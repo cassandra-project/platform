@@ -1,0 +1,7 @@
+# temporary Emacs files
+*~
+
+# binaries
+build/
+*.class
+

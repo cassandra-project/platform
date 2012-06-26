@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>cassandra</display-name>
+  <servlet>
+    <servlet-name>cassandra</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>cassandra</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cassandra</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+  <env-entry>
+    <env-entry-name>mongo.host.address</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>localhost</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <env-entry-name>mongo.db</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>test</env-entry-value>
+  </env-entry>
+</web-app>
