@@ -12,7 +12,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>cassandra</servlet-name>
-    <url-pattern>/rest/*</url-pattern>
+    <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
   <env-entry>
     <env-entry-name>mongo.host.address</env-entry-name>
