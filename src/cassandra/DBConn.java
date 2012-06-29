@@ -2,11 +2,15 @@ package cassandra;
 
 import java.net.UnknownHostException;
 
+import org.apache.log4j.Logger;
+
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 
 public class DBConn {
+	
+	private static Logger logger = Logger.getLogger(DBConn.class);
 	
 	private final static String DB_NAME = "test";
 	
@@ -29,6 +33,7 @@ public class DBConn {
 			e.printStackTrace();
 		}
 		db = m.getDB(DB_NAME);
+		logger.debug("DB connection instantiated.");
 	}
 	
 	public static DB getConn() {
