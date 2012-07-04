@@ -46,9 +46,11 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String createInstallation(String dataToInsert) {
-		System.out.println("CREATE:" +dataToInsert);
 		return new MongoDBQueries().insertData(COL_INSTALLATIONS ,dataToInsert,
-				"Installation created successfully", MongoScenarios.COL_SCENARIOS ,"scenario_id" ).toString();
+				"Installation created successfully", 
+				new String[] {MongoScenarios.COL_SCENARIOS,COL_INSTALLATIONS} ,
+				new String[] {"scenario_id","belongsToInstallation"},
+				new boolean[] {false,true}).toString();
 	}
 
 	/**

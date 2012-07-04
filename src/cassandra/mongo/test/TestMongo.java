@@ -22,14 +22,16 @@ public class TestMongo {
 	private static final String ACTIVITIES = "activities";
 	private static final String ACT_MODELS = "act_models";
 	private static final String APPLIANCES = "appliances";
+	private static final String DISTRIBUTIONS = "distributions";
 
 	public static void main(String args[]) {
 		new TestMongo();
 	}
 
 	public TestMongo() {
-		testCreate();
-		getData("http://localhost:8080/cassandra/api/prj/","4ff410c8e4b0c338f131de9e",PROJECTS);
+//		testCreate();
+//		getData("http://localhost:8080/cassandra/api/prj/","4ff410c8e4b0c338f131de9e",PROJECTS);
+		getData("http://localhost:8080/cassandra/api/distr/","4ff46ab0e4b0560065300d36",DISTRIBUTIONS);
 	}
 
 	/**
@@ -37,8 +39,8 @@ public class TestMongo {
 	 */
 	public void testCreate() {
 		System.out.println("Creating Projects");
-		httpConnection("http://localhost:8080/cassandra/api/prj","POST","tests/project2.json",null,null);
-		String res = httpConnection("http://localhost:8080/cassandra/api/prj","POST","tests/project.json",null,null);
+		httpConnection("http://localhost:8080/cassandra/api/prj","POST","tests/project2.json",(String[])null,(String[])null);
+		String res = httpConnection("http://localhost:8080/cassandra/api/prj","POST","tests/project.json",(String[])null,(String[])null);
 		DBObject obj = (DBObject)JSON.parse(res); 
 		String id = ((DBObject)obj.get("objectCreated")).get("_id").toString();
 
@@ -72,7 +74,16 @@ public class TestMongo {
 		httpConnection("http://localhost:8080/cassandra/api/actmod","POST","tests/activitymodel.json","act_id",id);
 		res = httpConnection("http://localhost:8080/cassandra/api/actmod","POST","tests/activitymodel2.json","act_id",id);
 		obj = (DBObject)JSON.parse(res);
+		System.out.println("\n\n" + obj);
 		id = ((DBObject)obj.get("objectCreated")).get("_id").toString();
+
+		res = httpConnection("http://localhost:8080/cassandra/api/distr","POST","tests/distribution2.json",(String[])null,(String[])null);
+		obj = (DBObject)JSON.parse(res);
+		System.out.println(obj);
+		id = ((DBObject)obj.get("objectCreated")).get("_id").toString();
+		res =httpConnection("http://localhost:8080/cassandra/api/distr","POST","tests/distribution.json",new String[] {"duration","startTime","repeatsNrOfTimes"},new String[] {id,id,id});
+		System.out.println(res);
+
 	}
 
 	/**
@@ -119,7 +130,7 @@ public class TestMongo {
 	 * @return
 	 */
 	private String httpConnection(String url,String method) {
-		return httpConnection(url,method,null,null,null);
+		return httpConnection(url,method,null,(String[])null,(String[])null);
 	}
 
 	/**
@@ -127,10 +138,27 @@ public class TestMongo {
 	 * @param url
 	 * @param method
 	 * @param fileToSend
+	 * @param keyToReplace
+	 * @param valueToReplace
 	 * @return
 	 */
 	private String httpConnection(String url,String method, String fileToSend, 
 			String keyToReplace, String valueToReplace) {
+		return httpConnection(url,method, fileToSend, 
+				new String[] {keyToReplace}, new String[] {valueToReplace});
+	}
+
+	/**
+	 * 
+	 * @param url
+	 * @param method
+	 * @param fileToSend
+	 * @param keyToReplace
+	 * @param valueToReplace
+	 * @return
+	 */
+	private String httpConnection(String url,String method, String fileToSend, 
+			String[] keyToReplace, String valueToReplace[]) {
 		System.out.println(method + " on: " + url);
 		String response = "";
 		HttpURLConnection httpCon = null;
@@ -169,7 +197,7 @@ public class TestMongo {
 	 * @param fileName
 	 * @return
 	 */
-	private String readFile(String fileName, String keyToReplace, String valueToReplace) {
+	private String readFile(String fileName, String keyToReplace[], String valueToReplace[]) {
 		StringBuilder sb = new StringBuilder();
 		String strLine = null;
 		try{
@@ -180,11 +208,14 @@ public class TestMongo {
 			while ((strLine = br.readLine()) != null)   {
 				if(keyToReplace != null && valueToReplace != null) {
 					strLine = strLine.trim();
-					if(strLine.startsWith(keyToReplace)) {
-						String comma = "";
-						if(strLine.endsWith(","))
-							comma = ",";
-						strLine = keyToReplace + " : \"" + valueToReplace + "\"" + comma;
+					for(int i=0;i<keyToReplace.length;i++) {
+						if(strLine.startsWith(keyToReplace[i])) {
+							String comma = "";
+							if(strLine.endsWith(","))
+								comma = ",";
+							strLine = keyToReplace[i] + " : \"" + valueToReplace[i] + "\"" + comma;
+							break;
+						}
 					}
 				}
 				sb.append(strLine);

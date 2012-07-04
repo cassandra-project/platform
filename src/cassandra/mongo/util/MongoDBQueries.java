@@ -38,7 +38,7 @@ public class MongoDBQueries {
 			System.out.println("qKey=" + qKey);
 			System.out.println("oKey=" + oKey);
 			System.out.println("refKey=" + refKey);
-			
+
 			newObjId =  new ObjectId();
 			System.out.println(1);
 			System.out.println(2);
@@ -54,7 +54,7 @@ public class MongoDBQueries {
 			BasicDBObject q = new BasicDBObject();
 			q.put( qKey, new ObjectId(refKey) );
 			System.out.println(4);
-			
+
 			BasicDBObject o = new BasicDBObject();
 			o.put( "$push", new BasicDBObject(oKey, dataToInsert));
 			System.out.println(q);
@@ -78,7 +78,7 @@ public class MongoDBQueries {
 			data = (DBObject)JSON.parse(dataToInsert);
 			if(!data.containsField("cid"))
 				data.put("cid", new ObjectId());
-			ensureThatRefKeyExists(data, coll, refKeyName);
+			ensureThatRefKeyExists(data, coll, refKeyName, false);
 			_id = data.get(refKeyName).toString();
 			DBObject q = new BasicDBObject("_id", new ObjectId(_id));
 			DBObject o =  new BasicDBObject().append("$set", new BasicDBObject("sim_param", data));
@@ -288,7 +288,7 @@ public class MongoDBQueries {
 				ensureThatRefKeysMatch(dbObject, collection, refKeyName, intDocKey, qValue);
 			}
 			else if((refColl != null || refKeyName != null) && dbObject.get(refKeyName) != null) {
-				ensureThatRefKeyExists(dbObject, refColl, refKeyName);
+				ensureThatRefKeyExists(dbObject, refColl, refKeyName, false);
 			}
 			for(String key : dbObject.keySet()) {
 				if(!key.equalsIgnoreCase("id")) {
@@ -335,10 +335,10 @@ public class MongoDBQueries {
 			System.out.println(refColl);
 			System.out.println(refKeyName);
 			if( (refColl != null || refKeyName != null) && dbObject.get(refKeyName) != null) {
-				ensureThatRefKeyExists(dbObject, refColl, refKeyName);
+				ensureThatRefKeyExists(dbObject, refColl, refKeyName,false);
 			}
 			DBObject q = new BasicDBObject(entityName + ".cid",new ObjectId(cid));
-		
+
 			for(String key : dbObject.keySet()) {
 				if(!key.equalsIgnoreCase("cid")) {
 					keysUpdated.add(key);
@@ -356,8 +356,8 @@ public class MongoDBQueries {
 		return getInternalEntity(coll,entityName, cid,"Internal document " + coll + "." + 
 				entityName + " with cid=" + cid + " was successfullylly updated");
 	}
-	
-	
+
+
 	public DBObject addArrayDocumentDump(String coll, String parentEntityName,
 			DBObject qObj, String cid, DBObject objToPush) {
 		try {
@@ -393,7 +393,22 @@ public class MongoDBQueries {
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
 			String successMessage) {
-		return insertData(coll, dataToInsert, successMessage,null,null);
+		return insertData(coll, dataToInsert, successMessage,(String[])null,(String[])null,null);
+	}
+
+	/**
+	 * 
+	 * @param coll
+	 * @param dataToInsert
+	 * @param successMessage
+	 * @param refColl
+	 * @param refKeyName
+	 * @return
+	 */
+	public DBObject insertData(String coll, String dataToInsert, 
+			String successMessage,String refColl, String refKeyName) {
+		return insertData(coll, dataToInsert, successMessage,
+				new String[] {refColl},new String[] {refKeyName}, new boolean[] {false});
 	}
 
 	/**
@@ -403,14 +418,18 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage, String refColl, String refKeyName) {
+			String successMessage, String[] refColl, String[] refKeyName, boolean[] canBeNull) {
 		DBObject data;
 		try {
 			data = (DBObject)JSON.parse(dataToInsert);
 			if(refColl != null || refKeyName != null ) {
-				ensureThatRefKeyExists(data, refColl, refKeyName);
+				for(int i=0;i<refColl.length;i++) {
+					ensureThatRefKeyExists(data, refColl[i], refKeyName[i],canBeNull[i]);
+				}
 			}
 			DBConn.getConn().getCollection(coll).insert(data);
+		}catch(com.mongodb.util.JSONParseException e) {
+			return createJSONError("Error parsing JSON input","com.mongodb.util.JSONParseException");
 		}catch(Exception e) {
 			return createJSONError(dataToInsert,e);
 		}
@@ -424,9 +443,12 @@ public class MongoDBQueries {
 	 * @param refKeyName
 	 * @throws Exception
 	 */
-	private DBObject ensureThatRefKeyExists(DBObject data, String refColl, String refKeyName) 
-			throws MongoRefNotFoundException {
+	private DBObject ensureThatRefKeyExists(DBObject data, String refColl, 
+			String refKeyName, boolean canBeNull) 
+					throws MongoRefNotFoundException {
 		String refKey = (String)data.get(refKeyName);
+		if(canBeNull && refKey == null)
+			return null;
 		DBObject obj = getEntity(refColl, refKey);
 		if(obj == null)
 			throw new MongoRefNotFoundException("RefID: " + refKeyName + 
@@ -536,9 +558,19 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject createJSONError(String data, Exception ex) {
+		return  createJSONError(data, ex.getMessage() );
+	}
+
+	/**
+	 * 
+	 * @param data
+	 * @param ex
+	 * @return
+	 */
+	public DBObject createJSONError(String data, String ex) {
 		DBObject errorMessage = new BasicDBObject();
 		errorMessage.put("success", false);
-		errorMessage.put("exception", ex.getMessage());
+		errorMessage.put("exception", ex);
 		errorMessage.put("message", data);
 		return errorMessage;
 	}
@@ -624,8 +656,8 @@ public class MongoDBQueries {
 		successMessage.put("data", dbObjects);
 		return successMessage;
 	}
-	
-	
+
+
 	public String getRefKey(String key, DBObject data) throws MongoRefNotFoundException {
 		if(!data.containsField(key))
 			throw new MongoRefNotFoundException(key + " not found");

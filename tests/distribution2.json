@@ -1,0 +1,7 @@
+{
+    name : "Distribution 1",
+    description : "lala",
+    distrParam : "parameters",
+    distrType : "distribution type",
+    values : ["3","4"]
+}

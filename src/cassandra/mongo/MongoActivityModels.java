@@ -44,7 +44,16 @@ public class MongoActivityModels {
 	 */
 	public String createActivityModel(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_ACTMODELS ,dataToInsert,
-				"Activity Model created successfully", MongoActivities.COL_ACTIVITIES ,"act_id" ).toString();
+				"Activity Model created successfully", 
+				new String[] {MongoActivities.COL_ACTIVITIES, MongoDistributions.COL_DISTRIBUTIONS, 
+				MongoDistributions.COL_DISTRIBUTIONS, MongoDistributions.COL_DISTRIBUTIONS  },
+				new String[] {"act_id","duration","startTime","repeatsNrOfTime"},
+				new boolean[] {false,true,true,true}
+				).toString();
+
+		//         : "4ff31bc9e4b0721a5785a1bc",
+		//         : "4ff31bc9e4b0721a5785a1bc",
+		//         : "4ff45dc1e4b00acd8d6457e3"
 	}
 
 	/**

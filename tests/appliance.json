@@ -5,7 +5,7 @@
         standy_consumption: 1.23,
         controllable: true,
         shiftable: false,
-        inst_id: "4ff410c8e4b0c338f131dea4",
-        consumptionModel : "5ff32156e4b042e3bb583d7c"
+        inst_id: "4ff42978e4b0c906ef374ce2",
+        consumptionModel : "{5{100.4;4;0.2;3},{20.5;3;1}};{1{40.2;2;0.3},{40.5;3;-1}}"
         
 }
