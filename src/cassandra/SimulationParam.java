@@ -9,6 +9,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import cassandra.mongo.MongoSimParam;
+import cassandra.mongo.util.PrettyJSONPrinter;
+
 @Path("smp/{smp_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -21,8 +24,7 @@ public class SimulationParam {
 	 */
 	@GET
 	public String getSimulationParam(@PathParam("smp_id") String smp_id) {
-		System.out.println(smp_id);
-		return null;
+		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().getSimParam(smp_id));
 	}
 	
 	/**
@@ -32,8 +34,7 @@ public class SimulationParam {
 	 */
 	@PUT
 	public String updateSimulationParam(@PathParam("smp_id") String smp_id, String message) {
-		System.out.println(smp_id + " | " + message);
-		return null;
+		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().updateSimParam(smp_id,message));
 	}
 	
 	/**
@@ -41,8 +42,7 @@ public class SimulationParam {
 	 */
 	@DELETE
 	public String deleteSimulationParam(@PathParam("smp_id") String smp_id) {
-		// TODO
-		return null;
+		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().deleteSimParam(smp_id));
 	}
 
 }

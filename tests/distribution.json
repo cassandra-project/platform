@@ -1,0 +1,10 @@
+{
+    name : "Distribution 1",
+    description : "lala",
+    distParam : "parameters",
+    distType : "distribution type",
+    duration: "4ff31c38e4b0721a5785a1c3",
+    startTime: "5ff31c38e4b0721a5785a1c4",
+    values : ["3","4"],
+    repeatsNrOfTimes: "6ff31c38e4b0721a5785a144"
+}

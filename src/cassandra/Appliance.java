@@ -9,20 +9,24 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import cassandra.mongo.MongoAppliances;
+import cassandra.mongo.util.PrettyJSONPrinter;
+
 @Path("app/{app_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class Appliance {
 	
 	/**
+	 * 
+	 * 
 	 * Returns the appliance data based on the appliance id
 	 * @param app_id
 	 * @return
 	 */
 	@GET
 	public String getAppliance(@PathParam("app_id") String app_id) {
-		System.out.println(app_id);
-		return null;
+		return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliance(app_id));
 	}
 	
 	/**
@@ -32,8 +36,7 @@ public class Appliance {
 	 */
 	@PUT
 	public String updateAppliance(@PathParam("app_id") String app_id, String message) {
-		System.out.println(app_id + " | " + message);
-		return null;
+		return  PrettyJSONPrinter.prettyPrint(new MongoAppliances().updateAppliance(app_id,message));
 	}
 	
 	/**
@@ -41,8 +44,8 @@ public class Appliance {
 	 */
 	@DELETE
 	public String deleteAppliance(@PathParam("app_id") String app_id) {
-		// TODO
-		return null;
+		// TODO delete references
+		return PrettyJSONPrinter.prettyPrint(new MongoAppliances().deleteAppliance(app_id));
 	}
 
 }

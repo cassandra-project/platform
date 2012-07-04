@@ -9,40 +9,41 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import cassandra.mongo.MongoActivities;
+import cassandra.mongo.util.PrettyJSONPrinter;
+
 @Path("act/{act_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class Activity {
-	
+
 	/**
-	 * Returns the scenario data based on the scenario id
+	 * Returns an activity data based on the activity id
 	 * @param scn_id
 	 * @return
 	 */
 	@GET
 	public String getActivity(@PathParam("act_id") String act_id) {
-		System.out.println(act_id);
-		return null;
+		return PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivity(act_id));
 	}
-	
+
 	/**
-	 * Scenario update
+	 * Activity update
 	 * @param scn_id
 	 * @return
 	 */
 	@PUT
 	public String updateActivity(@PathParam("act_id") String act_id, String message) {
-		System.out.println(act_id + " | " + message);
-		return null;
+		return  PrettyJSONPrinter.prettyPrint(new MongoActivities().updateActivity(act_id,message));
 	}
-	
+
 	/**
-	 * Delete a scenario
+	 * Delete an activity
 	 */
 	@DELETE
 	public String deleteActivity(@PathParam("act_id") String act_id) {
-		// TODO
-		return null;
+		// TODO remove references
+		return PrettyJSONPrinter.prettyPrint(new MongoActivities().deleteActivity(act_id));
 	}
 
 }

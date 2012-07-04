@@ -1,0 +1,11 @@
+ {
+        name: "ApplianceName",
+        description: "I am an appliance",
+        energy_class: "A",
+        standy_consumption: 1.23,
+        controllable: true,
+        shiftable: false,
+        inst_id: "4ff410c8e4b0c338f131dea4",
+        consumptionModel : "5ff32156e4b042e3bb583d7c"
+        
+}

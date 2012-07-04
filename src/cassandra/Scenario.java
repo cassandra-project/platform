@@ -9,40 +9,43 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import cassandra.mongo.MongoScenarios;
+import cassandra.mongo.util.PrettyJSONPrinter;
+
 @Path("scn/{scn_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class Scenario {
-	
-	private final static String COL_SCENARIOS = "scenarios";
-	
+
 	/**
+	 * 
 	 * Returns the scenario data based on the scenario id
 	 * @param scn_id
 	 * @return
 	 */
 	@GET
 	public String getScenario(@PathParam("scn_id") String scn_id) {
-		return null;
+		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().getScenario(scn_id));
 	}
-	
+
 	/**
+	 * 
 	 * Scenario update
 	 * @param scn_id
 	 * @return
 	 */
 	@PUT
 	public String updateScenario(@PathParam("scn_id") String scn_id, String message) {
-		return null;
+		return  PrettyJSONPrinter.prettyPrint(new MongoScenarios().updateScenario(scn_id,message));
 	}
-	
+
 	/**
 	 * Delete a scenario
 	 */
 	@DELETE
 	public String deleteProject(@PathParam("scn_id") String scn_id) {
-		// TODO
-		return null;
+		// TODO delete references
+		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().deleteScenario(scn_id));
 	}
 
 }

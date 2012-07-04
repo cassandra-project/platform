@@ -10,6 +10,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import cassandra.mongo.MongoProjects;
+import cassandra.mongo.util.PrettyJSONPrinter;
 import cassandra.threads.DemoThread;
 
 import com.mongodb.util.JSON;
@@ -33,12 +35,7 @@ public class Projects {
 	public String getProjects() {
 		ExecutorService executor = (ExecutorService )context.getAttribute("MY_EXECUTOR");
 		executor.submit(new DemoThread());
-		DBCursor cursorDoc = DBConn.getConn().getCollection(COL_PROJECTS).find();
-		StringBuilder sb = new StringBuilder();
-		while (cursorDoc.hasNext()) {
-			sb.append(JSON.serialize(cursorDoc.next()));
-		}
-		return sb.toString();
+		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(null));
 	}
 	
 	/**
@@ -46,8 +43,7 @@ public class Projects {
 	 */
 	@POST
 	public String createProject(String message) {
-		
-		return null;
+		return PrettyJSONPrinter.prettyPrint(new MongoProjects().createProject(message));
 	}
 
 }
