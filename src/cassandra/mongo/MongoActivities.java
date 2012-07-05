@@ -32,7 +32,7 @@ public class MongoActivities {
 					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(COL_ACTIVITIES,"inst_id", 
+			return new MongoDBQueries().getEntity(COL_ACTIVITIES,"pers_id", 
 					inst_id, "Activities retrieved successfully").toString();
 		}
 	}
@@ -45,7 +45,7 @@ public class MongoActivities {
 	 */
 	public String createActivity(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_ACTIVITIES ,dataToInsert,
-				"Activity created successfully", MongoInstallations.COL_INSTALLATIONS ,"inst_id" ).toString();
+				"Activity created successfully", MongoPersons.COL_PERSONS ,"pers_id" ).toString();
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class MongoActivities {
 	public String updateActivity(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_ACTIVITIES, "Activity updated successfully",
-				MongoInstallations.COL_INSTALLATIONS ,"inst_id" ).toString();
+				 MongoPersons.COL_PERSONS ,"pers_id" ).toString();
 	}
 
 }

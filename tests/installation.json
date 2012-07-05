@@ -1,7 +1,9 @@
  {
         name: "Installation 1",
+        type : "Installation Type",
         description : "Installation description",
-        scenario_id: "4ff1a8e2e4b0ed82920aa45b"
+        scenario_id: "4ff5bca7e4b0082c63d08df3",
+        belongsToInstallation : "4ff5bca7e4b0082c63d08df6"
  }
  
  

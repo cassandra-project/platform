@@ -29,7 +29,7 @@ public class SimulationParams {
 	}
 
 	/**
-	 * curl -i http://localhost:8080/cassandra/smp?scn_id=4fed8675e4b019410d75e577
+	 * curl -i http://localhost:8080/cassandra/api/smp?scn_id=4fed8675e4b019410d75e577
 	 * 
 	 * @param smp_id
 	 * @return

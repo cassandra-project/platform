@@ -19,10 +19,6 @@ public class MongoDistributions {
 	 */
 	public String createDistribution(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_DISTRIBUTIONS ,dataToInsert,
-				"Distribution created successfully", 
-				new String[] {"distributions","distributions","distributions"}, 
-				new String[] {"duration","startTime","repeatsNrOfTimes"},
-				new boolean[] {true,true,true}
-		).toString();
+				"Distribution created successfully").toString();
 	}
 }

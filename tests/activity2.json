@@ -1,6 +1,7 @@
  {
         name: "Ironing",
+        type : "Coocking",
         description: "Bla bla Ironing",
-        inst_id: "4ff31bc9e4b0721a5785a1bc"
+        pers_id: "4ff31bc9e4b0721a5785a1bc"
  }
  

@@ -22,6 +22,7 @@ public class TestMongo {
 	private static final String ACTIVITIES = "activities";
 	private static final String ACT_MODELS = "act_models";
 	private static final String APPLIANCES = "appliances";
+	private static final String PERSONS = "persons";
 	private static final String DISTRIBUTIONS = "distributions";
 
 	public static void main(String args[]) {
@@ -29,8 +30,8 @@ public class TestMongo {
 	}
 
 	public TestMongo() {
-//		testCreate();
-//		getData("http://localhost:8080/cassandra/api/prj/","4ff410c8e4b0c338f131de9e",PROJECTS);
+		testCreate();
+		getData("http://localhost:8080/cassandra/api/prj/","4ff410c8e4b0c338f131de9e",PROJECTS);
 		getData("http://localhost:8080/cassandra/api/distr/","4ff46ab0e4b0560065300d36",DISTRIBUTIONS);
 	}
 
@@ -55,19 +56,29 @@ public class TestMongo {
 		httpConnection("http://localhost:8080/cassandra/api/smp","POST","tests/simparam2.json","scn_id",id);
 
 		System.out.println("\n\nCreating Installations");
-		httpConnection("http://localhost:8080/cassandra/api/inst","POST","tests/installation.json","scenario_id",id);
-		res = httpConnection("http://localhost:8080/cassandra/api/inst","POST","tests/installation2.json","scenario_id",id);
+		String t = httpConnection("http://localhost:8080/cassandra/api/inst","POST","tests/installation.json",new String[] {"scenario_id","belongsToInstallation"},new String[] {id,id});
+		DBObject objT = (DBObject)JSON.parse(t);
+		String idT = ((DBObject)objT.get("objectCreated")).get("_id").toString();
+		res = httpConnection("http://localhost:8080/cassandra/api/inst","POST","tests/installation2.json",new String[] {"scenario_id","belongsToInstallation"},new String[] {id,idT});
 		obj = (DBObject)JSON.parse(res);
 		id = ((DBObject)obj.get("objectCreated")).get("_id").toString();
 
 		System.out.println("\n\nCreating Appliances");
-		httpConnection("http://localhost:8080/cassandra/api/app","POST","tests/appliance.json","inst_id",id);
-		httpConnection("http://localhost:8080/cassandra/api/app","POST","tests/appliance2.json","inst_id",id);
+		httpConnection("http://localhost:8080/cassandra/api/app","POST","tests/appliance.json",new String[] {"inst_id",},new String[] {id});
+		httpConnection("http://localhost:8080/cassandra/api/app","POST","tests/appliance2.json",new String[] {"inst_id",},new String[] {id});
+		
+		System.out.println("\n\nCreating Persons");
+		System.out.println(id);
+		String pers = httpConnection("http://localhost:8080/cassandra/api/pers","POST","tests/person.json","inst_id",id);
+		DBObject persObj = (DBObject)JSON.parse(pers);
+		System.out.println(persObj);
+		String  persID = ((DBObject)persObj.get("objectCreated")).get("_id").toString();
 
 		System.out.println("\n\nCreating Activities");
-		httpConnection("http://localhost:8080/cassandra/api/act","POST","tests/activity.json","inst_id",id);
-		res = httpConnection("http://localhost:8080/cassandra/api/act","POST","tests/activity2.json","inst_id",id);
+		httpConnection("http://localhost:8080/cassandra/api/act","POST","tests/activity.json","pers_id",persID);
+		res = httpConnection("http://localhost:8080/cassandra/api/act","POST","tests/activity2.json","pers_id",persID);
 		obj = (DBObject)JSON.parse(res);
+		System.out.println(obj);
 		id = ((DBObject)obj.get("objectCreated")).get("_id").toString();
 
 		System.out.println("\n\nCreating Activity Models");
@@ -110,11 +121,14 @@ public class TestMongo {
 			if(type.equalsIgnoreCase(SCENARIOS))
 				getData("http://localhost:8080/cassandra/api/smp?scn_id=", intID,"");
 
-			if(type.equalsIgnoreCase(INSTALLATIONS))
-				getData("http://localhost:8080/cassandra/api/act?inst_id=", intID,ACTIVITIES);
+			if(type.equalsIgnoreCase(PERSONS))
+				getData("http://localhost:8080/cassandra/api/act?pers_id=", intID,ACTIVITIES);
 
 			if(type.equalsIgnoreCase(INSTALLATIONS))
 				getData("http://localhost:8080/cassandra/api/app?inst_id=", intID,APPLIANCES);
+			
+			if(type.equalsIgnoreCase(INSTALLATIONS))
+				getData("http://localhost:8080/cassandra/api/pers?inst_id=", intID,PERSONS);
 
 			if(type.equalsIgnoreCase(ACTIVITIES))
 				getData("http://localhost:8080/cassandra/api/actmod?act_id=", intID,ACT_MODELS);

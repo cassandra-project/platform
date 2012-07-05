@@ -24,8 +24,8 @@ public class Activities {
 	 * @return
 	 */
 	@GET
-	public String getActivities(@QueryParam("inst_id") String inst_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivities(inst_id));
+	public String getActivities(@QueryParam("pers_id") String pers_id) {
+		return PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivities(pers_id));
 	}
 
 	/**

@@ -1,10 +1,19 @@
 {
     name : "Distribution 2",
+    type : "Normal Distribution",
     description : "lala2",
-    distrParam : "parameters",
     distrType : "distribution type",
-    duration: "4ff45dc1e4b00acd8d6457e3",
-    startTime: "4ff45dc1e4b00acd8d6457e3",
     values : ["3","4"],
-    repeatsNrOfTimes: "4ff45dc1e4b00acd8d6457e3"
+    parameters : [
+        {
+            w : 23
+            mean : 23.3
+            std : 44.4
+        },
+                {
+            w : 23
+            mean : 23.3
+            std : 44.4
+        }
+    ]
 }

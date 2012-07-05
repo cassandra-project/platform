@@ -1,5 +1,6 @@
  {
         name: "ApplianceName",
+        type : "fridge",
         description: "I am an appliance",
         energy_class: "A",
         standy_consumption: 1.23,
