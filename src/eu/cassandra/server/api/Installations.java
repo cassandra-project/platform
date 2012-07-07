@@ -1,4 +1,4 @@
-package cassandra;
+package eu.cassandra.server.api;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -8,8 +8,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import cassandra.mongo.MongoInstallations;
-import cassandra.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.server.mongo.MongoInstallations;
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 @Path("inst")
 @Produces(MediaType.APPLICATION_JSON)

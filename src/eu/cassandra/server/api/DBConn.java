@@ -1,4 +1,4 @@
-package cassandra;
+package eu.cassandra.server.api;
 
 import java.net.UnknownHostException;
 

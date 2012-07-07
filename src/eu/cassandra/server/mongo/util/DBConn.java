@@ -1,4 +1,4 @@
-package cassandra.mongo.util;
+package eu.cassandra.server.mongo.util;
 
 import java.net.UnknownHostException;
 

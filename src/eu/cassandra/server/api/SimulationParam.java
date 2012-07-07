@@ -1,4 +1,4 @@
-package cassandra;
+package eu.cassandra.server.api;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -9,8 +9,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import cassandra.mongo.MongoSimParam;
-import cassandra.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.server.mongo.MongoSimParam;
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 @Path("smp/{smp_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)

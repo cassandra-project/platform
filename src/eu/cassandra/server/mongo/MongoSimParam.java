@@ -1,7 +1,7 @@
-package cassandra.mongo;
+package eu.cassandra.server.mongo;
 
-import cassandra.exceptions.RestQueryParamMissingException;
-import cassandra.mongo.util.MongoDBQueries;
+import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoSimParam {
 	private final static String KEYNAME_SIMPARAM = "sim_param";

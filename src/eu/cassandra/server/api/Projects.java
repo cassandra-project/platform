@@ -1,4 +1,4 @@
-package cassandra;
+package eu.cassandra.server.api;
 
 import java.util.concurrent.ExecutorService;
 
@@ -10,12 +10,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import cassandra.mongo.MongoProjects;
-import cassandra.mongo.util.PrettyJSONPrinter;
-import cassandra.threads.DemoThread;
 
 import com.mongodb.util.JSON;
 import com.mongodb.DBCursor;
+
+import eu.cassandra.server.mongo.MongoProjects;
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.server.threads.DemoThread;
 
 @Path("prj")
 @Produces(MediaType.APPLICATION_JSON)

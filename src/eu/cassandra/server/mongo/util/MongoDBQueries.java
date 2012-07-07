@@ -1,18 +1,19 @@
-package cassandra.mongo.util;
+package eu.cassandra.server.mongo.util;
 
 import java.util.Vector;
 
 import org.bson.types.ObjectId;
 
 
-import cassandra.exceptions.MongoInvalidObjectId;
-import cassandra.exceptions.MongoRefNotFoundException;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+
+import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
+import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
 
 public class MongoDBQueries {
 

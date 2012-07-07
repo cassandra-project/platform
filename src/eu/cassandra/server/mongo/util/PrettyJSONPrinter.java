@@ -1,4 +1,4 @@
-package cassandra.mongo.util;
+package eu.cassandra.server.mongo.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

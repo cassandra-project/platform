@@ -1,4 +1,4 @@
-package cassandra.mongo.test;
+package eu.cassandra.server.mongo.test;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -8,11 +8,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import cassandra.mongo.util.PrettyJSONPrinter;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 public class TestMongo {
 

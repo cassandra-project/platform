@@ -1,4 +1,4 @@
-package cassandra.threads;
+package eu.cassandra.server.threads;
 
 public class DemoThread implements Runnable {
 	

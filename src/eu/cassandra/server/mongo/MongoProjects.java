@@ -1,6 +1,6 @@
-package cassandra.mongo;
+package eu.cassandra.server.mongo;
 
-import cassandra.mongo.util.MongoDBQueries;
+import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoProjects {
 

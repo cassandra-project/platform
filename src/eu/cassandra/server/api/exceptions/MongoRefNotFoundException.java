@@ -1,4 +1,4 @@
-package cassandra.exceptions;
+package eu.cassandra.server.api.exceptions;
 
 public class MongoRefNotFoundException extends Exception {
 

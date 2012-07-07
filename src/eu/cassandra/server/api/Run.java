@@ -1,4 +1,4 @@
-package cassandra;
+package eu.cassandra.server.api;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
