@@ -15,7 +15,7 @@
     <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
   <listener>
-    <listener-class>cassandra.threads.ExecutorContextListener</listener-class>
+    <listener-class>eu.cassandra.server.threads.ExecutorContextListener</listener-class>
   </listener>
   <env-entry>
     <env-entry-name>mongo.host.address</env-entry-name>
