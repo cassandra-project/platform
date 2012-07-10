@@ -5,3 +5,5 @@
 build/
 *.class
 
+/.project
+/.gitignore
