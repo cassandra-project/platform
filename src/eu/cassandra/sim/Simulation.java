@@ -151,7 +151,7 @@ public class Simulation implements Runnable
     registry.saveRegistry(folder);
   }
 
-  public void setup () throws SetupException
+  public void setup () throws Exception
   {
     logger.info("Simulation setup started.");
     installations = new Vector<Installation>();
@@ -169,7 +169,7 @@ public class Simulation implements Runnable
       dynamicSetup();
     }
     else {
-      throw new SetupException("Problem with setup property in "
+      throw new Exception("Problem with setup property in "
                                + Params.SIM_PROPS);
     }
     // Load possible activities
