@@ -1,6 +1,7 @@
 package eu.cassandra.server.threads;
 
 import java.util.concurrent.ExecutorService;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 

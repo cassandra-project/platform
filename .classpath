@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
-	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/asm-3.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-core-asl-1.9.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-jaxrs-1.9.2.jar"/>
@@ -17,7 +15,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mongo-2.8.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.16.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/servlet-api-2.4.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-2.2.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/httpclient-4.2.jar"/>
@@ -27,5 +24,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="output" path="build/classes"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/servlet-api.jar"/>
+	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
