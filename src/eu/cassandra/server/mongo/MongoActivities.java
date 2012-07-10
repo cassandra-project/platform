@@ -25,15 +25,15 @@ public class MongoActivities {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getActivities(String inst_id) {
-		if(inst_id == null) {
+	public String getActivities(String pers_id) {
+		if(pers_id == null) {
 			return new MongoDBQueries().createJSONError(
 					"Only the Activities of a particular Installation can be retrieved", 
 					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_ACTIVITIES,"pers_id", 
-					inst_id, "Activities retrieved successfully").toString();
+					pers_id, "Activities retrieved successfully").toString();
 		}
 	}
 

@@ -1,0 +1,16 @@
+ {
+        name: "Consumption Model 1",
+        description: "I am a Consumption Model ",
+        steps: 100,
+        p : 
+            {
+                n 
+                { 
+                    n 
+                    (power : , 
+                    duration, 
+                    slope)
+                }
+            }
+        
+}

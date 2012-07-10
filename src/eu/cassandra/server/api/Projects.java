@@ -10,10 +10,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-
-import com.mongodb.util.JSON;
-import com.mongodb.DBCursor;
-
 import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.server.threads.DemoThread;
@@ -22,8 +18,6 @@ import eu.cassandra.server.threads.DemoThread;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class Projects {
-	
-	private final static String COL_PROJECTS = "projects";
 	
 	@javax.ws.rs.core.Context 
 	ServletContext context;

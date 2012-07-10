@@ -5,15 +5,14 @@ import java.util.Vector;
 import org.bson.types.ObjectId;
 
 
+import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
+import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-
-import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
-import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
 
 public class MongoDBQueries {
 
@@ -35,18 +34,9 @@ public class MongoDBQueries {
 		ObjectId newObjId;
 		String refKey = dataToInsert.get(refKeyName).toString();
 		try {
-			System.out.println("dataToInsert=" + dataToInsert);
-			System.out.println("qKey=" + qKey);
-			System.out.println("oKey=" + oKey);
-			System.out.println("refKey=" + refKey);
-
 			newObjId =  new ObjectId();
-			System.out.println(1);
-			System.out.println(2);
 			dataToInsert.put("cid", newObjId );
-			System.out.println(3);
 			//ensureThatRefKeyExists(entityToInsert, coll, refKeyName);
-
 
 			//new BasicDBObject("dddd", entityToInsert ))
 			//refKey = (String)entityToInsert.get(refKeyName);
@@ -54,12 +44,9 @@ public class MongoDBQueries {
 
 			BasicDBObject q = new BasicDBObject();
 			q.put( qKey, new ObjectId(refKey) );
-			System.out.println(4);
 
 			BasicDBObject o = new BasicDBObject();
 			o.put( "$push", new BasicDBObject(oKey, dataToInsert));
-			System.out.println(q);
-			System.out.println(o);
 			DBConn.getConn().getCollection(coll).update( q, o, true, true );
 		}catch(Exception e) {
 			return createJSONError("Data to insert: " + dataToInsert ,e);
@@ -128,8 +115,8 @@ public class MongoDBQueries {
 	 * @param id
 	 * @return
 	 */
-	public DBObject getEntity(String collection, String id) {
 		BasicDBObject query = new BasicDBObject();
+		public DBObject getEntity(String collection, String id) {
 		query.put("_id", new ObjectId(id));
 		return DBConn.getConn().getCollection(collection).findOne(query);
 	}
@@ -142,15 +129,10 @@ public class MongoDBQueries {
 	 */
 	public DBObject getInternalEntities(String coll, String entityName, String parentID) {
 		try {
-			System.out.println(coll);
-			System.out.println(entityName);
-			System.out.println(parentID);
 			BasicDBObject query = new BasicDBObject("_id", new ObjectId(parentID));
 			BasicDBObject fields = new BasicDBObject(entityName,1);
 			DBObject result = new MongoDBQueries().executeFindQuery(coll,query, fields, 
 					"Get " + entityName + " with " +  " from " + coll + " with _id=" + parentID);
-			System.out.println(query);
-			System.out.println(fields);
 			@SuppressWarnings("unchecked")
 			Vector<DBObject> data = (Vector<DBObject>)result.get("data");
 			BasicDBList internalEntities = (BasicDBList)data.get(0).get(entityName);
@@ -224,9 +206,6 @@ public class MongoDBQueries {
 	 */
 	public DBObject executeFindQuery(String collection, 
 			BasicDBObject dbObj1, BasicDBObject dbObj2, String successMsg) {
-		System.out.println(collection);
-		System.out.println(dbObj1);
-		System.out.println(dbObj2);
 		DBCursor cursorDoc;
 		if(dbObj2 == null) {
 			cursorDoc = DBConn.getConn().getCollection(collection).find(dbObj1);
@@ -332,9 +311,6 @@ public class MongoDBQueries {
 		Vector<String> keysUpdated = new Vector<String>();
 		try {
 			DBObject dbObject = (DBObject) JSON.parse(jsonToUpdate);
-			System.out.println(dbObject);
-			System.out.println(refColl);
-			System.out.println(refKeyName);
 			if( (refColl != null || refKeyName != null) && dbObject.get(refKeyName) != null) {
 				ensureThatRefKeyExists(dbObject, refColl, refKeyName,false);
 			}
@@ -345,9 +321,6 @@ public class MongoDBQueries {
 					keysUpdated.add(key);
 					DBObject o = new BasicDBObject("$set",new BasicDBObject(
 							entityName + ".$." + key, dbObject.get(key)));
-					System.out.println("q=" + q);
-					System.out.println("o=" + o);
-					System.out.println();
 					DBConn.getConn().getCollection(coll).update(q,o);
 				}
 			}
@@ -374,13 +347,10 @@ public class MongoDBQueries {
 
 	public DBObject updateInternalDocumentDump(String coll, String qField, String parentKeyFieldName, String updateFieldName, String newData) {
 		DBObject newObject = (DBObject) JSON.parse(newData);
-		System.out.println(newObject);
 		String parentID = newObject.get(parentKeyFieldName).toString();
 		DBObject q = new BasicDBObject(qField, new ObjectId(parentID));
 		DBObject o = new BasicDBObject("$set",new BasicDBObject(updateFieldName,newObject));
 		DBConn.getConn().getCollection(coll).update(q,o,false,true);
-		System.out.println(q);
-		System.out.println(o);
 		return new BasicDBObject("a","b");
 	}
 
@@ -516,8 +486,6 @@ public class MongoDBQueries {
 			DBObject q = new BasicDBObject();
 			DBObject o = new BasicDBObject(new BasicDBObject("$pull",new BasicDBObject(
 					keyName, new BasicDBObject("cid",new ObjectId(cid)))));
-			System.out.println(q);
-			System.out.println(o);
 			DBConn.getConn().getCollection(coll).update(q, o, false, true);
 		}catch(Exception e) {
 			return createJSONError("remove db." + coll + "." + keyName + " with cid=" + cid,e);

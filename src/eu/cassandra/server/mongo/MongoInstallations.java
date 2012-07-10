@@ -26,7 +26,6 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String getInstallations(String scn_id) {
-		System.out.println("GET s:" +scn_id);
 		if(scn_id == null) {
 			return new MongoDBQueries().createJSONError(
 					"Only the Installations of a particular Scenario can be retrieved", 
