@@ -1,15 +1,15 @@
  {
         name: "Consumption Model 1",
         description: "I am a Consumption Model ",
-        steps: 100,
-        p : 
+        model : 
             {
-                n 
+                n : 2,
                 { 
-                    n 
-                    (power : , 
-                    duration, 
-                    slope)
+                    n : 2, 
+                    arr : [
+                           {p : 100, d : 10, s: 0},
+                           {p : 120, d : 5,  s: 0 }
+                          ]
                 }
             }
         
