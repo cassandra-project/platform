@@ -1,0 +1,73 @@
+package eu.cassandra.server.mongo;
+
+import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.MongoDBQueries;
+
+public class MongoDemographics {
+
+	protected final static String COL_DEMOGRAPHICS = "demographics";
+
+	/**
+	 * curl -i http://localhost:8080/cassandra/api/demog/4ff1d9d4e4b0ddb832a310bc
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public String getDemographic(String id) {
+		return new MongoDBQueries().getEntity(COL_DEMOGRAPHICS,"_id", 
+				id, "Demographics retrieved successfully").toString();
+	}
+
+	/**
+	 * curl -i http://localhost:8080/cassandra/api/demog?scn_id=4ff1d9d4e4b0ddb832a310bc
+	 * 
+	 * @param scn_id
+	 * @return
+	 */
+	public String getDemographics(String scn_id) {
+		if(scn_id == null) {
+			return new MongoDBQueries().createJSONError(
+					"Only the Demographics of a particular Scenario can be retrieved", 
+					new RestQueryParamMissingException("scn_id QueryParam is missing")).toString();
+		}
+		else {
+			return new MongoDBQueries().getEntity(COL_DEMOGRAPHICS,"scn_id", 
+					scn_id, "Demographics retrieved successfully").toString();
+		}
+	}
+
+	/**
+	 * curl -i --data  @demographics.json    --header Content-type:application/json http://localhost:8080/cassandra/api/demog
+	 * 
+	 * @param dataToInsert
+	 * @return
+	 */
+	public String createDemographic(String dataToInsert) {
+		return new MongoDBQueries().insertData(COL_DEMOGRAPHICS ,dataToInsert,
+				"Demographics created successfully", MongoScenarios.COL_SCENARIOS ,"scn_id" ).toString();
+	}
+
+	/**
+	 * curl -i -X DELETE http://localhost:8080/cassandra/api/demog/4ff153dbe4b0c855ac36d9a7
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public String deleteDemographics(String id) {
+		return new MongoDBQueries().deleteDocument(COL_DEMOGRAPHICS, id).toString();
+	}
+
+	/**
+	 * curl -X PUT -d @demographics.json   --header Content-type:application/json   http://localhost:8080/cassandra/api/demog/4fec8b53df4ffdb8d1d1ce57
+	 * 
+	 * @param id
+	 * @param jsonToUpdate
+	 * @return
+	 */
+	public String updateDemographics(String id,String jsonToUpdate) {
+		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
+				COL_DEMOGRAPHICS, "Demographics updated successfully",
+				MongoScenarios.COL_SCENARIOS ,"scn_id" ).toString();
+	}
+}
+
