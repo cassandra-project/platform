@@ -1,5 +1,6 @@
 package eu.cassandra.server.mongo;
 
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
@@ -20,12 +21,12 @@ public class MongoInstallations {
 	}
 
 	/**
-	 * curl -i http://localhost:8080/cassandra/api/inst?scn_id=scenarioID
+	 *  curl 'http://localhost:8080/cassandra/api/inst?scn_id=4ff5bca7e4b0082c63d08df3&limt=20&filter=\{x:234.232\}&sort=\{y:-1\}'
 	 * 
 	 * @param scn_id
 	 * @return
 	 */
-	public String getInstallations(String scn_id) {
+	public String getInstallations(String scn_id,String filters, String sort, int limit, int skip) {
 		if(scn_id == null) {
 			return new MongoDBQueries().createJSONError(
 					"Only the Installations of a particular Scenario can be retrieved", 
@@ -33,9 +34,10 @@ public class MongoInstallations {
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_INSTALLATIONS,"scenario_id", 
-					scn_id, "Installations retrieved successfully").toString();
+					scn_id, filters, sort, limit, skip, "Installations retrieved successfully").toString();
 		}
 	}
+
 
 	/**
 	 * curl -i --data  @installation.json    --header Content-type:application/json http://localhost:8080/cassandra/api/inst

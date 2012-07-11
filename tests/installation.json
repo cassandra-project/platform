@@ -3,10 +3,10 @@
         type : "Installation Type",
         description : "Installation description",
         scenario_id: "4ff5bca7e4b0082c63d08df3",
-        belongsToInstallation : "4ff5bca7e4b0082c63d08df6"
+        belongsToInstallation : "4ff5bca7e4b0082c63d08df6",
         location : "Description of location",
         x : 234.232,
-        y : 12.12
+        y : 12.14
  }
  
  

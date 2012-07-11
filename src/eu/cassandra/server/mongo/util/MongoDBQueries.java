@@ -77,16 +77,23 @@ public class MongoDBQueries {
 		return createJSONInsertPostMessage(coll + " with _id=" + _id + " updated with the following data", data) ;
 	}
 
+
+	public DBObject getEntity(String coll, String qKey, String qValue, 
+			String successMsg, String...fieldNames) {
+		return getEntity(coll, qKey, qValue, null, null, 0, 0, successMsg, fieldNames);
+	}
+
+
 	/**
-	 * 
 	 * @param collection
 	 * @param id
 	 * @param fieldNames
 	 * @return
 	 */
 	public DBObject getEntity(String coll, String qKey, String qValue, 
+			String filters, String sort, int limit, int skip,
 			String successMsg, String...fieldNames) {
-		BasicDBObject query;
+		DBObject query;
 		BasicDBObject fields;
 		try {
 			query = new BasicDBObject();
@@ -95,6 +102,12 @@ public class MongoDBQueries {
 				query.put(qKey, new ObjectId(qValue));
 			}
 			else if(qKey != null && qValue != null) {
+				try{
+					query = (DBObject)JSON.parse(filters);
+				}catch(Exception e) {
+					return createJSONError("Cannot get entity for collection: " + coll + 
+							", error in filters: " + filters ,e);
+				}
 				query.put(qKey, qValue);
 			}
 			fields = new BasicDBObject();
@@ -106,8 +119,34 @@ public class MongoDBQueries {
 					" with qKey=" + qKey + " and qValue=" + qValue,e);
 		}
 		return new MongoDBQueries().executeFindQuery(
-				coll,query,fields, successMsg);
+				coll,query,fields, successMsg, sort, limit, skip);
 	}
+
+	//	
+	//	public DBObject getEntity(String coll, String qKey, String qValue, 
+	//				String successMsg, int limit, int offset, Vector<SortingInfo> sortingInfo, String...fieldNames) {
+	//		BasicDBObject query;
+	//		BasicDBObject fields;
+	//		try {
+	//			query = new BasicDBObject();
+	//			if(qKey != null && qValue != null && 
+	//					(qKey.equalsIgnoreCase("_id") || qKey.endsWith(".cid"))) {
+	//				query.put(qKey, new ObjectId(qValue));
+	//			}
+	//			else if(qKey != null && qValue != null) {
+	//				query.put(qKey, qValue);
+	//			}
+	//			fields = new BasicDBObject();
+	//			for(String fieldName: fieldNames) {
+	//				fields.put(fieldName, 1);
+	//			}
+	//		}catch(Exception e) {
+	//			return createJSONError("Cannot get entity for collection: " + coll + 
+	//					" with qKey=" + qKey + " and qValue=" + qValue,e);
+	//		}
+	//		return new MongoDBQueries().executeFindQuery(
+	//				coll,query,fields, successMsg);
+	//	}
 
 	/**
 	 * 
@@ -115,8 +154,8 @@ public class MongoDBQueries {
 	 * @param id
 	 * @return
 	 */
-		BasicDBObject query = new BasicDBObject();
-		public DBObject getEntity(String collection, String id) {
+	BasicDBObject query = new BasicDBObject();
+	public DBObject getEntity(String collection, String id) {
 		query.put("_id", new ObjectId(id));
 		return DBConn.getConn().getCollection(collection).findOne(query);
 	}
@@ -213,6 +252,26 @@ public class MongoDBQueries {
 		else {
 			cursorDoc = DBConn.getConn().getCollection(collection).find(dbObj1,dbObj2);
 		}
+		return createJSON(cursorDoc,successMsg);
+	}
+
+	public DBObject executeFindQuery(String collection, 
+			DBObject dbObj1, DBObject dbObj2, String successMsg,
+			String sort, int limit, int skip) {
+		DBCursor cursorDoc = DBConn.getConn().
+				getCollection(collection).find(dbObj1);
+		if(sort != null)	{
+			try{
+				DBObject sortObj = (DBObject)JSON.parse(sort);
+				cursorDoc = cursorDoc.sort(sortObj);
+			}catch(Exception e) {
+				return createJSONError("Error in filtering JSON sorting object: " + sort, e);
+			}
+		}
+		if(skip != 0)
+			cursorDoc =	cursorDoc.skip(skip);
+		if(limit != 0)
+			cursorDoc =	cursorDoc.limit(limit);
 		return createJSON(cursorDoc,successMsg);
 	}
 
@@ -393,7 +452,7 @@ public class MongoDBQueries {
 		DBObject data;
 		try {
 			data = (DBObject)JSON.parse(dataToInsert);
-			if(refColl != null || refKeyName != null ) {
+			if(refColl != null && refKeyName != null ) {
 				for(int i=0;i<refColl.length;i++) {
 					ensureThatRefKeyExists(data, refColl[i], refKeyName[i],canBeNull[i]);
 				}
