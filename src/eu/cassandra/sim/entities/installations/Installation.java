@@ -16,103 +16,180 @@
 package eu.cassandra.sim.entities.installations;
 
 import java.util.Vector;
-
 import java.util.concurrent.PriorityBlockingQueue;
 
+import eu.cassandra.sim.Event;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.people.Person;
-import eu.cassandra.sim.Event;
 import eu.cassandra.sim.utilities.Registry;
 
-public class Installation {
-	private final int id;
+public class Installation
+{
+  private final int id;
+  private final String name;
+  private final String description;
+  private final String type;
+  private Vector<Person> persons;
+  private Vector<Appliance> appliances;
+  private Vector<Installation> subInstallations;
+  private Registry registry;
+  private LocationInfo locationInfo;
+
+  public static class Builder
+  {
+    // Required variables
+    private final int id;
     private final String name;
-    private Vector<Person> persons;
-    private Vector<Appliance> appliances;
-    private Registry registry;
-    
-    public static class Builder {
-    	// Required variables
-    	private final int id;
-        private final String name;
-        // Optional or state related variables
-        private Vector<Person> persons = new Vector<Person>();
-        private Vector<Appliance> appliances = new Vector<Appliance>();
-        private Registry registry = null;
-        public Builder(int aid, String aname) {
-        	id = aid;
-			name = aname;
-        }
-        public Builder registry(Registry aregistry) {
-			registry = aregistry; return this;
-		}
-		public Installation build() {
-			return new Installation(this);
-		}
-    }
-    
-    private Installation(Builder builder) {
-		id = builder.id;
-		name = builder.name;
-		persons = builder.persons;
-		appliances = builder.appliances;
-		registry = builder.registry;
-	}
-    
-    public void updateDailySchedule(int tick,  PriorityBlockingQueue<Event> queue) {
-    	for(Person person : getPersons()) {
-    		person.updateDailySchedule(tick, queue);
-		}
+    private final String description;
+    private final String type;
+    // Optional or state related variables
+    private Vector<Person> persons = new Vector<Person>();
+    private Vector<Appliance> appliances = new Vector<Appliance>();
+    private Vector<Installation> subInstallations = new Vector<Installation>();
+    private Registry registry = null;
+    private LocationInfo locationInfo = null;
+
+    public Builder (int aid, String aname, String desc, String type)
+    {
+      id = aid;
+      name = aname;
+      description = desc;
+      this.type = type;
     }
 
-	public void nextStep(int tick) {
-		updateRegistry(tick);
-	}
-
-	public void updateRegistry(int tick) {
-		float power = 0f;
-		for(Appliance appliance : getAppliances()) {
-			power += appliance.getPower(tick);
-		}
-		getRegistry().setValue(tick, power);
-	}
-
-	public float getPower(int tick) {
-		return getRegistry().getValue(tick);
-	}
-	
-    public int getId() {
-        return this.id;
+    public Builder subInstallations (Installation... inst)
+    {
+      for (Installation installation: inst) {
+        subInstallations.add(installation);
+      }
+      return this;
     }
 
-    public String getName() {
-        return name;
+    public Builder registry (Registry aregistry)
+    {
+      registry = aregistry;
+      return this;
     }
 
-    public Registry getRegistry() {
-        return registry;
-    }
-    
-    public Vector<Person> getPersons() {
-    	return persons;
+    public Builder locationInfo (LocationInfo aLocationInfo)
+    {
+      locationInfo = aLocationInfo;
+      return this;
     }
 
-    public void addPerson(Person person) {
-        persons.add(person);
+    public Installation build ()
+    {
+      return new Installation(this);
     }
+  }
 
-    public Vector<Appliance> getAppliances() {
-        return appliances;
-    }
+  private Installation (Builder builder)
+  {
+    id = builder.id;
+    name = builder.name;
+    description = builder.description;
+    type = builder.type;
+    persons = builder.persons;
+    appliances = builder.appliances;
+    subInstallations = builder.subInstallations;
+    registry = builder.registry;
+    locationInfo = builder.locationInfo;
+  }
 
-    public void addAppliance(Appliance appliance) {
-        this.appliances.add(appliance);
+  public void
+    updateDailySchedule (int tick, PriorityBlockingQueue<Event> queue)
+  {
+    for (Person person: getPersons()) {
+      person.updateDailySchedule(tick, queue);
     }
-    
-    public Appliance applianceExists(String name) {
-    	for(Appliance a : appliances) {
-    		if(a.getName().equalsIgnoreCase(name)) return a;
-    	}
-    	return null;
+  }
+
+  public void nextStep (int tick)
+  {
+    updateRegistry(tick);
+  }
+
+  public void updateRegistry (int tick)
+  {
+    float power = 0f;
+    for (Appliance appliance: getAppliances()) {
+      power += appliance.getPower(tick);
     }
+    getRegistry().setValue(tick, power);
+  }
+
+  public float getPower (int tick)
+  {
+    return getRegistry().getValue(tick);
+  }
+
+  public int getId ()
+  {
+    return this.id;
+  }
+
+  public String getName ()
+  {
+    return name;
+  }
+
+  public String getDescription ()
+  {
+    return description;
+  }
+
+  public String getType ()
+  {
+    return type;
+  }
+
+  public Registry getRegistry ()
+  {
+    return registry;
+  }
+
+  public Vector<Person> getPersons ()
+  {
+    return persons;
+  }
+
+  public void addPerson (Person person)
+  {
+    persons.add(person);
+  }
+
+  public Vector<Appliance> getAppliances ()
+  {
+    return appliances;
+  }
+
+  public Vector<Installation> getSubInstallations ()
+  {
+    return subInstallations;
+  }
+
+  public void addAppliance (Appliance appliance)
+  {
+    this.appliances.add(appliance);
+  }
+
+  public void addInstallation (Installation installation)
+  {
+    subInstallations.add(installation);
+  }
+
+  public Appliance applianceExists (String name)
+  {
+    for (Appliance a: appliances) {
+      if (a.getName().equalsIgnoreCase(name))
+        return a;
+    }
+    return null;
+  }
+
+  public LocationInfo getLocationInfo ()
+  {
+    return locationInfo;
+  }
+
 }
