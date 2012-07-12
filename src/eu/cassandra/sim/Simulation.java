@@ -17,7 +17,6 @@
 package eu.cassandra.sim;
 
 import java.io.File;
-
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Vector;
@@ -169,8 +168,7 @@ public class Simulation implements Runnable
       dynamicSetup();
     }
     else {
-      throw new Exception("Problem with setup property in "
-                               + Params.SIM_PROPS);
+      throw new Exception("Problem with setup property in " + Params.SIM_PROPS);
     }
     // Load possible activities
     String[] activities =
@@ -180,7 +178,9 @@ public class Simulation implements Runnable
     for (int i = 0; i < installations.size(); i++) {
       Installation inst = installations.get(i);
       int type = RNG.nextInt(typesOfPersons) + 1;
-      Person person = new Person.Builder("Person " + i, type, inst).build();
+      Person person =
+        new Person.Builder("Person " + i, "Person Type " + type,
+                           Integer.toString(type), inst).build();
       inst.addPerson(person);
 
       for (int j = 0; j < activities.length; j++) {
@@ -430,9 +430,10 @@ public class Simulation implements Runnable
           weekend.status();
 
           Activity act =
-            new Activity.Builder(activities[j], start, duration)
-                    .times("weekday", weekday).times("weekend", weekend)
-                    .build();
+            new Activity.Builder(activities[j], "Typical " + activities[j]
+                                                + " Activity", activities[j],
+                                 start, duration).times("weekday", weekday)
+                    .times("weekend", weekend).build();
           for (Appliance e: existing) {
             act.addAppliance(e, 1.0 / existing.size());
           }
@@ -453,14 +454,16 @@ public class Simulation implements Runnable
     for (int i = 0; i < numOfInstallations; i++) {
       // Make the installation
       Installation inst =
-        new Installation.Builder(i, i + "").registry(new Registry(i + "",
-                                                                  endTick))
-                .build();
+        new Installation.Builder(i, namesOfInstallations[i],
+                                 Integer.toString(i), i + "")
+                .registry(new Registry(i + "", endTick)).build();
       // Create the appliances
       String[] instApps =
         FileUtils.getStringArray(Params.DEMOG_PROPS, namesOfInstallations[i]);
       for (int j = 0; j < instApps.length; j++) {
-        Appliance app = new Appliance.Builder(instApps[j], inst).build();
+        Appliance app =
+          new Appliance.Builder(instApps[j], instApps[j], instApps[j], inst)
+                  .build();
         inst.addAppliance(app);
         logger.trace(i + " " + instApps[j]);
       }
@@ -487,14 +490,15 @@ public class Simulation implements Runnable
     for (int i = 0; i < numOfInstallations; i++) {
       // Make the installation
       Installation inst =
-        new Installation.Builder(i, i + "").registry(new Registry(i + "",
-                                                                  endTick))
-                .build();
+        new Installation.Builder(i, "Generic Installation", "Generic", i + "")
+                .registry(new Registry(i + "", endTick)).build();
       // Create the appliances
       for (int j = 0; j < appliances.length; j++) {
         double dice = RNG.nextDouble();
         if (dice < ownershipPerc[j]) {
-          Appliance app = new Appliance.Builder(appliances[j], inst).build();
+          Appliance app =
+            new Appliance.Builder(appliances[j], "A Typical " + appliances[j],
+                                  appliances[j], inst).build();
           inst.addAppliance(app);
           logger.trace(i + " " + appliances[j]);
         }
