@@ -1,6 +1,7 @@
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoDemographics {
@@ -44,7 +45,8 @@ public class MongoDemographics {
 	 */
 	public String createDemographic(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_DEMOGRAPHICS ,dataToInsert,
-				"Demographics created successfully", MongoScenarios.COL_SCENARIOS ,"scn_id" ).toString();
+				"Demographics created successfully", MongoScenarios.COL_SCENARIOS ,
+				"scn_id",JSONValidator.DEMOGRAPHICS_SCHEMA).toString();
 	}
 
 	/**

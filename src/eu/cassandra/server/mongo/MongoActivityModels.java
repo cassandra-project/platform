@@ -1,6 +1,7 @@
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoActivityModels {
@@ -48,7 +49,7 @@ public class MongoActivityModels {
 				new String[] {MongoActivities.COL_ACTIVITIES, MongoDistributions.COL_DISTRIBUTIONS, 
 				MongoDistributions.COL_DISTRIBUTIONS, MongoDistributions.COL_DISTRIBUTIONS  },
 				new String[] {"act_id","duration","startTime","repeatsNrOfTime"},
-				new boolean[] {false,true,true,true}
+				new boolean[] {false,true,true,true},JSONValidator.ACTIVITYMODEL_SCHEMA
 				).toString();
 
 		//         : "4ff31bc9e4b0721a5785a1bc",

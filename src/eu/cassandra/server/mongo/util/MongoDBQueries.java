@@ -59,11 +59,12 @@ public class MongoDBQueries {
 
 
 	public DBObject insertNestedDocument(String dataToInsert, String coll, 
-			String refKeyName) {
+			String refKeyName, int schemaType) {
 		DBObject data;
 		String _id;
 		try {
 			data = (DBObject)JSON.parse(dataToInsert);
+			new JSONValidator().isValid(dataToInsert, schemaType);
 			if(!data.containsField("cid"))
 				data.put("cid", new ObjectId());
 			ensureThatRefKeyExists(data, coll, refKeyName, false);
@@ -103,7 +104,10 @@ public class MongoDBQueries {
 			}
 			else if(qKey != null && qValue != null) {
 				try{
-					query = (DBObject)JSON.parse(filters);
+					if(filters != null)
+						query = (DBObject)JSON.parse(filters);
+					else
+						query = new BasicDBObject();
 				}catch(Exception e) {
 					return createJSONError("Cannot get entity for collection: " + coll + 
 							", error in filters: " + filters ,e);
@@ -422,8 +426,9 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage) {
-		return insertData(coll, dataToInsert, successMessage,(String[])null,(String[])null,null);
+			String successMessage, int schemaType) {
+		return insertData(coll, dataToInsert, successMessage,(String[])null,
+				(String[])null,null, schemaType);
 	}
 
 	/**
@@ -436,9 +441,9 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage,String refColl, String refKeyName) {
-		return insertData(coll, dataToInsert, successMessage,
-				new String[] {refColl},new String[] {refKeyName}, new boolean[] {false});
+			String successMessage,String refColl, String refKeyName, int schemaType) {
+		return insertData(coll, dataToInsert, successMessage, new String[] {refColl},
+				new String[] {refKeyName}, new boolean[] {false}, schemaType);
 	}
 
 	/**
@@ -448,10 +453,12 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage, String[] refColl, String[] refKeyName, boolean[] canBeNull) {
+			String successMessage, String[] refColl, String[] refKeyName, 
+			boolean[] canBeNull, int schemaType) {
 		DBObject data;
 		try {
 			data = (DBObject)JSON.parse(dataToInsert);
+			new JSONValidator().isValid(dataToInsert, schemaType);
 			if(refColl != null && refKeyName != null ) {
 				for(int i=0;i<refColl.length;i++) {
 					ensureThatRefKeyExists(data, refColl[i], refKeyName[i],canBeNull[i]);
@@ -459,7 +466,7 @@ public class MongoDBQueries {
 			}
 			DBConn.getConn().getCollection(coll).insert(data);
 		}catch(com.mongodb.util.JSONParseException e) {
-			return createJSONError("Error parsing JSON input","com.mongodb.util.JSONParseException");
+			return createJSONError("Error parsing JSON input",e.getMessage());
 		}catch(Exception e) {
 			return createJSONError(dataToInsert,e);
 		}

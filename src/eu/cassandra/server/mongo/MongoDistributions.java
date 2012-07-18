@@ -1,6 +1,7 @@
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoDistributions {
@@ -15,7 +16,8 @@ public class MongoDistributions {
 	 */
 	public String createDistribution(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_DISTRIBUTIONS ,dataToInsert,
-				"Distribution created successfully",MongoActivityModels.COL_ACTMODELS,"actmod_id" ).toString();
+				"Distribution created successfully",MongoActivityModels.COL_ACTMODELS,
+				"actmod_id",JSONValidator.DISTRIBUTION_SCHEMA).toString();
 	}
 
 	/**

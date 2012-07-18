@@ -1,6 +1,7 @@
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoPersons {
@@ -38,7 +39,8 @@ public class MongoPersons {
 	 */
 	public String createPerson(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_PERSONS ,dataToInsert,
-				"Person created successfully", MongoInstallations.COL_INSTALLATIONS ,"inst_id" ).toString();
+				"Person created successfully", MongoInstallations.COL_INSTALLATIONS ,
+				"inst_id",JSONValidator.PERSON_SCHEMA ).toString();
 	}
 
 	/**

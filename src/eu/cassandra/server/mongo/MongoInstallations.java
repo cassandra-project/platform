@@ -2,6 +2,7 @@ package eu.cassandra.server.mongo;
 
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoInstallations {
@@ -51,7 +52,7 @@ public class MongoInstallations {
 				"Installation created successfully", 
 				new String[] {MongoScenarios.COL_SCENARIOS,COL_INSTALLATIONS} ,
 				new String[] {"scenario_id","belongsToInstallation"},
-				new boolean[] {false,true}).toString();
+				new boolean[] {false,true},JSONValidator.INSTALLATION_SCHEMA).toString();
 	}
 
 	/**

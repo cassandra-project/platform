@@ -1,17 +1,17 @@
 {
-    name : "Demographic Name",
-    description : "blabla",
-    type : "My type",
-    scn_id : "4ff5bca7e4b0082c63d08df2",
-    numberOfInstallations : 100,
-    generators : [
+    "name" : "Demographic Name",
+    "description" : "blabla",
+    "type" : "My type",
+    "scn_id" : "5006a550e4b05ff53eb83fe0",
+    "numberOfEntities" : 100,
+    "generators" : [
         {
-            app_id : "4ff5bca7e4b0082c63d08df9",
-            probability : 0.5
+            "app_id" : "4ff5bca7e4b0082c63d08df9",
+            "probability" : 0.5
         },
         {
-            app_id : "4ff5bca7e4b0082c63d08df8",
-            probability : 0.7
+            "app_id" : "4ff5bca7e4b0082c63d08df8",
+            "probability" : 0.7
         }
     ]
     
