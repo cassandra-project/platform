@@ -1,6 +1,7 @@
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoRuns {
@@ -70,7 +71,7 @@ public class MongoRuns {
 		// pause or resume
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_RUNS, "Scenarios updated successfully", 
-				MongoProjects.COL_PROJECTS ,"project_id" ).toString(); 
+				MongoProjects.COL_PROJECTS ,"project_id",JSONValidator.SCENARIO_SCHEMA).toString(); 
 	}
 
 }
