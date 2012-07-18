@@ -103,7 +103,10 @@ public class MongoDBQueries {
 			}
 			else if(qKey != null && qValue != null) {
 				try{
-					query = (DBObject)JSON.parse(filters);
+					if(filters != null)
+						query = (DBObject)JSON.parse(filters);
+					else
+						query = new BasicDBObject();
 				}catch(Exception e) {
 					return createJSONError("Cannot get entity for collection: " + coll + 
 							", error in filters: " + filters ,e);
@@ -459,7 +462,7 @@ public class MongoDBQueries {
 			}
 			DBConn.getConn().getCollection(coll).insert(data);
 		}catch(com.mongodb.util.JSONParseException e) {
-			return createJSONError("Error parsing JSON input","com.mongodb.util.JSONParseException");
+			return createJSONError("Error parsing JSON input",e.getMessage());
 		}catch(Exception e) {
 			return createJSONError(dataToInsert,e);
 		}
