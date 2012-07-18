@@ -1,5 +1,5 @@
 {
-        name: "BBBB simulation",
-        numberOfDay: 33,
-        scn_id : "4ff1a8e2e4b0ed82920aa45b"
+        "name" : "BBBB simulation",
+        "numberOfDay" : 33,
+        "scn_id" : "5006a550e4b05ff53eb83fe0"
 }

@@ -1,15 +1,16 @@
  {
-        name: "Consumption Model 1",
-        description: "I am a Consumption Model ",
-        model : 
+        "name": "Consumption Model 1",
+        "description": "I am a Consumption Model ",
+        "app_id" : "4ff5bca7e4b0082c63d08df9",
+        "model" : 
             {
-                n : 2,
-                { 
-                    n : 2, 
-                    arr : [
-                           {p : 100, d : 10, s: 0},
-                           {p : 120, d : 5,  s: 0 }
-                          ]
+                "n" : 222,
+                "params" : { 
+                            "n" : 3, 
+                            "values" : [
+                                {"p" : 100, "d" : 10, "s": 0},
+                                {"p" : 120, "d" : 5,  "s": 0 }
+                            ]
                 }
             }
         

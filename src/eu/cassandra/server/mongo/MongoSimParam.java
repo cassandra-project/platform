@@ -1,6 +1,7 @@
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoSimParam {
@@ -45,7 +46,7 @@ public class MongoSimParam {
 	 */
 	public String createSimParam(String dataToInsert) {
 		return  new MongoDBQueries().insertNestedDocument(dataToInsert, 
-				MongoScenarios.COL_SCENARIOS, "scn_id").toString();
+				MongoScenarios.COL_SCENARIOS, "scn_id",JSONValidator.SIMPARAM_SCHEMA).toString();
 	}
 
 	/**
@@ -56,7 +57,8 @@ public class MongoSimParam {
 	 * @return
 	 */
 	public String deleteSimParam(String cid) {
-		return new MongoDBQueries().deleteDocumentField(MongoScenarios.COL_SCENARIOS,KEYNAME_SIMPARAM, cid).toString();
+		return new MongoDBQueries().deleteDocumentField(MongoScenarios.COL_SCENARIOS,
+				KEYNAME_SIMPARAM, cid).toString();
 	}
 
 	/**

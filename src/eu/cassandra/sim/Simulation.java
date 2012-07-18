@@ -16,6 +16,8 @@
 
 package eu.cassandra.sim;
 
+import java.io.File;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Vector;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -57,10 +59,10 @@ public class Simulation implements Runnable
   private int tick = 0;
 
   private int endTick;
-
-//  private Registry registry;
   
   private MongoResults m;
+
+  private SimulationWorld simulationWorld;
 
   public Collection<Installation> getInstallations ()
   {
@@ -88,9 +90,14 @@ public class Simulation implements Runnable
 	  scenario = ascenario;
 	  RNG.init();
   }
+  
+  public SimulationWorld getSimulationWorld ()
+  {
+    return simulationWorld;
+  }
 
-  public void run () {
-	  
+  public void run ()
+  {
     while (tick < endTick) {
       // If it is the beginning of the day create the events
       if (tick % Constants.MIN_IN_DAY == 0) {
@@ -99,7 +106,7 @@ public class Simulation implements Runnable
           installation.updateDailySchedule(tick, queue);
         }
         logger.info("Daily queue size: " + queue.size() + "("
-                    + SimCalendar.isWeekend(tick) + ")");
+                    + simulationWorld.getSimCalendar().isWeekend(tick) + ")");
       }
 
       Event top = queue.peek();
@@ -131,9 +138,13 @@ public class Simulation implements Runnable
     logger.info("Simulation setup started.");
     installations = new Vector<Installation>();
     
+    /* TODO  Change the Simulation Calendar initialization */
+    simulationWorld = new SimulationWorld();
+    
     DBObject jsonScenario = (DBObject) JSON.parse(scenario);
     
     int numOfDays = ((Integer)jsonScenario.get("days")).intValue();
+
     endTick = Constants.MIN_IN_DAY * numOfDays;
 
     // Check type of setup
@@ -154,7 +165,9 @@ public class Simulation implements Runnable
     for (int i = 0; i < installations.size(); i++) {
       Installation inst = installations.get(i);
       int type = RNG.nextInt(typesOfPersons) + 1;
-      Person person = new Person.Builder("Person " + i, type, inst).build();
+      Person person =
+        new Person.Builder("Person " + i, "Person Type " + type,
+                           Integer.toString(type), inst).build();
       inst.addPerson(person);
 
       for (int j = 0; j < activities.size(); j++) {
@@ -448,8 +461,13 @@ public class Simulation implements Runnable
           System.out.println("Weekend Distribution");
           weekend.status();
 
+          
+          String activity = (String)activities.get(j);
+          
           Activity act =
-            new Activity.Builder((String)activities.get(j), start, duration)
+            new Activity.Builder(activity, "Typical " + activity
+                                                + " Activity", activity,
+                                 start, duration, simulationWorld)
                     .times("weekday", weekday).times("weekend", weekend)
                     .build();
           for (Appliance e: existing) {
@@ -502,7 +520,8 @@ public class Simulation implements Runnable
     // Create the installations and put appliances inside
     for (int i = 0; i < numOfInstallations; i++) {
       // Make the installation
-      Installation inst = new Installation.Builder(i, i + "").build();
+      Installation inst =
+        new Installation.Builder(i, "Generic Installation", "Generic", i + "").build();
       // Create the appliances
       for (int j = 0; j < appliances.size(); j++) {
         double dice = RNG.nextDouble();
@@ -512,14 +531,15 @@ public class Simulation implements Runnable
         double standby = (Double)jsonScenario.get(appliance + ".stand-by");
         boolean base = (Boolean)jsonScenario.get(appliance + ".base");
         if (dice < ownershipPerc[j]) {
-        	System.out.println(appliance);
           Appliance app = new Appliance.Builder(
+        		  appliance, 
+        		  "A Typical " + appliance,
         		  appliance, 
         		  inst,
         		  power,
-        		  period,
-        		  standby,
-        		  base).build();
+          		  period,
+          		  standby,
+          		  base).build();
           inst.addAppliance(app);
           logger.info(i + " " + appliances.get(i));
         }

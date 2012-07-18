@@ -35,7 +35,8 @@ public class MongoRuns {
 	public String createRun(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_RUNS, dataToInsert,
 				"Run created successfully", 
-				MongoProjects.COL_PROJECTS ,"project_id" ).toString();
+				MongoProjects.COL_PROJECTS ,"project_id", -1).toString();
+		// TODO -1 needs to change when the REST for runs is completed
 	}
 	
 	/**
