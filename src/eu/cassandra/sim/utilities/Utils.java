@@ -21,8 +21,34 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Utils {
+import com.mongodb.BasicDBList;
 
+public class Utils {
+	
+	public static double[] dblist2doubleArr(BasicDBList list) {
+		double[] arr = new double[list.size()];
+		for(int i = 0; i < list.size(); i++) {
+			arr[i] = ((Double) list.get(i)).doubleValue();
+		}
+		return arr;
+	}
+	
+	public static float[] dblist2floatArr(BasicDBList list) {
+		float[] arr = new float[list.size()];
+		for(int i = 0; i < list.size(); i++) {
+			arr[i] = ((Float) list.get(i)).floatValue();
+		}
+		return arr;
+	}
+
+	public static int[] dblist2intArr(BasicDBList list) {
+		int[] arr = new int[list.size()];
+		for(int i = 0; i < list.size(); i++) {
+			arr[i] = ((Integer) list.get(i)).intValue();
+		}
+		return arr;
+	}
+	
 	public static String hashcode(String message) {
 		String hash = null;
 		try {

@@ -22,14 +22,13 @@ import java.util.concurrent.PriorityBlockingQueue;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.people.Person;
 import eu.cassandra.sim.Event;
-import eu.cassandra.sim.utilities.Registry;
 
 public class Installation {
 	private final int id;
     private final String name;
     private Vector<Person> persons;
     private Vector<Appliance> appliances;
-    private Registry registry;
+    private double currentPower;
     
     public static class Builder {
     	// Required variables
@@ -38,14 +37,11 @@ public class Installation {
         // Optional or state related variables
         private Vector<Person> persons = new Vector<Person>();
         private Vector<Appliance> appliances = new Vector<Appliance>();
-        private Registry registry = null;
+        private double currentPower = 0.0;
         public Builder(int aid, String aname) {
         	id = aid;
 			name = aname;
         }
-        public Builder registry(Registry aregistry) {
-			registry = aregistry; return this;
-		}
 		public Installation build() {
 			return new Installation(this);
 		}
@@ -56,7 +52,7 @@ public class Installation {
 		name = builder.name;
 		persons = builder.persons;
 		appliances = builder.appliances;
-		registry = builder.registry;
+		currentPower = builder.currentPower;
 	}
     
     public void updateDailySchedule(int tick,  PriorityBlockingQueue<Event> queue) {
@@ -74,11 +70,11 @@ public class Installation {
 		for(Appliance appliance : getAppliances()) {
 			power += appliance.getPower(tick);
 		}
-		getRegistry().setValue(tick, power);
+		currentPower = power;
 	}
 
-	public float getPower(int tick) {
-		return getRegistry().getValue(tick);
+	public double getCurrentPower() {
+		return currentPower;
 	}
 	
     public int getId() {
@@ -87,10 +83,6 @@ public class Installation {
 
     public String getName() {
         return name;
-    }
-
-    public Registry getRegistry() {
-        return registry;
     }
     
     public Vector<Person> getPersons() {
