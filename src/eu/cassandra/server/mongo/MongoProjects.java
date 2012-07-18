@@ -48,6 +48,7 @@ public class MongoProjects {
 	 */
 	public String updateProject(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", 
-				id,jsonToUpdate,COL_PROJECTS,"Project updated successfully").toString();
+				id,jsonToUpdate,COL_PROJECTS,"Project updated successfully",
+				JSONValidator.PROJECT_SCHEMA).toString();
 	}
 }

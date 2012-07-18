@@ -71,6 +71,6 @@ public class MongoConsumptionModels {
 	public String updateConsumptionModel(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_CONSMODELS, "Consumption Model updated successfully",
-				MongoAppliances.COL_APPLIANCES ,"app_id" ).toString();
+				MongoAppliances.COL_APPLIANCES ,"app_id",JSONValidator.CONSUMPTIONMODEL_SCHEMA).toString();
 	}
 }

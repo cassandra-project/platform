@@ -69,7 +69,7 @@ public class MongoDemographics {
 	public String updateDemographics(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_DEMOGRAPHICS, "Demographics updated successfully",
-				MongoScenarios.COL_SCENARIOS ,"scn_id" ).toString();
+				MongoScenarios.COL_SCENARIOS ,"scn_id",JSONValidator.DEMOGRAPHICS_SCHEMA).toString();
 	}
 }
 

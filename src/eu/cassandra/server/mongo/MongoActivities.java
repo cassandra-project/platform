@@ -70,7 +70,7 @@ public class MongoActivities {
 	public String updateActivity(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_ACTIVITIES, "Activity updated successfully",
-				MongoPersons.COL_PERSONS ,"pers_id" ).toString();
+				MongoPersons.COL_PERSONS ,"pers_id",JSONValidator.ACTIVITY_SCHEMA).toString();
 	}
 
 }

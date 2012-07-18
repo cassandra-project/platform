@@ -69,6 +69,6 @@ public class MongoAppliances {
 	public String updateAppliance(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_APPLIANCES, "Appliance updated successfully",
-				MongoInstallations.COL_INSTALLATIONS ,"inst_id" ).toString();
+				MongoInstallations.COL_INSTALLATIONS ,"inst_id",JSONValidator.APPLIANCE_SCHEMA).toString();
 	}
 }

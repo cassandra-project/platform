@@ -289,9 +289,9 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject updateDocument(String qKey, String qValue, String jsonToUpdate, 
-			String collection, String successMsg) {
+			String collection, String successMsg, int schemaType) {
 		return updateDocument(qKey, qValue, jsonToUpdate, 
-				collection, successMsg, null,null);
+				collection, successMsg, null,null, schemaType);
 	}
 
 	/**
@@ -306,8 +306,10 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject updateDocument(String qKey, String qValue, String jsonToUpdate, 
-			String collection, String successMsg, String refColl, String refKeyName) {
-		return updateDocument(qKey, qValue, jsonToUpdate, collection, successMsg, refColl, refKeyName, null); 
+			String collection, String successMsg, String refColl, 
+			String refKeyName, int schemaType) {
+		return updateDocument(qKey, qValue, jsonToUpdate, collection, successMsg, 
+				refColl, refKeyName, null, schemaType); 
 	}
 
 	/**
@@ -323,10 +325,13 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject updateDocument(String qKey, String qValue, String jsonToUpdate, 
-			String collection, String successMsg, String refColl, String refKeyName, String intDocKey) {
+			String collection, String successMsg, String refColl, String refKeyName, 
+			String intDocKey, int schemaType) {
 		Vector<String> keysUpdated = new Vector<String>();
 		try {
 			DBObject dbObject = (DBObject) JSON.parse(jsonToUpdate);
+			new JSONValidator().isValid(jsonToUpdate, schemaType,true);
+
 			if(intDocKey != null && refKeyName != null && dbObject.containsField(refKeyName) ) {
 				ensureThatRefKeysMatch(dbObject, collection, refKeyName, intDocKey, qValue);
 			}
@@ -352,6 +357,7 @@ public class MongoDBQueries {
 				}
 			}
 		}catch(Exception e) {
+			e.printStackTrace();
 			return createJSONError("Update Failed for " + jsonToUpdate,e);
 		}
 		return getEntity(collection,qKey, qValue,successMsg,
@@ -374,6 +380,7 @@ public class MongoDBQueries {
 		Vector<String> keysUpdated = new Vector<String>();
 		try {
 			DBObject dbObject = (DBObject) JSON.parse(jsonToUpdate);
+			
 			if( (refColl != null || refKeyName != null) && dbObject.get(refKeyName) != null) {
 				ensureThatRefKeyExists(dbObject, refColl, refKeyName,false);
 			}

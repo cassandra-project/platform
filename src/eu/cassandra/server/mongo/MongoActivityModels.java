@@ -9,7 +9,7 @@ public class MongoActivityModels {
 	public final static String COL_ACTMODELS = "act_models";
 
 	/**
-	 * curl -i http://localhost:8080/cassandra/api/app/4fedc0cde4b00db232508ea6
+	 * curl -i http://localhost:8080/cassandra/api/actmod/4fedc0cde4b00db232508ea6
 	 * 
 	 * @param cid
 	 * @return
@@ -20,7 +20,7 @@ public class MongoActivityModels {
 	}
 
 	/**
-	 * curl -i http://localhost:8080/cassandra/api/app?inst_id=4fedb39be4b0445cc271fb4d
+	 * curl -i http://localhost:8080/cassandra/api/actmod?inst_id=4fedb39be4b0445cc271fb4d
 	 * 
 	 * @param inst_id
 	 * @return
@@ -58,7 +58,7 @@ public class MongoActivityModels {
 	}
 
 	/**
-	 * curl -i -X DELETE http://localhost:8080/cassandra/api/app/4ff153dbe4b0c855ac36d9a7
+	 * curl -i -X DELETE http://localhost:8080/cassandra/api/actmod/4ff153dbe4b0c855ac36d9a7
 	 * 
 	 * @param id
 	 * @return
@@ -68,7 +68,7 @@ public class MongoActivityModels {
 	}
 
 	/**
-	 * curl -X PUT -d @appliance.json   --header Content-type:application/json   http://localhost:8080/cassandra/api/app/4fec8b53df4ffdb8d1d1ce57
+	 * curl -X PUT -d @activitymodel.json   --header Content-type:application/json   http://localhost:8080/cassandra/api/actmod/4fec8b53df4ffdb8d1d1ce57
 	 * 
 	 * @param cid
 	 * @param jsonToUpdate
@@ -77,6 +77,7 @@ public class MongoActivityModels {
 	public String updateActivityModel(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_ACTMODELS, "Activity Model updated successfully",
-				MongoActivities.COL_ACTIVITIES ,"act_id" ).toString();
+				MongoActivities.COL_ACTIVITIES ,"act_id",
+				JSONValidator.ACTIVITYMODEL_SCHEMA).toString();
 	}
 }

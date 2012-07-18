@@ -26,6 +26,7 @@
         "model" : {
             "type": "object",
             "description": "Parameters of the consumption model",
+            "optional": true,
             "properties" : {
                 "n" : {
                     "type" : "integer",

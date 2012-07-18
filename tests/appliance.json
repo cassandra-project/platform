@@ -5,6 +5,5 @@
         "energy_class": "A",
         "standy_consumption": 1.23,
         "controllable": true,
-        "shiftable": false,
-        "inst_id": "5006a550e4b05ff53eb83fe4" 
+        "shiftable": false
 }
