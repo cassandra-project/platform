@@ -59,11 +59,12 @@ public class MongoDBQueries {
 
 
 	public DBObject insertNestedDocument(String dataToInsert, String coll, 
-			String refKeyName) {
+			String refKeyName, int schemaType) {
 		DBObject data;
 		String _id;
 		try {
 			data = (DBObject)JSON.parse(dataToInsert);
+			new JSONValidator().isValid(dataToInsert, schemaType);
 			if(!data.containsField("cid"))
 				data.put("cid", new ObjectId());
 			ensureThatRefKeyExists(data, coll, refKeyName, false);
@@ -425,8 +426,9 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage) {
-		return insertData(coll, dataToInsert, successMessage,(String[])null,(String[])null,null);
+			String successMessage, int schemaType) {
+		return insertData(coll, dataToInsert, successMessage,(String[])null,
+				(String[])null,null, schemaType);
 	}
 
 	/**
@@ -439,9 +441,9 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage,String refColl, String refKeyName) {
-		return insertData(coll, dataToInsert, successMessage,
-				new String[] {refColl},new String[] {refKeyName}, new boolean[] {false});
+			String successMessage,String refColl, String refKeyName, int schemaType) {
+		return insertData(coll, dataToInsert, successMessage, new String[] {refColl},
+				new String[] {refKeyName}, new boolean[] {false}, schemaType);
 	}
 
 	/**
@@ -451,10 +453,12 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage, String[] refColl, String[] refKeyName, boolean[] canBeNull) {
+			String successMessage, String[] refColl, String[] refKeyName, 
+			boolean[] canBeNull, int schemaType) {
 		DBObject data;
 		try {
 			data = (DBObject)JSON.parse(dataToInsert);
+			new JSONValidator().isValid(dataToInsert, schemaType);
 			if(refColl != null && refKeyName != null ) {
 				for(int i=0;i<refColl.length;i++) {
 					ensureThatRefKeyExists(data, refColl[i], refKeyName[i],canBeNull[i]);

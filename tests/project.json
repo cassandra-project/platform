@@ -1,4 +1,4 @@
 {
-	name : "My project",
-	description : "A project"
+	"name" : "My project",
+	"description" : "A project"
 }

@@ -86,7 +86,7 @@ public class TestMongo {
 		httpConnection("http://localhost:8080/cassandra/api/actmod","POST","tests/activitymodel.json","act_id",id);
 		res = httpConnection("http://localhost:8080/cassandra/api/actmod","POST","tests/activitymodel2.json","act_id",id);
 		obj = (DBObject)JSON.parse(res);
-		System.out.println("\n\n" + obj);
+		System.out.println("\n\nTest: " + obj);
 		id = ((DBObject)obj.get("objectCreated")).get("_id").toString();
 
 		res = httpConnection("http://localhost:8080/cassandra/api/distr","POST","tests/distribution2.json",(String[])null,(String[])null);
