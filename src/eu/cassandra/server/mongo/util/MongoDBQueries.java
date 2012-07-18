@@ -380,7 +380,7 @@ public class MongoDBQueries {
 		Vector<String> keysUpdated = new Vector<String>();
 		try {
 			DBObject dbObject = (DBObject) JSON.parse(jsonToUpdate);
-			
+
 			if( (refColl != null || refKeyName != null) && dbObject.get(refKeyName) != null) {
 				ensureThatRefKeyExists(dbObject, refColl, refKeyName,false);
 			}
@@ -624,11 +624,11 @@ public class MongoDBQueries {
 	 * @param answer
 	 * @return
 	 */
-	private DBObject createJSONInsertPostMessage(String successMessage, Object answer ) {
+	private DBObject createJSONInsertPostMessage(String successMessage, DBObject answer ) {
 		DBObject postSuccessMessage = new BasicDBObject();
 		postSuccessMessage.put("success", true);
 		postSuccessMessage.put("message", successMessage);
-		postSuccessMessage.put("objectCreated", answer);
+		postSuccessMessage.put("objectCreated", changeObjectIdToString(answer));
 		return postSuccessMessage;
 	}
 
@@ -645,7 +645,10 @@ public class MongoDBQueries {
 		postSuccessMessage.put("success", (objRemoved==null)?false:true);
 		postSuccessMessage.put("message", (objRemoved==null)?"Object not found":"Object Removed");
 		postSuccessMessage.put("idToRemove", idToRemove);
-		postSuccessMessage.put("objectRemoved", objRemoved);
+		if(objRemoved instanceof DBObject)
+			postSuccessMessage.put("objectRemoved", changeObjectIdToString((DBObject)objRemoved));
+		else
+			postSuccessMessage.put("objectRemoved", objRemoved);
 		return postSuccessMessage;
 	}
 
@@ -662,7 +665,8 @@ public class MongoDBQueries {
 		successMessage.put("size", cursorDoc.size());
 		Vector<DBObject> recordsVec = new Vector<DBObject>();
 		while (cursorDoc.hasNext()) {
-			recordsVec.add( cursorDoc.next());
+			DBObject obj = cursorDoc.next();
+			recordsVec.add(changeObjectIdToString(obj));
 		}
 		cursorDoc.close();
 		successMessage.put("data", recordsVec);
@@ -680,7 +684,7 @@ public class MongoDBQueries {
 		successMessage.put("success", true);
 		successMessage.put("message", descr);
 		successMessage.put("size", 1);
-		successMessage.put("data", dbObject);
+		successMessage.put("data", changeObjectIdToString(dbObject));
 		return successMessage;
 	}
 
@@ -699,11 +703,29 @@ public class MongoDBQueries {
 		return successMessage;
 	}
 
-
+	/**
+	 * 
+	 * @param key
+	 * @param data
+	 * @return
+	 * @throws MongoRefNotFoundException
+	 */
 	public String getRefKey(String key, DBObject data) throws MongoRefNotFoundException {
 		if(!data.containsField(key))
 			throw new MongoRefNotFoundException(key + " not found");
 		return data.get(key).toString();
+	}
+
+	/**
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	private DBObject changeObjectIdToString(DBObject obj) {
+		if(obj.containsField("_id") && (obj.get("_id") instanceof ObjectId)) {
+			obj.put("_id", obj.get("_id").toString());
+		}
+		return obj;
 	}
 
 }

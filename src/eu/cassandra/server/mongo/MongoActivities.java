@@ -21,7 +21,7 @@ public class MongoActivities {
 	}
 
 	/**
-	 * curl -i http://localhost:8080/cassandra/api/act?inst_id=4ff154f8e4b0c855ac36d9ad
+	 * curl -i http://localhost:8080/cassandra/api/act?pers_id=4ff154f8e4b0c855ac36d9ad
 	 * 
 	 * @param inst_id
 	 * @return
