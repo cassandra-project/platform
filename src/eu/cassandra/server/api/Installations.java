@@ -23,8 +23,14 @@ public class Installations {
 	 * @return
 	 */
 	@GET
-	public String getInstallations(@QueryParam("scn_id") String scn_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().getInstallations(scn_id));
+	public String getInstallations(
+			@QueryParam("scn_id") String scn_id,
+			@QueryParam("filter") String filters,
+			@QueryParam("sort") String sort,
+			@QueryParam("limit") int limit,
+			@QueryParam("skip") int skip) {
+		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().
+				getInstallations(scn_id,filters,sort, limit,skip));
 	}
 
 	/**

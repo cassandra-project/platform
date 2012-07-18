@@ -16,13 +16,12 @@
 package eu.cassandra.sim.entities.appliances;
 
 import eu.cassandra.sim.entities.installations.Installation;
-
 import eu.cassandra.sim.utilities.Constants;
 import eu.cassandra.sim.utilities.RNG;
 
 /**
- * Class modeling an electric appliance. The appliance has a stand by 
- * consumption otherwise there are a number of periods along with their 
+ * Class modeling an electric appliance. The appliance has a stand by
+ * consumption otherwise there are a number of periods along with their
  * consumption rates.
  * 
  * @author kyrcha
@@ -30,7 +29,9 @@ import eu.cassandra.sim.utilities.RNG;
  */
 public class Appliance {
 	private final int id;
-	private final String name;
+	private final String description;
+	private final String type;
+    private final String name;
 	private final Installation installation;
 	private final double[] consumption;
 	private final int[] periods;
@@ -46,7 +47,9 @@ public class Appliance {
 		private static int idCounter = 0;
 		// Required variables
 		private final int id;
-		private final String name;
+		private final String description;
+		private final String type;
+	    private final String name;
 		private final Installation installation;
 		private final double[] consumption;
 		private final int[] periods;
@@ -58,6 +61,8 @@ public class Appliance {
 		private String who = null;
 		public Builder(
 				String aname, 
+				String adesc, 
+				String atype,
 				Installation ainstallation, 
 				double[] aconsumption, 
 				int[] aperiods, 
@@ -65,6 +70,8 @@ public class Appliance {
 				boolean abase) {
 			id = idCounter++;
 			name = aname;
+			description = adesc;
+			type = atype;		
 			installation = ainstallation;
 			consumption = aconsumption;
 			periods = aperiods;
@@ -84,6 +91,8 @@ public class Appliance {
 	private Appliance(Builder builder) {
 		id = builder.id;
 		name = builder.name;
+		description = builder.description;
+		type = builder.type;
 		installation = builder.installation;
 		standByConsumption = builder.standByConsumption;
 		consumption = builder.consumption;
@@ -158,6 +167,8 @@ public class Appliance {
 		int[] period = {1, 1};
 		Appliance fridge = new Appliance.Builder(
 				"refrigerator", 
+				"A new refrigerator", 
+				"FridgeA", 
 				null, 
 				power, 
 				period,
@@ -167,6 +178,8 @@ public class Appliance {
 		System.out.println(fridge.getName());
 		Appliance freezer = new Appliance.Builder(
 				"freezer", 
+				"A new freezer", 
+				"FreezerA", 
 				null,
 				power,
 				period,

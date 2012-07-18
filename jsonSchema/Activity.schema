@@ -1,0 +1,28 @@
+{
+    "name": "Activity",
+    "type": "object",
+    "description": "The activity of a Person/Agent, such as cooking, washing, etc",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name of the activity",
+            "optional": true
+        },
+        "type": {
+            "type": "string",
+            "description": "Type of the activity",
+            "optional": true
+        },
+        "description": {
+            "type": "string",
+            "description": "Description of the activity",
+            "optional": true
+        },
+        "pers_id": {
+            "type": "string",
+            "description": "The ObjectId of the Person this Activity belongs",
+            "optional": false
+        }
+    },
+    "additionalProperties" : false
+}
