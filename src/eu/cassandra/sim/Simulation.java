@@ -57,6 +57,8 @@ public class Simulation implements Runnable
 
   private int endTick;
 
+  private SimulationWorld simulationWorld;
+
   private Registry registry;
 
   public Collection<Installation> getInstallations ()
@@ -84,6 +86,11 @@ public class Simulation implements Runnable
     return registry;
   }
 
+  public SimulationWorld getSimulationWorld ()
+  {
+    return simulationWorld;
+  }
+
   public void simulate ()
   {
     Thread t = new Thread(this);
@@ -106,7 +113,7 @@ public class Simulation implements Runnable
           installation.updateDailySchedule(tick, queue);
         }
         logger.info("Daily queue size: " + queue.size() + "("
-                    + SimCalendar.isWeekend(tick) + ")");
+                    + simulationWorld.getSimCalendar().isWeekend(tick) + ")");
       }
 
       Event top = queue.peek();
@@ -154,6 +161,9 @@ public class Simulation implements Runnable
   {
     logger.info("Simulation setup started.");
     installations = new Vector<Installation>();
+
+    /* TODO  Change the Simulation Calendar initialization */
+    simulationWorld = new SimulationWorld();
 
     int numOfDays = FileUtils.getInt(Params.SIM_PROPS, "days");
     endTick = Constants.MIN_IN_DAY * numOfDays;
@@ -432,8 +442,9 @@ public class Simulation implements Runnable
           Activity act =
             new Activity.Builder(activities[j], "Typical " + activities[j]
                                                 + " Activity", activities[j],
-                                 start, duration).times("weekday", weekday)
-                    .times("weekend", weekend).build();
+                                 start, duration, simulationWorld)
+                    .times("weekday", weekday).times("weekend", weekend)
+                    .build();
           for (Appliance e: existing) {
             act.addAppliance(e, 1.0 / existing.size());
           }

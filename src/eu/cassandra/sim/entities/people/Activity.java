@@ -22,7 +22,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import org.apache.log4j.Logger;
 
 import eu.cassandra.sim.Event;
-import eu.cassandra.sim.SimCalendar;
+import eu.cassandra.sim.SimulationWorld;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.math.ProbabilityDistribution;
 import eu.cassandra.sim.utilities.RNG;
@@ -41,6 +41,7 @@ public class Activity
   private final ProbabilityDistribution probDuration;
   private Vector<Appliance> appliances;
   private Vector<Double> probApplianceUsed;
+  private SimulationWorld simulationWorld;
 
   public static class Builder
   {
@@ -54,10 +55,11 @@ public class Activity
     // Optional parameters: not available
     private Vector<Appliance> appliances;
     private Vector<Double> probApplianceUsed;
+    private SimulationWorld simulationWorld;
 
     public Builder (String aname, String desc, String type,
                     ProbabilityDistribution start,
-                    ProbabilityDistribution duration)
+                    ProbabilityDistribution duration, SimulationWorld world)
     {
       name = aname;
       description = desc;
@@ -67,6 +69,7 @@ public class Activity
       appliances = new Vector<Appliance>();
       probApplianceUsed = new Vector<Double>();
       nTimesGivenDay = new HashMap<String, ProbabilityDistribution>();
+      simulationWorld = world;
     }
 
     public Builder appliances (Appliance... apps)
@@ -107,6 +110,7 @@ public class Activity
     probStartTime = builder.probStartTime;
     probDuration = builder.probDuration;
     probApplianceUsed = builder.probApplianceUsed;
+    simulationWorld = builder.simulationWorld;
   }
 
   public void addAppliance (Appliance a, Double prob)
@@ -130,6 +134,11 @@ public class Activity
     return type;
   }
 
+  public SimulationWorld getSimulationWorld ()
+  {
+    return simulationWorld;
+  }
+
   public void
     updateDailySchedule (int tick, PriorityBlockingQueue<Event> queue)
   {
@@ -138,7 +147,8 @@ public class Activity
      *  during a day
      */
     ProbabilityDistribution numOfTimesProb;
-    if (SimCalendar.isWeekend(tick)) {
+
+    if (simulationWorld.getSimCalendar().isWeekend(tick)) {
       numOfTimesProb = nTimesGivenDay.get("weekend");
     }
     else {
