@@ -91,10 +91,9 @@ public class Simulation implements Runnable
 	  RNG.init();
   }
   
-  public SimulationWorld getSimulationWorld ()
-  {
-    return simulationWorld;
-  }
+  	public SimulationWorld getSimulationWorld () {
+  		return simulationWorld;
+  	}
 
   public void run ()
   {

@@ -17,7 +17,6 @@
 package eu.cassandra.sim;
 
 import java.text.DateFormat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,6 +43,7 @@ public class SimulationWorld
   {
 
     // TODO Read the correct parameter file and fill the variables //
+
 //    String date = FileUtils.getString(parametersFile, "date");
 //
 //    DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
