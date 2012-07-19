@@ -1,0 +1,18 @@
+{
+    "name": "Project",
+    "type": "object",
+    "description": "The project of a user containing his scenarios of experiments",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name of the project",
+            "optional": true
+        },
+        "description": {
+            "type": "string",
+            "description": "Description of the project",
+            "optional": true
+        }
+    },
+    "additionalProperties" : false
+}

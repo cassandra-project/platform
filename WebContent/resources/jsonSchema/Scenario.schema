@@ -1,0 +1,28 @@
+{
+    "name": "Scenario",
+    "type": "object",
+    "description": "The scenario that containes the entities and the parameters for the experiment",
+    "properties": {
+        "project_id": {
+            "type": "string",
+            "description": "The ObjectId of the Project this Scenario belongs",
+            "optional": false
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of the Scenario",
+            "optional": true
+        },
+        "description": {
+            "type": "string",
+            "description": "Description of the Scenario",
+            "optional": true
+        },
+        "editable": {
+            "type": "boolean",
+            "description": "When Scenario is not editable, then its a locked Run",
+            "optional": true
+        }
+    },
+    "additionalProperties" : false        
+}
