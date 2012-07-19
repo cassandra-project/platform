@@ -1,11 +1,15 @@
 package eu.cassandra.server.mongo.util;
 
-import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 import eu.cassandra.server.api.exceptions.JSONSchemaNotValidException;
 import eu.vahlas.json.schema.JSONSchema;
@@ -26,6 +30,11 @@ public class JSONValidator {
 	public static final int SCENARIO_SCHEMA = 9;
 	public static final int SIMPARAM_SCHEMA = 10;
 
+	/**
+	 * 
+	 * @param schemaType
+	 * @return
+	 */
 	private String getSchemaFileName(int schemaType) {
 		String fileName = "/home/kvavliak/Dropbox/GitHub/platform3/jsonSchema/";
 		switch (schemaType) {
@@ -55,13 +64,60 @@ public class JSONValidator {
 		return fileName;
 	}
 
-	public boolean isValid(String jsonText,int schemaType) throws IOException, JSONSchemaNotValidException {
+	/**
+	 * 
+	 * @param jsonText
+	 * @param schemaType
+	 * @return
+	 * @throws IOException
+	 * @throws JSONSchemaNotValidException
+	 */
+	public boolean isValid(String jsonText,int schemaType) 
+			throws IOException, JSONSchemaNotValidException {
+		return isValid(jsonText,schemaType,false); 
+	}
+
+	private DBObject removeKeyFromInternalFields(DBObject obj, String key) {
+		String[] keys = obj.keySet().toArray(new String[0]);
+		for(String k : keys) {
+			if(k.equalsIgnoreCase(key) &&  obj.get(k) instanceof Boolean &&  !(Boolean)obj.get(k)) {
+				obj.put(k,true);
+			}
+			else if (obj.get(k) instanceof BasicDBObject) {
+				DBObject intObj = (DBObject) obj.get(k); 
+				removeKeyFromInternalFields(intObj, key);
+			}
+		}
+		return obj;
+	}
+
+	/**
+	 * 
+	 * @param jsonText
+	 * @param schemaType
+	 * @param isUpdate
+	 * @return
+	 * @throws IOException
+	 * @throws JSONSchemaNotValidException
+	 */
+	public boolean isValid(String jsonText,int schemaType, boolean isUpdate) 
+			throws IOException, JSONSchemaNotValidException {
 		ObjectMapper mapper = new ObjectMapper();
 		JSONSchemaProvider schemaProvider = new JacksonSchemaProvider(mapper);
 
-		InputStream jsonSchema = new FileInputStream(getSchemaFileName(schemaType));
+		String jsonSchema = readFile(getSchemaFileName(schemaType));
+		if(isUpdate) {
+			
+			//			DBObject jsonSchemaObj = (DBObject)JSON.parse(jsonSchema);
+			//			DBObject oidObject = new BasicDBObject("type","string").append("optional", "false").append("properties", new BasicDBObject("$oid",new BasicDBObject("type","string").append("optional", "false")));
+			//			DBObject schemaProperties = (DBObject)jsonSchemaObj.get("properties");
+			//			schemaProperties.put("_id", oidObject);
+			//			jsonSchemaObj.put("properties", schemaProperties);
+			//			jsonSchema = jsonSchemaObj.toString();
+			DBObject jsonSchemaObj = (DBObject)JSON.parse(jsonSchema);
+			jsonSchema =  removeKeyFromInternalFields(jsonSchemaObj, "optional").toString();
+		}
 		JSONSchema schema = schemaProvider.getSchema(jsonSchema);
-		jsonSchema.close();
 		List<String> errors = schema.validate(jsonText);
 		StringBuilder errorMessage = new StringBuilder();
 		for (int i=0;i<errors.size();i++) {
@@ -77,10 +133,35 @@ public class JSONValidator {
 			return true;
 	}
 
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	private String readFile(String file) throws IOException {
+		FileReader fileReader =  new FileReader (file);
+		BufferedReader reader = new BufferedReader(fileReader);
+		String line = null;
+		StringBuilder  stringBuilder = new StringBuilder();
+		String ls = System.getProperty("line.separator");
+		while( ( line = reader.readLine() ) != null ) {
+			stringBuilder.append(line);
+			stringBuilder.append(ls);
+		}
+		reader.close();
+		fileReader.close();
+		return stringBuilder.toString();
+	}
+
+	/**
+	 * 
+	 * @param args
+	 */
 	public static void main(String args[]) {
 		try {
-		System.out.println(new JSONValidator().isValid("{\"name\":\"My project\"," +
-				"\"description\":\"A project\"}",PROJECT_SCHEMA));
+			System.out.println(new JSONValidator().isValid("{\"name\":\"My project\"," +
+					"\"description\":\"A project\"}",PROJECT_SCHEMA,true));
 		} catch (IOException | JSONSchemaNotValidException e) {
 			e.printStackTrace();
 		}

@@ -70,6 +70,6 @@ public class MongoDistributions {
 	public String updateDistribution(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_DISTRIBUTIONS, "DIstribution updated successfully",
-				MongoActivityModels.COL_ACTMODELS ,"actmod_id" ).toString();
+				MongoActivityModels.COL_ACTMODELS ,"actmod_id",JSONValidator.DISTRIBUTION_SCHEMA).toString();
 	}
 }

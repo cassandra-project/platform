@@ -21,8 +21,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import eu.cassandra.sim.utilities.FileUtils;
-
 /**
  * The Simulation class can simulate up to 4085 years of simulation.
  * 
@@ -45,13 +43,14 @@ public class SimulationWorld
   {
 
     // TODO Read the correct parameter file and fill the variables //
-    String date = FileUtils.getString(parametersFile, "date");
 
-    DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-    Date temp = df.parse(date);
-    String granularity = FileUtils.getString(parametersFile, "granularity");
-    int granularityValue = FileUtils.getInt(parametersFile, "granularityValue");
-    simCalendar = new SimCalendar(temp, granularity, granularityValue);
+//    String date = FileUtils.getString(parametersFile, "date");
+//
+//    DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+//    Date temp = df.parse(date);
+//    String granularity = FileUtils.getString(parametersFile, "granularity");
+//    int granularityValue = FileUtils.getInt(parametersFile, "granularityValue");
+//    simCalendar = new SimCalendar(temp, granularity, granularityValue);
 
   }
 

@@ -69,7 +69,7 @@ public class MongoScenarios {
 	public String updateScenario(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_SCENARIOS, "Scenarios updated successfully", 
-				MongoProjects.COL_PROJECTS ,"project_id" ).toString(); 
+				MongoProjects.COL_PROJECTS ,"project_id",JSONValidator.SCENARIO_SCHEMA).toString(); 
 	}
 
 }

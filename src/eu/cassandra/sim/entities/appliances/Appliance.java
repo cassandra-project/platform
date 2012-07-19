@@ -17,8 +17,6 @@ package eu.cassandra.sim.entities.appliances;
 
 import eu.cassandra.sim.entities.installations.Installation;
 import eu.cassandra.sim.utilities.Constants;
-import eu.cassandra.sim.utilities.FileUtils;
-import eu.cassandra.sim.utilities.Params;
 import eu.cassandra.sim.utilities.RNG;
 
 /**
@@ -29,177 +27,169 @@ import eu.cassandra.sim.utilities.RNG;
  * @author kyrcha
  * @version prelim
  */
-public class Appliance
-{
-  private final int id;
-  private final String description;
-  private final String type;
-  private final String name;
-  private final Installation installation;
-  private final float[] consumption;
-  private final int[] periods;
-  private final int totalCycleTime;
-  private final float standByConsumption;
-  private final boolean base;
-
-  private boolean inUse;
-  private long onTick;
-  private String who;
-
-  public static class Builder
-  {
-    private static int idCounter = 0;
-    // Required variables
-    private final int id;
+public class Appliance {
+	private final int id;
+	private final String description;
+	private final String type;
     private final String name;
-    private final String description;
-    private final String type;
-    private final Installation installation;
-    private final float[] consumption;
-    private final int[] periods;
-    private final int totalCycleTime;
-    private final float standByConsumption;
-    private final boolean base;
-    // Optional or state related variables
-    private long onTick = -1;
-    private String who = null;
+	private final Installation installation;
+	private final double[] consumption;
+	private final int[] periods;
+	private final int totalCycleTime;
+	private final double standByConsumption;
+	private final boolean base;
+	
+	private boolean inUse;
+	private long onTick;
+	private String who;
+	
+	public static class Builder {
+		private static int idCounter = 0;
+		// Required variables
+		private final int id;
+		private final String description;
+		private final String type;
+	    private final String name;
+		private final Installation installation;
+		private final double[] consumption;
+		private final int[] periods;
+		private final int totalCycleTime;
+		private final double standByConsumption;
+		private final boolean base;
+		// Optional or state related variables
+		private long onTick = -1;
+		private String who = null;
+		public Builder(
+				String aname, 
+				String adesc, 
+				String atype,
+				Installation ainstallation, 
+				double[] aconsumption, 
+				int[] aperiods, 
+				double astandy, 
+				boolean abase) {
+			id = idCounter++;
+			name = aname;
+			description = adesc;
+			type = atype;		
+			installation = ainstallation;
+			consumption = aconsumption;
+			periods = aperiods;
+			int sum = 0;
+			for(int i = 0; i < periods.length; i++) {
+				sum += periods[i];
+			}
+			totalCycleTime = sum;
+			standByConsumption = astandy;
+			base = abase;
+		}
+		public Appliance build() {
+			return new Appliance(this);
+		}
+	}
+	
+	private Appliance(Builder builder) {
+		id = builder.id;
+		name = builder.name;
+		description = builder.description;
+		type = builder.type;
+		installation = builder.installation;
+		standByConsumption = builder.standByConsumption;
+		consumption = builder.consumption;
+		periods = builder.periods;
+		totalCycleTime = builder.totalCycleTime;
+		base = builder.base;
+		inUse = (base) ? true : false;
+		onTick = (base) ? -RNG.nextInt(Constants.MIN_IN_DAY) : builder.onTick;
+		who = builder.who;
+	}
 
-    public Builder (String aname, String desc, String type,
-                    Installation ainstallation)
-    {
-      id = idCounter++;
-      name = aname;
-      description = desc;
-      this.type = type;
-      installation = ainstallation;
-      consumption = FileUtils.getFloatArray(Params.APPS_PROPS, name + ".power");
-      periods = FileUtils.getIntArray(Params.APPS_PROPS, name + ".periods");
-      int sum = 0;
-      for (int i = 0; i < periods.length; i++) {
-        sum += periods[i];
-      }
-      totalCycleTime = sum;
-      standByConsumption =
-        FileUtils.getFloat(Params.APPS_PROPS, name + ".stand-by");
-      base = FileUtils.getBool(Params.APPS_PROPS, name + ".base");
-    }
+	public int getId() {
+		return id;
+	}
 
-    public Appliance build ()
-    {
-      return new Appliance(this);
-    }
-  }
+	public String getName() {
+		return name;
+	}
 
-  private Appliance (Builder builder)
-  {
-    id = builder.id;
-    name = builder.name;
-    description = builder.description;
-    type = builder.type;
-    installation = builder.installation;
-    standByConsumption = builder.standByConsumption;
-    consumption = builder.consumption;
-    periods = builder.periods;
-    totalCycleTime = builder.totalCycleTime;
-    base = builder.base;
-    inUse = (base)? true: false;
-    onTick = (base)? -RNG.nextInt(Constants.MIN_IN_DAY): builder.onTick;
-    who = builder.who;
-  }
+	public Installation getInstallation() {
+		return installation;
+	}
 
-  public int getId ()
-  {
-    return id;
-  }
+	public boolean isInUse() {
+		return inUse;
+	}
 
-  public String getName ()
-  {
-    return name;
-  }
+	public double getPower(long tick) {
+		double power;
+		if(isInUse()) {
+			long relativeTick = Math.abs(tick - onTick);
+			long tickInCycle = relativeTick % totalCycleTime;
+			int ticks = 0;
+			int periodIndex = 0;
+			for(int i = 0; i < periods.length; i++) {
+				ticks += periods[i];
+				if(tickInCycle < ticks) {
+					periodIndex = i;
+					break;
+				}
+			}
+			power = consumption[periodIndex];
+		} else {
+			power = standByConsumption;
+		}
+		return power;
+	}
 
-  public String getDescription ()
-  {
-    return description;
-  }
+	public void turnOff() {
+		if(!base) {
+			inUse = false;
+			onTick = -1;
+		}
+	}
 
-  public String getType ()
-  {
-    return type;
-  }
+	public void turnOn(long tick, String awho) {
+		inUse = true;
+		onTick = tick;
+		who = awho;
+	}
 
-  public Installation getInstallation ()
-  {
-    return installation;
-  }
-
-  public boolean isInUse ()
-  {
-    return inUse;
-  }
-
-  public float getPower (long tick)
-  {
-    float power;
-    if (isInUse()) {
-      long relativeTick = Math.abs(tick - onTick);
-      long tickInCycle = relativeTick % totalCycleTime;
-      int ticks = 0;
-      int periodIndex = 0;
-      for (int i = 0; i < periods.length; i++) {
-        ticks += periods[i];
-        if (tickInCycle < ticks) {
-          periodIndex = i;
-          break;
-        }
-      }
-      power = consumption[periodIndex];
-    }
-    else {
-      power = standByConsumption;
-    }
-    return power;
-  }
-
-  public void turnOff ()
-  {
-    if (!base) {
-      inUse = false;
-      onTick = -1;
-    }
-  }
-
-  public void turnOn (long tick, String awho)
-  {
-    inUse = true;
-    onTick = tick;
-    who = awho;
-  }
-
-  public long getOnTick ()
-  {
-    return onTick;
-  }
-
-  public String getWho ()
-  {
-    return who;
-  }
-
-  public static void main (String[] args)
-  {
-    Appliance frige =
-      new Appliance.Builder("refrigerator", "A new refrigerator", "FridgeA",
-                            null).build();
-    System.out.println(frige.getId());
-    System.out.println(frige.getName());
-    Appliance freezer =
-      new Appliance.Builder("freezer", "A new freezer", "FreezerA", null)
-              .build();
-    System.out.println(freezer.getId());
-    System.out.println(freezer.getName());
-    for (int i = 0; i < 100; i++) {
-      System.out.println(freezer.getPower(i));
-    }
-  }
-
+	public long getOnTick() {
+		return onTick;
+	}
+	
+	public String getWho() {
+		return who;
+	}
+	
+	public static void main(String[] args) {
+		double[] power = {1f,1f};
+		int[] period = {1, 1};
+		Appliance fridge = new Appliance.Builder(
+				"refrigerator", 
+				"A new refrigerator", 
+				"FridgeA", 
+				null, 
+				power, 
+				period,
+				1f,
+				true).build();
+		System.out.println(fridge.getId());
+		System.out.println(fridge.getName());
+		Appliance freezer = new Appliance.Builder(
+				"freezer", 
+				"A new freezer", 
+				"FreezerA", 
+				null,
+				power,
+				period,
+				2f,
+				true).build();
+		System.out.println(freezer.getId());
+		System.out.println(freezer.getName());
+		for(int i = 0; i < 100; i++) {
+			System.out.println(freezer.getPower(i));
+		}
+	}
+	
 }

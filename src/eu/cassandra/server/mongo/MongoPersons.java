@@ -59,6 +59,6 @@ public class MongoPersons {
 	public String updatePerson(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_PERSONS, "Person updated successfully",
-				MongoInstallations.COL_INSTALLATIONS ,"inst_id" ).toString();
+				MongoInstallations.COL_INSTALLATIONS ,"inst_id",JSONValidator.PERSON_SCHEMA).toString();
 	}
 }

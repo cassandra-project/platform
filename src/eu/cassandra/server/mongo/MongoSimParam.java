@@ -71,6 +71,7 @@ public class MongoSimParam {
 	public String updateSimParam(String cid,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument(KEYNAME_SIMPARAM + ".cid", cid,jsonToUpdate,
 				MongoScenarios.COL_SCENARIOS, "Simulation Parameters updated successfully",
-				MongoScenarios.COL_SCENARIOS, "scn_id", KEYNAME_SIMPARAM).toString();
+				MongoScenarios.COL_SCENARIOS, "scn_id", KEYNAME_SIMPARAM,
+				JSONValidator.SIMPARAM_SCHEMA).toString();
 	}
 }

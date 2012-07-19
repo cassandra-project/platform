@@ -33,14 +33,16 @@
             "description": "Values of the distribution",
             "items": {
                 "type": "number"
-            }
+            },
+            "optional" : true
         },
         "parameters": {
             "type": "array",
             "description": "Distribution parameters",
             "items": {
                 "type": "object"
-            }
+            },
+            "optional" : true
         }
     },
     "additionalProperties" : false

@@ -43,7 +43,7 @@ public class Scenario {
 	 * Delete a scenario
 	 */
 	@DELETE
-	public String deleteProject(@PathParam("scn_id") String scn_id) {
+	public String deleteScenario(@PathParam("scn_id") String scn_id) {
 		// TODO delete references
 		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().deleteScenario(scn_id));
 	}

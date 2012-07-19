@@ -5,7 +5,8 @@
     "properties": {
         "scn_id": {
             "type": "string",
-            "description": "The ObjectId of the Scenario these Simulation Parameters belong "
+            "description": "The ObjectId of the Scenario these Simulation Parameters belong ",
+            "optional": false
         },
         "name": {
             "type": "string",
@@ -48,7 +49,8 @@
                     "type": "integer",
                     "optional": true                
                 }                
-            }
+            },
+            "optional": true
         }               
     },
     "additionalProperties" : false
