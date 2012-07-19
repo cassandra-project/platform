@@ -330,6 +330,10 @@ public class MongoDBQueries {
 		Vector<String> keysUpdated = new Vector<String>();
 		try {
 			DBObject dbObject = (DBObject) JSON.parse(jsonToUpdate);
+			if(dbObject.containsField("_id")){
+				dbObject.removeField("_id");
+				jsonToUpdate = dbObject.toString();
+			}
 			new JSONValidator().isValid(jsonToUpdate, schemaType,true);
 
 			if(intDocKey != null && refKeyName != null && dbObject.containsField(refKeyName) ) {
@@ -465,6 +469,10 @@ public class MongoDBQueries {
 		DBObject data;
 		try {
 			data = (DBObject)JSON.parse(dataToInsert);
+			if(data.containsField("_id")){
+				data.removeField("_id");
+				dataToInsert = data.toString();
+			}
 			new JSONValidator().isValid(dataToInsert, schemaType);
 			if(refColl != null && refKeyName != null ) {
 				for(int i=0;i<refColl.length;i++) {
@@ -628,7 +636,7 @@ public class MongoDBQueries {
 		DBObject postSuccessMessage = new BasicDBObject();
 		postSuccessMessage.put("success", true);
 		postSuccessMessage.put("message", successMessage);
-		postSuccessMessage.put("objectCreated", changeObjectIdToString(answer));
+		postSuccessMessage.put("data", changeObjectIdToString(answer));
 		return postSuccessMessage;
 	}
 
