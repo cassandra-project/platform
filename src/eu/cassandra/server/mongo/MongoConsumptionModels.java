@@ -1,6 +1,7 @@
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoConsumptionModels {
@@ -46,7 +47,7 @@ public class MongoConsumptionModels {
 		return new MongoDBQueries().insertData(COL_CONSMODELS ,dataToInsert,
 				"Consumption Model created successfully", 
 				MongoAppliances.COL_APPLIANCES,
-				"app_id"
+				"app_id",JSONValidator.CONSUMPTIONMODEL_SCHEMA
 				).toString();
 	}
 
@@ -70,6 +71,6 @@ public class MongoConsumptionModels {
 	public String updateConsumptionModel(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_CONSMODELS, "Consumption Model updated successfully",
-				MongoAppliances.COL_APPLIANCES ,"app_id" ).toString();
+				MongoAppliances.COL_APPLIANCES ,"app_id",JSONValidator.CONSUMPTIONMODEL_SCHEMA).toString();
 	}
 }

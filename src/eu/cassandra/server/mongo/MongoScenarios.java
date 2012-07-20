@@ -1,6 +1,7 @@
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoScenarios {
@@ -44,7 +45,8 @@ public class MongoScenarios {
 	 */
 	public String createScenario(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_SCENARIOS,dataToInsert,
-				"Scenario created successfully", MongoProjects.COL_PROJECTS ,"project_id" ).toString();
+				"Scenario created successfully", MongoProjects.COL_PROJECTS ,
+				"project_id",JSONValidator.SCENARIO_SCHEMA).toString();
 	}
 
 	/**
@@ -67,7 +69,7 @@ public class MongoScenarios {
 	public String updateScenario(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_SCENARIOS, "Scenarios updated successfully", 
-				MongoProjects.COL_PROJECTS ,"project_id" ).toString(); 
+				MongoProjects.COL_PROJECTS ,"project_id",JSONValidator.SCENARIO_SCHEMA).toString(); 
 	}
 
 }

@@ -1,6 +1,7 @@
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoActivities {
@@ -20,7 +21,7 @@ public class MongoActivities {
 	}
 
 	/**
-	 * curl -i http://localhost:8080/cassandra/api/act?inst_id=4ff154f8e4b0c855ac36d9ad
+	 * curl -i http://localhost:8080/cassandra/api/act?pers_id=4ff154f8e4b0c855ac36d9ad
 	 * 
 	 * @param inst_id
 	 * @return
@@ -45,7 +46,8 @@ public class MongoActivities {
 	 */
 	public String createActivity(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_ACTIVITIES ,dataToInsert,
-				"Activity created successfully", MongoPersons.COL_PERSONS ,"pers_id" ).toString();
+				"Activity created successfully", MongoPersons.COL_PERSONS ,"pers_id",
+				JSONValidator.ACTIVITY_SCHEMA).toString();
 	}
 
 	/**
@@ -68,7 +70,7 @@ public class MongoActivities {
 	public String updateActivity(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_ACTIVITIES, "Activity updated successfully",
-				 MongoPersons.COL_PERSONS ,"pers_id" ).toString();
+				MongoPersons.COL_PERSONS ,"pers_id",JSONValidator.ACTIVITY_SCHEMA).toString();
 	}
 
 }

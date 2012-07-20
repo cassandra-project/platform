@@ -41,6 +41,16 @@ public class RNG {
 		random.nextDouble();
 	}
 	
+	public static void init(long seed) {
+		random = new Random();
+		random.setSeed(seed);
+		random.nextDouble();
+		random.nextDouble();
+		random.nextDouble();
+		random.nextDouble();
+		random.nextDouble();
+	}
+	
 	public static void setSeed(long seed) {
 		random.setSeed(seed);
 	}

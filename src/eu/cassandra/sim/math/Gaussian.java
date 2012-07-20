@@ -25,6 +25,8 @@ import eu.cassandra.sim.utilities.RNG;
  */
 public class Gaussian implements ProbabilityDistribution
 {
+  private static double small_number = 0.0000000001;
+
   protected double mean;
   protected double sigma;
 
@@ -136,7 +138,7 @@ public class Gaussian implements ProbabilityDistribution
 
   public void precompute (double startValue, double endValue, int nBins)
   {
-    if (startValue >= endValue) {
+    if ((startValue >= endValue) || (nBins == 0)) {
       // TODO Throw an exception or whatever.
       return;
     }
@@ -147,13 +149,15 @@ public class Gaussian implements ProbabilityDistribution
     double div = (endValue - startValue) / (double) nBins;
     histogram = new double[nBins];
 
-    histogram[0] = bigPhi(startValue + div, mean, sigma);
-    for (int i = 1; i < nBins - 1; i++) {
+    double residual = bigPhi(startValue, mean, sigma) + 1 -
+      bigPhi(endValue, mean, sigma);
+    residual /= nBins;
+    for (int i = 0; i < nBins; i++) {
+      //      double x = startValue + i * div - small_number;
       double x = startValue + i * div;
-      histogram[i] = bigPhi(x + div, mean, sigma) - bigPhi(x, mean, sigma);
-    }
-    if (nBins > 1) {
-      histogram[nBins - 1] = 1 - bigPhi(endValue - div, mean, sigma);
+      histogram[i] = bigPhi(x + div / 2.0, mean, sigma) -
+        bigPhi(x - div / 2.0, mean, sigma);
+      histogram[i] += residual;
     }
     precomputed = true;
   }
@@ -200,7 +204,7 @@ public class Gaussian implements ProbabilityDistribution
     System.out.println(" Sigma: " + getParameter(1));
     System.out.println("Precomputed: " + precomputed);
     if (precomputed) {
-      System.out.print("Number of Beans: " + numberOfBins);
+      System.out.print("Number of Bins: " + numberOfBins);
       System.out.print(" Starting Point: " + precomputeFrom);
       System.out.println(" Ending Point: " + precomputeTo);
     }
@@ -212,7 +216,7 @@ public class Gaussian implements ProbabilityDistribution
   {
     System.out.println("Testing num of time per day.");
     Gaussian g = new Gaussian(1, 0.00001);
-    g.precompute(0, 1439, 1440);
+    g.precompute(0, 1440, 1440);
     g.status();
     double sum = 0;
     for (int i = 0; i <= 3; i++) {
@@ -228,7 +232,7 @@ public class Gaussian implements ProbabilityDistribution
     System.out.println(g.getPrecomputedBin());
     System.out.println("Testing start time.");
     g = new Gaussian(620, 200);
-    g.precompute(0, 1439, 1440);
+    g.precompute(0, 1440, 1440);
     System.out.println(g.getPrecomputedBin());
     System.out.println(g.getPrecomputedBin());
     System.out.println(g.getPrecomputedBin());
@@ -241,7 +245,7 @@ public class Gaussian implements ProbabilityDistribution
     System.out.println(g.getPrecomputedBin());
     System.out.println("Testing duration.");
     g = new Gaussian(240, 90);
-    g.precompute(1, 1439, 1440);
+    g.precompute(1, 1440, 1440);
     System.out.println(g.getPrecomputedBin());
     System.out.println(g.getPrecomputedBin());
     System.out.println(g.getPrecomputedBin());

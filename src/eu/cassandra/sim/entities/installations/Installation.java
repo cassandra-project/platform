@@ -16,50 +16,72 @@
 package eu.cassandra.sim.entities.installations;
 
 import java.util.Vector;
-
 import java.util.concurrent.PriorityBlockingQueue;
 
+import eu.cassandra.sim.Event;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.people.Person;
-import eu.cassandra.sim.Event;
-import eu.cassandra.sim.utilities.Registry;
 
 public class Installation {
 	private final int id;
-    private final String name;
-    private Vector<Person> persons;
-    private Vector<Appliance> appliances;
-    private Registry registry;
-    
-    public static class Builder {
+	private final String name;
+	private final String description;
+	private final String type;
+	private Vector<Person> persons;
+	private Vector<Appliance> appliances;
+	private Vector<Installation> subInstallations;
+	private LocationInfo locationInfo;
+	private double currentPower;
+	
+	public static class Builder {
     	// Required variables
     	private final int id;
         private final String name;
+        private final String description;
+        private final String type;
         // Optional or state related variables
+        private LocationInfo locationInfo;
         private Vector<Person> persons = new Vector<Person>();
         private Vector<Appliance> appliances = new Vector<Appliance>();
-        private Registry registry = null;
-        public Builder(int aid, String aname) {
+        private Vector<Installation> subInstallations;
+        private double currentPower = 0.0;
+        
+        public Builder(int aid, String aname, String adescription, String atype) {
         	id = aid;
 			name = aname;
+		    description = adescription;
+		    type = atype;
         }
-        public Builder registry(Registry aregistry) {
-			registry = aregistry; return this;
-		}
+        
+		public Builder locationInfo (LocationInfo aLocationInfo) {
+			locationInfo = aLocationInfo;
+			return this;
+	    }
+		
+	    public Builder subInstallations (Installation... inst) {
+	    	for (Installation installation: inst) {
+	    		subInstallations.add(installation);
+	    	}
+	    	return this;
+	    }
+	    
 		public Installation build() {
 			return new Installation(this);
 		}
     }
     
     private Installation(Builder builder) {
-		id = builder.id;
-		name = builder.name;
-		persons = builder.persons;
-		appliances = builder.appliances;
-		registry = builder.registry;
+    	id = builder.id;
+        name = builder.name;
+        description = builder.description;
+        type = builder.type;
+        persons = builder.persons;
+        appliances = builder.appliances;
+        subInstallations = builder.subInstallations;
+        locationInfo = builder.locationInfo;
 	}
     
-    public void updateDailySchedule(int tick,  PriorityBlockingQueue<Event> queue) {
+    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue) {
     	for(Person person : getPersons()) {
     		person.updateDailySchedule(tick, queue);
 		}
@@ -74,45 +96,63 @@ public class Installation {
 		for(Appliance appliance : getAppliances()) {
 			power += appliance.getPower(tick);
 		}
-		getRegistry().setValue(tick, power);
+		currentPower = power;
 	}
 
-	public float getPower(int tick) {
-		return getRegistry().getValue(tick);
+	public double getCurrentPower() {
+		return currentPower;
 	}
 	
     public int getId() {
         return this.id;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public Registry getRegistry() {
-        return registry;
-    }
     
     public Vector<Person> getPersons() {
-    	return persons;
+    	return persons;    
     }
 
-    public void addPerson(Person person) {
-        persons.add(person);
+    public String getName () {
+    	return name;
     }
 
-    public Vector<Appliance> getAppliances() {
-        return appliances;
+    public String getDescription () {
+    	return description;
     }
 
-    public void addAppliance(Appliance appliance) {
-        this.appliances.add(appliance);
+    public String getType () {
+    	return type;
     }
-    
-    public Appliance applianceExists(String name) {
-    	for(Appliance a : appliances) {
-    		if(a.getName().equalsIgnoreCase(name)) return a;
+
+    public void addPerson (Person person) {
+    	persons.add(person);
+    }
+
+    public Vector<Appliance> getAppliances () {
+    	return appliances;
+    }
+ 
+    public Vector<Installation> getSubInstallations () {
+    	return subInstallations;
+    }
+
+    public void addAppliance (Appliance appliance) {
+    	appliances.add(appliance);
+    }
+
+    public void addInstallation (Installation installation) {
+    	subInstallations.add(installation);
+    }
+
+    public Appliance applianceExists (String name) {
+    	for (Appliance a: appliances) {
+    		if (a.getName().equalsIgnoreCase(name))
+    			return a;
     	}
     	return null;
     }
+
+    public LocationInfo getLocationInfo () {
+    	return locationInfo;
+    }
+
 }

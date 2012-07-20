@@ -59,11 +59,12 @@ public class MongoDBQueries {
 
 
 	public DBObject insertNestedDocument(String dataToInsert, String coll, 
-			String refKeyName) {
+			String refKeyName, int schemaType) {
 		DBObject data;
 		String _id;
 		try {
 			data = (DBObject)JSON.parse(dataToInsert);
+			new JSONValidator().isValid(dataToInsert, schemaType);
 			if(!data.containsField("cid"))
 				data.put("cid", new ObjectId());
 			ensureThatRefKeyExists(data, coll, refKeyName, false);
@@ -77,16 +78,23 @@ public class MongoDBQueries {
 		return createJSONInsertPostMessage(coll + " with _id=" + _id + " updated with the following data", data) ;
 	}
 
+
+	public DBObject getEntity(String coll, String qKey, String qValue, 
+			String successMsg, String...fieldNames) {
+		return getEntity(coll, qKey, qValue, null, null, 0, 0, successMsg, fieldNames);
+	}
+
+
 	/**
-	 * 
 	 * @param collection
 	 * @param id
 	 * @param fieldNames
 	 * @return
 	 */
 	public DBObject getEntity(String coll, String qKey, String qValue, 
+			String filters, String sort, int limit, int skip,
 			String successMsg, String...fieldNames) {
-		BasicDBObject query;
+		DBObject query;
 		BasicDBObject fields;
 		try {
 			query = new BasicDBObject();
@@ -95,6 +103,15 @@ public class MongoDBQueries {
 				query.put(qKey, new ObjectId(qValue));
 			}
 			else if(qKey != null && qValue != null) {
+				try{
+					if(filters != null)
+						query = (DBObject)JSON.parse(filters);
+					else
+						query = new BasicDBObject();
+				}catch(Exception e) {
+					return createJSONError("Cannot get entity for collection: " + coll + 
+							", error in filters: " + filters ,e);
+				}
 				query.put(qKey, qValue);
 			}
 			fields = new BasicDBObject();
@@ -106,8 +123,34 @@ public class MongoDBQueries {
 					" with qKey=" + qKey + " and qValue=" + qValue,e);
 		}
 		return new MongoDBQueries().executeFindQuery(
-				coll,query,fields, successMsg);
+				coll,query,fields, successMsg, sort, limit, skip);
 	}
+
+	//	
+	//	public DBObject getEntity(String coll, String qKey, String qValue, 
+	//				String successMsg, int limit, int offset, Vector<SortingInfo> sortingInfo, String...fieldNames) {
+	//		BasicDBObject query;
+	//		BasicDBObject fields;
+	//		try {
+	//			query = new BasicDBObject();
+	//			if(qKey != null && qValue != null && 
+	//					(qKey.equalsIgnoreCase("_id") || qKey.endsWith(".cid"))) {
+	//				query.put(qKey, new ObjectId(qValue));
+	//			}
+	//			else if(qKey != null && qValue != null) {
+	//				query.put(qKey, qValue);
+	//			}
+	//			fields = new BasicDBObject();
+	//			for(String fieldName: fieldNames) {
+	//				fields.put(fieldName, 1);
+	//			}
+	//		}catch(Exception e) {
+	//			return createJSONError("Cannot get entity for collection: " + coll + 
+	//					" with qKey=" + qKey + " and qValue=" + qValue,e);
+	//		}
+	//		return new MongoDBQueries().executeFindQuery(
+	//				coll,query,fields, successMsg);
+	//	}
 
 	/**
 	 * 
@@ -115,8 +158,8 @@ public class MongoDBQueries {
 	 * @param id
 	 * @return
 	 */
-		BasicDBObject query = new BasicDBObject();
-		public DBObject getEntity(String collection, String id) {
+	BasicDBObject query = new BasicDBObject();
+	public DBObject getEntity(String collection, String id) {
 		query.put("_id", new ObjectId(id));
 		return DBConn.getConn().getCollection(collection).findOne(query);
 	}
@@ -216,6 +259,26 @@ public class MongoDBQueries {
 		return createJSON(cursorDoc,successMsg);
 	}
 
+	public DBObject executeFindQuery(String collection, 
+			DBObject dbObj1, DBObject dbObj2, String successMsg,
+			String sort, int limit, int skip) {
+		DBCursor cursorDoc = DBConn.getConn().
+				getCollection(collection).find(dbObj1);
+		if(sort != null)	{
+			try{
+				DBObject sortObj = (DBObject)JSON.parse(sort);
+				cursorDoc = cursorDoc.sort(sortObj);
+			}catch(Exception e) {
+				return createJSONError("Error in filtering JSON sorting object: " + sort, e);
+			}
+		}
+		if(skip != 0)
+			cursorDoc =	cursorDoc.skip(skip);
+		if(limit != 0)
+			cursorDoc =	cursorDoc.limit(limit);
+		return createJSON(cursorDoc,successMsg);
+	}
+
 	/**
 	 * 
 	 * @param qKey
@@ -226,9 +289,9 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject updateDocument(String qKey, String qValue, String jsonToUpdate, 
-			String collection, String successMsg) {
+			String collection, String successMsg, int schemaType) {
 		return updateDocument(qKey, qValue, jsonToUpdate, 
-				collection, successMsg, null,null);
+				collection, successMsg, null,null, schemaType);
 	}
 
 	/**
@@ -243,8 +306,10 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject updateDocument(String qKey, String qValue, String jsonToUpdate, 
-			String collection, String successMsg, String refColl, String refKeyName) {
-		return updateDocument(qKey, qValue, jsonToUpdate, collection, successMsg, refColl, refKeyName, null); 
+			String collection, String successMsg, String refColl, 
+			String refKeyName, int schemaType) {
+		return updateDocument(qKey, qValue, jsonToUpdate, collection, successMsg, 
+				refColl, refKeyName, null, schemaType); 
 	}
 
 	/**
@@ -260,10 +325,17 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject updateDocument(String qKey, String qValue, String jsonToUpdate, 
-			String collection, String successMsg, String refColl, String refKeyName, String intDocKey) {
+			String collection, String successMsg, String refColl, String refKeyName, 
+			String intDocKey, int schemaType) {
 		Vector<String> keysUpdated = new Vector<String>();
 		try {
 			DBObject dbObject = (DBObject) JSON.parse(jsonToUpdate);
+			if(dbObject.containsField("_id")){
+				dbObject.removeField("_id");
+				jsonToUpdate = dbObject.toString();
+			}
+			new JSONValidator().isValid(jsonToUpdate, schemaType,true);
+
 			if(intDocKey != null && refKeyName != null && dbObject.containsField(refKeyName) ) {
 				ensureThatRefKeysMatch(dbObject, collection, refKeyName, intDocKey, qValue);
 			}
@@ -289,6 +361,7 @@ public class MongoDBQueries {
 				}
 			}
 		}catch(Exception e) {
+			e.printStackTrace();
 			return createJSONError("Update Failed for " + jsonToUpdate,e);
 		}
 		return getEntity(collection,qKey, qValue,successMsg,
@@ -311,6 +384,7 @@ public class MongoDBQueries {
 		Vector<String> keysUpdated = new Vector<String>();
 		try {
 			DBObject dbObject = (DBObject) JSON.parse(jsonToUpdate);
+
 			if( (refColl != null || refKeyName != null) && dbObject.get(refKeyName) != null) {
 				ensureThatRefKeyExists(dbObject, refColl, refKeyName,false);
 			}
@@ -363,8 +437,9 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage) {
-		return insertData(coll, dataToInsert, successMessage,(String[])null,(String[])null,null);
+			String successMessage, int schemaType) {
+		return insertData(coll, dataToInsert, successMessage,(String[])null,
+				(String[])null,null, schemaType);
 	}
 
 	/**
@@ -377,9 +452,9 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage,String refColl, String refKeyName) {
-		return insertData(coll, dataToInsert, successMessage,
-				new String[] {refColl},new String[] {refKeyName}, new boolean[] {false});
+			String successMessage,String refColl, String refKeyName, int schemaType) {
+		return insertData(coll, dataToInsert, successMessage, new String[] {refColl},
+				new String[] {refKeyName}, new boolean[] {false}, schemaType);
 	}
 
 	/**
@@ -389,18 +464,24 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage, String[] refColl, String[] refKeyName, boolean[] canBeNull) {
+			String successMessage, String[] refColl, String[] refKeyName, 
+			boolean[] canBeNull, int schemaType) {
 		DBObject data;
 		try {
 			data = (DBObject)JSON.parse(dataToInsert);
-			if(refColl != null || refKeyName != null ) {
+			if(data.containsField("_id")){
+				data.removeField("_id");
+				dataToInsert = data.toString();
+			}
+			new JSONValidator().isValid(dataToInsert, schemaType);
+			if(refColl != null && refKeyName != null ) {
 				for(int i=0;i<refColl.length;i++) {
 					ensureThatRefKeyExists(data, refColl[i], refKeyName[i],canBeNull[i]);
 				}
 			}
 			DBConn.getConn().getCollection(coll).insert(data);
 		}catch(com.mongodb.util.JSONParseException e) {
-			return createJSONError("Error parsing JSON input","com.mongodb.util.JSONParseException");
+			return createJSONError("Error parsing JSON input",e.getMessage());
 		}catch(Exception e) {
 			return createJSONError(dataToInsert,e);
 		}
@@ -551,11 +632,11 @@ public class MongoDBQueries {
 	 * @param answer
 	 * @return
 	 */
-	private DBObject createJSONInsertPostMessage(String successMessage, Object answer ) {
+	private DBObject createJSONInsertPostMessage(String successMessage, DBObject answer ) {
 		DBObject postSuccessMessage = new BasicDBObject();
 		postSuccessMessage.put("success", true);
 		postSuccessMessage.put("message", successMessage);
-		postSuccessMessage.put("objectCreated", answer);
+		postSuccessMessage.put("data", changeObjectIdToString(answer));
 		return postSuccessMessage;
 	}
 
@@ -572,7 +653,10 @@ public class MongoDBQueries {
 		postSuccessMessage.put("success", (objRemoved==null)?false:true);
 		postSuccessMessage.put("message", (objRemoved==null)?"Object not found":"Object Removed");
 		postSuccessMessage.put("idToRemove", idToRemove);
-		postSuccessMessage.put("objectRemoved", objRemoved);
+		if(objRemoved instanceof DBObject)
+			postSuccessMessage.put("objectRemoved", changeObjectIdToString((DBObject)objRemoved));
+		else
+			postSuccessMessage.put("objectRemoved", objRemoved);
 		return postSuccessMessage;
 	}
 
@@ -589,7 +673,8 @@ public class MongoDBQueries {
 		successMessage.put("size", cursorDoc.size());
 		Vector<DBObject> recordsVec = new Vector<DBObject>();
 		while (cursorDoc.hasNext()) {
-			recordsVec.add( cursorDoc.next());
+			DBObject obj = cursorDoc.next();
+			recordsVec.add(changeObjectIdToString(obj));
 		}
 		cursorDoc.close();
 		successMessage.put("data", recordsVec);
@@ -607,7 +692,7 @@ public class MongoDBQueries {
 		successMessage.put("success", true);
 		successMessage.put("message", descr);
 		successMessage.put("size", 1);
-		successMessage.put("data", dbObject);
+		successMessage.put("data", changeObjectIdToString(dbObject));
 		return successMessage;
 	}
 
@@ -626,11 +711,29 @@ public class MongoDBQueries {
 		return successMessage;
 	}
 
-
+	/**
+	 * 
+	 * @param key
+	 * @param data
+	 * @return
+	 * @throws MongoRefNotFoundException
+	 */
 	public String getRefKey(String key, DBObject data) throws MongoRefNotFoundException {
 		if(!data.containsField(key))
 			throw new MongoRefNotFoundException(key + " not found");
 		return data.get(key).toString();
+	}
+
+	/**
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	private DBObject changeObjectIdToString(DBObject obj) {
+		if(obj.containsField("_id") && (obj.get("_id") instanceof ObjectId)) {
+			obj.put("_id", obj.get("_id").toString());
+		}
+		return obj;
 	}
 
 }

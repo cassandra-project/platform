@@ -1,6 +1,7 @@
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoAppliances {
@@ -44,7 +45,8 @@ public class MongoAppliances {
 	 */
 	public String createAppliance(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_APPLIANCES ,dataToInsert,
-				"Appliance created successfully", MongoInstallations.COL_INSTALLATIONS ,"inst_id" ).toString();
+				"Appliance created successfully", MongoInstallations.COL_INSTALLATIONS ,
+				"inst_id",JSONValidator.APPLIANCE_SCHEMA).toString();
 	}
 
 	/**
@@ -67,6 +69,6 @@ public class MongoAppliances {
 	public String updateAppliance(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_APPLIANCES, "Appliance updated successfully",
-				MongoInstallations.COL_INSTALLATIONS ,"inst_id" ).toString();
+				MongoInstallations.COL_INSTALLATIONS ,"inst_id",JSONValidator.APPLIANCE_SCHEMA).toString();
 	}
 }

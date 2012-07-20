@@ -1,8 +1,5 @@
 package eu.cassandra.server.api;
 
-import java.util.concurrent.ExecutorService;
-
-import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -12,15 +9,11 @@ import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
-import eu.cassandra.server.threads.DemoThread;
 
 @Path("prj")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class Projects {
-	
-	@javax.ws.rs.core.Context 
-	ServletContext context;
 	
 	/**
 	 * 
@@ -28,8 +21,6 @@ public class Projects {
 	 */
 	@GET
 	public String getProjects() {
-		ExecutorService executor = (ExecutorService )context.getAttribute("MY_EXECUTOR");
-		executor.submit(new DemoThread());
 		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(null));
 	}
 	
