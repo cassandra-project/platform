@@ -24,7 +24,6 @@ package eu.cassandra.sim.math.tests;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import static org.mockito.Mockito.*;
 
 /**
  * @author Konstantina Valogianni 
@@ -43,15 +42,6 @@ public class GaussianCDFTest {
 		GaussianCDF tester=new GaussianCDF();
 		assertTrue("Result", "Gaussian cumulative probability density function"==tester.getDescription());
 	}
-	  @Test
-		public void testPrecomputed() {
-			GaussianCDF tester=new GaussianCDF(5,10);
-			tester.precompute(1, 10, 10);
-			//assertTrue("Result", 1== tester.precomputeFrom);
-			//assertTrue("Result", 10== tester.precomputeTo);
-			//assertTrue("Result", 10== tester.numberOfBins);
-			//assertTrue("Result", true== tester.precomputed);
-		}
 		
 	@Test
 	public void testGetProbability() {

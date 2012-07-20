@@ -53,8 +53,6 @@ public class GaussianTest {
 	@Test
 	public void testGetProbability() {
 		Gaussian tester=new Gaussian();
-		//assertTrue("Result1", 0==tester.mean);
-		//assertTrue("Result2", 1==tester.sigma);
 		assertTrue("Result3",0.3989422804014327==tester.getProbability(0));
 	}
 	
@@ -62,7 +60,7 @@ public class GaussianTest {
 	public void testGetPrecomputedProbability() {
 		Gaussian tester=new Gaussian(2, 3);
 		tester.precompute (1, 10, 10);
-		assertTrue("Result",0.4867043872769655==tester.getPrecomputedProbability(1));
+		assertTrue("Result",0.1501655201415712==tester.getPrecomputedProbability(1));
 	}
 	
 	/* This part is not deterministic and therefore the outcome is not the same after repeated trials
