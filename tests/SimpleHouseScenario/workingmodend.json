@@ -1,0 +1,10 @@
+ {
+        "name" : "Working model",
+        "type" : "working",
+        "day_type" : "non-working",
+        "act_id" : "",
+        "containsAppliances" : ["500d20c5e4b04cef9589f6c9"],
+        "duration" : "",
+        "startTime" : "",
+        "repeatsNrOfTime" : ""
+ }

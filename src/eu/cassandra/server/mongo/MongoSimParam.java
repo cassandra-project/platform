@@ -5,7 +5,8 @@ import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoSimParam {
-	private final static String KEYNAME_SIMPARAM = "sim_param";
+	
+	public final static String KEYNAME_SIMPARAM = "sim_param";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/smp?scn_id=4ff1a8e2e4b0ed82920aa45b

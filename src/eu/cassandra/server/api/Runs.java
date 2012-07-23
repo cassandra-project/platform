@@ -13,7 +13,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.bson.BSONObject;
+import org.bson.types.ObjectId;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
 import eu.cassandra.server.mongo.MongoRuns;
+import eu.cassandra.server.mongo.MongoScenarios;
+import eu.cassandra.server.mongo.MongoSimParam;
+import eu.cassandra.server.mongo.util.DBConn;
+import eu.cassandra.server.mongo.util.MongoDBQueries;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.server.threads.DemoThread;
 import eu.cassandra.sim.Simulation;
@@ -53,16 +64,40 @@ public class Runs {
 	 */
 	@POST
 	public String createRun(String message) {
-		Simulation sim = new Simulation(message);
-		try {
-			sim.setup();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "Sim creation failed";
-		}
-		ExecutorService executor = (ExecutorService )context.getAttribute("MY_EXECUTOR");
-		executor.submit(sim);
+		DBObject scenario = new BasicDBObject();
+		// Parse message to db object
+		System.out.println(message);
+		DBObject jsonMessage = (DBObject) JSON.parse(message);
+		String smp_id =  (String)jsonMessage.get("smp_id");
+		System.out.println(smp_id);
+		DBObject query = new BasicDBObject(); 
+		query.put("sim_param.cid", new ObjectId(smp_id));
+		DBObject result = DBConn.getConn().getCollection(MongoScenarios.COL_SCENARIOS).findOne(query);
+		System.out.println(result.toString());
+		DBObject simParams = (DBObject) result.get("sim_param");
+		System.out.println(simParams.toString());
+		String scenario_id = (String) simParams.get("scn_id");
+		System.out.println(scenario_id);
+		
+		// Add installations
+		// Add persons
+		// Add activities
+		// Add activity models
+		// Add appliances
+		// Add consumption models
+		// Add simulation parameters
+		// Add distributions
+		
+//		Simulation sim = new Simulation(message);
+//		try {
+//			sim.setup();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return "Sim creation failed";
+//		}
+//		ExecutorService executor = (ExecutorService )context.getAttribute("MY_EXECUTOR");
+//		executor.submit(sim);
 		return "Simulation Submitted\n";
 //		return PrettyJSONPrinter.prettyPrint(new MongoRuns().createRun(message));
 	}
