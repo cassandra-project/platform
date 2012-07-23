@@ -1,0 +1,11 @@
+{
+    "name" : "Working",
+    "type" : "weekday",
+    "distrType" : "normal",
+    "parameters" : [
+        {
+            "mean" : 1.0,
+            "std" : 0.00001
+        }
+     ]
+}

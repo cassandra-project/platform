@@ -1,0 +1,11 @@
+{
+    "name" : "Working",
+    "type" : "duration",
+    "distrType" : "normal",
+    "parameters" : [
+        {
+            "mean" : 800.0,
+            "std" : 0.00001
+        }
+     ]
+}

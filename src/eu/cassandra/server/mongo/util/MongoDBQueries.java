@@ -112,6 +112,7 @@ public class MongoDBQueries {
 					return createJSONError("Cannot get entity for collection: " + coll + 
 							", error in filters: " + filters ,e);
 				}
+				System.out.println(qKey + "\n\n" + qValue);
 				query.put(qKey, qValue);
 			}
 			fields = new BasicDBObject();

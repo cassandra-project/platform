@@ -6,7 +6,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoScenarios {
 
-	protected final static String COL_SCENARIOS = "scenarios";
+	public final static String COL_SCENARIOS = "scenarios";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/scn/4fec747cdf4ffdb8d1d1ce55

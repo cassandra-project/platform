@@ -1,0 +1,10 @@
+ {
+        "name" : "Cleaning model",
+        "type" : "cleaning",
+        "day_type" : "non-working",
+        "act_id" : "",
+        "containsAppliances" : ["500d209ae4b04cef9589f6c8"],
+        "duration" : "",
+        "startTime" : "",
+        "repeatsNrOfTime" : ""
+ }

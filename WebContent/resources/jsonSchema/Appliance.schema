@@ -38,6 +38,11 @@
             "description": "The ability to control the appliance",
             "optional": true
         },
+        "base": {
+            "type": "boolean",
+            "description": "Whether the appliance is a base load or not",
+            "optional": true
+        },
         "shiftable": {
             "type": "boolean",
             "description": "The ability to shift the appliance",
