@@ -16,8 +16,7 @@ public class MongoDistributions {
 	 */
 	public String createDistribution(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_DISTRIBUTIONS ,dataToInsert,
-				"Distribution created successfully",MongoActivityModels.COL_ACTMODELS,
-				"actmod_id",JSONValidator.DISTRIBUTION_SCHEMA).toString();
+				"Distribution created successfully",JSONValidator.DISTRIBUTION_SCHEMA).toString();
 	}
 
 	/**
