@@ -6,7 +6,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoActivities {
 
-	protected final static String COL_ACTIVITIES = "activities";
+	public final static String COL_ACTIVITIES = "activities";
 
 	/**
 	 * 

@@ -7,7 +7,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoInstallations {
 
-	protected final static String COL_INSTALLATIONS = "installations";
+	public final static String COL_INSTALLATIONS = "installations";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/inst/4ff1ddfde4b0bfe3a2fa6cd9

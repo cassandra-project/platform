@@ -1,10 +1,10 @@
  {
         "name" : "Entertainment 1 model",
         "type" : "entertainment",
-        "day_type" : "non-working",
-        "act_id" : "",
+        "day_type" : "nonworking",
+        "act_id" : "500d30c4e4b04cef9589f6d5",
         "containsAppliances" : ["500d206ae4b04cef9589f6c6"],
-        "duration" : "",
-        "startTime" : "",
-        "repeatsNrOfTime" : ""
+        "duration" : "500e7d62e4b072419315898a",
+        "startTime" : "500e7d3fe4b0724193158989",
+        "repeatsNrOfTime" : "500e7da6e4b072419315898c"
  }

@@ -5,7 +5,7 @@ import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoPersons {
-	protected final static String COL_PERSONS = "persons";
+	public final static String COL_PERSONS = "persons";
 
 	/**
 	 * 
