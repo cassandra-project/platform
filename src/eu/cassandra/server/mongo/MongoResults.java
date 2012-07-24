@@ -1,5 +1,6 @@
 package eu.cassandra.server.mongo;
 
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -9,17 +10,17 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoResults {
 
-	private final static String COL_APPRESULTS = "app_results";
-	private final static String COL_INSTRESULTS = "inst_results";
-	private final static String COL_AGGRRESULTS = "aggr_results";
-
+	public final static String COL_APPRESULTS = "app_results";
+	public final static String COL_INSTRESULTS = "inst_results";
+	public final static String COL_AGGRRESULTS = "aggr_results";
+	
 	/**
 	 * 
 	 * @param app_id
 	 * @param openTick
 	 * @throws MongoRefNotFoundException
 	 */
-	public void addOpenTick(String app_id, long openTick) throws MongoRefNotFoundException {
+	public void addOpenTick(String app_id, int openTick) throws MongoRefNotFoundException {
 		DBObject refObj = new MongoDBQueries().getEntity(MongoAppliances.COL_APPLIANCES, app_id);
 		if(refObj == null) {
 			throw new MongoRefNotFoundException("Reference Key: " + 
@@ -36,7 +37,7 @@ public class MongoResults {
 	 * @param app_id
 	 * @param closeTick
 	 */
-	public void addCloseTick(String app_id, long closeTick) {
+	public void addCloseTick(String app_id, int closeTick) {
 		DBObject q = new BasicDBObject();
 		q.put("app_id", app_id);
 		DBObject data = new BasicDBObject();
@@ -52,7 +53,7 @@ public class MongoResults {
 	 * @param p
 	 * @param q
 	 */
-	public void addTickResultForInstallation(long tick,
+	public void addTickResultForInstallation(int tick,
 			String inst_id, double p, double q) {
 		DBObject data = new BasicDBObject();
 		data.put("inst_id",inst_id);
@@ -61,14 +62,14 @@ public class MongoResults {
 		data.put("q",q);
 		DBConn.getConn().getCollection(COL_INSTRESULTS).insert(data);
 	}
-	
+
 	/**
 	 * 
 	 * @param tick
 	 * @param p
 	 * @param q
 	 */
-	public void addAggregatedTickResult(long tick, double p, double q) {
+	public void addAggregatedTickResult(int tick, double p, double q) {
 		DBObject data = new BasicDBObject();
 		data.put("tick",tick);
 		data.put("p",p);
@@ -77,10 +78,17 @@ public class MongoResults {
 	}
 
 
-	//	public static void main(String args[]) {
-	//		MongoResults m = new MongoResults();
-	//		m.addTickResultForInstallation(1,"dszfs123", 0.1, 2.3);
-	//		m.addTickResultForInstallation(2,"dszfs123", 0.1, 2.3); 
-	//		m.addTickResultForInstallation(3,"dszfs123", 0.1, 2.3); 
-	//	}
+//	public static void main(String args[]) {
+//		MongoResults m = new MongoResults();
+//		m.mongoResultQuery("instID_", MongoResults.ACTIVE_POWER_P, 2, null, null); 
+//		//		m.addTickResultForInstallation(1,"instID_", 0.1, 2.3);
+//		//		m.addTickResultForInstallation(2,"instID_", 0.2, 2.3); 
+//		//		m.addTickResultForInstallation(3,"instID_", 0.3, 2.3); 
+//		//		m.addTickResultForInstallation(4,"instID_", 0.1, 2.3);
+//		//		m.addTickResultForInstallation(5,"instID_", 0.2, 2.3); 
+//		//		m.addTickResultForInstallation(6,"instID_", 0.3, 2.3); 
+//		//		m.addTickResultForInstallation(7,"instID_", 0.4, 2.3);
+//		//		m.addTickResultForInstallation(8,"instID_", 0.5, 2.3); 
+//		//		m.addTickResultForInstallation(9,"instID_", 0.6, 2.3); 
+//	}
 }

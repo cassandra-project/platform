@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
+import eu.cassandra.server.mongo.MongoResults;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -15,6 +16,10 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 public class MongoDBQueries {
+
+	public final static int ACTIVE_POWER_P = 0;
+	public final static int REACTIVE_POWER_Q = 1;
+
 
 	/**
 	 * 
@@ -603,6 +608,89 @@ public class MongoDBQueries {
 	}
 
 	/**
+	 * curl -i 'http://localhost:8080/cassandra/api/results?inst_id=instID_&aggr_unit=3&metric=1&from=3&to=100'
+	 * 
+	 * @param installationId
+	 * @param metric
+	 * @param aggregationUnit
+	 * @param fromTick
+	 * @param toTick
+	 * @return
+	 */
+	public DBObject mongoResultQuery(String installationId, String metricS, String aggregationUnitS, String fromTickS, String toTickS) {
+		try {
+			System.out.println(installationId);
+			System.out.println(metricS);
+			System.out.println(fromTickS);
+			System.out.println(toTickS);
+			
+			Integer aggregationUnit = null;
+			if(aggregationUnitS != null)
+				aggregationUnit = Integer.parseInt(aggregationUnitS);
+			Integer metric = null;
+			if(metricS != null)
+				metric = Integer.parseInt(metricS);
+			Integer fromTick = null;
+			if(fromTickS != null)
+				fromTick = Integer.parseInt(fromTickS);
+			Integer toTick = null;
+			if(toTickS != null)
+				toTick = Integer.parseInt(toTickS);
+			System.out.println("----");
+			String coll = MongoResults.COL_AGGRRESULTS;
+			if(aggregationUnit == null || aggregationUnit <= 0)
+				aggregationUnit = 1;
+			if(installationId != null)
+				coll = MongoResults.COL_INSTRESULTS;
+
+			String yMetric = "p";
+			if(metric != null && metric == REACTIVE_POWER_Q)
+				yMetric = "q";
+			//db.inst_results.find({inst_id:"dszfs123",tick:{$gt:1}}).sort({tick:1}).pretty()
+			//db.inst_results.group(
+			//	{
+			//	 keyf:function(doc)
+			//		{var key=new NumberInt(doc.tick/4); return {x:key}
+			//		} , 
+			//	 cond:{inst_id:"instID_"}, 
+			//	 reduce:function(obj,prev)
+			//		{prev.csum+=obj.p},
+			//	 initial:{csum:0}
+			//	}
+			//)
+			System.out.println("-----------");
+			BasicDBObject condition = null; 
+			if(installationId != null || fromTick != null || toTick != null)
+				condition =	new BasicDBObject();
+			if(installationId != null)
+				condition.append("inst_id",installationId);
+			if(fromTick != null)
+				condition.append("tick",new BasicDBObject("$gte",fromTick));
+			if(toTick != null)
+				condition.append("tick",new BasicDBObject("$lte",toTick));
+			System.out.println("--------------");
+
+			BasicDBObject groupCmd = new BasicDBObject("ns",coll);
+			groupCmd.append("$keyf", "function(doc){var key=new NumberInt(doc.tick/" + aggregationUnit + "); return {x:key}}");
+			if(condition != null)
+				groupCmd.append("cond", condition); 
+			groupCmd.append("$reduce", "function(obj,prev){prev.y+=obj." + yMetric + "}");
+			groupCmd.append("initial",  new BasicDBObject("y",0));
+			System.out.println("-----------------------");
+			System.out.println(PrettyJSONPrinter.prettyPrint(groupCmd.toString()));
+			@SuppressWarnings("deprecation")
+			BasicDBList dbList = (BasicDBList)DBConn.getConn().getCollection(coll).group(groupCmd);
+			System.out.println("--------------------------");
+			return createJSONPlot(dbList, "Data for plot retrieved successfully", 
+					"title", "xAxisLabel", "yAxisLabel"); 
+
+		}catch(Exception e) {
+			e.printStackTrace();
+			return createJSONError("Error in retrieving results", e.getMessage());
+		}
+	}
+
+	/**
 	 * 
 	 * @param data
 	 * @param ex
@@ -707,6 +795,20 @@ public class MongoDBQueries {
 		DBObject successMessage = new BasicDBObject();
 		successMessage.put("success", true);
 		successMessage.put("message", descr);
+		successMessage.put("size", dbObjects.size());
+		successMessage.put("data", dbObjects);
+		return successMessage;
+	}
+
+
+	public DBObject createJSONPlot(BasicDBList dbObjects, String descr, 
+			String title, String xAxisLabel, String yAxisLabel) {
+		DBObject successMessage = new BasicDBObject();
+		successMessage.put("success", true);
+		successMessage.put("message", descr);
+		successMessage.put("title", title);
+		successMessage.put("xAxisLabel", xAxisLabel);
+		successMessage.put("yAxisLabel", yAxisLabel);
 		successMessage.put("size", dbObjects.size());
 		successMessage.put("data", dbObjects);
 		return successMessage;
