@@ -46,10 +46,10 @@ public class MongoActivityModels {
 	public String createActivityModel(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_ACTMODELS ,dataToInsert,
 				"Activity Model created successfully", 
-				new String[] {MongoDistributions.COL_DISTRIBUTIONS, 
+				new String[] {MongoActivities.COL_ACTIVITIES, MongoDistributions.COL_DISTRIBUTIONS, 
 				MongoDistributions.COL_DISTRIBUTIONS, MongoDistributions.COL_DISTRIBUTIONS  },
-				new String[] {"duration","startTime","repeatsNrOfTime"},
-				new boolean[] {true,true,true},JSONValidator.ACTIVITYMODEL_SCHEMA
+				new String[] {"act_id","duration","startTime","repeatsNrOfTime"},
+				new boolean[] {false,true,true,true},JSONValidator.ACTIVITYMODEL_SCHEMA
 				).toString();
 
 		//         : "4ff31bc9e4b0721a5785a1bc",

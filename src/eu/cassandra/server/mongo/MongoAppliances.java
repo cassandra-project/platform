@@ -6,7 +6,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoAppliances {
 
-	protected final static String COL_APPLIANCES = "appliances";
+	public final static String COL_APPLIANCES = "appliances";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/app/4ff1d9d4e4b0ddb832a310bc

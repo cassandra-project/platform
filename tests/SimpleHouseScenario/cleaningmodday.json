@@ -2,9 +2,9 @@
         "name" : "Cleaning model",
         "type" : "cleaning",
         "day_type" : "working",
-        "act_id" : "",
+        "act_id" : "500d30a0e4b04cef9589f6d3",
         "containsAppliances" : ["500d209ae4b04cef9589f6c8"],
-        "duration" : "",
-        "startTime" : "",
-        "repeatsNrOfTime" : ""
+        "duration" : "500e7c56e4b0724193158987",
+        "startTime" : "500e7c6ae4b0724193158988",
+        "repeatsNrOfTime" : "500e7c09e4b0724193158985"
  }

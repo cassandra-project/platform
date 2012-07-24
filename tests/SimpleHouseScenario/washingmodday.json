@@ -2,9 +2,9 @@
         "name" : "Washing model",
         "type" : "washing",
         "day_type" : "working",
-        "act_id" : "",
+        "act_id" : "500d30ade4b04cef9589f6d4",
         "containsAppliances" : ["500d208de4b04cef9589f6c7"],
-        "duration" : "",
-        "startTime" : "",
-        "repeatsNrOfTime" : ""
+        "duration" : "500e7e3ae4b0724193158992",
+        "startTime" : "500e7e23e4b0724193158991",
+        "repeatsNrOfTime" : "500e7e48e4b0724193158993"
  }

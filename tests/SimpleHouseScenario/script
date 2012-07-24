@@ -41,6 +41,11 @@ curl -i --data @working.json --header Content-type:application/json http://local
 curl -i -X GET http://localhost:8080/cassandra/api/act?pers_id=500d2e96e4b04cef9589f6d2
 
 # Insert the distributions
+# example:
+curl -i --data @cleaning.start.json --header Content-type:application/json http://localhost:8080/cassandra/api/distr
+curl -i --data @cleaning.dur.json --header Content-type:application/json http://localhost:8080/cassandra/api/distr
+curl -i --data @cleaning.day.json --header Content-type:application/json http://localhost:8080/cassandra/api/distr
+curl -i --data @cleaning.end.json --header Content-type:application/json http://localhost:8080/cassandra/api/distr
 
 # Activity Models
 

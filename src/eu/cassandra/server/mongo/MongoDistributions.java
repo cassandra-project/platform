@@ -6,7 +6,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoDistributions {
 
-	protected final static String COL_DISTRIBUTIONS = "distributions";
+	public final static String COL_DISTRIBUTIONS = "distributions";
 
 	/**
 	 * curl -i --data  @distribution.json    --header Content-type:application/json http://localhost:8080/cassandra/api/distr

@@ -17,6 +17,7 @@
 package eu.cassandra.sim;
 
 import java.io.File;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Vector;
@@ -142,7 +143,9 @@ public class Simulation implements Runnable
     
     DBObject jsonScenario = (DBObject) JSON.parse(scenario);
     
-    int numOfDays = ((Integer)jsonScenario.get("days")).intValue();
+    int numOfDays = ((Integer)jsonScenario.get("scenario.sim_param.numberOfDay")).intValue();
+    
+    System.out.println(numOfDays);
 
     endTick = Constants.MIN_IN_DAY * numOfDays;
 
