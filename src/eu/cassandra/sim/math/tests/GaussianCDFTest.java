@@ -1,5 +1,4 @@
 
-
 /*   
    Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
 
@@ -25,13 +24,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-/**
- * @author Konstantina Valogianni 
- * @version prelim
- * @since 2012-11-07
- */
-
-import org.junit.Test;
 
 import eu.cassandra.sim.math.GaussianCDF;
 
