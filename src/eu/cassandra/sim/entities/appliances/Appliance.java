@@ -28,14 +28,12 @@ import eu.cassandra.sim.utilities.RNG;
  * @version prelim
  */
 public class Appliance {
-	private final int id;
+	private final String id;
 	private final String description;
 	private final String type;
     private final String name;
 	private final Installation installation;
-	private final double[] consumption;
-	private final int[] periods;
-	private final int totalCycleTime;
+	private final String consumption;
 	private final double standByConsumption;
 	private final boolean base;
 	
@@ -44,42 +42,33 @@ public class Appliance {
 	private String who;
 	
 	public static class Builder {
-		private static int idCounter = 0;
 		// Required variables
-		private final int id;
+		private final String id;
 		private final String description;
 		private final String type;
 	    private final String name;
 		private final Installation installation;
-		private final double[] consumption;
-		private final int[] periods;
-		private final int totalCycleTime;
+		private final String consumption;
 		private final double standByConsumption;
 		private final boolean base;
 		// Optional or state related variables
 		private long onTick = -1;
 		private String who = null;
 		public Builder(
+				String aid,
 				String aname, 
 				String adesc, 
 				String atype,
 				Installation ainstallation, 
-				double[] aconsumption, 
-				int[] aperiods, 
+				String aconsumption, 
 				double astandy, 
 				boolean abase) {
-			id = idCounter++;
+			id = aid;
 			name = aname;
 			description = adesc;
 			type = atype;		
 			installation = ainstallation;
 			consumption = aconsumption;
-			periods = aperiods;
-			int sum = 0;
-			for(int i = 0; i < periods.length; i++) {
-				sum += periods[i];
-			}
-			totalCycleTime = sum;
 			standByConsumption = astandy;
 			base = abase;
 		}
@@ -96,15 +85,13 @@ public class Appliance {
 		installation = builder.installation;
 		standByConsumption = builder.standByConsumption;
 		consumption = builder.consumption;
-		periods = builder.periods;
-		totalCycleTime = builder.totalCycleTime;
 		base = builder.base;
 		inUse = (base) ? true : false;
 		onTick = (base) ? -RNG.nextInt(Constants.MIN_IN_DAY) : builder.onTick;
 		who = builder.who;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -121,23 +108,24 @@ public class Appliance {
 	}
 
 	public double getPower(long tick) {
-		double power;
-		if(isInUse()) {
-			long relativeTick = Math.abs(tick - onTick);
-			long tickInCycle = relativeTick % totalCycleTime;
-			int ticks = 0;
-			int periodIndex = 0;
-			for(int i = 0; i < periods.length; i++) {
-				ticks += periods[i];
-				if(tickInCycle < ticks) {
-					periodIndex = i;
-					break;
-				}
-			}
-			power = consumption[periodIndex];
-		} else {
-			power = standByConsumption;
-		}
+		double power = 0;
+		// TODO
+//		if(isInUse()) {
+//			long relativeTick = Math.abs(tick - onTick);
+//			long tickInCycle = relativeTick % totalCycleTime;
+//			int ticks = 0;
+//			int periodIndex = 0;
+//			for(int i = 0; i < periods.length; i++) {
+//				ticks += periods[i];
+//				if(tickInCycle < ticks) {
+//					periodIndex = i;
+//					break;
+//				}
+//			}
+//			power = consumption[periodIndex];
+//		} else {
+//			power = standByConsumption;
+//		}
 		return power;
 	}
 
@@ -163,33 +151,34 @@ public class Appliance {
 	}
 	
 	public static void main(String[] args) {
-		double[] power = {1f,1f};
-		int[] period = {1, 1};
-		Appliance fridge = new Appliance.Builder(
-				"refrigerator", 
-				"A new refrigerator", 
-				"FridgeA", 
-				null, 
-				power, 
-				period,
-				1f,
-				true).build();
-		System.out.println(fridge.getId());
-		System.out.println(fridge.getName());
-		Appliance freezer = new Appliance.Builder(
-				"freezer", 
-				"A new freezer", 
-				"FreezerA", 
-				null,
-				power,
-				period,
-				2f,
-				true).build();
-		System.out.println(freezer.getId());
-		System.out.println(freezer.getName());
-		for(int i = 0; i < 100; i++) {
-			System.out.println(freezer.getPower(i));
-		}
+		// TODO
+//		double[] power = {1f,1f};
+//		int[] period = {1, 1};
+//		Appliance fridge = new Appliance.Builder("id1",
+//				"refrigerator", 
+//				"A new refrigerator", 
+//				"FridgeA", 
+//				null, 
+//				power, 
+//				period,
+//				1f,
+//				true).build();
+//		System.out.println(fridge.getId());
+//		System.out.println(fridge.getName());
+//		Appliance freezer = new Appliance.Builder("id2",
+//				"freezer", 
+//				"A new freezer", 
+//				"FreezerA", 
+//				null,
+//				power,
+//				period,
+//				2f,
+//				true).build();
+//		System.out.println(freezer.getId());
+//		System.out.println(freezer.getName());
+//		for(int i = 0; i < 100; i++) {
+//			System.out.println(freezer.getPower(i));
+//		}
 	}
 	
 }

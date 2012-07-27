@@ -23,8 +23,7 @@ import eu.cassandra.sim.entities.installations.Installation;
 
 public class Person
 {
-  private static int idCounter = 0;
-  private final int id;
+  private final String id;
   private final String name;
   private final String description;
   private final String type;
@@ -34,7 +33,7 @@ public class Person
   public static class Builder
   {
     // Required parameters
-    private final int id;
+    private final String id;
     private final String name;
     private final String description;
     private final String type;
@@ -42,9 +41,9 @@ public class Person
     // Optional parameters: not available
     private Vector<Activity> activities = new Vector<Activity>();
 
-    public Builder (String aname, String desc, String atype, Installation ahouse)
+    public Builder (String aid, String aname, String desc, String atype, Installation ahouse)
     {
-      id = idCounter++;
+      id = aid;
       name = aname;
       description = desc;
       type = atype;
@@ -81,7 +80,7 @@ public class Person
     }
   }
 
-  public int getId ()
+  public String getId ()
   {
     return id;
   }

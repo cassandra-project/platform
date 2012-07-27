@@ -23,7 +23,7 @@ import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.people.Person;
 
 public class Installation {
-	private final int id;
+	private final String id;
 	private final String name;
 	private final String description;
 	private final String type;
@@ -35,7 +35,7 @@ public class Installation {
 	
 	public static class Builder {
     	// Required variables
-    	private final int id;
+    	private final String id;
         private final String name;
         private final String description;
         private final String type;
@@ -46,7 +46,7 @@ public class Installation {
         private Vector<Installation> subInstallations;
         private double currentPower = 0.0;
         
-        public Builder(int aid, String aname, String adescription, String atype) {
+        public Builder(String aid, String aname, String adescription, String atype) {
         	id = aid;
 			name = aname;
 		    description = adescription;
@@ -103,8 +103,8 @@ public class Installation {
 		return currentPower;
 	}
 	
-    public int getId() {
-        return this.id;
+    public String getId() {
+        return id;
     }
     
     public Vector<Person> getPersons() {

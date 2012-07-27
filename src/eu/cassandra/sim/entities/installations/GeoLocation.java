@@ -8,11 +8,11 @@ public class GeoLocation
 
   private double latitude;
   private double longitude;
-  private int id;
+  private String id;
 
   GeoLocation ()
   {
-    id = -1;
+    id = null;
     longitude = 0;
     latitude = 0;
 
