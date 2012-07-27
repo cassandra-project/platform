@@ -69,8 +69,9 @@ public class MongoResults {
 	 * @param p
 	 * @param q
 	 */
-	public void addAggregatedTickResult(int tick, double p, double q) {
+	public void addAggregatedTickResult(String runId, int tick, double p, double q) {
 		DBObject data = new BasicDBObject();
+		data.put("run_id",runId);
 		data.put("tick",tick);
 		data.put("p",p);
 		data.put("q",q);
@@ -80,15 +81,18 @@ public class MongoResults {
 
 //	public static void main(String args[]) {
 //		MongoResults m = new MongoResults();
+//		m.addAggregatedTickResult("5006a550e4b05ff53eb83fe0",1, 0.1, 2.3);
+//		m.addAggregatedTickResult("5006a550e4b05ff53eb83fe0",2, 0.1, 2.3);
+//		m.addAggregatedTickResult("5006a550e4b05ff53eb83fe0",3, 0.1, 2.3);
 //		m.mongoResultQuery("instID_", MongoResults.ACTIVE_POWER_P, 2, null, null); 
-//		//		m.addTickResultForInstallation(1,"instID_", 0.1, 2.3);
-//		//		m.addTickResultForInstallation(2,"instID_", 0.2, 2.3); 
-//		//		m.addTickResultForInstallation(3,"instID_", 0.3, 2.3); 
-//		//		m.addTickResultForInstallation(4,"instID_", 0.1, 2.3);
-//		//		m.addTickResultForInstallation(5,"instID_", 0.2, 2.3); 
-//		//		m.addTickResultForInstallation(6,"instID_", 0.3, 2.3); 
-//		//		m.addTickResultForInstallation(7,"instID_", 0.4, 2.3);
-//		//		m.addTickResultForInstallation(8,"instID_", 0.5, 2.3); 
-//		//		m.addTickResultForInstallation(9,"instID_", 0.6, 2.3); 
+		//		m.addTickResultForInstallation(1,"instID_", 0.1, 2.3);
+		//		m.addTickResultForInstallation(2,"instID_", 0.2, 2.3); 
+		//		m.addTickResultForInstallation(3,"instID_", 0.3, 2.3); 
+		//		m.addTickResultForInstallation(4,"instID_", 0.1, 2.3);
+		//		m.addTickResultForInstallation(5,"instID_", 0.2, 2.3); 
+		//		m.addTickResultForInstallation(6,"instID_", 0.3, 2.3); 
+		//		m.addTickResultForInstallation(7,"instID_", 0.4, 2.3);
+		//		m.addTickResultForInstallation(8,"instID_", 0.5, 2.3); 
+		//		m.addTickResultForInstallation(9,"instID_", 0.6, 2.3); 
 //	}
 }

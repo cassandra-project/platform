@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
+import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.MongoResults;
 
 import com.mongodb.BasicDBList;
@@ -617,12 +618,14 @@ public class MongoDBQueries {
 	 * @param toTick
 	 * @return
 	 */
-	public DBObject mongoResultQuery(String installationId, String metricS, String aggregationUnitS, String fromTickS, String toTickS) {
+	public DBObject mongoResultQuery(String runId, String installationId, String metricS, String aggregationUnitS, String fromTickS, String toTickS) {
 		try {
-			System.out.println(installationId);
-			System.out.println(metricS);
-			System.out.println(fromTickS);
-			System.out.println(toTickS);
+			if(runId != null && installationId != null)
+				throw new RestQueryParamMissingException(
+						"Either run_id or installation_id should be null");
+			else if(runId == null && installationId == null)
+				throw new RestQueryParamMissingException(
+						"Both run_id and installation_id are null");
 			
 			Integer aggregationUnit = null;
 			if(aggregationUnitS != null)
@@ -636,7 +639,6 @@ public class MongoDBQueries {
 			Integer toTick = null;
 			if(toTickS != null)
 				toTick = Integer.parseInt(toTickS);
-			System.out.println("----");
 			String coll = MongoResults.COL_AGGRRESULTS;
 			if(aggregationUnit == null || aggregationUnit <= 0)
 				aggregationUnit = 1;
@@ -658,17 +660,17 @@ public class MongoDBQueries {
 			//	 initial:{csum:0}
 			//	}
 			//)
-			System.out.println("-----------");
 			BasicDBObject condition = null; 
 			if(installationId != null || fromTick != null || toTick != null)
 				condition =	new BasicDBObject();
+			if(runId != null)
+				condition.append("run_id",runId);
 			if(installationId != null)
 				condition.append("inst_id",installationId);
 			if(fromTick != null)
 				condition.append("tick",new BasicDBObject("$gte",fromTick));
 			if(toTick != null)
 				condition.append("tick",new BasicDBObject("$lte",toTick));
-			System.out.println("--------------");
 
 			BasicDBObject groupCmd = new BasicDBObject("ns",coll);
 			groupCmd.append("$keyf", "function(doc){var key=new NumberInt(doc.tick/" + aggregationUnit + "); return {x:key}}");
@@ -676,11 +678,8 @@ public class MongoDBQueries {
 				groupCmd.append("cond", condition); 
 			groupCmd.append("$reduce", "function(obj,prev){prev.y+=obj." + yMetric + "}");
 			groupCmd.append("initial",  new BasicDBObject("y",0));
-			System.out.println("-----------------------");
-			System.out.println(PrettyJSONPrinter.prettyPrint(groupCmd.toString()));
 			@SuppressWarnings("deprecation")
 			BasicDBList dbList = (BasicDBList)DBConn.getConn().getCollection(coll).group(groupCmd);
-			System.out.println("--------------------------");
 			return createJSONPlot(dbList, "Data for plot retrieved successfully", 
 					"title", "xAxisLabel", "yAxisLabel"); 
 
