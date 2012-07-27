@@ -24,6 +24,7 @@ import java.util.Vector;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
@@ -142,370 +143,467 @@ public class Simulation implements Runnable
     simulationWorld = new SimulationWorld();
     
     DBObject jsonScenario = (DBObject) JSON.parse(scenario);
+    DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
+    DBObject simParamsDoc = (DBObject) scenarioDoc.get("sim_param");
     
-    int numOfDays = ((Integer)jsonScenario.get("scenario.sim_param.numberOfDay")).intValue();
-    
-    System.out.println(numOfDays);
+    int numOfDays = ((Integer)simParamsDoc.get("numberOfDay")).intValue();    
 
     endTick = Constants.MIN_IN_DAY * numOfDays;
 
     // Check type of setup
-    String setup = (String)jsonScenario.get("setup"); 
+    String setup = (String)scenarioDoc.get("setup"); 
     if (setup.equalsIgnoreCase("static")) {
       staticSetup(jsonScenario);
     }
     else if (setup.equalsIgnoreCase("dynamic")) {
       dynamicSetup(jsonScenario);
+   // Load possible activities
+      BasicDBList activities = (BasicDBList)jsonScenario.get("activities");
+      // Put persons inside installations along with activities
+      int typesOfPersons =  ((Integer)jsonScenario.get("person-types")).intValue();
+      for (int i = 0; i < installations.size(); i++) {
+        Installation inst = installations.get(i);
+        int type = RNG.nextInt(typesOfPersons) + 1;
+        Person person =
+          new Person.Builder(i+"","Person " + i, "Person Type " + type,
+                             Integer.toString(type), inst).build();
+        inst.addPerson(person);
+
+        for (int j = 0; j < activities.size(); j++) {
+      	  BasicDBList appsNeeded = (BasicDBList)jsonScenario.get(activities.get(j) + ".apps");
+      	  Vector<Appliance> existing = new Vector<Appliance>();
+      	  for (int k = 0; k < appsNeeded.size(); k++) {
+      		  System.out.println((String)appsNeeded.get(k));
+      		  Appliance a = inst.applianceExists((String)appsNeeded.get(k));
+      		  if (a != null) {
+      			  existing.add(a);
+      		  }
+      	  }
+
+          if (existing.size() > 0) {
+            logger.info(i + " " + activities.get(j));
+            double mu = 0, sigma = 0, from = 0, to = 0;
+            ProbabilityDistribution start = null, duration = null, weekday = null, weekend =
+              null;
+            double[] means, sigmas, pi;
+            String distribution = "";
+
+            /* ==========Start Time Distribution========== */
+
+            distribution = (String) jsonScenario.get(
+          		  activities.get(j) + 
+          		  ".startTime.distribution." + 
+          				  type);
+            switch (distribution) {
+            case ("normal"):
+              mu = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".startTime.mu." + 
+              				type);
+            
+              sigma = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".startTime.sigma." + 
+              				type);
+              start = new Gaussian(mu, sigma);
+              start.precompute(0, 1439, 1440);
+              break;
+
+            case ("uniform"):
+              from = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".startTime.start." + 
+              				type);
+
+              to = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".startTime.end." + 
+              				type);
+
+              start = new Uniform(from, to);
+              start.precompute(from, to, (int) to + 1);
+              break;
+
+            case ("mixture"):
+              means = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".startTime.means." + 
+              				type)
+              		);
+
+              sigmas = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".startTime.sigmas." + 
+              				type)
+              		);
+
+              pi = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".startTime.pi." + 
+              				type)
+              		);
+
+              start = new GaussianMixtureModels(pi.length, pi, means, sigmas);
+              start.precompute(0, 1439, 1440);
+              break;
+
+            default:
+              System.out.println("Non existing start time distribution type");
+            }
+
+            System.out.println("Start Time Distribution");
+            start.status();
+
+            /* ==========Duration Distribution========== */
+
+            distribution = (String) jsonScenario.get(
+          		  activities.get(j) + 
+          		  ".duration.distribution." + 
+          				  type);
+          		  
+            switch (distribution) {
+            case ("normal"):
+
+              mu = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".duration.mu." + 
+              				type);
+
+              sigma = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".duration.sigma." + 
+              				type);
+
+              duration = new Gaussian(mu, sigma);
+              duration.precompute(0, 1439, 1440);
+              break;
+
+            case ("uniform"):
+              from = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".duration.start." + 
+              				type);
+
+              to = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".duration.end." + 
+              				type);
+
+              duration = new Uniform(from, to);
+              duration.precompute(from, to, (int) to + 1);
+              break;
+
+            case ("mixture"):
+              means = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".duration.means." + 
+              				type)
+              		);
+
+              sigmas = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".duration.sigmas." + 
+              				type)
+              		);
+
+              pi = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".duration.pi." + 
+              				type)
+              		);
+
+              duration = new GaussianMixtureModels(pi.length, pi, means, sigmas);
+              duration.precompute(0, 1439, 1440);
+              break;
+
+            default:
+              System.out.println("Non existing duration distribution type");
+            }
+
+            System.out.println("Duration Distribution");
+            duration.status();
+
+            /* ==========Weekday Times Distribution========== */
+
+            distribution = (String) jsonScenario.get(
+          		  activities.get(j) + 
+          		  ".weekday.distribution." + 
+          				  type);
+
+            switch (distribution) {
+            case ("normal"):
+
+              mu = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekday.mu." + 
+              				type);
+
+              sigma = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekday.sigma." + 
+              				type);
+
+              weekday = new Gaussian(mu, sigma);
+              weekday.precompute(0, 1439, 1440);
+
+              break;
+            case ("uniform"):
+              from = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekday.start." + 
+              				type);
+
+              to = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekday.end." + 
+              				type);
+
+              weekday = new Uniform(from, to);
+              weekday.precompute(from, to, (int) to + 1);
+              break;
+
+            case ("mixture"):
+              means = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekday.means." + 
+              				type)
+              		);
+
+              sigmas = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekday.sigmas." + 
+              				type)
+              		);
+
+              pi = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekday.pi." + 
+              				type)
+              		);
+
+              weekday = new GaussianMixtureModels(pi.length, pi, means, sigmas);
+              weekday.precompute(0, 1439, 1440);
+              break;
+
+            default:
+              System.out.println("Non existing duration distribution type");
+            }
+
+            System.out.println("Weekday Distribution");
+            weekday.status();
+
+            /* ==========Weekend Times Distribution========== */
+
+            distribution = (String) jsonScenario.get(
+          		  activities.get(j) + 
+          		  ".weekend.distribution." + 
+          				  type);
+
+            switch (distribution) {
+            case ("normal"):
+
+              mu = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekend.mu." + 
+              				type);
+
+              sigma = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekend.sigma." + 
+              				type);
+
+              weekend = new Gaussian(mu, sigma);
+              weekend.precompute(0, 1439, 1440);
+              break;
+            case ("uniform"):
+              from = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekend.start." + 
+              				type);
+
+              to = (Double)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekend.end." + 
+              				type);
+
+              weekend = new Uniform(from, to);
+              weekend.precompute(from, to, (int) to + 1);
+              break;
+
+            case ("mixture"):
+              means = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekend.means." + 
+              				type)
+              		);
+
+              sigmas = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekend.sigmas." + 
+              				type)
+              		);
+
+              pi = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
+              		activities.get(j) + 
+              		".weekend.pi." + 
+              				type)
+              		);
+
+              weekend = new GaussianMixtureModels(pi.length, pi, means, sigmas);
+              weekend.precompute(0, 1439, 1440);
+              break;
+
+            default:
+              System.out.println("Non existing duration distribution type");
+            }
+
+            System.out.println("Weekend Distribution");
+            weekend.status();
+
+            
+            String activity = (String)activities.get(j);
+            
+            Activity act =
+              new Activity.Builder(activity, "Typical " + activity
+                                                  + " Activity", activity,
+                                   start, duration, simulationWorld)
+                      .times("weekday", weekday).times("weekend", weekend)
+                      .build();
+            for (Appliance e: existing) {
+              act.addAppliance(e, 1.0 / existing.size());
+            }
+            person.addActivity(act);
+          }
+        }
+      }
     }
     else {
       throw new Exception("Problem with setup property");
     }
-    // Load possible activities
-    BasicDBList activities = (BasicDBList)jsonScenario.get("activities");
-    // Put persons inside installations along with activities
-    int typesOfPersons =  ((Integer)jsonScenario.get("person-types")).intValue();
-    for (int i = 0; i < installations.size(); i++) {
-      Installation inst = installations.get(i);
-      int type = RNG.nextInt(typesOfPersons) + 1;
-      Person person =
-        new Person.Builder("Person " + i, "Person Type " + type,
-                           Integer.toString(type), inst).build();
-      inst.addPerson(person);
 
-      for (int j = 0; j < activities.size(); j++) {
-    	  BasicDBList appsNeeded = (BasicDBList)jsonScenario.get(activities.get(j) + ".apps");
-    	  Vector<Appliance> existing = new Vector<Appliance>();
-    	  for (int k = 0; k < appsNeeded.size(); k++) {
-    		  System.out.println((String)appsNeeded.get(k));
-    		  Appliance a = inst.applianceExists((String)appsNeeded.get(k));
-    		  if (a != null) {
-    			  existing.add(a);
-    		  }
-    	  }
-
-        if (existing.size() > 0) {
-          logger.info(i + " " + activities.get(j));
-          double mu = 0, sigma = 0, from = 0, to = 0;
-          ProbabilityDistribution start = null, duration = null, weekday = null, weekend =
-            null;
-          double[] means, sigmas, pi;
-          String distribution = "";
-
-          /* ==========Start Time Distribution========== */
-
-          distribution = (String) jsonScenario.get(
-        		  activities.get(j) + 
-        		  ".startTime.distribution." + 
-        				  type);
-          switch (distribution) {
-          case ("normal"):
-            mu = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".startTime.mu." + 
-            				type);
-          
-            sigma = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".startTime.sigma." + 
-            				type);
-            start = new Gaussian(mu, sigma);
-            start.precompute(0, 1439, 1440);
-            break;
-
-          case ("uniform"):
-            from = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".startTime.start." + 
-            				type);
-
-            to = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".startTime.end." + 
-            				type);
-
-            start = new Uniform(from, to);
-            start.precompute(from, to, (int) to + 1);
-            break;
-
-          case ("mixture"):
-            means = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".startTime.means." + 
-            				type)
-            		);
-
-            sigmas = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".startTime.sigmas." + 
-            				type)
-            		);
-
-            pi = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".startTime.pi." + 
-            				type)
-            		);
-
-            start = new GaussianMixtureModels(pi.length, pi, means, sigmas);
-            start.precompute(0, 1439, 1440);
-            break;
-
-          default:
-            System.out.println("Non existing start time distribution type");
-          }
-
-          System.out.println("Start Time Distribution");
-          start.status();
-
-          /* ==========Duration Distribution========== */
-
-          distribution = (String) jsonScenario.get(
-        		  activities.get(j) + 
-        		  ".duration.distribution." + 
-        				  type);
-        		  
-          switch (distribution) {
-          case ("normal"):
-
-            mu = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".duration.mu." + 
-            				type);
-
-            sigma = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".duration.sigma." + 
-            				type);
-
-            duration = new Gaussian(mu, sigma);
-            duration.precompute(0, 1439, 1440);
-            break;
-
-          case ("uniform"):
-            from = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".duration.start." + 
-            				type);
-
-            to = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".duration.end." + 
-            				type);
-
-            duration = new Uniform(from, to);
-            duration.precompute(from, to, (int) to + 1);
-            break;
-
-          case ("mixture"):
-            means = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".duration.means." + 
-            				type)
-            		);
-
-            sigmas = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".duration.sigmas." + 
-            				type)
-            		);
-
-            pi = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".duration.pi." + 
-            				type)
-            		);
-
-            duration = new GaussianMixtureModels(pi.length, pi, means, sigmas);
-            duration.precompute(0, 1439, 1440);
-            break;
-
-          default:
-            System.out.println("Non existing duration distribution type");
-          }
-
-          System.out.println("Duration Distribution");
-          duration.status();
-
-          /* ==========Weekday Times Distribution========== */
-
-          distribution = (String) jsonScenario.get(
-        		  activities.get(j) + 
-        		  ".weekday.distribution." + 
-        				  type);
-
-          switch (distribution) {
-          case ("normal"):
-
-            mu = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekday.mu." + 
-            				type);
-
-            sigma = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekday.sigma." + 
-            				type);
-
-            weekday = new Gaussian(mu, sigma);
-            weekday.precompute(0, 1439, 1440);
-
-            break;
-          case ("uniform"):
-            from = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekday.start." + 
-            				type);
-
-            to = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekday.end." + 
-            				type);
-
-            weekday = new Uniform(from, to);
-            weekday.precompute(from, to, (int) to + 1);
-            break;
-
-          case ("mixture"):
-            means = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekday.means." + 
-            				type)
-            		);
-
-            sigmas = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekday.sigmas." + 
-            				type)
-            		);
-
-            pi = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekday.pi." + 
-            				type)
-            		);
-
-            weekday = new GaussianMixtureModels(pi.length, pi, means, sigmas);
-            weekday.precompute(0, 1439, 1440);
-            break;
-
-          default:
-            System.out.println("Non existing duration distribution type");
-          }
-
-          System.out.println("Weekday Distribution");
-          weekday.status();
-
-          /* ==========Weekend Times Distribution========== */
-
-          distribution = (String) jsonScenario.get(
-        		  activities.get(j) + 
-        		  ".weekend.distribution." + 
-        				  type);
-
-          switch (distribution) {
-          case ("normal"):
-
-            mu = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekend.mu." + 
-            				type);
-
-            sigma = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekend.sigma." + 
-            				type);
-
-            weekend = new Gaussian(mu, sigma);
-            weekend.precompute(0, 1439, 1440);
-            break;
-          case ("uniform"):
-            from = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekend.start." + 
-            				type);
-
-            to = (Double)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekend.end." + 
-            				type);
-
-            weekend = new Uniform(from, to);
-            weekend.precompute(from, to, (int) to + 1);
-            break;
-
-          case ("mixture"):
-            means = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekend.means." + 
-            				type)
-            		);
-
-            sigmas = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekend.sigmas." + 
-            				type)
-            		);
-
-            pi = Utils.dblist2doubleArr((BasicDBList)jsonScenario.get(
-            		activities.get(j) + 
-            		".weekend.pi." + 
-            				type)
-            		);
-
-            weekend = new GaussianMixtureModels(pi.length, pi, means, sigmas);
-            weekend.precompute(0, 1439, 1440);
-            break;
-
-          default:
-            System.out.println("Non existing duration distribution type");
-          }
-
-          System.out.println("Weekend Distribution");
-          weekend.status();
-
-          
-          String activity = (String)activities.get(j);
-          
-          Activity act =
-            new Activity.Builder(activity, "Typical " + activity
-                                                + " Activity", activity,
-                                 start, duration, simulationWorld)
-                    .times("weekday", weekday).times("weekend", weekend)
-                    .build();
-          for (Appliance e: existing) {
-            act.addAppliance(e, 1.0 / existing.size());
-          }
-          person.addActivity(act);
-        }
-      }
-    }
     logger.info("Simulation setup finished.");
   }
 
-  public void staticSetup (DBObject jsonScenario)
-  {
-//    // Initialize simulation variables
-//    String[] namesOfInstallations =
-//      FileUtils.getStringArray(Params.SIM_PROPS, "installations");
-//    int numOfInstallations = namesOfInstallations.length;
-//    queue = new PriorityBlockingQueue<Event>(2 * numOfInstallations);
-//    for (int i = 0; i < numOfInstallations; i++) {
-//      // Make the installation
-//      Installation inst =
-//        new Installation.Builder(i, i + "").registry(new Registry(i + "",
-//                                                                  endTick))
-//                .build();
-//      // Create the appliances
-//      String[] instApps =
-//        FileUtils.getStringArray(Params.DEMOG_PROPS, namesOfInstallations[i]);
-//      for (int j = 0; j < instApps.length; j++) {
-//        Appliance app = new Appliance.Builder(instApps[j], inst).build();
-//        inst.addAppliance(app);
-//        logger.trace(i + " " + instApps[j]);
-//      }
-//      installations.add(inst);
-//    }
+  	public void staticSetup (DBObject jsonScenario) {
+	    int numOfInstallations = ((Integer)jsonScenario.get("instcount")).intValue();
+	    queue = new PriorityBlockingQueue<Event>(2 * numOfInstallations);
+	    for (int i = 1; i <= numOfInstallations; i++) {
+	    	DBObject instDoc = (DBObject)jsonScenario.get("inst"+i);
+	    	String id = ((ObjectId)instDoc.get("_id")).toString();
+	    	System.out.println(id);
+	    	String name = (String)instDoc.get("name");
+	    	String description = (String)instDoc.get("description");
+	    	String type = (String)instDoc.get("type");
+	    	Installation inst = new Installation.Builder(
+	    			id, name, description, type).build();
+	    	int appcount = ((Integer)instDoc.get("appcount")).intValue();
+	    	// Create the appliances
+	    	for (int j = 1; j <= appcount; j++) {
+	    		DBObject applianceDoc = (DBObject)instDoc.get("app"+j);
+	    		String appid = ((ObjectId)applianceDoc.get("_id")).toString();
+	    		String appname = (String)applianceDoc.get("name");
+		    	String appdescription = (String)applianceDoc.get("description");
+		    	String apptype = (String)applianceDoc.get("type");
+		    	double standy = ((Double)applianceDoc.get("standy_consumption")).doubleValue();
+		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
+		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
+		    	String consmod = ((String)consModDoc.get("model"));
+	    		Appliance app = new Appliance.Builder(
+	    				appid,
+	    				appname,
+	    				appdescription,
+	    				apptype, 
+	    				inst,
+	    				consmod,
+	    				standy,
+	            		base).build();
+	    		inst.addAppliance(app);
+	    	}
+	    	DBObject personDoc = (DBObject)instDoc.get("person");
+	    	String personid = ((ObjectId)personDoc.get("_id")).toString();
+    		String personName = (String)personDoc.get("name");
+	    	String personDescription = (String)personDoc.get("description");
+	    	String personType = (String)personDoc.get("type");
+	    	Person person = new Person.Builder(
+	    	        		  personid,
+	    	        		  personName, 
+	    	        		  personDescription,
+	    	                  personType, inst).build();
+	    	inst.addPerson(person);
+	    	int actcount = ((Integer)instDoc.get("activitycount")).intValue();
+	    	for (int j = 1; j <= actcount; j++) {
+	    		DBObject activityDoc = (DBObject)instDoc.get("act"+j);
+	    		String activityName = (String)activityDoc.get("name");
+	    		String activityType = (String)activityDoc.get("type");
+	    		int actmodcount = ((Integer)instDoc.get("actmodcount")).intValue();
+	    		ProbabilityDistribution startDist;
+	    		ProbabilityDistribution durDist;
+	    		ProbabilityDistribution workingDist;
+	    		ProbabilityDistribution nonWorkingDist;
+	    		for (int k = 1; k <= actmodcount; k++) {
+	    			DBObject actmodDoc = (DBObject)activityDoc.get("actmod"+k);
+	    			String actmodName = (String)actmodDoc.get("name");
+	    			String actmodType = (String)actmodDoc.get("type");
+	    			String actmodDayType = (String)actmodDoc.get("day_type");
+	    			DBObject duration = (DBObject)actmodDoc.get("duration");
+	    			DBObject start = (DBObject)actmodDoc.get("start");
+	    			DBObject rep = (DBObject)actmodDoc.get("rep");
+	    		}
+//	    		 Activity act =
+//	    	              new Activity.Builder(
+//	    	            		  activity, 
+//	    	            		  "Typical " + activity + " Activity", 
+//	    	            		  activity,
+//	    	            		  json2dist(start), 
+//	    	            		  json2dist(duration), 
+//	    	            		  simulationWorld)
+//	    	                      .times("weekday", json2dist)
+//	    	                      .times("weekend", weekend)
+//	    	                      .build();
+	    	}
+	    	installations.add(inst);
+	    }
   }
+  	
+  	public static ProbabilityDistribution json2dist(DBObject distribution) {
+  		String distType = (String)distribution.get("distrType");
+  		switch (distType) {
+  		case ("normal"):
+  			BasicDBList normalList = (BasicDBList)distribution.get("parameters");
+  			DBObject normalDoc = (DBObject)normalList.get(0);
+  			double mean = ((Double)normalDoc.get("mean")).doubleValue();
+  			double std = ((Double)normalDoc.get("std")).doubleValue();
+  			Gaussian normal = new Gaussian(mean, std);
+  			normal.precompute(0, 1439, 1440);
+  			return normal;
+         case ("uniform"):
+   			BasicDBList unifList = (BasicDBList)distribution.get("parameters");
+   			DBObject unifDoc = (DBObject)unifList.get(0);
+   			double from = ((Double)unifDoc.get("from")).doubleValue();
+   			double to = ((Double)unifDoc.get("to")).doubleValue();
+   			Uniform uniform = new Uniform(from, to);
+   			uniform.precompute(from, to, (int) to + 1);
+   			return uniform;
+   		case ("mixture"):
+        	 BasicDBList mixList = (BasicDBList)distribution.get("parameters");
+   			int length = mixList.size();
+   			double[] w = new double[length];
+         	double[] means = new double[length];
+         	double[] stds = new double[length];
+         	for(int i = 0; i < mixList.size(); i++) {
+         		DBObject tuple = (DBObject)mixList.get(i);
+         		w[i] = ((Double)tuple.get("w")).doubleValue();
+         		means[i] = ((Double)tuple.get("mean")).doubleValue();
+         		stds[i] = ((Double)tuple.get("std")).doubleValue();
+    		} 
+         	GaussianMixtureModels gmm = new GaussianMixtureModels(length, w, means, stds);
+         	gmm.precompute(0, 1439, 1440);
+         	return gmm;
+         default:
+           System.out.println("Non existing start time distribution type");
+         }
+		return null;
+  	}
 
   public void dynamicSetup (DBObject jsonScenario)
   {
@@ -523,7 +621,7 @@ public class Simulation implements Runnable
     for (int i = 0; i < numOfInstallations; i++) {
       // Make the installation
       Installation inst =
-        new Installation.Builder(i, "Generic Installation", "Generic", i + "").build();
+        new Installation.Builder(i+"", "Generic Installation", "Generic", i + "").build();
       // Create the appliances
       for (int j = 0; j < appliances.size(); j++) {
         double dice = RNG.nextDouble();
@@ -533,13 +631,12 @@ public class Simulation implements Runnable
         double standby = (Double)jsonScenario.get(appliance + ".stand-by");
         boolean base = (Boolean)jsonScenario.get(appliance + ".base");
         if (dice < ownershipPerc[j]) {
-          Appliance app = new Appliance.Builder(
+          Appliance app = new Appliance.Builder("id",
         		  appliance, 
         		  "A Typical " + appliance,
         		  appliance, 
         		  inst,
-        		  power,
-          		  period,
+        		  "",
           		  standby,
           		  base).build();
           inst.addAppliance(app);

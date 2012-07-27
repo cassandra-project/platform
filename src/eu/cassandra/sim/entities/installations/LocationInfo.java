@@ -22,14 +22,14 @@ public class LocationInfo
 
   static Logger logger = Logger.getLogger(LocationInfo.class);
 
-  private final int id;
+  private final String id;
   private final String name;
   private GeoLocation location;
 
   public static class Builder
   {
     // Required variables
-    private final int id;
+    private final String id;
     private final String name;
     // Optional or state related variables
     private GeoLocation location = null;
@@ -60,9 +60,9 @@ public class LocationInfo
     location = builder.location;
   }
 
-  public int getId ()
+  public String getId ()
   {
-    return this.id;
+    return id;
   }
 
   public String getName ()

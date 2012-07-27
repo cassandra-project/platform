@@ -18,6 +18,15 @@
             "description": "Description of the Scenario",
             "optional": true
         },
+        "setup": {
+            "type": "string",
+            "description": "Check whether the scenario will be instantiated via a static or dynamic way",
+            "optional": false,
+            "enum": [
+                "static",
+                "dynamic"
+            ]
+        },
         "editable": {
             "type": "boolean",
             "description": "When Scenario is not editable, then its a locked Run",
