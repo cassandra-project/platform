@@ -1,0 +1,15 @@
+   Cassandra Platform
+   Copyright 2011-2012 The Cassandra Consortium
+
+   This product includes software developed by
+   The Cassandra Consortium (http://www.cassandra-fp7.eu/) under the 
+   support of the 7th Framework Programme
+
+   Uses
+   java
+   mongo
+   vahlasJsonValidation
+   jersey
+   jackson
+    
+
