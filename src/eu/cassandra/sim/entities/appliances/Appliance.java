@@ -15,6 +15,7 @@
 */
 package eu.cassandra.sim.entities.appliances;
 
+import eu.cassandra.sim.entities.appliances.ConsumptionModel.Tripplet;
 import eu.cassandra.sim.entities.installations.Installation;
 import eu.cassandra.sim.utilities.Constants;
 import eu.cassandra.sim.utilities.RNG;
@@ -32,10 +33,10 @@ public class Appliance {
 	private final String description;
 	private final String type;
     private final String name;
-	private final Installation installation;
-	private final String consumption;
+	private final ConsumptionModel cm;
 	private final double standByConsumption;
 	private final boolean base;
+	private final Installation installation;
 	
 	private boolean inUse;
 	private long onTick;
@@ -48,7 +49,7 @@ public class Appliance {
 		private final String type;
 	    private final String name;
 		private final Installation installation;
-		private final String consumption;
+		private final ConsumptionModel cm;
 		private final double standByConsumption;
 		private final boolean base;
 		// Optional or state related variables
@@ -60,7 +61,7 @@ public class Appliance {
 				String adesc, 
 				String atype,
 				Installation ainstallation, 
-				String aconsumption, 
+				ConsumptionModel acm, 
 				double astandy, 
 				boolean abase) {
 			id = aid;
@@ -68,7 +69,7 @@ public class Appliance {
 			description = adesc;
 			type = atype;		
 			installation = ainstallation;
-			consumption = aconsumption;
+			cm = acm;
 			standByConsumption = astandy;
 			base = abase;
 		}
@@ -84,7 +85,7 @@ public class Appliance {
 		type = builder.type;
 		installation = builder.installation;
 		standByConsumption = builder.standByConsumption;
-		consumption = builder.consumption;
+		cm = builder.cm;
 		base = builder.base;
 		inUse = (base) ? true : false;
 		onTick = (base) ? -RNG.nextInt(Constants.MIN_IN_DAY) : builder.onTick;
@@ -110,22 +111,41 @@ public class Appliance {
 	public double getPower(long tick) {
 		double power = 0;
 		// TODO
-//		if(isInUse()) {
-//			long relativeTick = Math.abs(tick - onTick);
-//			long tickInCycle = relativeTick % totalCycleTime;
-//			int ticks = 0;
-//			int periodIndex = 0;
-//			for(int i = 0; i < periods.length; i++) {
-//				ticks += periods[i];
-//				if(tickInCycle < ticks) {
-//					periodIndex = i;
-//					break;
-//				}
-//			}
-//			power = consumption[periodIndex];
-//		} else {
-//			power = standByConsumption;
-//		}
+		if(isInUse()) {
+			long relativeTick = Math.abs(tick - onTick);
+			// If the device has a limited operational duration
+			long divTick = relativeTick / cm.getTotalDuration();
+			if(divTick >= cm.getOuterN() && cm.getOuterN() > 0) {
+				power = 0;
+			} else {
+				int sum = 0;
+				long moduloTick = relativeTick % cm.getTotalDuration();
+				int index1 = -1;
+				for(int i = 0; i < cm.getPatternN(); i++) {
+					sum += (cm.getN(i) * cm.getPatternDuration(i));
+					long whichPattern = moduloTick / sum;
+					if(whichPattern == 0) {
+						index1 = i;
+						break;
+					}
+				}
+				sum = 0;
+				long moduloTick2 = moduloTick % cm.getPatternDuration(index1);
+				int index2 = -1;
+				for(int j = 0; j < cm.getPattern(index1).size(); j++) {
+					sum += ((Tripplet)cm.getPattern(index1).get(j)).d;
+					long whichPattern = moduloTick2 / sum;
+					if(whichPattern == 0) {
+						index2 = j;
+						break;
+					}
+				}
+				relativeTick++;		
+				power = ((Tripplet)cm.getPattern(index1).get(index2)).p; 
+			}
+		} else {
+			power = standByConsumption;
+		}
 		return power;
 	}
 
@@ -151,34 +171,22 @@ public class Appliance {
 	}
 	
 	public static void main(String[] args) {
-		// TODO
-//		double[] power = {1f,1f};
-//		int[] period = {1, 1};
-//		Appliance fridge = new Appliance.Builder("id1",
-//				"refrigerator", 
-//				"A new refrigerator", 
-//				"FridgeA", 
-//				null, 
-//				power, 
-//				period,
-//				1f,
-//				true).build();
-//		System.out.println(fridge.getId());
-//		System.out.println(fridge.getName());
-//		Appliance freezer = new Appliance.Builder("id2",
-//				"freezer", 
-//				"A new freezer", 
-//				"FreezerA", 
-//				null,
-//				power,
-//				period,
-//				2f,
-//				true).build();
-//		System.out.println(freezer.getId());
-//		System.out.println(freezer.getName());
-//		for(int i = 0; i < 100; i++) {
-//			System.out.println(freezer.getPower(i));
-//		}
+		// TODO [TEST] check the getPower method
+		RNG.init();
+		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
+		Appliance freezer = new Appliance.Builder("id2",
+				"freezer", 
+				"A new freezer", 
+				"FreezerA", 
+				null,
+				new ConsumptionModel(s),
+				2f,
+				true).build();
+		System.out.println(freezer.getId());
+		System.out.println(freezer.getName());
+		for(int i = 0; i < 200; i++) {
+			System.out.println(freezer.getPower(i));
+		}
 	}
 	
 }

@@ -16,10 +16,7 @@
 
 package eu.cassandra.sim;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * The Simulation class can simulate up to 4085 years of simulation.
