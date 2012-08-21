@@ -522,7 +522,7 @@ public class MongoDBQueries {
 			String refKeyName, boolean canBeNull) 
 					throws MongoRefNotFoundException {
 		String refKey = (String)data.get(refKeyName);
-		if(canBeNull && refKey == null)
+		if(canBeNull && ((refKey == null)||(refKey.length()==0)))
 			return null;
 		DBObject obj = getEntity(refColl, refKey);
 		if(obj == null)
