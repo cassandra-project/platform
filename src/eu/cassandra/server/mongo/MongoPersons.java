@@ -37,15 +37,15 @@ public class MongoPersons {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getPersons(String pers_id) {
-		if(pers_id == null) {
+	public String getPersons(String inst_id) {
+		if(inst_id == null) {
 			return new MongoDBQueries().createJSONError(
 					"Only the Persons of a particular Installation can be retrieved", 
-					new RestQueryParamMissingException("pers_id QueryParam is missing")).toString();
+					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(COL_PERSONS,"pers_id", 
-					pers_id, "Persons retrieved successfully").toString();
+			return new MongoDBQueries().getEntity(COL_PERSONS,"inst_id", 
+					inst_id, "Persons retrieved successfully").toString();
 		}
 	}
 
