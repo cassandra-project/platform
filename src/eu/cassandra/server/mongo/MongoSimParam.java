@@ -22,7 +22,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoSimParam {
 	
-	public final static String KEYNAME_SIMPARAM = "sim_param";
+	public final static String COL_SIMPARAM = "sim_param";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/smp?scn_id=4ff1a8e2e4b0ed82920aa45b
@@ -37,9 +37,8 @@ public class MongoSimParam {
 					new RestQueryParamMissingException("scn_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(MongoScenarios.COL_SCENARIOS ,"_id", 
-					scn_id, "Simulation Parameters retrieved successfully", 
-					new String[]{KEYNAME_SIMPARAM}).toString();
+			return new MongoDBQueries().getEntity(MongoSimParam.COL_SIMPARAM ,"scn_id", 
+					scn_id, "Simulation Parameters retrieved successfully").toString();
 		}
 	}
 
@@ -49,10 +48,9 @@ public class MongoSimParam {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getSimParam(String smp_id) {
-		return new MongoDBQueries().getEntity(MongoScenarios.COL_SCENARIOS,"sim_param.cid", 
-				smp_id, "Simulation Parameter retrieved successfully",
-				new String[]{KEYNAME_SIMPARAM}).toString();
+	public String getSimParam(String id) {
+		return new MongoDBQueries().getEntity(MongoSimParam.COL_SIMPARAM,"_id", 
+				id, "Simulation Parameter retrieved successfully").toString();
 	}
 
 	/**
@@ -62,8 +60,11 @@ public class MongoSimParam {
 	 * @return
 	 */
 	public String createSimParam(String dataToInsert) {
-		return  new MongoDBQueries().insertNestedDocument(dataToInsert, 
-				MongoScenarios.COL_SCENARIOS, "scn_id",JSONValidator.SIMPARAM_SCHEMA).toString();
+		return new MongoDBQueries().insertData(COL_SIMPARAM ,dataToInsert,
+				"Simulation parameters created successfully", 
+				MongoScenarios.COL_SCENARIOS,
+				"scn_id",
+				JSONValidator.SIMPARAM_SCHEMA).toString();
 	}
 
 	/**
@@ -73,9 +74,8 @@ public class MongoSimParam {
 	 * @param cid
 	 * @return
 	 */
-	public String deleteSimParam(String cid) {
-		return new MongoDBQueries().deleteDocumentField(MongoScenarios.COL_SCENARIOS,
-				KEYNAME_SIMPARAM, cid).toString();
+	public String deleteSimParam(String id) {
+		return new MongoDBQueries().deleteDocument(COL_SIMPARAM, id).toString();
 	}
 
 	/**
@@ -85,10 +85,9 @@ public class MongoSimParam {
 	 * @param jsonToUpdate
 	 * @return
 	 */
-	public String updateSimParam(String cid,String jsonToUpdate) {
-		return new MongoDBQueries().updateDocument(KEYNAME_SIMPARAM + ".cid", cid,jsonToUpdate,
-				MongoScenarios.COL_SCENARIOS, "Simulation Parameters updated successfully",
-				MongoScenarios.COL_SCENARIOS, "scn_id", KEYNAME_SIMPARAM,
-				JSONValidator.SIMPARAM_SCHEMA).toString();
+	public String updateSimParam(String id,String jsonToUpdate) {
+		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
+				COL_SIMPARAM, "Simulation Parameters updated successfully",
+				MongoScenarios.COL_SCENARIOS ,"scenario_id",JSONValidator.SIMPARAM_SCHEMA).toString();
 	}
 }

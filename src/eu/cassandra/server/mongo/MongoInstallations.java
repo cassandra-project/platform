@@ -77,7 +77,6 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String deleteInstallation(String id) {
-		System.out.println("DELETE:" + id);
 		return new MongoDBQueries().deleteDocument(COL_INSTALLATIONS, id).toString();
 	}
 
@@ -89,7 +88,6 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String updateInstallation(String id,String jsonToUpdate) {
-		System.out.println("UPDATE s:" +id);
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_INSTALLATIONS, "Installations updated successfully",
 				MongoScenarios.COL_SCENARIOS ,"scenario_id",JSONValidator.INSTALLATION_SCHEMA).toString();
