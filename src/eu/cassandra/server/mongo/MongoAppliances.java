@@ -13,12 +13,18 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.server.mongo;
+
+import java.util.Vector;
+
+
+import com.mongodb.DBObject;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 public class MongoAppliances {
 
@@ -50,6 +56,35 @@ public class MongoAppliances {
 		else {
 			return new MongoDBQueries().getEntity(COL_APPLIANCES,"inst_id", 
 					inst_id, "Appliances retrieved successfully").toString();
+		}
+	}
+
+	/**
+	 * curl -i http://localhost:8080/cassandra/api/app?actmod_id=5040bca5e4b03aeba2cd907
+	 * 
+	 * @param actmod_id
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public String getApplianceFromActivityModel(String actmod_id) {
+		DBObject o =  new MongoDBQueries().getEntity(MongoActivityModels.COL_ACTMODELS,"_id", actmod_id, "Activity Model retrieved successfully");
+		Vector<DBObject> appliances = new Vector<DBObject>();
+		Vector<DBObject> dataVec = (Vector<DBObject>)o.get("data");
+		if(dataVec != null && dataVec.size() > 0) {
+			DBObject data = dataVec.get(0);
+			com.mongodb.BasicDBList apps = (com.mongodb.BasicDBList)data.get("containsAppliances");
+			for(int i=0;i<apps.size();i++) {
+				String appID = apps.get(i).toString();
+				DBObject appObj = new MongoDBQueries().getEntity(COL_APPLIANCES,"_id", appID, "Appliance retrieved successfully");
+				Vector<DBObject> appIn = (Vector<DBObject>)appObj.get("data");
+				if(appIn != null && appIn.size() > 0) {
+					appliances.add(appIn.get(0));
+				}
+			}
+			return new MongoDBQueries().createJSON(appliances, "Appliance Retrieved from activity Model").toString();
+		}
+		else {
+			return PrettyJSONPrinter.prettyPrint(o.toString());
 		}
 	}
 
