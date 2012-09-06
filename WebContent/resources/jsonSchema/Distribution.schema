@@ -3,7 +3,11 @@
     "type": "object",
     "description": "The distribution of a possiblility model",
     "properties": {
-        "name": {
+        "actmod_id": {
+            "type": "string",
+            "description": "The ObjectId of the ActivityModel this Distribution belongs",
+            "optional": false
+        },"name": {
             "type": "string",
             "description": "Name of the Distribution",
             "optional": true
