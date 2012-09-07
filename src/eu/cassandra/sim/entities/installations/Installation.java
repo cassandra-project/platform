@@ -83,6 +83,7 @@ public class Installation {
     
     public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue) {
     	for(Person person : getPersons()) {
+    		System.out.println(person.getName());
     		person.updateDailySchedule(tick, queue);
 		}
     }

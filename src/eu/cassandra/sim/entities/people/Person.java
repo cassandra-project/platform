@@ -67,18 +67,17 @@ public class Person
     activities = builder.activities;
   }
 
-  public void addActivity (Activity a)
-  {
-    activities.add(a);
-  }
-
-  public void
-    updateDailySchedule (int tick, PriorityBlockingQueue<Event> queue)
-  {
-    for (Activity activity: activities) {
-      activity.updateDailySchedule(tick, queue);
+  	public void addActivity(Activity a) {
+  		System.out.println(a.getName());
+  		activities.add(a);
+  	}
+  
+    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue) {
+    	for(Activity activity: activities) {
+    		System.out.println(activity.getName());
+    		activity.updateDailySchedule(tick, queue);
+    	}
     }
-  }
 
   public String getId ()
   {
