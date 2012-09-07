@@ -1,0 +1,9 @@
+{
+  "name": "refridgerator",
+  "standy_consumption": 0.0,
+  "controllable": false,
+  "shiftable": false,
+  "base": true,
+  "type": "fridge",
+  "inst_id": "5045e189e4b058c3f86c32e1"
+}

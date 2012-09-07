@@ -132,6 +132,7 @@ public class Runs {
 				while(activityModels.hasNext()) {
 					countActMod++;
 					DBObject activityModel = activityModels.next();
+					System.out.println(activityModel + " ");
 					// Duration distribution
 					String dur_id = activityModel.get("duration").toString();
 					query = new BasicDBObject();
@@ -187,8 +188,8 @@ public class Runs {
 			e.printStackTrace();
 			return "Sim creation failed";
 		}
-//		ExecutorService executor = (ExecutorService )context.getAttribute("MY_EXECUTOR");
-//		executor.submit(sim);
+		ExecutorService executor = (ExecutorService )context.getAttribute("MY_EXECUTOR");
+		executor.submit(sim);
 		return "Simulation Submitted\n";
 //		return PrettyJSONPrinter.prettyPrint(new MongoRuns().createRun(message));
 	}
