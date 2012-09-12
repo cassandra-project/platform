@@ -22,7 +22,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoDemographics {
 
-	protected final static String COL_DEMOGRAPHICS = "demographics";
+	public final static String COL_DEMOGRAPHICS = "demographics";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/demog/4ff1d9d4e4b0ddb832a310bc
