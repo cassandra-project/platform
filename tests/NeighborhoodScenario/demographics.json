@@ -1,0 +1,38 @@
+{
+    "name" : "Neighborhood Demographics",
+    "description" : "Small demographics file for 10 houses",
+    "type" : "apps",
+    "scn_id" : "5045dc26e4b058c3f86c32df",
+    "numberOfEntities" : 10,
+    "generators" : [
+        {
+            "entity_id" : "5045e1aee4b058c3f86c32e2",
+            "probability" : 0.5
+        },
+        {
+            "entity_id" : "5045e1c6e4b058c3f86c32e3",
+            "probability" : 0.8
+        },
+        {
+            "entity_id" : "5045e212e4b058c3f86c32e4",
+            "probability" : 0.4
+        },
+        {
+            "entity_id" : "5045e21ee4b058c3f86c32e5",
+            "probability" : 0.3
+        },
+        {
+            "entity_id" : "5045e22ce4b058c3f86c32e6",
+            "probability" : 0.95
+        },
+        {
+            "entity_id" : "5045e4e2e4b058c3f86c32ec",
+            "probability" : 0.6
+        },
+        {
+            "entity_id" : "5045e4f6e4b058c3f86c32ed",
+            "probability" : 0.4
+        }
+    ]
+    
+}
