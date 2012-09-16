@@ -6,7 +6,7 @@
         "inst_id": {
             "type": "string",
             "description": "The ObjectId of the Installation this Appliance belongs",
-            "optional": false
+            "optional": true
         },
         "name": {
             "type": "string",
@@ -36,6 +36,11 @@
         "controllable": {
             "type": "boolean",
             "description": "The ability to control the appliance",
+            "optional": true
+        },
+        "base": {
+            "type": "boolean",
+            "description": "Whether the appliance is a base load or not",
             "optional": true
         },
         "shiftable": {

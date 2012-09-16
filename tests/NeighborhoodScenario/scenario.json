@@ -1,0 +1,7 @@
+{
+    "name" : "Baseline scenario",
+    "description" : "A small scale dynamic scenario",
+    "project_id" : "5045db20e4b058c3f86c32de",
+    "setup" : "dynamic",
+    "editable" : true
+}

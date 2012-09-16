@@ -1,3 +1,19 @@
+/*   
+   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package eu.cassandra.server.mongo.util;
 
 import java.util.Vector;
@@ -7,6 +23,8 @@ import org.bson.types.ObjectId;
 
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
+import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.MongoResults;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -15,6 +33,10 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 public class MongoDBQueries {
+
+	public final static int ACTIVE_POWER_P = 0;
+	public final static int REACTIVE_POWER_Q = 1;
+
 
 	/**
 	 * 
@@ -499,7 +521,7 @@ public class MongoDBQueries {
 			String refKeyName, boolean canBeNull) 
 					throws MongoRefNotFoundException {
 		String refKey = (String)data.get(refKeyName);
-		if(canBeNull && refKey == null)
+		if(canBeNull && ((refKey == null)||(refKey.length()==0)))
 			return null;
 		DBObject obj = getEntity(refColl, refKey);
 		if(obj == null)
@@ -599,6 +621,87 @@ public class MongoDBQueries {
 					" with cid=" + cid + "failed",e);
 		}
 		return createJSONRemovePostMessage(coll + "." + fieldName + ".cid",cid,deletedField) ;
+	}
+
+	/**
+	 * curl -i 'http://localhost:8080/cassandra/api/results?inst_id=instID_&aggr_unit=3&metric=1&from=3&to=100'
+	 * 
+	 * @param installationId
+	 * @param metric
+	 * @param aggregationUnit
+	 * @param fromTick
+	 * @param toTick
+	 * @return
+	 */
+	public DBObject mongoResultQuery(String runId, String installationId, String metricS, String aggregationUnitS, String fromTickS, String toTickS) {
+		try {
+			if(runId != null && installationId != null)
+				throw new RestQueryParamMissingException(
+						"Either run_id or installation_id should be null");
+			else if(runId == null && installationId == null)
+				throw new RestQueryParamMissingException(
+						"Both run_id and installation_id are null");
+			
+			Integer aggregationUnit = null;
+			if(aggregationUnitS != null)
+				aggregationUnit = Integer.parseInt(aggregationUnitS);
+			Integer metric = null;
+			if(metricS != null)
+				metric = Integer.parseInt(metricS);
+			Integer fromTick = null;
+			if(fromTickS != null)
+				fromTick = Integer.parseInt(fromTickS);
+			Integer toTick = null;
+			if(toTickS != null)
+				toTick = Integer.parseInt(toTickS);
+			String coll = MongoResults.COL_AGGRRESULTS;
+			if(aggregationUnit == null || aggregationUnit <= 0)
+				aggregationUnit = 1;
+			if(installationId != null)
+				coll = MongoResults.COL_INSTRESULTS;
+
+			String yMetric = "p";
+			if(metric != null && metric == REACTIVE_POWER_Q)
+				yMetric = "q";
+			//db.inst_results.find({inst_id:"dszfs123",tick:{$gt:1}}).sort({tick:1}).pretty()
+			//db.inst_results.group(
+			//	{
+			//	 keyf:function(doc)
+			//		{var key=new NumberInt(doc.tick/4); return {x:key}
+			//		} , 
+			//	 cond:{inst_id:"instID_"}, 
+			//	 reduce:function(obj,prev)
+			//		{prev.csum+=obj.p},
+			//	 initial:{csum:0}
+			//	}
+			//)
+			BasicDBObject condition = null; 
+			if(installationId != null || fromTick != null || toTick != null)
+				condition =	new BasicDBObject();
+			if(runId != null)
+				condition.append("run_id",runId);
+			if(installationId != null)
+				condition.append("inst_id",installationId);
+			if(fromTick != null)
+				condition.append("tick",new BasicDBObject("$gte",fromTick));
+			if(toTick != null)
+				condition.append("tick",new BasicDBObject("$lte",toTick));
+
+			BasicDBObject groupCmd = new BasicDBObject("ns",coll);
+			groupCmd.append("$keyf", "function(doc){var key=new NumberInt(doc.tick/" + aggregationUnit + "); return {x:key}}");
+			if(condition != null)
+				groupCmd.append("cond", condition); 
+			groupCmd.append("$reduce", "function(obj,prev){prev.y+=obj." + yMetric + "}");
+			groupCmd.append("initial",  new BasicDBObject("y",0));
+			@SuppressWarnings("deprecation")
+			BasicDBList dbList = (BasicDBList)DBConn.getConn().getCollection(coll).group(groupCmd);
+			return createJSONPlot(dbList, "Data for plot retrieved successfully", 
+					"title", "xAxisLabel", "yAxisLabel"); 
+
+		}catch(Exception e) {
+			e.printStackTrace();
+			return createJSONError("Error in retrieving results", e.getMessage());
+		}
 	}
 
 	/**
@@ -706,6 +809,20 @@ public class MongoDBQueries {
 		DBObject successMessage = new BasicDBObject();
 		successMessage.put("success", true);
 		successMessage.put("message", descr);
+		successMessage.put("size", dbObjects.size());
+		successMessage.put("data", dbObjects);
+		return successMessage;
+	}
+
+
+	public DBObject createJSONPlot(BasicDBList dbObjects, String descr, 
+			String title, String xAxisLabel, String yAxisLabel) {
+		DBObject successMessage = new BasicDBObject();
+		successMessage.put("success", true);
+		successMessage.put("message", descr);
+		successMessage.put("title", title);
+		successMessage.put("xAxisLabel", xAxisLabel);
+		successMessage.put("yAxisLabel", yAxisLabel);
 		successMessage.put("size", dbObjects.size());
 		successMessage.put("data", dbObjects);
 		return successMessage;

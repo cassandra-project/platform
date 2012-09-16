@@ -1,3 +1,19 @@
+/*   
+   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
@@ -5,7 +21,7 @@ import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoPersons {
-	protected final static String COL_PERSONS = "persons";
+	public final static String COL_PERSONS = "persons";
 
 	/**
 	 * 
@@ -21,15 +37,15 @@ public class MongoPersons {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getPersons(String pers_id) {
-		if(pers_id == null) {
+	public String getPersons(String inst_id) {
+		if(inst_id == null) {
 			return new MongoDBQueries().createJSONError(
 					"Only the Persons of a particular Installation can be retrieved", 
-					new RestQueryParamMissingException("pers_id QueryParam is missing")).toString();
+					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(COL_PERSONS,"pers_id", 
-					pers_id, "Persons retrieved successfully").toString();
+			return new MongoDBQueries().getEntity(COL_PERSONS,"inst_id", 
+					inst_id, "Persons retrieved successfully").toString();
 		}
 	}
 

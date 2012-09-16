@@ -1,5 +1,20 @@
-package eu.cassandra.server.mongo;
+/*   
+   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
 
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
@@ -7,7 +22,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoInstallations {
 
-	protected final static String COL_INSTALLATIONS = "installations";
+	public final static String COL_INSTALLATIONS = "installations";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/inst/4ff1ddfde4b0bfe3a2fa6cd9
@@ -62,7 +77,6 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String deleteInstallation(String id) {
-		System.out.println("DELETE:" + id);
 		return new MongoDBQueries().deleteDocument(COL_INSTALLATIONS, id).toString();
 	}
 
@@ -74,7 +88,6 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String updateInstallation(String id,String jsonToUpdate) {
-		System.out.println("UPDATE s:" +id);
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_INSTALLATIONS, "Installations updated successfully",
 				MongoScenarios.COL_SCENARIOS ,"scenario_id",JSONValidator.INSTALLATION_SCHEMA).toString();

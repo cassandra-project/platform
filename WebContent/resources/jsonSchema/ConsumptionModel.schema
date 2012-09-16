@@ -33,6 +33,9 @@
                     "description" : "Number of iterations"
                 },
                 "params" : {
+                    "type" : "array",
+                    "description" : "",
+                    "items" : {
                     "type" : "object",
                     "description" : "",
                     "properties" : {
@@ -48,7 +51,7 @@
                                 "description" : "",
                                 "properties" : {
                                     "p" : {
-                                        "type" : "integer",
+                                        "type" : "number",
                                         "description" : "power"
                                     },
                                     "d" : {
@@ -56,12 +59,13 @@
                                         "description" : "power"
                                     },
                                     "s" : {
-                                        "type" : "integer",
+                                        "type" : "number",
                                         "description" : "power"
                                     }                                                                     
                                 } 
                             }
                         }
+                    }
                     }
                 }
             }

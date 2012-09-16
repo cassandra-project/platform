@@ -5,10 +5,9 @@
     "properties": {
         "actmod_id": {
             "type": "string",
-            "description": "The ObjectId of the Activity Model that this Distribution belongs",
+            "description": "The ObjectId of the ActivityModel this Distribution belongs",
             "optional": false
-        },
-        "name": {
+        },"name": {
             "type": "string",
             "description": "Name of the Distribution",
             "optional": true
