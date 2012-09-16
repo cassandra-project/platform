@@ -1,0 +1,66 @@
+{
+    "name": "Activity Model",
+    "type": "object",
+    "description": "The Activity Model of an Activity",
+    "properties": {
+        "act_id": {
+            "type": "string",
+            "description": "The ObjectId of the Activity this Activity Model belongs",
+            "optional": false
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of the Activity Model",
+            "optional": true
+        },
+        "type": {
+            "type": "string",
+            "description": "Type of the Activity Model",
+            "optional": true
+        },
+        "description": {
+            "type": "string",
+            "description": "Description of the activity model",
+            "optional": true
+        },
+        "containsAppliances": {
+            "type": "array",
+            "description": "The array of ObjectIds for the Appliances contained in the Activity Model",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true,
+            "optional": true
+        },
+        "day_type": {
+            "type": "string",
+            "description": "The day type that this activity model concerns",
+            "optional": true,
+            "enum": [
+                "nonworking",
+                "working"
+            ]
+        },
+        "shiftable": {
+            "type": "boolean",
+            "description": "The ability to shift this activity model",
+            "optional": true
+        },
+        "duration": {
+            "type": "string",
+            "description": "The ObjectId of the duration distribution of the activity model",
+            "optional": true
+        },
+        "startTime": {
+            "type": "string",
+            "description": "The ObjectId of the start time distribution of the activity model",
+            "optional": true
+        },
+        "repeatsNrOfTime": {
+            "type": "string",
+            "description": "The ObjectId of the start time distribution of the activity model",
+            "optional": true
+        }
+    },
+    "additionalProperties" : false
+}

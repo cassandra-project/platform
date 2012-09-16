@@ -1,0 +1,28 @@
+{
+    "name": "Person",
+    "type": "object",
+    "description": "The equivalent Person/Agent for each installation",
+    "properties": {
+        "inst_id": {
+            "type": "string",
+            "description": "The ObjectId of the Installation this Person belongs",
+            "optional": false
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of the person/agent",
+            "optional": true
+        },
+        "type": {
+            "type": "string",
+            "description": "Type of the person/agent",
+            "optional": true
+        },                
+        "description": {
+            "type": "string",
+            "description": "Description of the person/agent",
+            "optional": true
+        }
+    },
+    "additionalProperties" : false
+}

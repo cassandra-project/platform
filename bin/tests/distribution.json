@@ -1,0 +1,20 @@
+{
+    "name" : "Distribution 1",
+    "type" : "Normal Distribution",
+    "description" : "lala2",
+    "distrType" : "distribution type",
+    "values" : [3,4.4],
+    "actmod_id" : "4ff5c44ee4b0d4da260a9a97",
+    "parameters" : [
+        {
+            "w" : 23,
+            "mean" : 23.3,
+            "std" : 44.4
+        },
+                {
+            "w" : 23,
+            "mean" : 23.3,
+            "std" : 44.4
+        }
+    ]
+}

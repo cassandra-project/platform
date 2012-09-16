@@ -1,0 +1,49 @@
+{
+    "name": "Distribution",
+    "type": "object",
+    "description": "The distribution of a possiblility model",
+    "properties": {
+        "actmod_id": {
+            "type": "string",
+            "description": "The ObjectId of the Activity Model that this Distribution belongs",
+            "optional": false
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of the Distribution",
+            "optional": true
+        },
+        "type": {
+            "type": "string",
+            "description": "Type of the Distribution",
+            "optional": true
+        },
+        "description": {
+            "type": "string",
+            "description": "Description of the Distribution",
+            "optional": true
+        },
+        "distrType": {
+            "type": "string",
+            "description": "Distribution Type",
+            "optional": true
+        },
+        "values": {
+            "type": "array",
+            "description": "Values of the distribution",
+            "items": {
+                "type": "number"
+            },
+            "optional" : true
+        },
+        "parameters": {
+            "type": "array",
+            "description": "Distribution parameters",
+            "items": {
+                "type": "object"
+            },
+            "optional" : true
+        }
+    },
+    "additionalProperties" : false
+}

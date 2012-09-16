@@ -1,0 +1,10 @@
+ {
+        "name": "Fridge",
+        "description": "I am a Frige",
+        "energy_class": "C",
+        "standy_consumption": 4.43,
+        "controllable": false,
+        "shiftable": true,
+        "inst_id": "4ff32156e4b042e3bb583d7b"
+        
+}
