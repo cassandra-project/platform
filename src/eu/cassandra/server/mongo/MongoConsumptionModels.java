@@ -16,8 +16,10 @@
 */
 package eu.cassandra.server.mongo;
 
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoConsumptionModels {
@@ -41,15 +43,15 @@ public class MongoConsumptionModels {
 	 * @param app_id
 	 * @return
 	 */
-	public String getConsumptionModels(String app_id) {
+	public String getConsumptionModels(String app_id, boolean count) {
 		if(app_id == null) {
-			return new MongoDBQueries().createJSONError(
+			return new JSONtoReturn().createJSONError(
 					"Only the Consumption Models of a particular Appliance can be retrieved", 
 					new RestQueryParamMissingException("app_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_CONSMODELS,"app_id", 
-					app_id, "Consumption Models retrieved successfully").toString();
+					app_id, "Consumption Models retrieved successfully",count).toString();
 		}
 	}
 

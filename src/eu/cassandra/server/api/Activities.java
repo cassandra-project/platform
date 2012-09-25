@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.server.api;
 
 import javax.ws.rs.Consumes;
@@ -40,8 +40,9 @@ public class Activities {
 	 * @return
 	 */
 	@GET
-	public String getActivities(@QueryParam("pers_id") String pers_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivities(pers_id));
+	public String getActivities(
+			@QueryParam("pers_id") String pers_id, @QueryParam("count") boolean count) {
+		return PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivities(pers_id,count));
 	}
 
 	/**

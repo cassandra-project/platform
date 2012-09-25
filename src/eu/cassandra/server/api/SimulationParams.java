@@ -51,8 +51,8 @@ public class SimulationParams {
 	 * @return
 	 */
 	@GET
-	public String getSimulationParam(@QueryParam("scn_id") String scn_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().getSimParams(scn_id));
+	public String getSimulationParam(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count) {
+		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().getSimParams(scn_id,count));
 	}
 
 	/**

@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.server.mongo.util;
 
 import java.util.Vector;
@@ -37,6 +37,7 @@ public class MongoDBQueries {
 	public final static int ACTIVE_POWER_P = 0;
 	public final static int REACTIVE_POWER_Q = 1;
 
+	private JSONtoReturn jSON2Rrn = new JSONtoReturn();
 
 	/**
 	 * 
@@ -71,9 +72,9 @@ public class MongoDBQueries {
 			o.put( "$push", new BasicDBObject(oKey, dataToInsert));
 			DBConn.getConn().getCollection(coll).update( q, o, true, true );
 		}catch(Exception e) {
-			return createJSONError("Data to insert: " + dataToInsert ,e);
+			return jSON2Rrn.createJSONError("Data to insert: " + dataToInsert ,e);
 		}
-		return createJSONInsertPostMessage(qKey + " with cid=" + newObjId  + 
+		return jSON2Rrn.createJSONInsertPostMessage(qKey + " with cid=" + newObjId  + 
 				" added successfully in " + coll + " with _id=" + 
 				refKey,dataToInsert) ;
 
@@ -95,17 +96,59 @@ public class MongoDBQueries {
 			DBObject o =  new BasicDBObject().append("$set", new BasicDBObject("sim_param", data));
 			DBConn.getConn().getCollection(coll).update(q,o);
 		}catch(Exception e) {
-			return createJSONError(dataToInsert,e);
+			return jSON2Rrn.createJSONError(dataToInsert,e);
 		}
-		return createJSONInsertPostMessage(coll + " with _id=" + _id + " updated with the following data", data) ;
+		return jSON2Rrn.createJSONInsertPostMessage(coll + " with _id=" + _id + " updated with the following data", data) ;
 	}
 
-
+	/**
+	 * 
+	 * @param coll
+	 * @param qKey
+	 * @param qValue
+	 * @param successMsg
+	 * @param fieldNames
+	 * @return
+	 */
 	public DBObject getEntity(String coll, String qKey, String qValue, 
 			String successMsg, String...fieldNames) {
-		return getEntity(coll, qKey, qValue, null, null, 0, 0, successMsg, fieldNames);
+		return getEntity(coll, qKey, qValue, null, null, 0, 0, successMsg, false, fieldNames);
 	}
 
+	/**
+	 * 
+	 * @param coll
+	 * @param qKey
+	 * @param qValue
+	 * @param successMsg
+	 * @param counter
+	 * @param fieldNames
+	 * @return
+	 */
+	public DBObject getEntity(String coll, String qKey, String qValue, 
+			String successMsg,  boolean counter, String...fieldNames) {
+		return getEntity(coll, qKey, qValue, null, null, 0, 0, successMsg, counter, fieldNames);
+	}
+
+	/**
+	 * 
+	 * @param coll
+	 * @param qKey
+	 * @param qValue
+	 * @param filters
+	 * @param sort
+	 * @param limit
+	 * @param skip
+	 * @param successMsg
+	 * @param fieldNames
+	 * @return
+	 */
+	public DBObject getEntity(String coll, String qKey, String qValue, 
+			String filters, String sort, int limit, int skip,
+			String successMsg, int counter, String...fieldNames) {
+		return getEntity(coll, qKey, qValue, filters, sort, limit, skip,
+				successMsg, counter, fieldNames);
+	}
 
 	/**
 	 * @param collection
@@ -115,7 +158,7 @@ public class MongoDBQueries {
 	 */
 	public DBObject getEntity(String coll, String qKey, String qValue, 
 			String filters, String sort, int limit, int skip,
-			String successMsg, String...fieldNames) {
+			String successMsg,  boolean count, String...fieldNames) {
 		DBObject query;
 		BasicDBObject fields;
 		try {
@@ -131,7 +174,7 @@ public class MongoDBQueries {
 					else
 						query = new BasicDBObject();
 				}catch(Exception e) {
-					return createJSONError("Cannot get entity for collection: " + coll + 
+					return jSON2Rrn.createJSONError("Cannot get entity for collection: " + coll + 
 							", error in filters: " + filters ,e);
 				}
 				query.put(qKey, qValue);
@@ -141,11 +184,11 @@ public class MongoDBQueries {
 				fields.put(fieldName, 1);
 			}
 		}catch(Exception e) {
-			return createJSONError("Cannot get entity for collection: " + coll + 
+			return jSON2Rrn.createJSONError("Cannot get entity for collection: " + coll + 
 					" with qKey=" + qKey + " and qValue=" + qValue,e);
 		}
 		return new MongoDBQueries().executeFindQuery(
-				coll,query,fields, successMsg, sort, limit, skip);
+				coll,query,fields, successMsg, sort, limit, skip, count);
 	}
 
 	//	
@@ -206,10 +249,10 @@ public class MongoDBQueries {
 				BasicDBObject entity = (BasicDBObject)internalEntities.get(i);
 				recordsVec.add( entity);
 			}
-			return createJSON(recordsVec,"Internal entites " + entityName + 
+			return jSON2Rrn.createJSON(recordsVec,"Internal entites " + entityName + 
 					" from " + coll + " with _id=" + parentID);
 		}catch(Exception e) {
-			return createJSONError("Cannot get internal entities " +  entityName + 
+			return jSON2Rrn.createJSONError("Cannot get internal entities " +  entityName + 
 					" from " + coll + " with _id=" + parentID, e);
 		}
 	}
@@ -251,13 +294,13 @@ public class MongoDBQueries {
 					if(successMsg == null)
 						successMsg = "Internal entity " + entityName + " with cid=" + 
 								cid + " from collection=" + coll + " successfully retrieved";
-					return createJSON(internalEntity,successMsg) ;
+					return jSON2Rrn.createJSON(internalEntity,successMsg) ;
 				}
 			}
 			throw new MongoRefNotFoundException("Cannot get internal entity " +  entityName + 
 					" with cid=" + cid + " from collection: " + coll);
 		}catch(Exception e) {
-			return createJSONError("Cannot get internal entity " +  entityName + 
+			return jSON2Rrn.createJSONError("Cannot get internal entity " +  entityName + 
 					" with cid=" + cid + " from collection: " + coll, e);
 		}
 	}
@@ -278,27 +321,34 @@ public class MongoDBQueries {
 		else {
 			cursorDoc = DBConn.getConn().getCollection(collection).find(dbObj1,dbObj2);
 		}
-		return createJSON(cursorDoc,successMsg);
+		return jSON2Rrn.createJSON(cursorDoc,successMsg);
 	}
 
 	public DBObject executeFindQuery(String collection, 
 			DBObject dbObj1, DBObject dbObj2, String successMsg,
-			String sort, int limit, int skip) {
-		DBCursor cursorDoc = DBConn.getConn().
-				getCollection(collection).find(dbObj1);
+			String sort, int limit, int skip, boolean count) {
+		DBCursor cursorDoc = null;
+		if(count) {
+			BasicDBObject dbObject = new BasicDBObject(); 
+			dbObject.put("count", DBConn.getConn().getCollection(collection).find(dbObj1).count());
+			return 	 jSON2Rrn.createJSON(dbObject, successMsg);
+		}
+		else {
+			cursorDoc = DBConn.getConn().getCollection(collection).find(dbObj1);
+		}
 		if(sort != null)	{
 			try{
 				DBObject sortObj = (DBObject)JSON.parse(sort);
 				cursorDoc = cursorDoc.sort(sortObj);
 			}catch(Exception e) {
-				return createJSONError("Error in filtering JSON sorting object: " + sort, e);
+				return jSON2Rrn.createJSONError("Error in filtering JSON sorting object: " + sort, e);
 			}
 		}
 		if(skip != 0)
 			cursorDoc =	cursorDoc.skip(skip);
 		if(limit != 0)
 			cursorDoc =	cursorDoc.limit(limit);
-		return createJSON(cursorDoc,successMsg);
+		return jSON2Rrn.createJSON(cursorDoc,successMsg);
 	}
 
 	/**
@@ -384,10 +434,10 @@ public class MongoDBQueries {
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
-			return createJSONError("Update Failed for " + jsonToUpdate,e);
+			return jSON2Rrn.createJSONError("Update Failed for " + jsonToUpdate,e);
 		}
 		return getEntity(collection,qKey, qValue,successMsg,
-				keysUpdated.toArray(new String[keysUpdated.size()]));
+				false,keysUpdated.toArray(new String[keysUpdated.size()]));
 	}
 
 	/**
@@ -421,7 +471,7 @@ public class MongoDBQueries {
 				}
 			}
 		}catch(Exception e) {
-			return createJSONError("Update Failed for " + jsonToUpdate,e);
+			return jSON2Rrn.createJSONError("Update Failed for " + jsonToUpdate,e);
 		}
 		return getInternalEntity(coll,entityName, cid,"Internal document " + coll + "." + 
 				entityName + " with cid=" + cid + " was successfullylly updated");
@@ -434,7 +484,7 @@ public class MongoDBQueries {
 			DBObject dObj = new BasicDBObject("$push", objToPush);
 			DBConn.getConn().getCollection(coll).update(qObj,dObj);
 		}catch(Exception e) {
-			return createJSONError("Update Failed for " + objToPush.toString() ,e);
+			return jSON2Rrn.createJSONError("Update Failed for " + objToPush.toString() ,e);
 		}
 		return getInternalEntity(coll,"activities", cid,"Internal document " + coll + "." + 
 				parentEntityName + " with cid=" + cid + " was successfullylly updated");
@@ -503,11 +553,11 @@ public class MongoDBQueries {
 			}
 			DBConn.getConn().getCollection(coll).insert(data);
 		}catch(com.mongodb.util.JSONParseException e) {
-			return createJSONError("Error parsing JSON input",e.getMessage());
+			return jSON2Rrn.createJSONError("Error parsing JSON input",e.getMessage());
 		}catch(Exception e) {
-			return createJSONError(dataToInsert,e);
+			return jSON2Rrn.createJSONError(dataToInsert,e);
 		}
-		return createJSONInsertPostMessage(successMessage,data) ;
+		return jSON2Rrn.createJSONInsertPostMessage(successMessage,data) ;
 	}
 
 	/**
@@ -567,9 +617,9 @@ public class MongoDBQueries {
 			DBObject deleteQuery = new BasicDBObject("_id", new ObjectId(id));
 			objRemoved = DBConn.getConn().getCollection(coll).findAndRemove(deleteQuery);
 		}catch(Exception e) {
-			return createJSONError("remove db." + coll + " with id=" + id,e);
+			return jSON2Rrn.createJSONError("remove db." + coll + " with id=" + id,e);
 		}
-		return createJSONRemovePostMessage(coll,id,objRemoved) ;
+		return jSON2Rrn.createJSONRemovePostMessage(coll,id,objRemoved) ;
 	}
 
 	/**
@@ -591,9 +641,9 @@ public class MongoDBQueries {
 					keyName, new BasicDBObject("cid",new ObjectId(cid)))));
 			DBConn.getConn().getCollection(coll).update(q, o, false, true);
 		}catch(Exception e) {
-			return createJSONError("remove db." + coll + "." + keyName + " with cid=" + cid,e);
+			return jSON2Rrn.createJSONError("remove db." + coll + "." + keyName + " with cid=" + cid,e);
 		}
-		return createJSONRemovePostMessage(coll + "." + keyName,cid,objToRemove.get("data")) ;
+		return jSON2Rrn.createJSONRemovePostMessage(coll + "." + keyName,cid,objToRemove.get("data")) ;
 	}
 
 	/**
@@ -607,7 +657,7 @@ public class MongoDBQueries {
 		DBObject deletedField;
 		try {
 			deletedField = getEntity(coll,fieldName + ".cid", cid, "Simulation Parameter " +
-					"with cid=" + cid + " removed successfully", new String[]{ fieldName});
+					"with cid=" + cid + " removed successfully", false, new String[]{ fieldName});
 			if(!deletedField.containsField("data"))
 				throw new MongoInvalidObjectId("invalid ObjectId [" + cid + "]");
 			Vector<?> data = (Vector<?>)deletedField.get("data");
@@ -617,10 +667,10 @@ public class MongoDBQueries {
 			DBObject o = new BasicDBObject("$unset",new BasicDBObject(fieldName,1));
 			DBConn.getConn().getCollection(coll).update(q, o, false, true);
 		}catch(Exception e) {
-			return createJSONError("remove field db." + coll + "." + fieldName + 
+			return jSON2Rrn.createJSONError("remove field db." + coll + "." + fieldName + 
 					" with cid=" + cid + "failed",e);
 		}
-		return createJSONRemovePostMessage(coll + "." + fieldName + ".cid",cid,deletedField) ;
+		return jSON2Rrn.createJSONRemovePostMessage(coll + "." + fieldName + ".cid",cid,deletedField) ;
 	}
 
 	/**
@@ -641,7 +691,7 @@ public class MongoDBQueries {
 			else if(runId == null && installationId == null)
 				throw new RestQueryParamMissingException(
 						"Both run_id and installation_id are null");
-			
+
 			Integer aggregationUnit = null;
 			if(aggregationUnitS != null)
 				aggregationUnit = Integer.parseInt(aggregationUnitS);
@@ -695,138 +745,15 @@ public class MongoDBQueries {
 			groupCmd.append("initial",  new BasicDBObject("y",0));
 			@SuppressWarnings("deprecation")
 			BasicDBList dbList = (BasicDBList)DBConn.getConn().getCollection(coll).group(groupCmd);
-			return createJSONPlot(dbList, "Data for plot retrieved successfully", 
+			return jSON2Rrn.createJSONPlot(dbList, "Data for plot retrieved successfully", 
 					"title", "xAxisLabel", "yAxisLabel"); 
 
 		}catch(Exception e) {
 			e.printStackTrace();
-			return createJSONError("Error in retrieving results", e.getMessage());
+			return jSON2Rrn.createJSONError("Error in retrieving results", e.getMessage());
 		}
 	}
 
-	/**
-	 * 
-	 * @param data
-	 * @param ex
-	 * @return
-	 */
-	public DBObject createJSONError(String data, Exception ex) {
-		return  createJSONError(data, ex.getMessage() );
-	}
-
-	/**
-	 * 
-	 * @param data
-	 * @param ex
-	 * @return
-	 */
-	public DBObject createJSONError(String data, String ex) {
-		DBObject errorMessage = new BasicDBObject();
-		errorMessage.put("success", false);
-		errorMessage.put("exception", ex);
-		errorMessage.put("message", data);
-		return errorMessage;
-	}
-
-	/**
-	 * 
-	 * @param successMessage
-	 * @param dataToInsert
-	 * @param answer
-	 * @return
-	 */
-	private DBObject createJSONInsertPostMessage(String successMessage, DBObject answer ) {
-		DBObject postSuccessMessage = new BasicDBObject();
-		postSuccessMessage.put("success", true);
-		postSuccessMessage.put("message", successMessage);
-		postSuccessMessage.put("data", changeObjectIdToString(answer));
-		return postSuccessMessage;
-	}
-
-	/**
-	 * 
-	 * @param successMessage
-	 * @param dataToInsert
-	 * @param answer
-	 * @return
-	 */
-	private DBObject createJSONRemovePostMessage(String coll, String idToRemove,
-			Object objRemoved ) {
-		DBObject postSuccessMessage = new BasicDBObject();
-		postSuccessMessage.put("success", (objRemoved==null)?false:true);
-		postSuccessMessage.put("message", (objRemoved==null)?"Object not found":"Object Removed");
-		postSuccessMessage.put("idToRemove", idToRemove);
-		if(objRemoved instanceof DBObject)
-			postSuccessMessage.put("objectRemoved", changeObjectIdToString((DBObject)objRemoved));
-		else
-			postSuccessMessage.put("objectRemoved", objRemoved);
-		return postSuccessMessage;
-	}
-
-	/**
-	 * 
-	 * @param cursorDoc
-	 * @param descr
-	 * @return
-	 */
-	public DBObject createJSON(DBCursor cursorDoc, String descr) {
-		DBObject successMessage = new BasicDBObject();
-		successMessage.put("success", true);
-		successMessage.put("message", descr + ((cursorDoc.size()==0)?" (No data were found though)":""));
-		successMessage.put("size", cursorDoc.size());
-		Vector<DBObject> recordsVec = new Vector<DBObject>();
-		while (cursorDoc.hasNext()) {
-			DBObject obj = cursorDoc.next();
-			recordsVec.add(changeObjectIdToString(obj));
-		}
-		cursorDoc.close();
-		successMessage.put("data", recordsVec);
-		return successMessage;
-	}
-
-	/**
-	 * 
-	 * @param dbObject
-	 * @param descr
-	 * @return
-	 */
-	public DBObject createJSON(DBObject dbObject, String descr) {
-		DBObject successMessage = new BasicDBObject();
-		successMessage.put("success", true);
-		successMessage.put("message", descr);
-		successMessage.put("size", 1);
-		successMessage.put("data", changeObjectIdToString(dbObject));
-		return successMessage;
-	}
-
-	/**
-	 * 
-	 * @param dbObjects
-	 * @param descr
-	 * @return
-	 */
-	public DBObject createJSON(Vector<DBObject> dbObjects, String descr) {
-		DBObject successMessage = new BasicDBObject();
-		successMessage.put("success", true);
-		successMessage.put("message", descr);
-		successMessage.put("size", dbObjects.size());
-		successMessage.put("data", dbObjects);
-		return successMessage;
-	}
-
-
-	public DBObject createJSONPlot(BasicDBList dbObjects, String descr, 
-			String title, String xAxisLabel, String yAxisLabel) {
-		DBObject successMessage = new BasicDBObject();
-		successMessage.put("success", true);
-		successMessage.put("message", descr);
-		successMessage.put("title", title);
-		successMessage.put("xAxisLabel", xAxisLabel);
-		successMessage.put("yAxisLabel", yAxisLabel);
-		successMessage.put("size", dbObjects.size());
-		successMessage.put("data", dbObjects);
-		return successMessage;
-	}
 
 	/**
 	 * 
@@ -841,16 +768,5 @@ public class MongoDBQueries {
 		return data.get(key).toString();
 	}
 
-	/**
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	private DBObject changeObjectIdToString(DBObject obj) {
-		if(obj.containsField("_id") && (obj.get("_id") instanceof ObjectId)) {
-			obj.put("_id", obj.get("_id").toString());
-		}
-		return obj;
-	}
 
 }

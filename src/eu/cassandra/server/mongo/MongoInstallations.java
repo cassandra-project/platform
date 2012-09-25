@@ -18,6 +18,7 @@ package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoInstallations {
@@ -42,15 +43,15 @@ public class MongoInstallations {
 	 * @param scn_id
 	 * @return
 	 */
-	public String getInstallations(String scn_id,String filters, String sort, int limit, int skip) {
+	public String getInstallations(String scn_id,String filters, String sort, int limit, int skip, boolean count) {
 		if(scn_id == null) {
-			return new MongoDBQueries().createJSONError(
+			return new JSONtoReturn().createJSONError(
 					"Only the Installations of a particular Scenario can be retrieved", 
 					new RestQueryParamMissingException("scn_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_INSTALLATIONS,"scenario_id", 
-					scn_id, filters, sort, limit, skip, "Installations retrieved successfully").toString();
+					scn_id, filters, sort, limit, skip, "Installations retrieved successfully",count).toString();
 		}
 	}
 

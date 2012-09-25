@@ -41,7 +41,7 @@ public class Project {
 	 */
 	@GET
 	public String getProject(@PathParam("prj_id") String prj_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(prj_id));
+		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(prj_id,false));
 	}
 
 	/**

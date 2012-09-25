@@ -33,8 +33,8 @@ import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 public class Demographics {
 
 	@GET
-	public String getDemographics(@QueryParam("scn_id") String scn_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDemographics().getDemographics(scn_id));
+	public String getDemographics(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count) {
+		return PrettyJSONPrinter.prettyPrint(new MongoDemographics().getDemographics(scn_id, count));
 	}
 
 	@POST
