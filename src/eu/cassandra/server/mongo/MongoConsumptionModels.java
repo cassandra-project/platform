@@ -25,6 +25,8 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoConsumptionModels {
 
 	public final static String COL_CONSMODELS = "cons_models";
+	public final static String REF_APPLIANCE = "app_id";
+	
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/consmod/4fedc0cde4b00db232508ea6

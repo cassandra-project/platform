@@ -61,7 +61,6 @@ public class ConsumptionModel {
 	 */
 	@DELETE
 	public String deleteConsumptionModel(@PathParam("consmod_id") String consmod_id) {
-		// TODO remove references
 		return PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().deleteConsumptionModel(consmod_id));
 	}
 

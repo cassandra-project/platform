@@ -61,7 +61,6 @@ public class Project {
 	 */
 	@DELETE
 	public String deleteProject(@PathParam("prj_id") String prj_id) {
-		// TODO: delete references to this project
 		return PrettyJSONPrinter.prettyPrint(new MongoProjects().deleteProject(prj_id));
 	}
 }

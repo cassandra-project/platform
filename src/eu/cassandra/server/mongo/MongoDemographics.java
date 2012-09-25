@@ -25,7 +25,9 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoDemographics {
 
 	public final static String COL_DEMOGRAPHICS = "demographics";
-
+	public final static String REF_SCENARIO = "scn_id";
+	public final static String REF_ENTITY = "entity_id";
+	
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/demog/4ff1d9d4e4b0ddb832a310bc
 	 * 

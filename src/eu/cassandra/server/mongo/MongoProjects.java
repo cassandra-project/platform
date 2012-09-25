@@ -22,7 +22,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoProjects {
 
-	protected final static String COL_PROJECTS = "projects";
+	public final static String COL_PROJECTS = "projects";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/prj/4fec374fdf4ffdb8d1d1ce38

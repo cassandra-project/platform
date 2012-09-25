@@ -24,7 +24,18 @@ import org.bson.types.ObjectId;
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
+import eu.cassandra.server.mongo.MongoActivities;
+import eu.cassandra.server.mongo.MongoActivityModels;
+import eu.cassandra.server.mongo.MongoAppliances;
+import eu.cassandra.server.mongo.MongoConsumptionModels;
+import eu.cassandra.server.mongo.MongoDemographics;
+import eu.cassandra.server.mongo.MongoDistributions;
+import eu.cassandra.server.mongo.MongoInstallations;
+import eu.cassandra.server.mongo.MongoPersons;
+import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.MongoResults;
+import eu.cassandra.server.mongo.MongoScenarios;
+import eu.cassandra.server.mongo.MongoSimParam;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -38,6 +49,7 @@ public class MongoDBQueries {
 	public final static int REACTIVE_POWER_Q = 1;
 
 	private JSONtoReturn jSON2Rrn = new JSONtoReturn();
+
 
 	/**
 	 * 
@@ -616,10 +628,73 @@ public class MongoDBQueries {
 		try {
 			DBObject deleteQuery = new BasicDBObject("_id", new ObjectId(id));
 			objRemoved = DBConn.getConn().getCollection(coll).findAndRemove(deleteQuery);
+			objRemoved = cascadeDeletes(coll, id,objRemoved);
 		}catch(Exception e) {
 			return jSON2Rrn.createJSONError("remove db." + coll + " with id=" + id,e);
 		}
 		return jSON2Rrn.createJSONRemovePostMessage(coll,id,objRemoved) ;
+	}
+
+	/**
+	 * 
+	 * @param coll
+	 * @param id
+	 * @param refKey
+	 */
+	private DBObject getAndDeleteReferencedDocuments(String coll, String id, String refKey, DBObject objRemoved) {
+		BasicDBObject q = new BasicDBObject(refKey, id); 
+		System.out.println(coll + "\t" + q);
+		int deleted = DBConn.getConn().getCollection(coll).remove(q).getN();
+		BasicDBObject line = new BasicDBObject("deleted",deleted);
+		line.put(refKey, id);
+		objRemoved.put("cascadeDel_"+coll, line );
+		objRemoved = cascadeDeletes(coll, id, objRemoved); 
+		return objRemoved;
+	}
+
+	/**
+	 * 
+	 * @param coll
+	 * @param id
+	 * @param objRemoved
+	 * @return
+	 */
+	private DBObject cascadeDeletes(String coll, String id, DBObject objRemoved) {
+		if(coll.equalsIgnoreCase(MongoProjects.COL_PROJECTS)) {
+			objRemoved = getAndDeleteReferencedDocuments(MongoScenarios.COL_SCENARIOS,id,MongoScenarios.REF_PROJECT,objRemoved);
+		}
+		else if(coll.equalsIgnoreCase(MongoScenarios.COL_SCENARIOS)) {
+			objRemoved = getAndDeleteReferencedDocuments(MongoInstallations.COL_INSTALLATIONS,id,MongoInstallations.REF_SCENARIO,objRemoved);
+			objRemoved = getAndDeleteReferencedDocuments(MongoDemographics.COL_DEMOGRAPHICS,id,MongoDemographics.REF_SCENARIO,objRemoved);
+			objRemoved = getAndDeleteReferencedDocuments(MongoSimParam.COL_SIMPARAM,id,MongoSimParam.REF_SCENARIO,objRemoved);
+		}
+		else if(coll.equalsIgnoreCase(MongoInstallations.COL_INSTALLATIONS)) {
+			//objRemoved = getAndDeleteReferencedDocuments(MongoInstallations.COL_INSTALLATIONS,id,MongoInstallations.REF_BELONGS_TO_INST,objRemoved);
+			objRemoved = getAndDeleteReferencedDocuments(MongoAppliances.COL_APPLIANCES,id,MongoAppliances.REF_INSTALLATION,objRemoved);
+			objRemoved = getAndDeleteReferencedDocuments(MongoPersons.COL_PERSONS,id,MongoPersons.REF_INSTALLATION,objRemoved);
+			objRemoved = deleteInternalDocument(MongoDemographics.COL_DEMOGRAPHICS, "generators", MongoDemographics.REF_ENTITY,id,objRemoved);
+		}
+		else if(coll.equalsIgnoreCase(MongoPersons.COL_PERSONS)) {
+			objRemoved = getAndDeleteReferencedDocuments(MongoActivities.COL_ACTIVITIES,id,MongoActivities.REF_PERSON,objRemoved);
+			objRemoved = deleteInternalDocument(MongoDemographics.COL_DEMOGRAPHICS, "generators", MongoDemographics.REF_ENTITY,id,objRemoved);
+		}
+		else if(coll.equalsIgnoreCase(MongoAppliances.COL_APPLIANCES)) {
+			objRemoved = getAndDeleteReferencedDocuments(MongoConsumptionModels.COL_CONSMODELS,id,MongoConsumptionModels.REF_APPLIANCE,objRemoved);
+			objRemoved = deleteArrayElements(MongoActivityModels.COL_ACTMODELS, MongoActivityModels.REF_CONTAINSAPPLIANCES,id,objRemoved);
+			objRemoved = deleteInternalDocument(MongoDemographics.COL_DEMOGRAPHICS, "generators", MongoDemographics.REF_ENTITY,id,objRemoved);
+		}
+		else if(coll.equalsIgnoreCase(MongoActivities.COL_ACTIVITIES)) {
+			objRemoved = getAndDeleteReferencedDocuments(MongoActivityModels.COL_ACTMODELS,id,MongoActivityModels.REF_ACTIVITY,objRemoved);
+		}
+		else if(coll.equalsIgnoreCase(MongoActivityModels.COL_ACTMODELS)) {
+			objRemoved = getAndDeleteReferencedDocuments(MongoDistributions.COL_DISTRIBUTIONS,id,MongoDistributions.REF_ACTIVITYMODEL,objRemoved);
+		}
+		else if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
+			objRemoved = deleteArrayElements(MongoActivityModels.COL_ACTMODELS, MongoActivityModels.REF_DISTR_DURATION ,id,objRemoved);
+			objRemoved = deleteArrayElements(MongoActivityModels.COL_ACTMODELS, MongoActivityModels.REF_DISTR_REPEATS ,id,objRemoved);
+			objRemoved = deleteArrayElements(MongoActivityModels.COL_ACTMODELS, MongoActivityModels.REF_DISTR_STARTTIME ,id,objRemoved);
+		}
+		return objRemoved;
 	}
 
 	/**
@@ -631,19 +706,29 @@ public class MongoDBQueries {
 	 * @param refKeyName
 	 * @return
 	 */
-	public DBObject deleteInternalDocument(String coll, String keyName, String cid) {
-		DBObject objToRemove;
-		try {
-			objToRemove = getInternalEntity(coll,keyName,cid);
-
+	public DBObject deleteInternalDocument(String coll, String keyName, String keyName2, String id, DBObject objRemoved) {
 			DBObject q = new BasicDBObject();
 			DBObject o = new BasicDBObject(new BasicDBObject("$pull",new BasicDBObject(
-					keyName, new BasicDBObject("cid",new ObjectId(cid)))));
-			DBConn.getConn().getCollection(coll).update(q, o, false, true);
-		}catch(Exception e) {
-			return jSON2Rrn.createJSONError("remove db." + coll + "." + keyName + " with cid=" + cid,e);
-		}
-		return jSON2Rrn.createJSONRemovePostMessage(coll + "." + keyName,cid,objToRemove.get("data")) ;
+					keyName, new BasicDBObject(keyName2,id))));
+			int removed = DBConn.getConn().getCollection(coll).update(q, o, false, true).getN();
+			objRemoved.put("cascadeDel_"+coll + "[" +keyName + "]", removed );
+			return objRemoved;
+	}
+
+	/**
+	 * 
+	 * @param coll
+	 * @param keyName
+	 * @param id
+	 * @param objRemoved
+	 * @return
+	 */
+	public DBObject deleteArrayElements(String coll, String keyName, String id, DBObject objRemoved) {
+		DBObject q = new BasicDBObject();
+		DBObject o = new BasicDBObject("$pull",new BasicDBObject(keyName,id));
+		int removed = DBConn.getConn().getCollection(coll).update(q, o, false, true).getN();
+		objRemoved.put("cascadeDel_"+coll + "[" +keyName + "]", removed );
+		return objRemoved;
 	}
 
 	/**
@@ -767,6 +852,17 @@ public class MongoDBQueries {
 			throw new MongoRefNotFoundException(key + " not found");
 		return data.get(key).toString();
 	}
+
+//	/**
+//	 * 
+//	 * @param collection
+//	 * @param id
+//	 * @param keyName
+//	 */
+//	public void deleteReferencedObject(String collection, String id, String keyName) {
+//		DBObject deleteQuery = new BasicDBObject(keyName, id);
+//		DBObject objRemoved = DBConn.getConn().getCollection(collection).findAndRemove(deleteQuery);
+//	}
 
 
 }

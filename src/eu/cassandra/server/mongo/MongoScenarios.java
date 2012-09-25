@@ -25,6 +25,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoScenarios {
 
 	public final static String COL_SCENARIOS = "scenarios";
+	public final static String REF_PROJECT= "project_id";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/scn/4fec747cdf4ffdb8d1d1ce55

@@ -25,7 +25,8 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoSimParam {
 	
 	public final static String COL_SIMPARAM = "sim_param";
-
+	public final static String REF_SCENARIO = "scn_id";
+	
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/smp?scn_id=4ff1a8e2e4b0ed82920aa45b
 	 * 
