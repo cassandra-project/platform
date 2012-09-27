@@ -4,9 +4,10 @@
 # hidden files
 .classpath
 .project
-.setting/
+.settings/
 
 # binaries
+bin/
 build/
 *.class
 

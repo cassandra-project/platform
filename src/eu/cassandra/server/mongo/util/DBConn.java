@@ -17,6 +17,7 @@
 package eu.cassandra.server.mongo.util;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -33,6 +34,8 @@ public class DBConn {
 	
 	private static DBConn dbConn = new DBConn();
 	
+	private static HashMap<String,DB> dbRuns = new HashMap<String,DB>();
+	
 	private Mongo m;
 	
 	private DB db;
@@ -44,13 +47,10 @@ public class DBConn {
 			DB_HOST = (String) ic.lookup("java:/comp/env/mongo.host.address");
 			m = new Mongo(DB_HOST);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MongoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NamingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		db = m.getDB(DB_NAME);
@@ -58,6 +58,23 @@ public class DBConn {
 	
 	public static DB getConn() {
 		return dbConn.db;
+	}
+	
+	public static DB getConn(String dbname) {
+		if(dbRuns.containsKey(dbname)) {
+			return dbRuns.get(dbname);
+		} else {
+			try {
+				Mongo m = new Mongo(DB_HOST);
+				dbRuns.put(dbname, m.getDB(dbname));
+				return dbRuns.get(dbname);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (MongoException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 }

@@ -80,8 +80,9 @@ public class Simulation implements Runnable {
 		return endTick;
 	}
   
-	public Simulation(String ascenario) {
+	public Simulation(String ascenario, String dbname) {
 		scenario = ascenario;
+		m = new MongoResults(dbname);
   		RNG.init();
 	}
   
@@ -90,23 +91,35 @@ public class Simulation implements Runnable {
   	}
 
   	public void run () {
+  		long startTime = System.currentTimeMillis();
   		while (tick < endTick) {
-  			System.out.println(tick);
+//  			System.out.println(tick);
   			// If it is the beginning of the day create the events
   			if (tick % Constants.MIN_IN_DAY == 0) {
   				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
   				for (Installation installation: installations) {
-  					System.out.println(installation.getName());
+//  					System.out.println(installation.getName());
   					installation.updateDailySchedule(tick, queue);
   				}
-  				System.out.println("Daily queue size: " + queue.size() + "(" + 
-  				simulationWorld.getSimCalendar().isWeekend(tick) + ")");
+//  				System.out.println("Daily queue size: " + queue.size() + "(" + 
+//  				simulationWorld.getSimCalendar().isWeekend(tick) + ")");
   			}
 
   			Event top = queue.peek();
   			while (top != null && top.getTick() == tick) {
   				Event e = queue.poll();
-  				e.apply();
+  				boolean applied = e.apply();
+  				if(applied) {
+  					if(e.getAction() == Event.SWITCH_ON) {
+  						try {
+  							m.addOpenTick(e.getAppliance().getId(), tick);
+  						} catch (Exception exc) {
+  							exc.printStackTrace();
+  						}
+  					} else if(e.getAction() == Event.SWITCH_OFF){
+  						m.addCloseTick(e.getAppliance().getId(), tick);
+  					}
+  				}
   				top = queue.peek();
   			}
 
@@ -118,15 +131,19 @@ public class Simulation implements Runnable {
   			for(Installation installation: installations) {
   				installation.nextStep(tick);
   				double power = installation.getCurrentPower();
+  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
   				sumPower += power;
-  				String name = installation.getName();
-  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
-  				+ "Power: " + power);
-  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
-  		  				+ "Power: " + power);
+//  				String name = installation.getName();
+//  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
+//  				+ "Power: " + power);
+//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
+//  		  				+ "Power: " + power);
   			}
+  			m.addAggregatedTickResult(tick, sumPower, 0);
   			tick++;
   		}
+  		long endTime = System.currentTimeMillis();
+  		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
   	}
 
   	public void setup() throws Exception {
