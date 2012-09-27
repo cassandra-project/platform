@@ -61,7 +61,6 @@ public class Distribution {
 	 */
 	@DELETE
 	public String deleteDistribution(@PathParam("distr_id") String distr_id) {
-		// TODO remove references
 		return PrettyJSONPrinter.prettyPrint(new MongoDistributions().deleteDistribution(distr_id));
 	}
 }

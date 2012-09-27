@@ -25,6 +25,13 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoActivityModels {
 
 	public final static String COL_ACTMODELS = "act_models";
+	public final static String REF_ACTIVITY = "act_id";
+	public final static String REF_CONTAINSAPPLIANCES = "containsAppliances";
+	
+	public final static String REF_DISTR_DURATION = "duration";
+	public final static String REF_DISTR_STARTTIME = "startTime";
+	public final static String REF_DISTR_REPEATS = "repeatsNrOfTime";
+	
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/actmod/4fedc0cde4b00db232508ea6

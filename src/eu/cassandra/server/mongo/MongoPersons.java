@@ -24,7 +24,8 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoPersons {
 	public final static String COL_PERSONS = "persons";
-
+	public final static String REF_INSTALLATION = "inst_id";
+	
 	/**
 	 * 
 	 * @param cid

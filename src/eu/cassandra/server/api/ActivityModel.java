@@ -58,7 +58,6 @@ public class ActivityModel {
 	 */
 	@DELETE
 	public String deleteActivityModel(@PathParam("actmod_id") String actmod_id) {
-		// TODO remove references
 		return PrettyJSONPrinter.prettyPrint(new MongoActivityModels().deleteActivityModel(actmod_id));
 	}
 

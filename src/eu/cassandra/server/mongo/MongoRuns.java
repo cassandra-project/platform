@@ -24,7 +24,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoRuns {
 	
-	protected final static String COL_RUNS = "runs";
+	public final static String COL_RUNS = "runs";
 	
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/runs/4fec747cdf4ffdb8d1d1ce55

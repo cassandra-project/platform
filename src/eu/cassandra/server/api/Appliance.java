@@ -60,7 +60,6 @@ public class Appliance {
 	 */
 	@DELETE
 	public String deleteAppliance(@PathParam("app_id") String app_id) {
-		// TODO delete references
 		return PrettyJSONPrinter.prettyPrint(new MongoAppliances().deleteAppliance(app_id));
 	}
 

@@ -25,6 +25,8 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoDistributions {
 
 	public final static String COL_DISTRIBUTIONS = "distributions";
+	public final static String REF_ACTIVITYMODEL = "actmod_id";
+	
 
 	/**
 	 * curl -i --data  @distribution.json    --header Content-type:application/json http://localhost:8080/cassandra/api/distr

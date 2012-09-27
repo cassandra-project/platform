@@ -24,6 +24,8 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoInstallations {
 
 	public final static String COL_INSTALLATIONS = "installations";
+	public final static String REF_SCENARIO = "scenario_id";
+	public final static String REF_BELONGS_TO_INST = "belongsToInstallation";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/inst/4ff1ddfde4b0bfe3a2fa6cd9

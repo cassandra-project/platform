@@ -24,6 +24,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoActivities {
 
 	public final static String COL_ACTIVITIES = "activities";
+	public final static String REF_PERSON = "pers_id";
 
 	/**
 	 * 

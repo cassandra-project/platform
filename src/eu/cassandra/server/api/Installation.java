@@ -60,7 +60,6 @@ public class Installation {
 	 */
 	@DELETE
 	public String deleteInstallation(@PathParam("inst_id") String inst_id) {
-		// TODO delete references
 		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().deleteInstallation(inst_id));
 	}
 
