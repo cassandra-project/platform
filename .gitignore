@@ -1,6 +1,11 @@
 # temporary Emacs files
 *~
 
+# hidden files
+.classpath
+.project
+.setting/
+
 # binaries
 build/
 *.class
