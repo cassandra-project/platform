@@ -29,6 +29,12 @@ public class MongoResults {
 	public final static String COL_INSTRESULTS = "inst_results";
 	public final static String COL_AGGRRESULTS = "aggr_results";
 	
+	private String dbname;
+	
+	public MongoResults(String adbname) {
+ 		dbname = adbname;
+	}
+	
 	/**
 	 * 
 	 * @param app_id
@@ -44,7 +50,7 @@ public class MongoResults {
 		DBObject data = new BasicDBObject();
 		data.put("app_id", app_id);
 		data.put("opentick", openTick);
-		DBConn.getConn().getCollection(COL_APPRESULTS).insert(data);
+		DBConn.getConn(dbname).getCollection(COL_APPRESULTS).insert(data);
 	}
 
 	/**
@@ -58,7 +64,7 @@ public class MongoResults {
 		DBObject data = new BasicDBObject();
 		data.put("$set", new BasicDBObject("closetick", closeTick));
 		q.put("closetick:", new BasicDBObject("$exists",false));
-		DBConn.getConn().getCollection(COL_APPRESULTS).update(q,data,false,false);
+		DBConn.getConn(dbname).getCollection(COL_APPRESULTS).update(q,data,false,false);
 	}
 
 	/**
@@ -75,7 +81,7 @@ public class MongoResults {
 		data.put("tick",tick);
 		data.put("p",p);
 		data.put("q",q);
-		DBConn.getConn().getCollection(COL_INSTRESULTS).insert(data);
+		DBConn.getConn(dbname).getCollection(COL_INSTRESULTS).insert(data);
 	}
 
 	/**
@@ -84,13 +90,12 @@ public class MongoResults {
 	 * @param p
 	 * @param q
 	 */
-	public void addAggregatedTickResult(String runId, int tick, double p, double q) {
+	public void addAggregatedTickResult(int tick, double p, double q) {
 		DBObject data = new BasicDBObject();
-		data.put("run_id",runId);
 		data.put("tick",tick);
 		data.put("p",p);
 		data.put("q",q);
-		DBConn.getConn().getCollection(COL_AGGRRESULTS).insert(data);
+		DBConn.getConn(dbname).getCollection(COL_AGGRRESULTS).insert(data);
 	}
 
 

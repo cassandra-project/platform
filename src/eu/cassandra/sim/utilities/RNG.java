@@ -16,6 +16,8 @@
 
 package eu.cassandra.sim.utilities;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -27,12 +29,12 @@ import java.util.Random;
  */
 public class RNG {
 	
-	private static Random random;
+	private static SecureRandom random;
 	
 	private RNG() { }
 	
 	public static void init() {
-		random = new Random();
+		random = new SecureRandom();
 		random.setSeed(System.currentTimeMillis());
 		random.nextDouble();
 		random.nextDouble();
@@ -42,7 +44,7 @@ public class RNG {
 	}
 	
 	public static void init(long seed) {
-		random = new Random();
+		random = new SecureRandom();
 		random.setSeed(seed);
 		random.nextDouble();
 		random.nextDouble();
@@ -79,6 +81,11 @@ public class RNG {
 		RNG.init();
 		System.out.println(RNG.nextLong());
 		System.out.println(RNG.nextInt());
+		System.out.println(RNG.randomString());
 	}
 	
+	public static String randomString() {
+		return new BigInteger(130, random).toString(32);
+	}
+
 }
