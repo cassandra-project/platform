@@ -189,8 +189,8 @@ public class MongoDBQueries {
 					return jSON2Rrn.createJSONError("Cannot get entity for collection: " + coll + 
 							", error in filters: " + filters ,e);
 				}
-				query.put(qKey, qValue);
 			}
+			query.put(qKey, qValue);
 			fields = new BasicDBObject();
 			for(String fieldName: fieldNames) {
 				fields.put(fieldName, 1);
@@ -643,7 +643,6 @@ public class MongoDBQueries {
 	 */
 	private DBObject getAndDeleteReferencedDocuments(String coll, String id, String refKey, DBObject objRemoved) {
 		BasicDBObject q = new BasicDBObject(refKey, id); 
-		System.out.println(coll + "\t" + q);
 		int deleted = DBConn.getConn().getCollection(coll).remove(q).getN();
 		BasicDBObject line = new BasicDBObject("deleted",deleted);
 		line.put(refKey, id);
