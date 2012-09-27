@@ -37,8 +37,8 @@ public class Scenarios {
 	 * @return
 	 */
 	@GET
-	public String getScenarios(@QueryParam("prj_id") String prj_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().getScenarios(prj_id));
+	public String getScenarios(@QueryParam("prj_id") String prj_id, @QueryParam("count") boolean count) {
+		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().getScenarios(prj_id,count));
 	}
 
 	/**

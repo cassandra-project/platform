@@ -16,13 +16,22 @@
 */
 package eu.cassandra.server.mongo;
 
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoActivityModels {
 
 	public final static String COL_ACTMODELS = "act_models";
+	public final static String REF_ACTIVITY = "act_id";
+	public final static String REF_CONTAINSAPPLIANCES = "containsAppliances";
+	
+	public final static String REF_DISTR_DURATION = "duration";
+	public final static String REF_DISTR_STARTTIME = "startTime";
+	public final static String REF_DISTR_REPEATS = "repeatsNrOfTime";
+	
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/actmod/4fedc0cde4b00db232508ea6
@@ -36,20 +45,20 @@ public class MongoActivityModels {
 	}
 
 	/**
-	 * curl -i http://localhost:8080/cassandra/api/actmod?inst_id=4fedb39be4b0445cc271fb4d
+	 * curl -i http://localhost:8080/cassandra/api/actmod?act_id=4fedb39be4b0445cc271fb4d
 	 * 
 	 * @param inst_id
 	 * @return
 	 */
-	public String getActivityModels(String act_id) {
+	public String getActivityModels(String act_id, boolean count) {
 		if(act_id == null) {
-			return new MongoDBQueries().createJSONError(
+			return new JSONtoReturn().createJSONError(
 					"Only the Activity Models of a particular Activity can be retrieved", 
 					new RestQueryParamMissingException("act_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_ACTMODELS,"act_id", 
-					act_id, "Activity Models retrieved successfully").toString();
+					act_id, "Activity Models retrieved successfully",count).toString();
 		}
 	}
 

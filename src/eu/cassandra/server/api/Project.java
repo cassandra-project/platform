@@ -41,7 +41,7 @@ public class Project {
 	 */
 	@GET
 	public String getProject(@PathParam("prj_id") String prj_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(prj_id));
+		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(prj_id,false));
 	}
 
 	/**
@@ -61,7 +61,6 @@ public class Project {
 	 */
 	@DELETE
 	public String deleteProject(@PathParam("prj_id") String prj_id) {
-		// TODO: delete references to this project
 		return PrettyJSONPrinter.prettyPrint(new MongoProjects().deleteProject(prj_id));
 	}
 }

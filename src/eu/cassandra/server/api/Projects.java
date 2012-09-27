@@ -21,6 +21,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoProjects;
@@ -36,8 +37,8 @@ public class Projects {
 	 * @return
 	 */
 	@GET
-	public String getProjects() {
-		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(null));
+	public String getProjects(@QueryParam("count") boolean count) {
+		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(null,count));
 	}
 	
 	/**

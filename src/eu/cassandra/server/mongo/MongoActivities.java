@@ -18,11 +18,13 @@ package eu.cassandra.server.mongo;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoActivities {
 
 	public final static String COL_ACTIVITIES = "activities";
+	public final static String REF_PERSON = "pers_id";
 
 	/**
 	 * 
@@ -33,7 +35,7 @@ public class MongoActivities {
 	 */
 	public String getActivity(String id) {
 		return new MongoDBQueries().getEntity(COL_ACTIVITIES,"_id", 
-				id, "Activity retrieved successfully").toString();
+				id, "Activity retrieved successfully", false).toString();
 	}
 
 	/**
@@ -42,15 +44,15 @@ public class MongoActivities {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getActivities(String pers_id) {
+	public String getActivities(String pers_id, boolean count) {
 		if(pers_id == null) {
-			return new MongoDBQueries().createJSONError(
+			return new JSONtoReturn().createJSONError(
 					"Only the Activities of a particular Installation can be retrieved", 
 					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_ACTIVITIES,"pers_id", 
-					pers_id, "Activities retrieved successfully").toString();
+					pers_id, "Activities retrieved successfully",count).toString();
 		}
 	}
 

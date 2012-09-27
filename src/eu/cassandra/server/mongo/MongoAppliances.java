@@ -18,17 +18,18 @@ package eu.cassandra.server.mongo;
 
 import java.util.Vector;
 
-
 import com.mongodb.DBObject;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 public class MongoAppliances {
 
 	public final static String COL_APPLIANCES = "appliances";
+	public final static String REF_INSTALLATION = "inst_id";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/app/4ff1d9d4e4b0ddb832a310bc
@@ -47,15 +48,15 @@ public class MongoAppliances {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getAppliances(String inst_id) {
+	public String getAppliances(String inst_id, boolean count) {
 		if(inst_id == null) {
-			return new MongoDBQueries().createJSONError(
+			return new JSONtoReturn().createJSONError(
 					"Only the Appliances of a particular Installation can be retrieved", 
 					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_APPLIANCES,"inst_id", 
-					inst_id, "Appliances retrieved successfully").toString();
+					inst_id, "Appliances retrieved successfully",count).toString();
 		}
 	}
 
@@ -81,7 +82,7 @@ public class MongoAppliances {
 					appliances.add(appIn.get(0));
 				}
 			}
-			return new MongoDBQueries().createJSON(appliances, "Appliance Retrieved from activity Model").toString();
+			return new JSONtoReturn().createJSON(appliances, "Appliance Retrieved from activity Model").toString();
 		}
 		else {
 			return PrettyJSONPrinter.prettyPrint(o.toString());

@@ -16,13 +16,17 @@
 */
 package eu.cassandra.server.mongo;
 
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoDistributions {
 
 	public final static String COL_DISTRIBUTIONS = "distributions";
+	public final static String REF_ACTIVITYMODEL = "actmod_id";
+	
 
 	/**
 	 * curl -i --data  @distribution.json    --header Content-type:application/json http://localhost:8080/cassandra/api/distr
@@ -53,15 +57,15 @@ public class MongoDistributions {
 	 * @param scn_id
 	 * @return
 	 */
-	public String getDistributions(String actmod_id) {
+	public String getDistributions(String actmod_id, boolean count) {
 		if(actmod_id == null) {
-			return new MongoDBQueries().createJSONError(
+			return new JSONtoReturn().createJSONError(
 					"Only the Distributions of a particular Activity Model can be retrieved", 
 					new RestQueryParamMissingException("actmod_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_DISTRIBUTIONS,"actmod_id", 
-					actmod_id, "Distributions retrieved successfully").toString();
+					actmod_id, "Distributions retrieved successfully",count).toString();
 		}
 	}
 

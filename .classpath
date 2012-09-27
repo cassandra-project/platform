@@ -30,6 +30,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-nop-1.6.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/vahlasJsonValidation.jar"/>
 	<!--<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>-->
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/junit-4.11-SNAPSHOT-20120416-1530.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

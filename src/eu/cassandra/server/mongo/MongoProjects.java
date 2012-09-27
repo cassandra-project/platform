@@ -16,12 +16,13 @@
 */
 package eu.cassandra.server.mongo;
 
+
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoProjects {
 
-	protected final static String COL_PROJECTS = "projects";
+	public final static String COL_PROJECTS = "projects";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/prj/4fec374fdf4ffdb8d1d1ce38
@@ -30,9 +31,9 @@ public class MongoProjects {
 	 * @param projectID
 	 * @return
 	 */
-	public String getProjects(String id) {
+	public String getProjects(String id, boolean count) {
 		return new MongoDBQueries().getEntity(COL_PROJECTS, "_id", id, 
-				"Project(s) retrieved successfully").toString();
+				"Project(s) retrieved successfully",count).toString();
 	}
 
 	/**

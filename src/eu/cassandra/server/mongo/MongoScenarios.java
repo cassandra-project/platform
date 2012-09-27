@@ -16,13 +16,16 @@
 */
 package eu.cassandra.server.mongo;
 
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoScenarios {
 
 	public final static String COL_SCENARIOS = "scenarios";
+	public final static String REF_PROJECT= "project_id";
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/scn/4fec747cdf4ffdb8d1d1ce55
@@ -31,15 +34,15 @@ public class MongoScenarios {
 	 * @param id
 	 * @return
 	 */
-	public String getScenarios(String project_id) {
+	public String getScenarios(String project_id, boolean count) {
 		if(project_id == null) {
-			return new MongoDBQueries().createJSONError(
+			return new JSONtoReturn().createJSONError(
 					"Only the Scenarios of a particular Project can be retrieved", 
 					new RestQueryParamMissingException("prj_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_SCENARIOS,"project_id", project_id, 
-					"Scenarios retrieved successfully").toString();
+					"Scenarios retrieved successfully",count).toString();
 		}
 	}
 

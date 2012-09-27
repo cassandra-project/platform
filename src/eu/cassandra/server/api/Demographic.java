@@ -45,7 +45,6 @@ public class Demographic {
 
 	@DELETE
 	public String deleteDemographic(@PathParam("demog_id") String demog_id) {
-		// TODO delete references
 		return PrettyJSONPrinter.prettyPrint(new MongoDemographics().deleteDemographics(demog_id));
 	}
 

@@ -17,7 +17,6 @@
 package eu.cassandra.server.api;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -29,7 +28,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.bson.BSONObject;
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -49,9 +47,7 @@ import eu.cassandra.server.mongo.MongoRuns;
 import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.MongoSimParam;
 import eu.cassandra.server.mongo.util.DBConn;
-import eu.cassandra.server.mongo.util.MongoDBQueries;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
-import eu.cassandra.server.threads.DemoThread;
 import eu.cassandra.sim.Simulation;
 
 @Path("runs")
@@ -69,8 +65,8 @@ public class Runs {
 	 * @return
 	 */
 	@GET
-	public String getRuns(@QueryParam("prj_id") String prj_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoRuns().getRuns(prj_id));
+	public String getRuns(@QueryParam("prj_id") String prj_id, @QueryParam("count") boolean count) {
+		return PrettyJSONPrinter.prettyPrint(new MongoRuns().getRuns(prj_id,count));
 	}
 	
 	/**

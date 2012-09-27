@@ -44,9 +44,10 @@ public class Installations {
 			@QueryParam("filter") String filters,
 			@QueryParam("sort") String sort,
 			@QueryParam("limit") int limit,
-			@QueryParam("skip") int skip) {
+			@QueryParam("skip") int skip,
+			@QueryParam("count") boolean count) {
 		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().
-				getInstallations(scn_id,filters,sort, limit,skip));
+				getInstallations(scn_id,filters,sort, limit,skip,count));
 	}
 
 	/**

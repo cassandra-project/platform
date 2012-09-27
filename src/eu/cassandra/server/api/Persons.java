@@ -39,8 +39,8 @@ public class Persons {
 	 * @return
 	 */
 	@GET
-	public String getPersons(@QueryParam("inst_id") String inst_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoPersons().getPersons(inst_id));
+	public String getPersons(@QueryParam("inst_id") String inst_id, @QueryParam("count") boolean count) {
+		return PrettyJSONPrinter.prettyPrint(new MongoPersons().getPersons(inst_id, count));
 	}
 	
 	/**

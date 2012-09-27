@@ -42,10 +42,8 @@ public class DBConn {
 		try {
 			m = new Mongo(DB_HOST);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MongoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		db = m.getDB(DB_NAME);

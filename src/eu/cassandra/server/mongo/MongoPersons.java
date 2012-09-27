@@ -16,13 +16,16 @@
 */
 package eu.cassandra.server.mongo;
 
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoPersons {
 	public final static String COL_PERSONS = "persons";
-
+	public final static String REF_INSTALLATION = "inst_id";
+	
 	/**
 	 * 
 	 * @param cid
@@ -37,15 +40,15 @@ public class MongoPersons {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getPersons(String inst_id) {
+	public String getPersons(String inst_id, boolean count) {
 		if(inst_id == null) {
-			return new MongoDBQueries().createJSONError(
+			return new JSONtoReturn().createJSONError(
 					"Only the Persons of a particular Installation can be retrieved", 
 					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_PERSONS,"inst_id", 
-					inst_id, "Persons retrieved successfully").toString();
+					inst_id, "Persons retrieved successfully",count).toString();
 		}
 	}
 
