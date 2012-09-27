@@ -28,158 +28,173 @@ import eu.cassandra.sim.math.ProbabilityDistribution;
 import eu.cassandra.sim.utilities.RNG;
 import eu.cassandra.sim.utilities.Utils;
 
-public class Activity
-{
+public class Activity {
+	static Logger logger = Logger.getLogger(Activity.class);
 
-  static Logger logger = Logger.getLogger(Activity.class);
+	private final String name;
+	private final String description;
+	private final String type;
+	private final HashMap<String, ProbabilityDistribution> nTimesGivenDay;
+	private final HashMap<String, ProbabilityDistribution> probStartTime;
+	private final HashMap<String, ProbabilityDistribution> probDuration;
+	private HashMap<String, Vector<Appliance>> appliances;
+	private HashMap<String, Vector<Double>> probApplianceUsed;
+	private SimulationWorld simulationWorld;
 
-  private final String name;
-  private final String description;
-  private final String type;
-  private final HashMap<String, ProbabilityDistribution> nTimesGivenDay;
-  private final ProbabilityDistribution probStartTime;
-  private final ProbabilityDistribution probDuration;
-  private Vector<Appliance> appliances;
-  private Vector<Double> probApplianceUsed;
-  private SimulationWorld simulationWorld;
+	public static class Builder {
+		// Required parameters
+		private final String name;
+		private final String description;
+		private final String type;
+		private final HashMap<String, ProbabilityDistribution> nTimesGivenDay;
+		private final HashMap<String, ProbabilityDistribution> probStartTime;
+		private final HashMap<String, ProbabilityDistribution> probDuration;
+		// Optional parameters: not available
+		private HashMap<String, Vector<Appliance>> appliances;
+		private HashMap<String, Vector<Double>> probApplianceUsed;
+		private SimulationWorld simulationWorld;
 
-  public static class Builder
-  {
-    // Required parameters
-    private final String name;
-    private final String description;
-    private final String type;
-    private final HashMap<String, ProbabilityDistribution> nTimesGivenDay;
-    private final ProbabilityDistribution probStartTime;
-    private final ProbabilityDistribution probDuration;
-    // Optional parameters: not available
-    private Vector<Appliance> appliances;
-    private Vector<Double> probApplianceUsed;
-    private SimulationWorld simulationWorld;
+		public Builder (String aname, String adesc, String atype, SimulationWorld world) {
+			name = aname;
+			description = adesc;
+			type = atype;
+			appliances = new HashMap<String, Vector<Appliance>>();
+			probApplianceUsed = new HashMap<String, Vector<Double>>();
+			nTimesGivenDay = new HashMap<String, ProbabilityDistribution>();
+			probStartTime = new HashMap<String, ProbabilityDistribution>();
+			probDuration = new HashMap<String, ProbabilityDistribution>();
+			simulationWorld = world;
+		}
+		
+		public Builder startTime(String day, ProbabilityDistribution probDist) {
+			probStartTime.put(day, probDist);
+			return this;
+		}
+		
+		public Builder duration(String day, ProbabilityDistribution probDist) {
+			probDuration.put(day, probDist);
+			return this;
+		}
 
-    public Builder (String aname, String desc, String type,
-                    ProbabilityDistribution start,
-                    ProbabilityDistribution duration, SimulationWorld world)
-    {
-      name = aname;
-      description = desc;
-      this.type = type;
-      probStartTime = start;
-      probDuration = duration;
-      appliances = new Vector<Appliance>();
-      probApplianceUsed = new Vector<Double>();
-      nTimesGivenDay = new HashMap<String, ProbabilityDistribution>();
-      simulationWorld = world;
-    }
+		public Builder times(String day, ProbabilityDistribution probDist) {
+			nTimesGivenDay.put(day, probDist);
+			return this;
+		}
 
-    public Builder appliances (Appliance... apps)
-    {
-      for (Appliance app: apps) {
-        appliances.add(app);
-      }
-      return this;
-    }
+		public Activity build () {
+			return new Activity(this);
+		}
+	}
 
-    public Builder times (String day, ProbabilityDistribution timesPerDay)
-    {
-      nTimesGivenDay.put(day, timesPerDay);
-      return this;
-    }
+	private Activity (Builder builder) {
+		name = builder.name;
+		description = builder.description;
+		type = builder.type;
+		appliances = builder.appliances;
+		nTimesGivenDay = builder.nTimesGivenDay;
+		probStartTime = builder.probStartTime;
+		probDuration = builder.probDuration;
+		probApplianceUsed = builder.probApplianceUsed;
+		simulationWorld = builder.simulationWorld;
+	}
 
-    public Builder applianceUsed (Double... probs)
-    {
-      for (Double prob: probs) {
-        probApplianceUsed.add(prob);
-      }
-      return this;
-    }
+	public void addAppliance (String day, Appliance a, Double prob) {
+		Vector<Appliance> vector = appliances.get(day);
+		if(vector == null) {
+			vector = new Vector<Appliance>(); 
+		}
+		vector.add(a);
+		Vector<Double> probVector = probApplianceUsed.get(day);
+		if(probVector == null) {
+			probVector = new Vector<Double>(); 
+		}
+		probVector.add(prob);
+	}
+	
+	public void addStartTime(String day, ProbabilityDistribution probDist) {
+		probStartTime.put(day, probDist);
+	}
+	
+	public void addDuration(String day, ProbabilityDistribution probDist) {
+		probDuration.put(day, probDist);
+	}
 
-    public Activity build ()
-    {
-      return new Activity(this);
-    }
-  }
+	public void addTimes(String day, ProbabilityDistribution probDist) {
+		nTimesGivenDay.put(day, probDist);
+	}
 
-  private Activity (Builder builder)
-  {
-    name = builder.name;
-    description = builder.description;
-    type = builder.type;
-    appliances = builder.appliances;
-    nTimesGivenDay = builder.nTimesGivenDay;
-    probStartTime = builder.probStartTime;
-    probDuration = builder.probDuration;
-    probApplianceUsed = builder.probApplianceUsed;
-    simulationWorld = builder.simulationWorld;
-  }
+	public String getName () {
+		return name;
+	}
 
-  public void addAppliance (Appliance a, Double prob)
-  {
-    appliances.add(a);
-    probApplianceUsed.add(prob);
-  }
+	public String getDescription () {
+		return description;
+	}
 
-  public String getName ()
-  {
-    return name;
-  }
+	public String getType () {
+		return type;
+	}
 
-  public String getDescription ()
-  {
-    return description;
-  }
+	public SimulationWorld getSimulationWorld () {
+		return simulationWorld;
+	}
 
-  public String getType ()
-  {
-    return type;
-  }
+	public void
+		updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue) {
+		/*
+		 *  Decide on the number of times the activity is going to be activated
+		 *  during a day
+		 */
+		ProbabilityDistribution numOfTimesProb;
+		ProbabilityDistribution startProb;
+		ProbabilityDistribution durationProb;
+		
+		Vector<Double> probVector;
+		Vector<Appliance> vector;
 
-  public SimulationWorld getSimulationWorld ()
-  {
-    return simulationWorld;
-  }
+		if (simulationWorld.getSimCalendar().isWeekend(tick)) {
+			System.out.println("isWeekend");
+			numOfTimesProb = nTimesGivenDay.get("nonworking");
+			startProb = probStartTime.get("nonworking");
+			durationProb = probDuration.get("nonworking");
+			probVector = probApplianceUsed.get("nonworking");
+			vector = appliances.get("nonworking");
+		} else {
+			System.out.println("isNotWeekend");
+			numOfTimesProb = nTimesGivenDay.get("working");
+			startProb = probStartTime.get("working");
+			durationProb = probDuration.get("working");
+			probVector = probApplianceUsed.get("working");
+			vector = appliances.get("working");
+		}
 
-  public void
-    updateDailySchedule (int tick, PriorityBlockingQueue<Event> queue)
-  {
-    /*
-     *  Decide on the number of times the activity is going to be activated
-     *  during a day
-     */
-    ProbabilityDistribution numOfTimesProb;
-
-    if (simulationWorld.getSimCalendar().isWeekend(tick)) {
-      numOfTimesProb = nTimesGivenDay.get("weekend");
-    }
-    else {
-      numOfTimesProb = nTimesGivenDay.get("weekday");
-    }
-
-    int numOfTimes = numOfTimesProb.getPrecomputedBin();
-    logger.trace(numOfTimes);
-    /*
-     * Decide the duration and start time for each activity activation
-     */
-    while (numOfTimes > 0) {
-      int duration = Math.max(probDuration.getPrecomputedBin(), 1);
-      int startTime = probStartTime.getPrecomputedBin();
-      // Select appliances to be switched on
-      for (int j = 0; j < appliances.size(); j++) {
-        if (RNG.nextDouble() < probApplianceUsed.get(j).doubleValue()) {
-          Appliance a = appliances.get(j);
-          int appDuration = duration;
-          int appStartTime = startTime;
-          String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
-          Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
-          queue.offer(eOn);
-          Event eOff =
-            new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a,
-                      hash);
-          queue.offer(eOff);
-        }
-      }
-      numOfTimes--;
-    }
-  }
+		System.out.println("POINT A");
+		System.out.println(numOfTimesProb.getNumberOfParameters());
+		int numOfTimes = numOfTimesProb.getPrecomputedBin();
+		System.out.println("POINT B");
+		System.out.println(numOfTimes);
+		/*
+		 * Decide the duration and start time for each activity activation
+		 */
+		while (numOfTimes > 0) {
+			int duration = Math.max(durationProb.getPrecomputedBin(), 1);
+			int startTime = startProb.getPrecomputedBin();
+			// Select appliances to be switched on
+			for (int j = 0; j < appliances.size(); j++) {
+				if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
+					Appliance a = vector.get(j);
+					int appDuration = duration;
+					int appStartTime = startTime;
+					String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
+					Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
+					queue.offer(eOn);
+					Event eOff =
+							new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
+					queue.offer(eOff);
+				}
+			}
+			numOfTimes--;
+		}
+	}
 
 }

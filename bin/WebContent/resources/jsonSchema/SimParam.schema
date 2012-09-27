@@ -1,0 +1,57 @@
+{
+    "name": "SimulationParameters",
+    "type": "object",
+    "description": "The simulation parameters of a scenario",
+    "properties": {
+        "scn_id": {
+            "type": "string",
+            "description": "The ObjectId of the Scenario these Simulation Parameters belong ",
+            "optional": false
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of the Simulation Parameters",
+            "optional": true
+        },        
+        "description": {
+            "type": "string",
+            "description": "Description of the Simulation Parameters",
+            "optional": true
+        },
+        "numberOfDay": {
+            "type": "integer",
+            "description": "The number of days that the simulation will run",
+            "optional": true
+        },
+        "locationInfo": {
+            "type": "string",
+            "description": "Information about the location",
+            "optional": true
+        }, 
+        "calendar": {
+            "type": "object",
+            "description": "Calendar",
+            "optional": true,
+            "properties" : {
+                "dayOfMonth" : {
+                    "type": "integer",
+                    "optional": true
+                },
+                "dayOfWeek" : {
+                    "type": "string",
+                    "optional": true                
+                },
+                "month" : {
+                     "type": "integer",
+                    "optional": true               
+                },
+                "year" : {
+                    "type": "integer",
+                    "optional": true                
+                }                
+            },
+            "optional": true
+        }               
+    },
+    "additionalProperties" : false
+}

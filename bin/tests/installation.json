@@ -1,0 +1,13 @@
+ {
+        "name" : "Installation 1",
+        "type" : "Installation Type",
+        "description" : "Installation description",
+        "scenario_id": "5006a550e4b05ff53eb83fe0",
+        "belongsToInstallation" : "5006a550e4b05ff53eb83fe4",
+        "location" : "Description of location",
+        "x" : 234.232,
+        "y" : 12.14
+ }
+ 
+ 
+ 

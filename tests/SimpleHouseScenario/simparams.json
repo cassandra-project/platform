@@ -1,6 +1,6 @@
 {
         "name" : "One day of sim time",
-        "numberOfDay" : 1,
+        "numberOfDays" : 1,
         "scn_id" : "500d1133e4b087bdfeda0900",
         "locationInfo" : "Thessaloniki",
         "calendar" : {

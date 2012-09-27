@@ -1,0 +1,11 @@
+    {
+    "name" : "Cleaning",
+    "type" : "start",
+    "distrType" : "normal",
+    "parameters" : [
+        {
+            "mean" : 800.0,
+            "std" : 0.00002
+        }
+     ]
+}

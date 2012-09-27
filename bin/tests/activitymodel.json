@@ -1,0 +1,12 @@
+ {
+        "name" : "Cooking Model5",
+        "type" : "Coocking",
+        "description" : "Bla bla5",
+        "shiftable" : true,
+        "day_type" : "working",
+        "act_id" : "4ff5bca7e4b0082c63d08dfb",
+        "containsAppliances" : ["4ff5bca7e4b0082c63d08df9"],
+        "duration" : "4ffafb1ae4b0540961e1f71c",
+        "startTime" : "4ffafb1ae4b0540961e1f71c",
+        "repeatsNrOfTime" : "4ffafb1ae4b0540961e1f71c"
+ }

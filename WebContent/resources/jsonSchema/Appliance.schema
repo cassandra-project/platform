@@ -6,7 +6,7 @@
         "inst_id": {
             "type": "string",
             "description": "The ObjectId of the Installation this Appliance belongs",
-            "optional": false
+            "optional": true
         },
         "name": {
             "type": "string",

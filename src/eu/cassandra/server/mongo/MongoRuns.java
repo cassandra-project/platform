@@ -16,8 +16,10 @@
 */
 package eu.cassandra.server.mongo;
 
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoRuns {
@@ -31,15 +33,15 @@ public class MongoRuns {
 	 * @param id
 	 * @return
 	 */
-	public String getRuns(String project_id) {
+	public String getRuns(String project_id, boolean count) {
 		if(project_id == null) {
-			return new MongoDBQueries().createJSONError(
+			return new JSONtoReturn().createJSONError(
 					"Only the Runs of a particular Project can be retrieved", 
 					new RestQueryParamMissingException("prj_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(COL_RUNS,"project_id", project_id, 
-					"Runs retrieved successfully").toString();
+					"Runs retrieved successfully",count).toString();
 		}
 	}
 	

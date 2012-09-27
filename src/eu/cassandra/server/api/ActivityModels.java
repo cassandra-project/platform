@@ -46,8 +46,8 @@ public class ActivityModels {
 	 * @return
 	 */
 	@GET
-	public String getActivityModels(@QueryParam("act_id") String act_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivityModels().getActivityModels(act_id));
+	public String getActivityModels(@QueryParam("act_id") String act_id, @QueryParam("count") boolean count) {
+		return PrettyJSONPrinter.prettyPrint(new MongoActivityModels().getActivityModels(act_id,count));
 	}
 
 

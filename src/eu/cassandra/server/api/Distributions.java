@@ -39,8 +39,8 @@ public class Distributions {
 	 * @return
 	 */
 	@GET
-	public String getDistributions(@QueryParam("actmod_id") String actmod_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDistributions().getDistributions(actmod_id));
+	public String getDistributions(@QueryParam("actmod_id") String actmod_id, @QueryParam("count") boolean count) {
+		return PrettyJSONPrinter.prettyPrint(new MongoDistributions().getDistributions(actmod_id, count));
 	}
 	
 	/**

@@ -42,7 +42,7 @@
                 "type" : "object",
                 "description" : "Propbability of appearence for entities",
                 "properties" : {           
-                    "app_id" : {
+                    "entity_id" : {
                         "type": "string",
                         "description": "The appliance the value refers to"
                     },

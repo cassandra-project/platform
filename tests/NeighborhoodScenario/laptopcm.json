@@ -1,0 +1,16 @@
+ {
+        "name": "Laptop consumption model",
+        "app_id" : "5045e1c6e4b058c3f86c32e3",
+        "model" : 
+            {
+                "n" : 0,
+                "params" : [ { 
+                            "n" : 1, 
+                            "values" : [
+                                {"p" : 100, "d" : 10, "s": 0}
+                            ]
+                            }
+                ]
+            }
+        
+}

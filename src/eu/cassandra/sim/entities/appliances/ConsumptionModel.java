@@ -48,11 +48,19 @@ public class ConsumptionModel {
 			patterns[i] = new ArrayList<Tripplet>(tripplets);
 			for(int j = 0; j < tripplets; j++) {
 				Tripplet t = new Tripplet();
-				t.p = ((Double)((DBObject)values.get(j)).get("p")).doubleValue();
+				try {
+					t.p = ((Double)((DBObject)values.get(j)).get("p")).doubleValue();
+				} catch(ClassCastException e) {
+					t.p = (double)((Integer)((DBObject)values.get(j)).get("p")).intValue();
+				} 
 				t.d = ((Integer)((DBObject)values.get(j)).get("d")).intValue();
 				patternDuration[i] += t.d; 
 				totalDuration += (n[i] * t.d);
-				t.s = ((Double)((DBObject)values.get(j)).get("s")).doubleValue();
+				try {
+					t.s = ((Double)((DBObject)values.get(j)).get("s")).doubleValue();
+				} catch(ClassCastException e) {
+					t.s = (double)((Integer)((DBObject)values.get(j)).get("s")).intValue();
+				}
 				patterns[i].add(t);
 			}
 		}

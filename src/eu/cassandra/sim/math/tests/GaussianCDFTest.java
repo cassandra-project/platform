@@ -14,11 +14,6 @@
    limitations under the License.
 */
 package eu.cassandra.sim.math.tests;
-/**
- * @author Konstantina Valogianni 
- * @version platform
- * @since 2012-11-07
- */
 import static org.junit.Assert.*;
 
 import org.junit.Test;

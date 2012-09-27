@@ -47,9 +47,14 @@ public class TestMongo {
 	}
 
 	public TestMongo() {
-		testCreate();
-		getData("http://localhost:8080/cassandra/api/prj/","4ff410c8e4b0c338f131de9e",PROJECTS);
-		getData("http://localhost:8080/cassandra/api/distr/","4ff46ab0e4b0560065300d36",DISTRIBUTIONS);
+//		testCreate();
+//		getData("http://localhost:8080/cassandra/api/prj/","4ff410c8e4b0c338f131de9e",PROJECTS);
+//		getData("http://localhost:8080/cassandra/api/distr/","4ff46ab0e4b0560065300d36",DISTRIBUTIONS);
+		
+		
+		getData("http://localhost:8080/cassandra/api/scn/","5006a550e4b05ff53eb83fe0",SCENARIOS);
+		
+		
 	}
 
 	/**

@@ -48,8 +48,8 @@ public class ConsumptionModels {
 	 * @return
 	 */
 	@GET
-	public String getConsumptionModels(@QueryParam("app_id") String app_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().getConsumptionModels(app_id));
+	public String getConsumptionModels(@QueryParam("app_id") String app_id, @QueryParam("count") boolean count) {
+		return PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().getConsumptionModels(app_id,count));
 	}
 
 
