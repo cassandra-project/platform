@@ -18,15 +18,15 @@ package eu.cassandra.sim.entities.people;
 import java.util.Vector;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import com.mongodb.BasicDBObject;
+
+import eu.cassandra.server.mongo.MongoPersons;
 import eu.cassandra.sim.Event;
+import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.installations.Installation;
 
-public class Person
-{
-  private final String id;
-  private final String name;
-  private final String description;
-  private final String type;
+public class Person extends Entity {
+
   private final Installation house;
   private Vector<Activity> activities;
 
@@ -79,26 +79,6 @@ public class Person
     	}
     }
 
-  public String getId ()
-  {
-    return id;
-  }
-
-  public String getName ()
-  {
-    return name;
-  }
-
-  public String getDescription ()
-  {
-    return description;
-  }
-
-  public String getType ()
-  {
-    return type;
-  }
-
   public Installation getInstallation ()
   {
     return house;
@@ -108,4 +88,19 @@ public class Person
   {
     return activities;
   }
+
+  	@Override
+  	public BasicDBObject toDBObject() {
+  		BasicDBObject obj = new BasicDBObject();
+  		obj.put("name", name);
+  		obj.put("type", type);
+  		obj.put("description", description);
+  		obj.put("inst_id", parentId);
+  		return obj;
+	}
+
+	@Override
+	public String getCollection() {
+		return MongoPersons.COL_PERSONS;
+	}
 }
