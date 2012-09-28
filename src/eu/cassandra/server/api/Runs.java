@@ -114,7 +114,7 @@ public class Runs {
 			query.put("_id", new ObjectId(smp_id));			
 			DBObject simParams = DBConn.getConn().getCollection(MongoSimParam.COL_SIMPARAM).findOne(query);
 			if(simParams == null) {
-				return "No simulation params found\n";
+				return "{ \"message\": \"No simulation params found\" }";
 			}
 			db.getCollection(MongoSimParam.COL_SIMPARAM).insert(simParams);
 			scenario.put("sim_params", simParams);
@@ -142,7 +142,7 @@ public class Runs {
 			query.put("scenario_id", scn_id);
 			DBCursor cursor = DBConn.getConn().getCollection(MongoInstallations.COL_INSTALLATIONS).find(query);
 			if(cursor.size() == 0) {
-				return "No istallations found\n";
+				return "{ \"message\": \"No istallations found\" }";
 			}
 			int countInst = 0;
 			while(cursor.hasNext()) {
@@ -248,16 +248,21 @@ public class Runs {
 			
 			Simulation sim = new Simulation(scenario.toString(), dbname);
 			sim.setup();
-//			ExecutorService executor = (ExecutorService )context.getAttribute("MY_EXECUTOR");
-//			executor.submit(sim);
+			ExecutorService executor = (ExecutorService )context.getAttribute("MY_EXECUTOR");
+			executor.submit(sim);
+			BasicDBObject run = new BasicDBObject();
+			run.put("_id", objid);
+			run.put("started", System.currentTimeMillis());
+			run.put("ended", -1);
+			run.put("percentage", 0);
+			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
+			return "{ \"message\": \"Sim creation successful \" }";
 		} catch (UnknownHostException | MongoException e1) {
-			e1.printStackTrace();
+			return "{ \"message\": \"Sim creation failed " + e1.getMessage() + "\" }";
 		} catch(Exception e) {
 			e.printStackTrace();
-			return "Sim creation failed " + e.getMessage();
+			return "{ \"message\": \"Sim creation failed " + e.getMessage() + "\" }";
 		}
-		return "Simulation Submitted\n";
-//		return PrettyJSONPrinter.prettyPrint(new MongoRuns().createRun(message));
 	}
 
 }

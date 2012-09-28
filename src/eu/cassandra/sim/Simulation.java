@@ -33,6 +33,7 @@ import eu.cassandra.server.mongo.MongoActivityModels;
 import eu.cassandra.server.mongo.MongoDistributions;
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.MongoResults;
+import eu.cassandra.server.mongo.MongoRuns;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
@@ -102,6 +103,10 @@ public class Simulation implements Runnable {
 
   	public void run () {
   		long startTime = System.currentTimeMillis();
+  		int percentage = 0;
+  		DBObject query = new BasicDBObject();
+  		query.put("_id", new ObjectId(dbname));
+  		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   		while (tick < endTick) {
 //  			System.out.println(tick);
   			// If it is the beginning of the day create the events
@@ -151,8 +156,13 @@ public class Simulation implements Runnable {
   			}
   			m.addAggregatedTickResult(tick, sumPower, 0);
   			tick++;
+  			percentage = (int)(tick * 100.0 / endTick);
+  			objRun.put("percentage", percentage);
+  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   		}
   		long endTime = System.currentTimeMillis();
+  		objRun.put("ended", endTime);
+  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
   	}
 
