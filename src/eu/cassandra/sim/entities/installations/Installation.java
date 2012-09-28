@@ -16,17 +16,18 @@
 package eu.cassandra.sim.entities.installations;
 
 import java.util.Vector;
+
 import java.util.concurrent.PriorityBlockingQueue;
 
+import com.mongodb.BasicDBObject;
+
+import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.sim.Event;
+import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.people.Person;
 
-public class Installation {
-	private final String id;
-	private final String name;
-	private final String description;
-	private final String type;
+public class Installation extends Entity {
 	private Vector<Person> persons;
 	private Vector<Appliance> appliances;
 	private Vector<Installation> subInstallations;
@@ -103,25 +104,9 @@ public class Installation {
 	public double getCurrentPower() {
 		return currentPower;
 	}
-	
-    public String getId() {
-        return id;
-    }
     
     public Vector<Person> getPersons() {
     	return persons;    
-    }
-
-    public String getName () {
-    	return name;
-    }
-
-    public String getDescription () {
-    	return description;
-    }
-
-    public String getType () {
-    	return type;
     }
 
     public void addPerson (Person person) {
@@ -154,6 +139,24 @@ public class Installation {
 
     public LocationInfo getLocationInfo () {
     	return locationInfo;
+    }
+    
+    public BasicDBObject toDBObject() {
+    	BasicDBObject obj = new BasicDBObject();
+    	obj.put("name", name);
+    	obj.put("description", description);
+    	obj.put("type", type);
+    	obj.put("scenarioId", parentId);
+    	if(locationInfo != null) {
+    		obj.put("location", locationInfo.getName());
+    		obj.put("x", locationInfo.getLocation().getLatitude());
+    		obj.put("y", locationInfo.getLocation().getLongitude());
+    	}
+    	return obj;
+    }
+    
+    public String getCollection() {
+    	return MongoInstallations.COL_INSTALLATIONS;
     }
 
 }

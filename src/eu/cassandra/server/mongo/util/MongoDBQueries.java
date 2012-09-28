@@ -20,7 +20,6 @@ import java.util.Vector;
 
 import org.bson.types.ObjectId;
 
-
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;

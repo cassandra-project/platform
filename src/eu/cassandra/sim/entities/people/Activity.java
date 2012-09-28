@@ -21,25 +21,32 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import org.apache.log4j.Logger;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
+import eu.cassandra.server.mongo.MongoActivities;
 import eu.cassandra.sim.Event;
 import eu.cassandra.sim.SimulationWorld;
+import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.math.ProbabilityDistribution;
 import eu.cassandra.sim.utilities.RNG;
 import eu.cassandra.sim.utilities.Utils;
 
-public class Activity {
+public class Activity extends Entity {
 	static Logger logger = Logger.getLogger(Activity.class);
 
-	private final String name;
-	private final String description;
-	private final String type;
 	private final HashMap<String, ProbabilityDistribution> nTimesGivenDay;
 	private final HashMap<String, ProbabilityDistribution> probStartTime;
 	private final HashMap<String, ProbabilityDistribution> probDuration;
 	private HashMap<String, Vector<Appliance>> appliances;
 	private HashMap<String, Vector<Double>> probApplianceUsed;
 	private SimulationWorld simulationWorld;
+	
+	private Vector<DBObject> activityModels;
+	private Vector<DBObject> starts;
+	private Vector<DBObject> durations;
+	private Vector<DBObject> times;
 
 	public static class Builder {
 		// Required parameters
@@ -52,6 +59,10 @@ public class Activity {
 		// Optional parameters: not available
 		private HashMap<String, Vector<Appliance>> appliances;
 		private HashMap<String, Vector<Double>> probApplianceUsed;
+		private Vector<DBObject> activityModels;
+		private Vector<DBObject> starts;
+		private Vector<DBObject> durations;
+		private Vector<DBObject> times;
 		private SimulationWorld simulationWorld;
 
 		public Builder (String aname, String adesc, String atype, SimulationWorld world) {
@@ -63,6 +74,10 @@ public class Activity {
 			nTimesGivenDay = new HashMap<String, ProbabilityDistribution>();
 			probStartTime = new HashMap<String, ProbabilityDistribution>();
 			probDuration = new HashMap<String, ProbabilityDistribution>();
+			activityModels = new Vector<DBObject>();
+			starts = new Vector<DBObject>();
+			durations = new Vector<DBObject>();
+			times = new Vector<DBObject>();
 			simulationWorld = world;
 		}
 		
@@ -96,6 +111,10 @@ public class Activity {
 		probDuration = builder.probDuration;
 		probApplianceUsed = builder.probApplianceUsed;
 		simulationWorld = builder.simulationWorld;
+		starts = builder.starts;
+		times = builder.times;
+		durations = builder.durations;
+		activityModels = builder.activityModels;
 	}
 
 	public void addAppliance (String day, Appliance a, Double prob) {
@@ -113,6 +132,38 @@ public class Activity {
 	
 	public void addStartTime(String day, ProbabilityDistribution probDist) {
 		probStartTime.put(day, probDist);
+	}
+	
+	public void addStarts(DBObject o) {
+		starts.add(o);
+	}
+	
+	public void addDurations(DBObject o) {
+		durations.add(o);
+	}
+	
+	public void addTimes(DBObject o) {
+		times.add(o);
+	}
+	
+	public void addModels(DBObject o) {
+		activityModels.add(o);
+	}
+	
+	public Vector<DBObject> getModels() {
+		return activityModels;
+	}
+	
+	public Vector<DBObject> getStarts() {
+		return starts;
+	}
+	
+	public Vector<DBObject> getTimes() {
+		return times;
+	}
+	
+	public Vector<DBObject> getDurations() {
+		return durations;
 	}
 	
 	public void addDuration(String day, ProbabilityDistribution probDist) {
@@ -195,6 +246,21 @@ public class Activity {
 			}
 			numOfTimes--;
 		}
+	}
+
+	@Override
+	public BasicDBObject toDBObject() {
+		BasicDBObject obj = new BasicDBObject();
+		obj.put("name", name);
+		obj.put("description", description);
+		obj.put("type", type);
+		obj.put("pers_id", parentId);
+		return obj;
+	}
+
+	@Override
+	public String getCollection() {
+		return MongoActivities.COL_ACTIVITIES;
 	}
 
 }

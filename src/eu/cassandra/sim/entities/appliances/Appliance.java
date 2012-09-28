@@ -15,6 +15,10 @@
 */
 package eu.cassandra.sim.entities.appliances;
 
+import com.mongodb.BasicDBObject;
+
+import eu.cassandra.server.mongo.MongoAppliances;
+import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel.Tripplet;
 import eu.cassandra.sim.entities.installations.Installation;
 import eu.cassandra.sim.utilities.Constants;
@@ -28,11 +32,7 @@ import eu.cassandra.sim.utilities.RNG;
  * @author kyrcha
  * @version prelim
  */
-public class Appliance {
-	private final String id;
-	private final String description;
-	private final String type;
-    private final String name;
+public class Appliance extends Entity {
 	private final ConsumptionModel cm;
 	private final double standByConsumption;
 	private final boolean base;
@@ -92,20 +92,16 @@ public class Appliance {
 		who = builder.who;
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
 	public Installation getInstallation() {
 		return installation;
 	}
 
 	public boolean isInUse() {
 		return inUse;
+	}
+	
+	public ConsumptionModel getConsumptionModel() {
+		return cm;
 	}
 
 	public double getPower(long tick) {
@@ -187,6 +183,21 @@ public class Appliance {
 		for(int i = 0; i < 200; i++) {
 			System.out.println(freezer.getPower(i));
 		}
+	}
+
+	@Override
+	public BasicDBObject toDBObject() {
+		BasicDBObject obj = new BasicDBObject();
+		obj.put("name", name);
+		obj.put("description", description);
+		obj.put("standby_consumption", standByConsumption);
+		obj.put("inst_id", parentId);
+		return obj;
+	}
+
+	@Override
+	public String getCollection() {
+		return MongoAppliances.COL_APPLIANCES;
 	}
 	
 }
