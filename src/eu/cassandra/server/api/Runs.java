@@ -72,8 +72,9 @@ public class Runs {
 	 * @return
 	 */
 	@GET
-	public String getRuns(@QueryParam("prj_id") String prj_id, @QueryParam("count") boolean count) {
-		return PrettyJSONPrinter.prettyPrint(new MongoRuns().getRuns(prj_id,count));
+	public String getRuns(@QueryParam("prj_id") String prj_id, @QueryParam("count") boolean count,
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoRuns().getRuns(httpHeaders,prj_id,count));
 	}
 	
 	/**

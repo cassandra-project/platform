@@ -17,6 +17,8 @@
 package eu.cassandra.server.mongo;
 
 
+import javax.ws.rs.core.HttpHeaders;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
@@ -33,14 +35,14 @@ public class MongoSimParam {
 	 * @param cid
 	 * @return
 	 */
-	public String getSimParams(String scn_id, boolean count) {
+	public String getSimParams(HttpHeaders httpHeaders,String scn_id, boolean count) {
 		if(scn_id == null) {
 			return new JSONtoReturn().createJSONError(
 					"Only the Simulation Parameters of a particular Scenario can be retrieved", 
 					new RestQueryParamMissingException("scn_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(MongoSimParam.COL_SIMPARAM ,"scn_id", 
+			return new MongoDBQueries().getEntity(httpHeaders,MongoSimParam.COL_SIMPARAM ,"scn_id", 
 					scn_id, "Simulation Parameters retrieved successfully",count).toString();
 		}
 	}
@@ -51,8 +53,8 @@ public class MongoSimParam {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getSimParam(String id) {
-		return new MongoDBQueries().getEntity(MongoSimParam.COL_SIMPARAM,"_id", 
+	public String getSimParam(HttpHeaders httpHeaders, String id) {
+		return new MongoDBQueries().getEntity(httpHeaders,MongoSimParam.COL_SIMPARAM,"_id", 
 				id, "Simulation Parameter retrieved successfully").toString();
 	}
 

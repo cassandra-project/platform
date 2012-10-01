@@ -23,6 +23,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoPersons;
@@ -38,8 +40,9 @@ public class Person {
 	 * @return
 	 */
 	@GET
-	public String getPerson(@PathParam("pers_id") String pers_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoPersons().getPerson(pers_id));
+	public String getPerson(@PathParam("pers_id") String pers_id,
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoPersons().getPerson(httpHeaders,pers_id));
 	}
 
 	/**

@@ -20,6 +20,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
@@ -72,7 +74,9 @@ public class CopyEntities {
 			@QueryParam("toAppID") String toAppID,
 			@QueryParam("toInstID") String toInstID,
 			@QueryParam("toPersID") String toPersID,
-			@QueryParam("toScnID") String toScnID)
+			@QueryParam("toScnID") String toScnID,
+			
+			@Context HttpHeaders httpHeaders)
 	{
 		//Check if the number of parameters is correct
 		int counter1 = 0;
@@ -101,7 +105,7 @@ public class CopyEntities {
 		}
 
 		String answer = "";
-		MongoCopyEntities copy = new MongoCopyEntities();
+		MongoCopyEntities copy = new MongoCopyEntities(httpHeaders);
 		try {
 		if(scnID != null && toPrjID != null) //Scenario to Project
 			answer = copy.copyScenarioToProject(scnID, toPrjID);

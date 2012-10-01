@@ -23,6 +23,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoInstallations;
@@ -40,8 +42,9 @@ public class Installation {
 	 * @return
 	 */
 	@GET
-	public String getInstallation(@PathParam("inst_id") String inst_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().getInstallation(inst_id));
+	public String getInstallation(@PathParam("inst_id") String inst_id,
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().getInstallation(httpHeaders,inst_id));
 	}
 
 	/**

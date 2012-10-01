@@ -22,6 +22,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoPersons;
@@ -39,8 +41,9 @@ public class Persons {
 	 * @return
 	 */
 	@GET
-	public String getPersons(@QueryParam("inst_id") String inst_id, @QueryParam("count") boolean count) {
-		return PrettyJSONPrinter.prettyPrint(new MongoPersons().getPersons(inst_id, count));
+	public String getPersons(@QueryParam("inst_id") String inst_id, @QueryParam("count") boolean count,
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoPersons().getPersons(httpHeaders,inst_id, count));
 	}
 	
 	/**

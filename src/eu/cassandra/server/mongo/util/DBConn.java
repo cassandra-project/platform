@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.server.mongo.util;
 
 import java.net.UnknownHostException;
@@ -27,19 +27,19 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 
 public class DBConn {
-	
+
 	private static String DB_NAME = "test";
-	
+
 	private static String DB_HOST = "localhost";
-	
+
 	private static DBConn dbConn = new DBConn();
-	
+
 	private static HashMap<String,DB> dbRuns = new HashMap<String,DB>();
-	
+
 	private Mongo m;
-	
+
 	private DB db;
-	
+
 	private DBConn() {
 		try {
 			InitialContext ic = new InitialContext();
@@ -55,13 +55,15 @@ public class DBConn {
 		}
 		db = m.getDB(DB_NAME);
 	}
-	
+
 	public static DB getConn() {
 		return dbConn.db;
 	}
-	
+
 	public static DB getConn(String dbname) {
-		if(dbRuns.containsKey(dbname)) {
+		if(dbname == null)
+			return getConn();
+		else if(dbRuns.containsKey(dbname)) {
 			return dbRuns.get(dbname);
 		} else {
 			try {

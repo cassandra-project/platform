@@ -23,6 +23,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoScenarios;
@@ -40,8 +42,9 @@ public class Scenario {
 	 * @return
 	 */
 	@GET
-	public String getScenario(@PathParam("scn_id") String scn_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().getScenario(scn_id));
+	public String getScenario(@PathParam("scn_id") String scn_id,
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().getScenario(httpHeaders,scn_id));
 	}
 
 	/**

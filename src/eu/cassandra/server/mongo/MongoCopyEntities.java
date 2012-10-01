@@ -2,6 +2,8 @@ package eu.cassandra.server.mongo;
 
 import java.util.Vector;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -15,6 +17,9 @@ import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 public class MongoCopyEntities {
 
+	public MongoCopyEntities(HttpHeaders httpHeaders) {
+		
+	}
 	
 	private void addInfoFroCascadedCopy(DBObject res,DBObject answer,String newID) {
 		if(answer == null)

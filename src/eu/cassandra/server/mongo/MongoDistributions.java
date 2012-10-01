@@ -17,6 +17,8 @@
 package eu.cassandra.server.mongo;
 
 
+import javax.ws.rs.core.HttpHeaders;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
@@ -45,9 +47,9 @@ public class MongoDistributions {
 	 * @param id
 	 * @return
 	 */
-	public String getDistribution(String id) {
+	public String getDistribution(HttpHeaders httpHeaders,String id) {
 		System.out.println(id);
-		return new MongoDBQueries().getEntity(COL_DISTRIBUTIONS,"_id", 
+		return new MongoDBQueries().getEntity(httpHeaders,COL_DISTRIBUTIONS,"_id", 
 				id, "Distribution retrieved successfully").toString();
 	}
 
@@ -57,14 +59,14 @@ public class MongoDistributions {
 	 * @param scn_id
 	 * @return
 	 */
-	public String getDistributions(String actmod_id, boolean count) {
+	public String getDistributions(HttpHeaders httpHeaders, String actmod_id, boolean count) {
 		if(actmod_id == null) {
 			return new JSONtoReturn().createJSONError(
 					"Only the Distributions of a particular Activity Model can be retrieved", 
 					new RestQueryParamMissingException("actmod_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(COL_DISTRIBUTIONS,"actmod_id", 
+			return new MongoDBQueries().getEntity(httpHeaders,COL_DISTRIBUTIONS,"actmod_id", 
 					actmod_id, "Distributions retrieved successfully",count).toString();
 		}
 	}

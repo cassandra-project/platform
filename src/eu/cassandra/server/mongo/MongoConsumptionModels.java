@@ -17,6 +17,8 @@
 package eu.cassandra.server.mongo;
 
 
+import javax.ws.rs.core.HttpHeaders;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
@@ -34,8 +36,8 @@ public class MongoConsumptionModels {
 	 * @param id
 	 * @return
 	 */
-	public String getConsumptionModel(String id) {
-		return new MongoDBQueries().getEntity(COL_CONSMODELS,"_id", 
+	public String getConsumptionModel(HttpHeaders httpHeaders,String id) {
+		return new MongoDBQueries().getEntity(httpHeaders,COL_CONSMODELS,"_id", 
 				id, "Consumption Model retrieved successfully").toString();
 	}
 
@@ -45,14 +47,14 @@ public class MongoConsumptionModels {
 	 * @param app_id
 	 * @return
 	 */
-	public String getConsumptionModels(String app_id, boolean count) {
+	public String getConsumptionModels(HttpHeaders httpHeaders,String app_id, boolean count) {
 		if(app_id == null) {
 			return new JSONtoReturn().createJSONError(
 					"Only the Consumption Models of a particular Appliance can be retrieved", 
 					new RestQueryParamMissingException("app_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(COL_CONSMODELS,"app_id", 
+			return new MongoDBQueries().getEntity(httpHeaders,COL_CONSMODELS,"app_id", 
 					app_id, "Consumption Models retrieved successfully",count).toString();
 		}
 	}

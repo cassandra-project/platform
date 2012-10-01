@@ -21,6 +21,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.util.MongoDBQueries;
@@ -38,7 +40,8 @@ public class Results {
 			@QueryParam("metric") String metric,
 			@QueryParam("aggr_unit") String aggr_unit,
 			@QueryParam("from") String from,
-			@QueryParam("to") String to) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDBQueries().mongoResultQuery(run_id,inst_id,metric,aggr_unit,from,to).toString());
+			@QueryParam("to") String to,
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoDBQueries().mongoResultQuery(httpHeaders,run_id,inst_id,metric,aggr_unit,from,to).toString());
 	}
 }
