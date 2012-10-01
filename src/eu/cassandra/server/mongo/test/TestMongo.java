@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.server.mongo.test;
 
 import java.io.BufferedReader;
@@ -40,7 +40,7 @@ public class TestMongo {
 	private static final String ACT_MODELS = "act_models";
 	private static final String APPLIANCES = "appliances";
 	private static final String PERSONS = "persons";
-	private static final String DISTRIBUTIONS = "distributions";
+//	private static final String DISTRIBUTIONS = "distributions";
 
 	public static void main(String args[]) {
 		new TestMongo();
@@ -48,13 +48,13 @@ public class TestMongo {
 
 	public TestMongo() {
 		testCreate();
-//		getData("http://localhost:8080/cassandra/api/prj/","4ff410c8e4b0c338f131de9e",PROJECTS);
-//		getData("http://localhost:8080/cassandra/api/distr/","4ff46ab0e4b0560065300d36",DISTRIBUTIONS);
-		
-		
+		//		getData("http://localhost:8080/cassandra/api/prj/","4ff410c8e4b0c338f131de9e",PROJECTS);
+		//		getData("http://localhost:8080/cassandra/api/distr/","4ff46ab0e4b0560065300d36",DISTRIBUTIONS);
+
+
 		//getData("http://localhost:8080/cassandra/api/scn/","5006a550e4b05ff53eb83fe0",SCENARIOS);
-		
-		
+
+
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class TestMongo {
 		httpConnection("http://localhost:8080/cassandra/api/smp","POST","tests/simparam2.json","scn_id",id);
 
 		System.out.println("\n\nCreating Installations");
-		String t = httpConnection("http://localhost:8080/cassandra/api/inst","POST","tests/installation.json",new String[] {"scenario_id","belongsToInstallation"},new String[] {id,id});
+		String t = httpConnection("http://localhost:8080/cassandra/api/inst","POST","tests/installation.json",new String[] {"scenario_id","belongsToInstallation"},new String[] {id,""});
 		DBObject objT = (DBObject)JSON.parse(t);
 		String idT = ((DBObject)objT.get("data")).get("_id").toString();
 		res = httpConnection("http://localhost:8080/cassandra/api/inst","POST","tests/installation2.json",new String[] {"scenario_id","belongsToInstallation"},new String[] {id,idT});
@@ -88,12 +88,10 @@ public class TestMongo {
 		System.out.println("\n\nCreating Appliances");
 		httpConnection("http://localhost:8080/cassandra/api/app","POST","tests/appliance.json",new String[] {"inst_id",},new String[] {id});
 		httpConnection("http://localhost:8080/cassandra/api/app","POST","tests/appliance2.json",new String[] {"inst_id",},new String[] {id});
-		
+
 		System.out.println("\n\nCreating Persons");
-		System.out.println(id);
 		String pers = httpConnection("http://localhost:8080/cassandra/api/pers","POST","tests/person.json","inst_id",id);
 		DBObject persObj = (DBObject)JSON.parse(pers);
-		System.out.println(persObj);
 		String  persID = ((DBObject)persObj.get("data")).get("_id").toString();
 
 		System.out.println("\n\nCreating Activities");
@@ -107,12 +105,10 @@ public class TestMongo {
 		httpConnection("http://localhost:8080/cassandra/api/actmod","POST","tests/activitymodel.json","act_id",id);
 		res = httpConnection("http://localhost:8080/cassandra/api/actmod","POST","tests/activitymodel2.json","act_id",id);
 		obj = (DBObject)JSON.parse(res);
-		System.out.println("\n\nTest: " + obj);
 		id = ((DBObject)obj.get("data")).get("_id").toString();
 
 		res = httpConnection("http://localhost:8080/cassandra/api/distr","POST","tests/distribution2.json",(String[])null,(String[])null);
 		obj = (DBObject)JSON.parse(res);
-		System.out.println(obj);
 		id = ((DBObject)obj.get("data")).get("_id").toString();
 		res =httpConnection("http://localhost:8080/cassandra/api/distr","POST","tests/distribution.json",new String[] {"duration","startTime","repeatsNrOfTimes"},new String[] {id,id,id});
 		System.out.println(res);
@@ -126,6 +122,7 @@ public class TestMongo {
 	 * @param type
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private BasicDBList getData(String url, String id, String type) {
 		String res = httpConnection(url +id,"GET");
 		DBObject obj = (DBObject)JSON.parse(res);
@@ -148,7 +145,7 @@ public class TestMongo {
 
 			if(type.equalsIgnoreCase(INSTALLATIONS))
 				getData("http://localhost:8080/cassandra/api/app?inst_id=", intID,APPLIANCES);
-			
+
 			if(type.equalsIgnoreCase(INSTALLATIONS))
 				getData("http://localhost:8080/cassandra/api/pers?inst_id=", intID,PERSONS);
 
@@ -240,17 +237,31 @@ public class TestMongo {
 			FileInputStream fstream = new FileInputStream(fileName);
 			DataInputStream in = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
 			while ((strLine = br.readLine()) != null)   {
 				if(keyToReplace != null && valueToReplace != null) {
 					strLine = strLine.trim();
 					for(int i=0;i<keyToReplace.length;i++) {
-						if(strLine.startsWith(keyToReplace[i])) {
-							String comma = "";
-							if(strLine.endsWith(","))
-								comma = ",";
-							strLine = keyToReplace[i] + " : \"" + valueToReplace[i] + "\"" + comma;
-							break;
+						if(strLine.startsWith("\"" + keyToReplace[i] + "\"")) {
+							if(valueToReplace[i].equalsIgnoreCase("")) {
+								strLine = "";
+							}
+							else {
+								String comma = "";
+								if(strLine.endsWith(","))
+									comma = ",";
+								strLine = "\"" + keyToReplace[i] + "\" : \"" + valueToReplace[i] + "\"" + comma;
+							}
+						}
+						else if(strLine.startsWith(keyToReplace[i])) {
+							if(valueToReplace[i].equalsIgnoreCase("")) {
+								strLine = "";
+							}
+							else {
+								String comma = "";
+								if(strLine.endsWith(","))
+									comma = ",";
+								strLine = keyToReplace[i] + " : \"" + valueToReplace[i] + "\"" + comma;
+							}
 						}
 					}
 				}
