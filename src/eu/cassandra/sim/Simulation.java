@@ -24,10 +24,18 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 
+import eu.cassandra.server.mongo.MongoActivityModels;
+import eu.cassandra.server.mongo.MongoDistributions;
+import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.MongoResults;
+import eu.cassandra.server.mongo.MongoRuns;
+import eu.cassandra.server.mongo.util.DBConn;
+import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel;
 import eu.cassandra.sim.entities.installations.Installation;
@@ -63,6 +71,8 @@ public class Simulation implements Runnable {
 	private SimulationWorld simulationWorld;
 	
 	private String scenario;
+	
+	private String dbname;
 
 	public Collection<Installation> getInstallations () {
 		return installations;
@@ -80,8 +90,10 @@ public class Simulation implements Runnable {
 		return endTick;
 	}
   
-	public Simulation(String ascenario) {
+	public Simulation(String ascenario, String adbname) {
 		scenario = ascenario;
+		dbname = adbname;
+		m = new MongoResults(dbname);
   		RNG.init();
 	}
   
@@ -90,23 +102,39 @@ public class Simulation implements Runnable {
   	}
 
   	public void run () {
+  		long startTime = System.currentTimeMillis();
+  		int percentage = 0;
+  		DBObject query = new BasicDBObject();
+  		query.put("_id", new ObjectId(dbname));
+  		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   		while (tick < endTick) {
-  			System.out.println(tick);
+//  			System.out.println(tick);
   			// If it is the beginning of the day create the events
   			if (tick % Constants.MIN_IN_DAY == 0) {
   				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
   				for (Installation installation: installations) {
-  					System.out.println(installation.getName());
+//  					System.out.println(installation.getName());
   					installation.updateDailySchedule(tick, queue);
   				}
-  				System.out.println("Daily queue size: " + queue.size() + "(" + 
-  				simulationWorld.getSimCalendar().isWeekend(tick) + ")");
+//  				System.out.println("Daily queue size: " + queue.size() + "(" + 
+//  				simulationWorld.getSimCalendar().isWeekend(tick) + ")");
   			}
 
   			Event top = queue.peek();
   			while (top != null && top.getTick() == tick) {
   				Event e = queue.poll();
-  				e.apply();
+  				boolean applied = e.apply();
+  				if(applied) {
+  					if(e.getAction() == Event.SWITCH_ON) {
+  						try {
+  							m.addOpenTick(e.getAppliance().getId(), tick);
+  						} catch (Exception exc) {
+  							exc.printStackTrace();
+  						}
+  					} else if(e.getAction() == Event.SWITCH_OFF){
+  						m.addCloseTick(e.getAppliance().getId(), tick);
+  					}
+  				}
   				top = queue.peek();
   			}
 
@@ -118,15 +146,24 @@ public class Simulation implements Runnable {
   			for(Installation installation: installations) {
   				installation.nextStep(tick);
   				double power = installation.getCurrentPower();
+  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
   				sumPower += power;
-  				String name = installation.getName();
-  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
-  				+ "Power: " + power);
-  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
-  		  				+ "Power: " + power);
+//  				String name = installation.getName();
+//  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
+//  				+ "Power: " + power);
+//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
+//  		  				+ "Power: " + power);
   			}
+  			m.addAggregatedTickResult(tick, sumPower, 0);
   			tick++;
+  			percentage = (int)(tick * 100.0 / endTick);
+  			objRun.put("percentage", percentage);
+  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   		}
+  		long endTime = System.currentTimeMillis();
+  		objRun.put("ended", endTime);
+  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
+  		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
   	}
 
   	public void setup() throws Exception {
@@ -246,8 +283,17 @@ public class Simulation implements Runnable {
 	    	installations.add(inst);
 	    }
   }
+  	
+  	private String addEntity(Entity e) {
+  		BasicDBObject obj = e.toDBObject();
+  		DBConn.getConn(dbname).getCollection(e.getCollection()).insert(obj);
+  		ObjectId objId = (ObjectId)obj.get("_id");
+  		return objId.toString();
+  	}
 
   	public void dynamicSetup(DBObject jsonScenario) {
+  		DBObject scenario = (DBObject)jsonScenario.get("scenario");
+  		String scenario_id =  ((ObjectId)scenario.get("_id")).toString();
   		DBObject demog = (DBObject)jsonScenario.get("demog");
   		BasicDBList generators = (BasicDBList) demog.get("generators");
   		// Initialize simulation variables
@@ -262,6 +308,9 @@ public class Simulation implements Runnable {
 	    	String type = (String)instDoc.get("type");
 	    	Installation inst = new Installation.Builder(
 	    			id, name, description, type).build();
+	    	inst.setParentId(scenario_id);
+	    	String inst_id = addEntity(inst);
+	    	inst.setId(inst_id);
 	    	int appcount = ((Integer)instDoc.get("appcount")).intValue();
 	    	// Create the appliances
 	    	HashMap<String,Appliance> existing = new HashMap<String,Appliance>();
@@ -275,6 +324,7 @@ public class Simulation implements Runnable {
 		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
 		    	ConsumptionModel consmod = new ConsumptionModel(consModDoc.get("model").toString());
+		    	
 	    		Appliance app = new Appliance.Builder(
 	    				appid,
 	    				appname,
@@ -293,7 +343,15 @@ public class Simulation implements Runnable {
 	    			double prob = ((Double)generator.get("probability")).doubleValue();
 	    			if(existing.containsKey(entityId)) {
 	    				if(RNG.nextDouble() < prob) {
-	    			    	inst.addAppliance(existing.get(entityId));
+	    					Appliance selectedApp = existing.get(entityId);
+	    					selectedApp.setParentId(inst.getId());
+	    			    	String app_id = addEntity(selectedApp);
+	    			    	selectedApp.setId(app_id);
+	    			    	inst.addAppliance(selectedApp);
+	    			    	ConsumptionModel cm = selectedApp.getConsumptionModel();
+	    			    	cm.setParentId(app_id);
+	    			    	String cm_id = addEntity(cm);
+	    			    	cm.setId(cm_id);
 	    			    	System.out.println(existing.get(entityId).getName());
 	    				}
 	    			}
@@ -314,7 +372,6 @@ public class Simulation implements Runnable {
 		    	        		  personName, 
 		    	        		  personDescription,
 		    	                  personType, inst).build();
-		    	inst.addPerson(person);
 		    	int actcount = ((Integer)personDoc.get("activitycount")).intValue();
 		    	System.out.println("Act-Count: " + actcount);
 		    	for (int k = 1; k <= actcount; k++) {
@@ -322,7 +379,6 @@ public class Simulation implements Runnable {
 		    		String activityName = (String)activityDoc.get("name");
 		    		String activityType = (String)activityDoc.get("type");
 		    		int actmodcount = ((Integer)activityDoc.get("actmodcount")).intValue();
-		    		System.out.println("Act-Mod-Count: " + actmodcount);
 		    		Activity act = new Activity.Builder(activityName, "", 
 		    				activityType, simulationWorld).build();
 		    		ProbabilityDistribution startDist;
@@ -330,16 +386,20 @@ public class Simulation implements Runnable {
 		    		ProbabilityDistribution timesDist;
 		    		for (int l = 1; l <= actmodcount; l++) {
 		    			DBObject actmodDoc = (DBObject)activityDoc.get("actmod"+l);
+		    			act.addModels(actmodDoc);
 		    			String actmodName = (String)actmodDoc.get("name");
 		    			String actmodType = (String)actmodDoc.get("type");
 		    			String actmodDayType = (String)actmodDoc.get("day_type");
 		    			DBObject duration = (DBObject)actmodDoc.get("duration");
+		    			act.addDurations(duration);
 		    			durDist = json2dist(duration);
 		    			System.out.println(durDist.getPrecomputedBin());
 		    			DBObject start = (DBObject)actmodDoc.get("start");
+		    			act.addStarts(start);
 		    			startDist = json2dist(start);
 		    			System.out.println(startDist.getPrecomputedBin());
 		    			DBObject rep = (DBObject)actmodDoc.get("repetitions");
+		    			act.addTimes(rep);
 		    			timesDist = json2dist(rep);
 		    			System.out.println(timesDist.getPrecomputedBin());
 		    			act.addDuration(actmodDayType, durDist);
@@ -367,8 +427,37 @@ public class Simulation implements Runnable {
 	    		sum += prob;
 	    		if(existingPersons.containsKey(entityId)) {
 	    			if(roulette < sum) {
-	    				inst.addPerson(existingPersons.get(entityId));
-	    				System.out.println(existingPersons.get(entityId).getName());
+	    				Person selectedPerson = existingPersons.get(entityId);
+	    				selectedPerson.setParentId(inst.getId());
+    			    	String person_id = addEntity(selectedPerson);
+    			    	selectedPerson.setId(person_id);
+	    				inst.addPerson(selectedPerson);
+	    				Vector<Activity> activities = selectedPerson.getActivities();
+	    				for(Activity a : activities) {
+	    					a.setParentId(person_id);
+	    					String act_id = addEntity(a);
+	    					a.setId(act_id);
+	    					Vector<DBObject> models = a.getModels();
+	    					Vector<DBObject> starts = a.getStarts();
+	    					Vector<DBObject> durations = a.getDurations();
+	    					Vector<DBObject> times = a.getTimes();
+	    					for(int l = 0; l < models.size();  l++ ) {
+	    						DBObject m = models.get(l);
+	    						m.put("act_id", act_id);
+	    						DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(m);
+	    				  		ObjectId objId = (ObjectId)m.get("_id");
+	    				  		String actmod_id = objId.toString();
+	    				  		DBObject s = starts.get(l);
+	    				  		s.put("actmod_id", actmod_id);
+	    				  		DBConn.getConn(dbname).getCollection(MongoDistributions.COL_DISTRIBUTIONS).insert(s);
+	    				  		DBObject d = durations.get(l);
+	    				  		d.put("actmod_id", actmod_id);
+	    				  		DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(d);
+	    				  		DBObject t = times.get(l);
+	    				  		t.put("actmod_id", actmod_id);
+	    				  		DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(t);
+	    					}
+	    				}
 	    				break;
 	    			}
 	    		}

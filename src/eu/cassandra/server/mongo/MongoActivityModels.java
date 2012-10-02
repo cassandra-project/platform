@@ -17,6 +17,8 @@
 package eu.cassandra.server.mongo;
 
 
+import javax.ws.rs.core.HttpHeaders;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
@@ -39,8 +41,8 @@ public class MongoActivityModels {
 	 * @param cid
 	 * @return
 	 */
-	public String getActivityModel(String id) {
-		return new MongoDBQueries().getEntity(COL_ACTMODELS,"_id", 
+	public String getActivityModel(HttpHeaders httpHeaders,String id) {
+		return new MongoDBQueries().getEntity(httpHeaders,COL_ACTMODELS,"_id", 
 				id, "Activity Model retrieved successfully").toString();
 	}
 
@@ -50,14 +52,14 @@ public class MongoActivityModels {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getActivityModels(String act_id, boolean count) {
+	public String getActivityModels(HttpHeaders httpHeaders,String act_id, boolean count) {
 		if(act_id == null) {
 			return new JSONtoReturn().createJSONError(
 					"Only the Activity Models of a particular Activity can be retrieved", 
 					new RestQueryParamMissingException("act_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(COL_ACTMODELS,"act_id", 
+			return new MongoDBQueries().getEntity(httpHeaders,COL_ACTMODELS,"act_id", 
 					act_id, "Activity Models retrieved successfully",count).toString();
 		}
 	}

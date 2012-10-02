@@ -22,6 +22,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoAppliances;
@@ -40,12 +42,13 @@ public class Appliances {
 	 */
 	@GET
 	public String getAppliances(@QueryParam("inst_id") String inst_id, 
-			@QueryParam("actmod_id") String actmod_id, @QueryParam("count") boolean count) {
+			@QueryParam("actmod_id") String actmod_id, @QueryParam("count") boolean count,
+			@Context HttpHeaders httpHeaders) {
 		if(actmod_id != null) {
-			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getApplianceFromActivityModel(actmod_id));
+			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getApplianceFromActivityModel(httpHeaders,actmod_id));
 		}
 		else
-			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliances(inst_id, count));
+			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliances(httpHeaders,inst_id, count));
 	}
 
 	/**

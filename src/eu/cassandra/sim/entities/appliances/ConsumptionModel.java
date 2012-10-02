@@ -3,8 +3,12 @@ package eu.cassandra.sim.entities.appliances;
 import java.util.ArrayList;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+
+import eu.cassandra.server.mongo.MongoConsumptionModels;
+import eu.cassandra.sim.entities.Entity;
 
 /**
  * This class stores the variables of a consumption model. It has no 
@@ -13,7 +17,7 @@ import com.mongodb.util.JSON;
  * @author kyrcha
  *
  */
-public class ConsumptionModel {
+public class ConsumptionModel extends Entity {
 	
 	/** How many times the patterns repeat */
 	private int outerN;
@@ -33,7 +37,10 @@ public class ConsumptionModel {
 	/** An array storing the consumption patterns */
 	private ArrayList[] patterns;
 	
-	public ConsumptionModel(String model) {
+	private String model;
+	
+	public ConsumptionModel(String amodel) {
+		model = amodel;
 		DBObject modelObj = (DBObject) JSON.parse(model);
 		outerN = ((Integer)modelObj.get("n")).intValue();
 		BasicDBList patternsObj = (BasicDBList)modelObj.get("params");
@@ -91,6 +98,21 @@ public class ConsumptionModel {
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		ConsumptionModel cm = new ConsumptionModel(s);
 		// TODO [TEST] check is parsing is done correctly
+	}
+
+	@Override
+	public BasicDBObject toDBObject() {
+		BasicDBObject obj = new BasicDBObject();
+		obj.put("name", name);
+		obj.put("description", description);
+		obj.put("app_id", parentId);
+		obj.put("model", model);
+		return obj;
+	}
+
+	@Override
+	public String getCollection() {
+		return MongoConsumptionModels.COL_CONSMODELS;
 	}
 	
 }

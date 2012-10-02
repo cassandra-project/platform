@@ -22,6 +22,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoConsumptionModels;
@@ -48,8 +50,9 @@ public class ConsumptionModels {
 	 * @return
 	 */
 	@GET
-	public String getConsumptionModels(@QueryParam("app_id") String app_id, @QueryParam("count") boolean count) {
-		return PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().getConsumptionModels(app_id,count));
+	public String getConsumptionModels(@QueryParam("app_id") String app_id, @QueryParam("count") boolean count,
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().getConsumptionModels(httpHeaders,app_id,count));
 	}
 
 

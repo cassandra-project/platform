@@ -16,6 +16,8 @@
 */
 package eu.cassandra.server.mongo;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
@@ -33,9 +35,9 @@ public class MongoInstallations {
 	 * @param id
 	 * @return
 	 */
-	public String getInstallation(String id) {
+	public String getInstallation(HttpHeaders httpHeaders,String id) {
 		System.out.println("GET:" +id);
-		return new MongoDBQueries().getEntity(COL_INSTALLATIONS,"_id", 
+		return new MongoDBQueries().getEntity(httpHeaders,COL_INSTALLATIONS,"_id", 
 				id, "Installation retrieved successfully").toString();
 	}
 
@@ -45,14 +47,14 @@ public class MongoInstallations {
 	 * @param scn_id
 	 * @return
 	 */
-	public String getInstallations(String scn_id,String filters, String sort, int limit, int skip, boolean count) {
+	public String getInstallations(HttpHeaders httpHeaders,String scn_id,String filters, String sort, int limit, int skip, boolean count) {
 		if(scn_id == null) {
 			return new JSONtoReturn().createJSONError(
 					"Only the Installations of a particular Scenario can be retrieved", 
 					new RestQueryParamMissingException("scn_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(COL_INSTALLATIONS,"scenario_id", 
+			return new MongoDBQueries().getEntity(httpHeaders,COL_INSTALLATIONS,"scenario_id", 
 					scn_id, filters, sort, limit, skip, "Installations retrieved successfully",count).toString();
 		}
 	}

@@ -27,6 +27,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import eu.cassandra.sim.entities.appliances.Appliance;
+import eu.cassandra.sim.entities.appliances.ConsumptionModel;
 import eu.cassandra.sim.entities.installations.Installation;
 import eu.cassandra.sim.utilities.RNG;
 import eu.cassandra.sim.utilities.Constants;
@@ -37,81 +38,97 @@ public class ApplianceTest {
 
 	@Test
 	public void testgetId() {
-		double[] power = {1f,1f};
-		int[] period = {1, 1};
-		Constants cons=new Constants();
+		
+		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		RNG.init();
-		Appliance tester=new Appliance.Builder("TestApp", "testDesc", "testType", null, power, period, 1f, true).build();
-		assertEquals(0,tester.getId());
+		String id = "111";
+		Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", null, new ConsumptionModel(s), 1f, true).build();
+		assertEquals("111",tester.getId());
 		
 	}
 	
 	@Test
 	public void testgetName() {
-		double[] power = {1f,1f};
-		int[] period = {1, 1};
+		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		RNG.init();
-		Appliance tester=new Appliance.Builder("TestApp", "testDesc", "testType", null, power, period, 1f, true).build();
+		String id = "111";
+		Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", null, new ConsumptionModel(s), 1f, true).build();
 		assertTrue("Result1", "TestApp"==tester.getName());
 		
 	}
 	
-	@Test
+@Test
 	public void testgetInstallation() {
-		double[] power = {1f,1f};
-		int[] period = {1, 1};
+		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		RNG.init();
-		Installation inst= new Installation.Builder(1, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance tester=new Appliance.Builder("TestApp", "testDesc", "testType", inst, power, period, 1f, true).build();
+		String id = "111";
+		String InstId="222";
+		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+		Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 1f, true).build();
 		assertTrue("Result2", inst==tester.getInstallation());
 		
 	}
 	
-	@Test
+@Test
 	public void testgetisInUse() {
-		double[] power = {1f,1f};
-		int[] period = {1, 1};
-		RNG.init();
-		Installation inst= new Installation.Builder(1, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance tester=new Appliance.Builder("TestApp", "testDesc", "testType", inst, power, period, 1f, true).build();
-		assertTrue("Result3", true==tester.isInUse());
+	String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
+	RNG.init();
+	String id = "111";
+	String InstId="222";
+	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 1f, true).build();
+	assertTrue("Result3", true==tester.isInUse());
 		
 	}
 	
-	@Test
+@Test
 	public void testgetOnTick() {
-		double[] power = {1f,1f};
-		int[] period = {1, 1};
-		RNG.init();
-		Installation inst= new Installation.Builder(1, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance tester=new Appliance.Builder("TestApp", "testDesc", "testType", inst, power, period, 1f, true).build();
-		tester.turnOn((long)1, "TestApp");
-		assertTrue("Result4", 1==tester.getOnTick());
+	String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
+	RNG.init();
+	String id = "111";
+	String InstId="222";
+	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, true).build();
+	tester.turnOn((long)1, "TestApp");
+	assertTrue("Result4", 1==tester.getOnTick());
 		
 	}
 	
-	@Test
+@Test
 	public void testgetWho() {
-		double[] power = {1f,1f};
-		int[] period = {1, 1};
-		RNG.init();
-		Installation inst= new Installation.Builder(1, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance tester=new Appliance.Builder("TestApp", "testDesc", "testType", inst, power, period, 1f, true).build();
-		assertTrue("Result5", null==tester.getWho());
+	String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
+	RNG.init();
+	String id = "111";
+	String InstId="222";
+	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 1f, true).build();
+	assertTrue("Result5", null==tester.getWho());
 		
 	}
 	
-	@Test
+@Test
 	public void testgetPower() {
-		double[] power = {2f,2f};
-		int[] period = {1, 1};
-		RNG.init();
-		Installation inst= new Installation.Builder(1, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance tester=new Appliance.Builder("TestApp", "testDesc", "testType", inst, power, period, 1f, true).build();
+	String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
+	RNG.init();
+	String id = "111";
+	String InstId="222";
+	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, true).build();
 		
-		for(int i = 0; i < 100; i++){
-			assertTrue("Result6",2f==tester.getPower(i));
-		}
-		
+	
+			tester.turnOn((long)1, "TestApp");
+			assertTrue("Result6",0==tester.getPower(100));
+			
+			tester.turnOn((long)10, "TestApp");
+			assertTrue("Result7",0==tester.getPower(100));
+			
+			tester.turnOn((long)100, "TestApp");
+			assertTrue("Result8",200==tester.getPower(100));
+			
+			tester.turnOn((long)60, "TestApp");
+			assertTrue("Result9",120==tester.getPower(70));
+			
+			Appliance tester2=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, false).build();
+			assertTrue("Result10",10==tester2.getPower(100));
 	}
 }

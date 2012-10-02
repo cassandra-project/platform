@@ -24,6 +24,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoSimParam;
@@ -51,8 +53,9 @@ public class SimulationParams {
 	 * @return
 	 */
 	@GET
-	public String getSimulationParam(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count) {
-		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().getSimParams(scn_id,count));
+	public String getSimulationParam(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count,
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().getSimParams(httpHeaders,scn_id,count));
 	}
 
 	/**

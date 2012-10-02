@@ -23,6 +23,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoActivityModels;
@@ -39,8 +41,9 @@ public class ActivityModel {
 	 * @return
 	 */
 	@GET
-	public String getActivityModel(@PathParam("actmod_id") String actmod_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivityModels().getActivityModel(actmod_id));
+	public String getActivityModel(@PathParam("actmod_id") String actmod_id,
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoActivityModels().getActivityModel(httpHeaders,actmod_id));
 	}
 
 	/**

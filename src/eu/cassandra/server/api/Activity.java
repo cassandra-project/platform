@@ -23,6 +23,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoActivities;
@@ -39,8 +41,9 @@ public class Activity {
 	 * @return
 	 */
 	@GET
-	public String getActivity(@PathParam("act_id") String act_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivity(act_id));
+	public String getActivity(@PathParam("act_id") String act_id, 
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivity(httpHeaders,act_id));
 	}
 
 	/**

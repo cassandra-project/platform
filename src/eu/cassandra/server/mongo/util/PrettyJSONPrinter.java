@@ -20,11 +20,22 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.mongodb.DBObject;
 
 public class PrettyJSONPrinter {
 
 
 	private static boolean PRETTY_PRINT = true; 
+	
+	/**
+	 * 
+	 * @param json
+	 * @return
+	 */
+	public static String prettyPrint(DBObject json) {
+		return prettyPrint(json.toString());
+	}
+	
 	/**
 	 * 
 	 * @param uglyJSONString

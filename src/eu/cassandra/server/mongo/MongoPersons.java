@@ -17,6 +17,8 @@
 package eu.cassandra.server.mongo;
 
 
+import javax.ws.rs.core.HttpHeaders;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
@@ -31,8 +33,8 @@ public class MongoPersons {
 	 * @param cid
 	 * @return
 	 */
-	public String getPerson(String id) {
-		return new MongoDBQueries().getEntity(COL_PERSONS,"_id", 
+	public String getPerson(HttpHeaders httpHeaders,String id) {
+		return new MongoDBQueries().getEntity(httpHeaders,COL_PERSONS,"_id", 
 				id, "Person retrieved successfully").toString();
 	}
 
@@ -40,14 +42,14 @@ public class MongoPersons {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getPersons(String inst_id, boolean count) {
+	public String getPersons(HttpHeaders httpHeaders,String inst_id, boolean count) {
 		if(inst_id == null) {
 			return new JSONtoReturn().createJSONError(
 					"Only the Persons of a particular Installation can be retrieved", 
 					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(COL_PERSONS,"inst_id", 
+			return new MongoDBQueries().getEntity(httpHeaders,COL_PERSONS,"inst_id", 
 					inst_id, "Persons retrieved successfully",count).toString();
 		}
 	}

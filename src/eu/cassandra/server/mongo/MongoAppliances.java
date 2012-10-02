@@ -18,6 +18,8 @@ package eu.cassandra.server.mongo;
 
 import java.util.Vector;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import com.mongodb.DBObject;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
@@ -37,8 +39,8 @@ public class MongoAppliances {
 	 * @param cid
 	 * @return
 	 */
-	public String getAppliance(String id) {
-		return new MongoDBQueries().getEntity(COL_APPLIANCES,"_id", 
+	public String getAppliance(HttpHeaders httpHeaders,String id) {
+		return new MongoDBQueries().getEntity(httpHeaders,COL_APPLIANCES,"_id", 
 				id, "Appliance retrieved successfully").toString();
 	}
 
@@ -48,14 +50,14 @@ public class MongoAppliances {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getAppliances(String inst_id, boolean count) {
+	public String getAppliances(HttpHeaders httpHeaders,String inst_id, boolean count) {
 		if(inst_id == null) {
 			return new JSONtoReturn().createJSONError(
 					"Only the Appliances of a particular Installation can be retrieved", 
 					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(COL_APPLIANCES,"inst_id", 
+			return new MongoDBQueries().getEntity(httpHeaders,COL_APPLIANCES,"inst_id", 
 					inst_id, "Appliances retrieved successfully",count).toString();
 		}
 	}
@@ -67,8 +69,9 @@ public class MongoAppliances {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public String getApplianceFromActivityModel(String actmod_id) {
-		DBObject o =  new MongoDBQueries().getEntity(MongoActivityModels.COL_ACTMODELS,"_id", actmod_id, "Activity Model retrieved successfully");
+	public String getApplianceFromActivityModel(HttpHeaders httpHeaders, String actmod_id) {
+		DBObject o =  new MongoDBQueries().getEntity(httpHeaders,MongoActivityModels.COL_ACTMODELS,"_id", 
+				actmod_id, "Activity Model retrieved successfully");
 		Vector<DBObject> appliances = new Vector<DBObject>();
 		Vector<DBObject> dataVec = (Vector<DBObject>)o.get("data");
 		if(dataVec != null && dataVec.size() > 0) {
@@ -76,7 +79,8 @@ public class MongoAppliances {
 			com.mongodb.BasicDBList apps = (com.mongodb.BasicDBList)data.get("containsAppliances");
 			for(int i=0;i<apps.size();i++) {
 				String appID = apps.get(i).toString();
-				DBObject appObj = new MongoDBQueries().getEntity(COL_APPLIANCES,"_id", appID, "Appliance retrieved successfully");
+				DBObject appObj = new MongoDBQueries().getEntity(httpHeaders,COL_APPLIANCES,"_id", appID, 
+						"Appliance retrieved successfully");
 				Vector<DBObject> appIn = (Vector<DBObject>)appObj.get("data");
 				if(appIn != null && appIn.size() > 0) {
 					appliances.add(appIn.get(0));

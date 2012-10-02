@@ -18,8 +18,9 @@ package eu.cassandra.server.mongo.util;
 
 import java.util.Vector;
 
-import org.bson.types.ObjectId;
+import javax.ws.rs.core.HttpHeaders;
 
+import org.bson.types.ObjectId;
 
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
@@ -93,6 +94,14 @@ public class MongoDBQueries {
 	}
 
 
+	/**
+	 * 
+	 * @param dataToInsert
+	 * @param coll
+	 * @param refKeyName
+	 * @param schemaType
+	 * @return
+	 */
 	public DBObject insertNestedDocument(String dataToInsert, String coll, 
 			String refKeyName, int schemaType) {
 		DBObject data;
@@ -122,9 +131,9 @@ public class MongoDBQueries {
 	 * @param fieldNames
 	 * @return
 	 */
-	public DBObject getEntity(String coll, String qKey, String qValue, 
+	public DBObject getEntity(HttpHeaders httpHeaders,String coll, String qKey, String qValue, 
 			String successMsg, String...fieldNames) {
-		return getEntity(coll, qKey, qValue, null, null, 0, 0, successMsg, false, fieldNames);
+		return getEntity(httpHeaders,coll, qKey, qValue, null, null, 0, 0, successMsg, false, fieldNames);
 	}
 
 	/**
@@ -137,9 +146,9 @@ public class MongoDBQueries {
 	 * @param fieldNames
 	 * @return
 	 */
-	public DBObject getEntity(String coll, String qKey, String qValue, 
+	public DBObject getEntity(HttpHeaders httpHeaders,String coll, String qKey, String qValue, 
 			String successMsg,  boolean counter, String...fieldNames) {
-		return getEntity(coll, qKey, qValue, null, null, 0, 0, successMsg, counter, fieldNames);
+		return getEntity(httpHeaders,coll, qKey, qValue, null, null, 0, 0, successMsg, counter, fieldNames);
 	}
 
 	/**
@@ -168,7 +177,7 @@ public class MongoDBQueries {
 	 * @param fieldNames
 	 * @return
 	 */
-	public DBObject getEntity(String coll, String qKey, String qValue, 
+	public DBObject getEntity(HttpHeaders httpHeaders,String coll, String qKey, String qValue, 
 			String filters, String sort, int limit, int skip,
 			String successMsg,  boolean count, String...fieldNames) {
 		DBObject query;
@@ -199,7 +208,7 @@ public class MongoDBQueries {
 			return jSON2Rrn.createJSONError("Cannot get entity for collection: " + coll + 
 					" with qKey=" + qKey + " and qValue=" + qValue,e);
 		}
-		return new MongoDBQueries().executeFindQuery(
+		return new MongoDBQueries().executeFindQuery(httpHeaders,
 				coll,query,fields, successMsg, sort, limit, skip, count);
 	}
 
@@ -235,8 +244,8 @@ public class MongoDBQueries {
 	 * @param id
 	 * @return
 	 */
-	BasicDBObject query = new BasicDBObject();
 	public DBObject getEntity(String collection, String id) {
+		BasicDBObject query = new BasicDBObject();
 		query.put("_id", new ObjectId(id));
 		return DBConn.getConn().getCollection(collection).findOne(query);
 	}
@@ -247,11 +256,11 @@ public class MongoDBQueries {
 	 * @param entityName
 	 * @return
 	 */
-	public DBObject getInternalEntities(String coll, String entityName, String parentID) {
+	public DBObject getInternalEntities(HttpHeaders httpHeaders, String coll, String entityName, String parentID) {
 		try {
 			BasicDBObject query = new BasicDBObject("_id", new ObjectId(parentID));
 			BasicDBObject fields = new BasicDBObject(entityName,1);
-			DBObject result = new MongoDBQueries().executeFindQuery(coll,query, fields, 
+			DBObject result = new MongoDBQueries().executeFindQuery(httpHeaders,coll,query, fields, 
 					"Get " + entityName + " with " +  " from " + coll + " with _id=" + parentID);
 			@SuppressWarnings("unchecked")
 			Vector<DBObject> data = (Vector<DBObject>)result.get("data");
@@ -276,8 +285,8 @@ public class MongoDBQueries {
 	 * @param cid
 	 * @return
 	 */
-	public DBObject getInternalEntity(String coll, String entityName, String cid) {
-		return getInternalEntity(coll, entityName, cid,null); 
+	public DBObject getInternalEntity(HttpHeaders httpHeaders, String coll, String entityName, String cid) {
+		return getInternalEntity(httpHeaders,coll, entityName, cid,null); 
 	}
 
 	/**
@@ -288,13 +297,13 @@ public class MongoDBQueries {
 	 * @param successMsg
 	 * @return
 	 */
-	public DBObject getInternalEntity(String coll, String entityName, 
+	public DBObject getInternalEntity(HttpHeaders httpHeaders, String coll, String entityName, 
 			String cid,String successMsg) {
 		BasicDBObject internalEntity = null;
 		try {
 			BasicDBObject query = new BasicDBObject(entityName + ".cid", new ObjectId(cid));
 			BasicDBObject fields = new BasicDBObject(entityName,1);
-			DBObject result = new MongoDBQueries().executeFindQuery(coll,query,
+			DBObject result = new MongoDBQueries().executeFindQuery(httpHeaders,coll,query,
 					fields, "Get " + entityName + " with cid=" +  " from " + coll);
 			@SuppressWarnings("unchecked")
 			Vector<DBObject> data = (Vector<DBObject>)result.get("data");
@@ -324,29 +333,46 @@ public class MongoDBQueries {
 	 * @param dbObj2
 	 * @return
 	 */
-	public DBObject executeFindQuery(String collection, 
+	public DBObject executeFindQuery(HttpHeaders httpHeaders, String collection, 
 			BasicDBObject dbObj1, BasicDBObject dbObj2, String successMsg) {
 		DBCursor cursorDoc;
 		if(dbObj2 == null) {
-			cursorDoc = DBConn.getConn().getCollection(collection).find(dbObj1);
+			cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+					getCollection(collection).find(dbObj1);
 		}
 		else {
-			cursorDoc = DBConn.getConn().getCollection(collection).find(dbObj1,dbObj2);
+			cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+					getCollection(collection).find(dbObj1,dbObj2);
 		}
 		return jSON2Rrn.createJSON(cursorDoc,successMsg);
 	}
 
-	public DBObject executeFindQuery(String collection, 
+	/**
+	 * 
+	 * @param httpHeaders
+	 * @param collection
+	 * @param dbObj1
+	 * @param dbObj2
+	 * @param successMsg
+	 * @param sort
+	 * @param limit
+	 * @param skip
+	 * @param count
+	 * @return
+	 */
+	public DBObject executeFindQuery(HttpHeaders httpHeaders,String collection, 
 			DBObject dbObj1, DBObject dbObj2, String successMsg,
 			String sort, int limit, int skip, boolean count) {
 		DBCursor cursorDoc = null;
 		if(count) {
 			BasicDBObject dbObject = new BasicDBObject(); 
-			dbObject.put("count", DBConn.getConn().getCollection(collection).find(dbObj1).count());
+			dbObject.put("count", DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+					getCollection(collection).find(dbObj1).count());
 			return 	 jSON2Rrn.createJSON(dbObject, successMsg);
 		}
 		else {
-			cursorDoc = DBConn.getConn().getCollection(collection).find(dbObj1);
+			cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+					getCollection(collection).find(dbObj1);
 		}
 		if(sort != null)	{
 			try{
@@ -448,7 +474,7 @@ public class MongoDBQueries {
 			e.printStackTrace();
 			return jSON2Rrn.createJSONError("Update Failed for " + jsonToUpdate,e);
 		}
-		return getEntity(collection,qKey, qValue,successMsg,
+		return getEntity(null,collection,qKey, qValue,successMsg,
 				false,keysUpdated.toArray(new String[keysUpdated.size()]));
 	}
 
@@ -485,24 +511,41 @@ public class MongoDBQueries {
 		}catch(Exception e) {
 			return jSON2Rrn.createJSONError("Update Failed for " + jsonToUpdate,e);
 		}
-		return getInternalEntity(coll,entityName, cid,"Internal document " + coll + "." + 
+		return getInternalEntity(null,coll,entityName, cid,"Internal document " + coll + "." + 
 				entityName + " with cid=" + cid + " was successfullylly updated");
 	}
 
+	//	/**
+	//	 * 
+	//	 * @param coll
+	//	 * @param parentEntityName
+	//	 * @param qObj
+	//	 * @param cid
+	//	 * @param objToPush
+	//	 * @return
+	//	 */
+	//	public DBObject addArrayDocumentDump(String coll, String parentEntityName,
+	//			DBObject qObj, String cid, DBObject objToPush) {
+	//		try {
+	//			DBObject dObj = new BasicDBObject("$push", objToPush);
+	//			DBConn.getConn().getCollection(coll).update(qObj,dObj);
+	//		}catch(Exception e) {
+	//			return jSON2Rrn.createJSONError("Update Failed for " + objToPush.toString() ,e);
+	//		}
+	//		return getInternalEntity(null,coll,"activities", cid,"Internal document " + coll + "." + 
+	//				parentEntityName + " with cid=" + cid + " was successfullylly updated");
+	//	}
 
-	public DBObject addArrayDocumentDump(String coll, String parentEntityName,
-			DBObject qObj, String cid, DBObject objToPush) {
-		try {
-			DBObject dObj = new BasicDBObject("$push", objToPush);
-			DBConn.getConn().getCollection(coll).update(qObj,dObj);
-		}catch(Exception e) {
-			return jSON2Rrn.createJSONError("Update Failed for " + objToPush.toString() ,e);
-		}
-		return getInternalEntity(coll,"activities", cid,"Internal document " + coll + "." + 
-				parentEntityName + " with cid=" + cid + " was successfullylly updated");
-	}
 
-
+	/**
+	 * 
+	 * @param coll
+	 * @param qField
+	 * @param parentKeyFieldName
+	 * @param updateFieldName
+	 * @param newData
+	 * @return
+	 */
 	public DBObject updateInternalDocumentDump(String coll, String qField, String parentKeyFieldName, String updateFieldName, String newData) {
 		DBObject newObject = (DBObject) JSON.parse(newData);
 		String parentID = newObject.get(parentKeyFieldName).toString();
@@ -706,12 +749,12 @@ public class MongoDBQueries {
 	 * @return
 	 */
 	public DBObject deleteInternalDocument(String coll, String keyName, String keyName2, String id, DBObject objRemoved) {
-			DBObject q = new BasicDBObject();
-			DBObject o = new BasicDBObject(new BasicDBObject("$pull",new BasicDBObject(
-					keyName, new BasicDBObject(keyName2,id))));
-			int removed = DBConn.getConn().getCollection(coll).update(q, o, false, true).getN();
-			objRemoved.put("cascadeDel_"+coll + "[" +keyName + "]", removed );
-			return objRemoved;
+		DBObject q = new BasicDBObject();
+		DBObject o = new BasicDBObject(new BasicDBObject("$pull",new BasicDBObject(
+				keyName, new BasicDBObject(keyName2,id))));
+		int removed = DBConn.getConn().getCollection(coll).update(q, o, false, true).getN();
+		objRemoved.put("cascadeDel_"+coll + "[" +keyName + "]", removed );
+		return objRemoved;
 	}
 
 	/**
@@ -740,7 +783,7 @@ public class MongoDBQueries {
 	public DBObject deleteDocumentField(String coll,  String fieldName, String cid) {
 		DBObject deletedField;
 		try {
-			deletedField = getEntity(coll,fieldName + ".cid", cid, "Simulation Parameter " +
+			deletedField = getEntity(null,coll,fieldName + ".cid", cid, "Simulation Parameter " +
 					"with cid=" + cid + " removed successfully", false, new String[]{ fieldName});
 			if(!deletedField.containsField("data"))
 				throw new MongoInvalidObjectId("invalid ObjectId [" + cid + "]");
@@ -767,7 +810,8 @@ public class MongoDBQueries {
 	 * @param toTick
 	 * @return
 	 */
-	public DBObject mongoResultQuery(String runId, String installationId, String metricS, String aggregationUnitS, String fromTickS, String toTickS) {
+	public DBObject mongoResultQuery(HttpHeaders httpHeaders, String runId, String installationId, 
+			String metricS, String aggregationUnitS, String fromTickS, String toTickS) {
 		try {
 			if(runId != null && installationId != null)
 				throw new RestQueryParamMissingException(
@@ -828,7 +872,8 @@ public class MongoDBQueries {
 			groupCmd.append("$reduce", "function(obj,prev){prev.y+=obj." + yMetric + "}");
 			groupCmd.append("initial",  new BasicDBObject("y",0));
 			@SuppressWarnings("deprecation")
-			BasicDBList dbList = (BasicDBList)DBConn.getConn().getCollection(coll).group(groupCmd);
+			BasicDBList dbList = (BasicDBList)DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)
+					).getCollection(coll).group(groupCmd);
 			return jSON2Rrn.createJSONPlot(dbList, "Data for plot retrieved successfully", 
 					"title", "xAxisLabel", "yAxisLabel"); 
 
@@ -852,16 +897,29 @@ public class MongoDBQueries {
 		return data.get(key).toString();
 	}
 
-//	/**
-//	 * 
-//	 * @param collection
-//	 * @param id
-//	 * @param keyName
-//	 */
-//	public void deleteReferencedObject(String collection, String id, String keyName) {
-//		DBObject deleteQuery = new BasicDBObject(keyName, id);
-//		DBObject objRemoved = DBConn.getConn().getCollection(collection).findAndRemove(deleteQuery);
-//	}
+	/**
+	 * 
+	 * @param httpHeaders
+	 * @return
+	 */
+	private String getDbNameFromHTTPHeader(HttpHeaders httpHeaders) {
+		if(httpHeaders == null || httpHeaders.getRequestHeaders() == null || 
+				!httpHeaders.getRequestHeaders().containsKey("dbname") )
+			return null;
+		else
+			return httpHeaders.getRequestHeaders().getFirst("dbname");
+	}
+
+	//	/**
+	//	 * 
+	//	 * @param collection
+	//	 * @param id
+	//	 * @param keyName
+	//	 */
+	//	public void deleteReferencedObject(String collection, String id, String keyName) {
+	//		DBObject deleteQuery = new BasicDBObject(keyName, id);
+	//		DBObject objRemoved = DBConn.getConn().getCollection(collection).findAndRemove(deleteQuery);
+	//	}
 
 
 }

@@ -56,26 +56,28 @@ public class Event implements Comparable<Event> {
 		return tick;
 	}
 	
-	public void apply() {
+	public boolean apply() {
 		switch(action) {
 			case SWITCH_ON:
 				if(!app.isInUse()) {
 					app.turnOn(tick, hashcode);
+					return true;
 				} else {
 					logger.warn("Tried to switch on appliance while on.");
+					return false;
 				}
-				break;
 			case SWITCH_OFF:
-				System.out.println(app.getId() + " " + app.getName() + " " + app.getWho());
+//				System.out.println(app.getId() + " " + app.getName() + " " + app.getWho());
 				if(app.isInUse() && app.getWho().equalsIgnoreCase(hashcode)) {
 					app.turnOff();
+					return true;
 				} else if(!app.getWho().equalsIgnoreCase(hashcode)){
 					logger.warn("Someone else tried to switch off " +
 							"appliance while off.");
+					return false;
 				}
-				break;
 			default:
-				break;
+				return false;
 		}
 	}
 

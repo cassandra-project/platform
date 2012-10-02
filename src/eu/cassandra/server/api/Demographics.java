@@ -22,6 +22,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoDemographics;
@@ -33,8 +35,9 @@ import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 public class Demographics {
 
 	@GET
-	public String getDemographics(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDemographics().getDemographics(scn_id, count));
+	public String getDemographics(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count,
+			@Context HttpHeaders httpHeaders) {
+		return PrettyJSONPrinter.prettyPrint(new MongoDemographics().getDemographics(httpHeaders,scn_id, count));
 	}
 
 	@POST
