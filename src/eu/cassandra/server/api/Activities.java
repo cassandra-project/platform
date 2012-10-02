@@ -43,8 +43,11 @@ public class Activities {
 	 */
 	@GET
 	public String getActivities(
-			@QueryParam("pers_id") String pers_id, @QueryParam("count") boolean count, 
-			@Context HttpHeaders httpHeaders) {
+			@QueryParam("pers_id") String pers_id, 
+			@QueryParam("count") boolean count,
+			@QueryParam("pertype") boolean pertype,
+			@Context HttpHeaders httpHeaders) 
+	{
 		return PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivities(httpHeaders,pers_id,count));
 	}
 

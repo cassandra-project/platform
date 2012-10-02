@@ -41,9 +41,13 @@ public class Persons {
 	 * @return
 	 */
 	@GET
-	public String getPersons(@QueryParam("inst_id") String inst_id, @QueryParam("count") boolean count,
+	public String getPersons(
+			@QueryParam("inst_id") String inst_id,
+			@QueryParam("scn_id") String scn_id,
+			@QueryParam("count") boolean count,
+			@QueryParam("pertype") boolean pertype,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoPersons().getPersons(httpHeaders,inst_id, count));
+		return PrettyJSONPrinter.prettyPrint(new MongoPersons().getPersons(httpHeaders,inst_id, scn_id, count,pertype));
 	}
 	
 	/**

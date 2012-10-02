@@ -50,15 +50,20 @@ public class MongoAppliances {
 	 * @param inst_id
 	 * @return
 	 */
-	public String getAppliances(HttpHeaders httpHeaders,String inst_id, boolean count) {
-		if(inst_id == null) {
+	public String getAppliances(HttpHeaders httpHeaders,String inst_id, String scn_id, boolean count, boolean pertype) {
+		if(inst_id != null)
+			return new MongoDBQueries().getEntity(httpHeaders,COL_APPLIANCES,"inst_id", 
+					inst_id, "Appliances retrieved successfully",count).toString();
+		else if(scn_id != null && count) {
+			return new MongoDBQueries().getSecondLevelCounts(httpHeaders,scn_id, COL_APPLIANCES).toString(); 
+		}
+		else if(scn_id != null && pertype) {
+			return new MongoDBQueries().getCountsPerType(httpHeaders, scn_id, COL_APPLIANCES).toString();
+		}
+		else  {
 			return new JSONtoReturn().createJSONError(
 					"Only the Appliances of a particular Installation can be retrieved", 
 					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
-		}
-		else {
-			return new MongoDBQueries().getEntity(httpHeaders,COL_APPLIANCES,"inst_id", 
-					inst_id, "Appliances retrieved successfully",count).toString();
 		}
 	}
 

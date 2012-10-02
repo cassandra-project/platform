@@ -48,9 +48,10 @@ public class Installations {
 			@QueryParam("limit") int limit,
 			@QueryParam("skip") int skip,
 			@QueryParam("count") boolean count,
+			@QueryParam("pertype") boolean pertype,
 			@Context HttpHeaders httpHeaders) {
 		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().
-				getInstallations(httpHeaders,scn_id,filters,sort, limit,skip,count));
+				getInstallations(httpHeaders,scn_id,filters,sort, limit,skip,count,pertype));
 	}
 
 	/**

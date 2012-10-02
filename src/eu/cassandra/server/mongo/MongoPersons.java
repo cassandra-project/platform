@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.server.mongo;
 
 
@@ -27,7 +27,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoPersons {
 	public final static String COL_PERSONS = "persons";
 	public final static String REF_INSTALLATION = "inst_id";
-	
+
 	/**
 	 * 
 	 * @param cid
@@ -39,18 +39,28 @@ public class MongoPersons {
 	}
 
 	/**
+	 * 
+	 * @param httpHeaders
 	 * @param inst_id
+	 * @param scn_id
+	 * @param count
 	 * @return
 	 */
-	public String getPersons(HttpHeaders httpHeaders,String inst_id, boolean count) {
-		if(inst_id == null) {
+	public String getPersons(HttpHeaders httpHeaders,String inst_id, String scn_id, boolean count, boolean pertype) {
+		if(inst_id != null) {
+			return new MongoDBQueries().getEntity(httpHeaders,COL_PERSONS,"inst_id", 
+					inst_id, "Persons retrieved successfully",count).toString();
+		}
+		else if(scn_id != null && count) {
+			return new MongoDBQueries().getSecondLevelCounts(httpHeaders,scn_id, COL_PERSONS).toString(); 
+		}
+		else if(scn_id != null && pertype) {
+			return new MongoDBQueries().getCountsPerType(httpHeaders,scn_id, COL_PERSONS).toString(); 
+		}
+		else {
 			return new JSONtoReturn().createJSONError(
 					"Only the Persons of a particular Installation can be retrieved", 
 					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
-		}
-		else {
-			return new MongoDBQueries().getEntity(httpHeaders,COL_PERSONS,"inst_id", 
-					inst_id, "Persons retrieved successfully",count).toString();
 		}
 	}
 

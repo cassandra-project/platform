@@ -16,6 +16,7 @@
  */
 package eu.cassandra.server.mongo.util;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -50,7 +51,6 @@ public class MongoDBQueries {
 	public final static int REACTIVE_POWER_Q = 1;
 
 	private JSONtoReturn jSON2Rrn = new JSONtoReturn();
-
 
 	/**
 	 * 
@@ -170,6 +170,80 @@ public class MongoDBQueries {
 		return getEntity(coll, qKey, qValue, filters, sort, limit, skip,
 				successMsg, counter, fieldNames);
 	}
+
+
+
+	public DBObject getCountsPerType(HttpHeaders httpHeaders,String scn_id, String obj2Get) {
+		HashMap<String,Integer> counterMap  = new HashMap<String,Integer>();
+		BasicDBObject q = new BasicDBObject();
+		q.put(MongoInstallations.REF_SCENARIO , scn_id);
+
+		DBCursor cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+				getCollection(MongoInstallations.COL_INSTALLATIONS).find(q);
+		while (cursorDoc.hasNext()) { //Iterate installations
+			DBObject obj = cursorDoc.next();
+			if(obj2Get.equalsIgnoreCase(MongoInstallations.COL_INSTALLATIONS)) {
+				String type = obj.get("type").toString();
+				addToMap(type,counterMap);
+			}
+			else {
+				BasicDBObject q2 = new BasicDBObject();
+				q2.put("inst_id", obj.get("_id").toString());
+				DBCursor cursorDoc2 = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection(obj2Get).find(q2);
+				while (cursorDoc2.hasNext()) { //Iterate Persons or Appliances
+					DBObject obj2 = cursorDoc2.next();
+					String type = obj2.get("type").toString();
+					addToMap(type,counterMap);
+				}
+				cursorDoc2.close();
+			}
+		}
+		cursorDoc.close();
+
+		BasicDBObject data = new BasicDBObject();
+		for(String type : counterMap.keySet()) {
+			data.put(type, counterMap.get(type));
+		}
+		return jSON2Rrn.createJSON(data, "Counters per type for " + obj2Get + " of Scenario: " + scn_id);
+	}
+
+
+	private HashMap<String,Integer> addToMap(String type, HashMap<String,Integer> map){
+		if(map.containsKey(type))
+			map.put(type, map.get(type)+1);
+		else
+			map.put(type, 1);
+		return map;
+	}
+
+
+	/**
+	 * 
+	 * @param httpHeaders
+	 * @param scn_id
+	 * @param obj2Get
+	 * @return
+	 */
+	public DBObject getSecondLevelCounts(HttpHeaders httpHeaders,String scn_id, String obj2Get) {
+		int counter = 0;
+		BasicDBObject q = new BasicDBObject();
+		q.put(MongoInstallations.REF_SCENARIO , scn_id);
+		DBCursor cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+				getCollection(MongoInstallations.COL_INSTALLATIONS).find(q);
+		while (cursorDoc.hasNext()) { //Iterate installations
+			DBObject obj = cursorDoc.next();
+			BasicDBObject q2 = new BasicDBObject();
+			q2.put("inst_id", obj.get("_id").toString());
+			counter += DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection(obj2Get).find(q2).count();
+		}
+		cursorDoc.close();
+
+		BasicDBObject data = new BasicDBObject();
+		data.put("count", counter);
+		return 	 jSON2Rrn.createJSON(data, "Number of " + obj2Get + " of Scenario: " + scn_id + " retrieved");
+	}
+
+
 
 	/**
 	 * @param collection
