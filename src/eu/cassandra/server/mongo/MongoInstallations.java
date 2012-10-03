@@ -47,11 +47,15 @@ public class MongoInstallations {
 	 * @param scn_id
 	 * @return
 	 */
-	public String getInstallations(HttpHeaders httpHeaders,String scn_id,String filters, String sort, int limit, int skip, boolean count) {
+	public String getInstallations(HttpHeaders httpHeaders,String scn_id,String filters, String sort, 
+			int limit, int skip, boolean count, boolean pertype) {
 		if(scn_id == null) {
 			return new JSONtoReturn().createJSONError(
 					"Only the Installations of a particular Scenario can be retrieved", 
 					new RestQueryParamMissingException("scn_id QueryParam is missing")).toString();
+		}
+		else if(pertype) {
+			return new MongoDBQueries().getCountsPerType(httpHeaders, scn_id, COL_INSTALLATIONS).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(httpHeaders,COL_INSTALLATIONS,"scenario_id", 

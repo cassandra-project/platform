@@ -41,14 +41,20 @@ public class Appliances {
 	 * @return
 	 */
 	@GET
-	public String getAppliances(@QueryParam("inst_id") String inst_id, 
-			@QueryParam("actmod_id") String actmod_id, @QueryParam("count") boolean count,
+	public String getAppliances(
+			@QueryParam("inst_id") String inst_id,
+			@QueryParam("scn_id") String scn_id,
+			@QueryParam("actmod_id") String actmod_id, 
+			@QueryParam("count") boolean count,
+			@QueryParam("pertype") boolean pertype,
 			@Context HttpHeaders httpHeaders) {
 		if(actmod_id != null) {
 			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getApplianceFromActivityModel(httpHeaders,actmod_id));
 		}
+		else if(scn_id != null && (pertype || count))
+			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliances(httpHeaders,inst_id, scn_id, count,pertype));
 		else
-			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliances(httpHeaders,inst_id, count));
+			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliances(httpHeaders,inst_id, null, count,pertype));
 	}
 
 	/**
