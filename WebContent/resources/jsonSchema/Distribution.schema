@@ -25,7 +25,8 @@
         "distrType": {
             "type": "string",
             "description": "Distribution Type",
-            "optional": true
+            "enum":["Uniform Distribution","Normal Distribution","Gaussian Mixture Models","Histogram"],
+            "optional": false
         },
         "values": {
             "type": "array",
