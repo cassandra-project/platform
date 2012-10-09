@@ -35,13 +35,12 @@ public class Results {
 
 	@GET
 	public String getResults(
-			@QueryParam("run_id") String run_id,
 			@QueryParam("inst_id") String inst_id,
 			@QueryParam("metric") String metric,
 			@QueryParam("aggr_unit") String aggr_unit,
 			@QueryParam("from") String from,
 			@QueryParam("to") String to,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDBQueries().mongoResultQuery(httpHeaders,run_id,inst_id,metric,aggr_unit,from,to).toString());
+		return PrettyJSONPrinter.prettyPrint(new MongoDBQueries().mongoResultQuery(httpHeaders,inst_id,metric,aggr_unit,from,to).toString());
 	}
 }
