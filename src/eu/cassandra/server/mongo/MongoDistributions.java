@@ -23,6 +23,7 @@ import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 public class MongoDistributions {
 
@@ -37,8 +38,8 @@ public class MongoDistributions {
 	 * @return
 	 */
 	public String createDistribution(String dataToInsert) {
-		return new MongoDBQueries().insertData(COL_DISTRIBUTIONS ,dataToInsert,
-				"Distribution created successfully",JSONValidator.DISTRIBUTION_SCHEMA).toString();
+		return PrettyJSONPrinter.prettyPrint(new MongoDBQueries().insertData(COL_DISTRIBUTIONS ,dataToInsert,
+				"Distribution created successfully",JSONValidator.DISTRIBUTION_SCHEMA).toString());
 	}
 
 	/**

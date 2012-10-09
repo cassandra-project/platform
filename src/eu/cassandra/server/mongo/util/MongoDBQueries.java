@@ -172,7 +172,13 @@ public class MongoDBQueries {
 	}
 
 
-
+	/**
+	 * 
+	 * @param httpHeaders
+	 * @param scn_id
+	 * @param obj2Get
+	 * @return
+	 */
 	public DBObject getCountsPerType(HttpHeaders httpHeaders,String scn_id, String obj2Get) {
 		HashMap<String,Integer> counterMap  = new HashMap<String,Integer>();
 		BasicDBObject q = new BasicDBObject();
@@ -199,10 +205,13 @@ public class MongoDBQueries {
 			}
 		}
 		cursorDoc.close();
-
-		BasicDBObject data = new BasicDBObject();
+	
+		Vector<DBObject> data = new Vector<DBObject>();
 		for(String type : counterMap.keySet()) {
-			data.put(type, counterMap.get(type));
+			BasicDBObject d = new BasicDBObject();
+			d.put("type", type);
+			d.put("count", counterMap.get(type));
+			data.add(d);
 		}
 		return jSON2Rrn.createJSON(data, "Counters per type for " + obj2Get + " of Scenario: " + scn_id);
 	}
