@@ -116,7 +116,7 @@ Ext.define('C.view.DynamicGrid', {
 		*/
 
 		if('C.model.'+data.records[0].get('nodeType')==this.store.model.modelName){
-			var record = node.dragData.records[0];
+			var record = data.records[0];
 			var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.raw.nodeId);
 			var node = Ext.getStore(record.raw.nodeStoreId).getAt(index);console.info(node);
 
@@ -127,17 +127,18 @@ Ext.define('C.view.DynamicGrid', {
 			var parent_id = this.store.navigationNode.parentNode.get('id');
 			switch(this.store.navigationNode.get('nodeType')){
 				case 'ScenariosCollection': dataToAdd.project_id = parent_id; break;
+				case 'SimulationParamsCollection': dataToAdd.scenario_id = parent_id; break;
 				case 'InstallationsCollection': dataToAdd.scenario_id = parent_id; break;
 				case 'PersonsCollection': dataToAdd.inst_id = parent_id; break;
 				case 'AppliancesCollection': dataToAdd.inst_id = parent_id; break;
 				case 'ActivitiesCollection': dataToAdd.pers_id = parent_id; break;
 				case 'ActivityModelsCollection': dataToAdd.act_id = parent_id; break;
-				case 'DistributionsCollection': dataToAdd.actmod_id = parent_id; break;
 				case 'ConsumptionModelsCollection': dataToAdd.app_id = parent_id; break;
 				default: return false;
 			}
 
 			this.store.add(dataToAdd);
+			this.store.sync();
 			dropFunction.cancelDrop();
 			return 0;
 		}

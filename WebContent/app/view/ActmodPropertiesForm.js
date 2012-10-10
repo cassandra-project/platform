@@ -67,7 +67,7 @@ Ext.define('C.view.ActmodPropertiesForm', {
 						{
 							xtype: 'displayfield',
 							width: 246,
-							name: 'name',
+							name: 'appliancesLabel',
 							fieldLabel: 'Appliances'
 						},
 						{

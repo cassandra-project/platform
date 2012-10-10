@@ -77,12 +77,15 @@ Ext.application({
 		'ActivityForm',
 		'SimulationParamsForm',
 		'ActmodPropertiesForm',
-		'TypesPieChart'
+		'TypesPieChart',
+		'ProjectForm'
 	],
 	autoCreateViewport: true,
 	name: 'C',
 
 	createForm: function(record) {
+		record.expand();//basic in order to be rendered
+
 		var breadcrumb = record.getPath('name');
 		var tabs = Ext.getCmp('MainTabPanel');
 		var cmpToAdd;
@@ -95,6 +98,10 @@ Ext.application({
 			var myForm;
 			var cur_record;
 			switch(record.get('nodeType')) {
+				case 'Project': 
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getProjectForm(cur_record);
+				break;
 				case 'Scenario':
 				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getScenarioForm(cur_record);
@@ -118,10 +125,6 @@ Ext.application({
 				case 'ActivityModel':
 				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getActivityModelForm(cur_record);
-				break;
-				case 'Distribution':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
-				myForm = C.app.getDistributionForm(cur_record);
 				break;
 				case 'SimulationParam':
 				cur_record = record.parentNode.c.store.getById(record.get('id'));
@@ -156,6 +159,24 @@ Ext.application({
 		out = out + '}';
 		}
 		*/
+		myPersonTypesStore = new C.store.PersonTypesStore({});
+		myPersonTypesStore.load({
+			params: {
+				scn_id: record.node.get('nodeId')
+			}
+		});
+		myPersonPie = new C.view.TypesPieChart({store: myPersonTypesStore, legend: {position:'right'}});
+		myFormCmp.add(myPersonPie);
+
+		myApplianceTypesStore = new C.store.ApplianceTypesStore({});
+		myApplianceTypesStore.load({
+			params: {
+				scn_id: record.node.get('nodeId')
+			}
+		});
+		myAppliancePie = new C.view.TypesPieChart({store: myApplianceTypesStore, legend: {position:'right'}});
+		myFormCmp.add(myAppliancePie);
+
 		Ext.each (record.node.childNodes, function(childNode, index) {
 			if(!childNode.c){
 				console.info('Creating structure for node '+childNode.data.name+'.', childNode);
@@ -186,14 +207,7 @@ Ext.application({
 			grid.setTitle(childNode.get('name'));
 			myFormCmp.insert(index + 1, grid);
 		});
-		myPersonTypesStore = new C.store.PersonTypesStore({});
-		myPersonTypesStore.load({
-			params: {
-				scn_id: record.node.get('nodeId')
-			}
-		});
-		myPersonPie = new C.view.TypesPieChart({store: myPersonTypesStore});
-		myFormCmp.add(myPersonPie);
+
 		console.info(record);
 		return myFormCmp;
 	},
@@ -204,7 +218,7 @@ Ext.application({
 		var gridStore = new C.store.ActmodAppliances();
 		var grid = new C.view.RelationsGrid({store:gridStore});
 
-		var propertiesCmp = new C.view.ActmodPropertiesForm({});
+		propertiesCmp = new C.view.ActmodPropertiesForm({});
 		var myForm = propertiesCmp.getForm();
 		myForm.loadRecord(record);
 		console.info(record);
@@ -260,96 +274,112 @@ Ext.application({
 		}
 		});
 		}
-		*//*
+		*/
+		var myDurationCmp = new C.view.DistributionForm({distr_type:'duration'});
+		myDurationCmp.setTitle('Duration');
+		var myStartCmp = new C.view.DistributionForm({distr_type:'startTime'});
+		myStartCmp.setTitle('Start Time');
+		var myRepeatsCmp = new C.view.DistributionForm({distr_type:'repeatsNrOfTime'});
+		myRepeatsCmp.setTitle('Repeats Nr of Times');
+
 		distr_store = new C.store.Distributions({
 			storeId: 'DistributionsStore-actmod_id-'+record.node.get('nodeId'),
 			listeners:{
 				'load': 
 				function(store,records,options){console.info(record);
 					Ext.each(records, function(distr_record, index){
-						//if (distr_record.get('_id') == record.get('duration')distr_record.get('type') == 'duration') {
-						myForm.setValues({ parameter1: JSON.stringify(record.get('parameters'))});
-						myForm.setValues({distrType1: distr_record.get('distrType')});
-					}
-					//else if (distr_record.get('_id') == record.get('startTime')distr_record.get('type') == 'startTime') {
-					myForm.setValues({ parameter2: JSON.stringify(distr_record.get('parameters'))});
-					myForm.setValues({distrType2: distr_record.get('distrType')});
+						if ( distr_record.get('_id') == record.get('duration')) {
+							myDurationCmp.getForm().loadRecord(distr_record);
+							myDurationCmp.getForm().setValues({ 
+								params: JSON.stringify(distr_record.get('parameters')),
+								val: JSON.stringify(distr_record.get('values'))
+							});
+						}
+						else if ( distr_record.get('_id') == record.get('startTime')) {
+							myStartCmp.getForm().loadRecord(distr_record);
+							myStartCmp.getForm().setValues({ 
+								params: JSON.stringify(distr_record.get('parameters')),
+								val: JSON.stringify(distr_record.get('values'))
+							});	
+						}
+						else if ( distr_record.get('_id') == record.get('repeatsNrOfTime')) {
+							myRepeatsCmp.getForm().loadRecord(distr_record);
+							myRepeatsCmp.getForm().setValues({ 
+								params: JSON.stringify(distr_record.get('parameters')),
+								val: JSON.stringify(distr_record.get('values'))
+							});
+						}
+					});			
 				}
-				//else if (distr_record.get('_id') == record.get('repeatsNrOfTime')distr_record.get('type') == 'repeatsNrOfTime') {
-				myForm.setValues({ parameter3: JSON.stringify(distr_record.get('parameters'))});
-				myForm.setValues({distrType3: distr_record.get('distrType')});
+			}	
+		});
+
+		distr_store.load({
+			params: {
+				actmod_id: record.node.get('nodeId')
 			}
-		});			
-	}
-	}	
-});
+		});
+		/*var myDurationCmp = new C.view.DistributionForm({});
+		var myDurationForm = myDurationCmp.getForm();
+		myDurationCmp.setTitle('Duration');
 
-distr_store.load({
-	params: {
-	actmod_id: record.node.get('nodeId')
-	}
-});*/
-var myDurationCmp = new C.view.DistributionForm({});
-var myDurationForm = myDurationCmp.getForm();
-myDurationCmp.setTitle('Duration');
-
-duration_store = new C.store.Distributions({
-	listeners:{
-	'load': 
-	function(store,records,options){
+		duration_store = new C.store.Distributions({
+		listeners:{
+		'load': 
+		function(store,records,options){
 		if (records){
-			myDurationForm.loadRecord(records[0]);
-			myDurationForm.setValues({ params: JSON.stringify(records[0].get('parameters')), vals: JSON.stringify(records[0].get('values')) });
+		myDurationForm.loadRecord(records[0]);
+		myDurationForm.setValues({ params: JSON.stringify(records[0].get('parameters')), vals: JSON.stringify(records[0].get('values')) });
 		}		
-	}
-	}	
-});
-duration_store.proxy.url += '/' + record.get('duration');
-duration_store.load();
-
-var myStartCmp = new C.view.DistributionForm({});
-var myStartForm = myStartCmp.getForm();
-myStartCmp.setTitle('Start Time');
-
-start_store = new C.store.Distributions({
-	listeners:{
-	'load': 
-	function(store,records,options){
-		if (records){
-			myStartForm.loadRecord(records[0]);
-			myStartForm.setValues({ params: JSON.stringify(records[0].get('parameters')), vals: JSON.stringify(records[0].get('values')) });
-
-		}		
-	}
-	}	
-});
-start_store.proxy.url += '/' + record.get('startTime');
-start_store.load();
-
-var myRepeatsCmp = new C.view.DistributionForm({});
-var myRepeatsForm = myRepeatsCmp.getForm();
-myRepeatsCmp.setTitle('Number of Times');
-
-repeats_store = new C.store.Distributions({
-	listeners:{
-	'load': 
-	function(store,records,options){
-		if (records){
-			myRepeatsForm.loadRecord(records[0]);
-			myRepeatsForm.setValues({ params: JSON.stringify(records[0].get('parameters')), vals: JSON.stringify(records[0].get('values')) });
 		}
-	}	
-	}
-});
-repeats_store.proxy.url += '/' + record.get('repeatsNrOfTime');
-repeats_store.load();
-record.c = [{store: duration_store}, {store: start_store},  {store: repeats_store}];
-propertiesCmp.getComponent('actmodFieldset').insert(6,grid);
-myFormCmp.getComponent('properties_and_appliances').add(propertiesCmp);
-myFormCmp.getComponent('distributionsFieldSet').add(myDurationCmp);	
-myFormCmp.getComponent('distributionsFieldSet').add(myStartCmp);
-myFormCmp.getComponent('distributionsFieldSet').add(myRepeatsCmp);
-return myFormCmp;
+		}	
+		});
+		duration_store.proxy.url += '/' + record.get('duration');
+		duration_store.load();
+
+		var myStartCmp = new C.view.DistributionForm({});
+		var myStartForm = myStartCmp.getForm();
+		myStartCmp.setTitle('Start Time');
+
+		start_store = new C.store.Distributions({
+		listeners:{
+		'load': 
+		function(store,records,options){
+		if (records){
+		myStartForm.loadRecord(records[0]);
+		myStartForm.setValues({ params: JSON.stringify(records[0].get('parameters')), vals: JSON.stringify(records[0].get('values')) });
+
+		}		
+		}
+		}	
+		});
+		start_store.proxy.url += '/' + record.get('startTime');
+		start_store.load();
+
+		var myRepeatsCmp = new C.view.DistributionForm({});
+		var myRepeatsForm = myRepeatsCmp.getForm();
+		myRepeatsCmp.setTitle('Number of Times');
+
+		repeats_store = new C.store.Distributions({
+		listeners:{
+		'load': 
+		function(store,records,options){
+		if (records){
+		myRepeatsForm.loadRecord(records[0]);
+		myRepeatsForm.setValues({ params: JSON.stringify(records[0].get('parameters')), vals: JSON.stringify(records[0].get('values')) });
+		}
+		}	
+		}
+		});
+		repeats_store.proxy.url += '/' + record.get('repeatsNrOfTime');
+		repeats_store.load();*/
+		record.c = {store: distr_store};
+		propertiesCmp.getComponent('actmodFieldset').insert(6,grid);
+		myFormCmp.getComponent('properties_and_appliances').add(propertiesCmp);
+		myFormCmp.getComponent('distributionsFieldSet').add(myDurationCmp);	
+		myFormCmp.getComponent('distributionsFieldSet').add(myStartCmp);
+		myFormCmp.getComponent('distributionsFieldSet').add(myRepeatsCmp);
+		return myFormCmp;
 	},
 
 	launch: function() {
@@ -539,11 +569,57 @@ return myFormCmp;
 
 		myForm.loadRecord(record);
 
+		var ended = '';
 		var day = record.get('calendar').dayOfMonth;
 		var month = record.get('calendar').month - 1;
 		var year = record.get('calendar').year;
-		var calendar = (new Date(year,month,day) == 'Invalid Date') ? '' : new Date(year,month,day);
-		myForm.setValues({ formCalendar:  calendar});
+		var started = (new Date(year,month,day) == 'Invalid Date') ? '' : new Date(year,month,day);
+		if (started) {
+			ended = (record.get('numberOfDays') === 0) ? '' : new Date((started.getTime() + record.get('numberOfDays')*24*60*60*1000));
+		}
+		myForm.setValues({ dateStarted:  started, dateEnds: ended});
+		console.info(record);
+		return myFormCmp;
+	},
+
+	getProjectForm: function(record) {
+		var myFormCmp = new C.view.ProjectForm({});
+
+		var myForm = myFormCmp.getForm();
+
+		myForm.loadRecord(record);
+
+		Ext.each (record.node.childNodes, function(childNode, index) {
+			if(!childNode.c){
+				console.info('Creating structure for node '+childNode.data.name+'.', childNode);
+				childNode.c = {
+					store: {} // single store, not array (?)
+				};
+				switch(childNode.get('nodeType')) {
+					case 'ScenariosCollection':
+					childNode.c.store = new C.store.Scenarios({
+						storeId: childNode.data.nodeType+'Store-prj_id-'+childNode.parentNode.get('nodeId'),
+						navigationNode: childNode
+					});
+					break;
+					case 'RunsCollection':
+					childNode.c.store = new C.store.Runs({
+						storeId: childNode.data.nodeType+'Store-prj_id-'+childNode.parentNode.get('nodeId'),
+						navigationNode: childNode
+					});
+					break;
+				}
+				childNode.c.store.load({
+					params: {
+						prj_id: childNode.parentNode.get('nodeId')
+					}
+				});
+			}
+			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
+			grid.setTitle(childNode.get('name'));
+			myFormCmp.insert(index + 1, grid);
+		});
+
 		console.info(record);
 		return myFormCmp;
 	}

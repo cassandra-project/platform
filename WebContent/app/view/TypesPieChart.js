@@ -16,7 +16,7 @@
 Ext.define('C.view.TypesPieChart', {
 	extend: 'Ext.chart.Chart',
 
-	height: 250,
+	height: 300,
 	width: 400,
 	shadow: true,
 	animate: true,
@@ -49,13 +49,14 @@ Ext.define('C.view.TypesPieChart', {
 						renderer: function(storeItem, item) {
 						//calculate percentage.
 						var total = 0;
-						this.store.each(function(rec) {
+						storeItem.store.each(function(rec) {
 							total += rec.get('count');
 						});
 						this.setTitle(storeItem.get('type') + ': ' + Math.round(storeItem.get('count') / total * 100) + '%');
 					  }
 					},
-					angleField: 'count'
+					angleField: 'count',
+					highlightDuration: 200
 				}
 			],
 			legend: {

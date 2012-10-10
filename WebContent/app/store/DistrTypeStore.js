@@ -24,16 +24,16 @@ Ext.define('C.store.DistrTypeStore', {
 			storeId: 'MyStore5',
 			data: [
 				{
-					distrType: 'normal'
+					distrType: 'Uniform Distribution'
+				},
+				{
+					distrType: 'Normal Distribution'
 				},
 				{
 					distrType: 'Histogram'
 				},
 				{
-					distrType: 'Gaussian'
-				},
-				{
-					distrType: 'GMM'
+					distrType: 'Gaussian Mixture Models'
 				}
 			],
 			fields: [

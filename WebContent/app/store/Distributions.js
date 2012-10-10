@@ -43,47 +43,12 @@ Ext.define('C.store.Distributions', {
 				}
 			},
 			listeners: {
-				load: {
-					fn: me.onJsonstoreLoad,
-					scope: me
-				},
 				datachanged: {
 					fn: me.onJsonstoreDataChangeD,
-					scope: me
-				},
-				update: {
-					fn: me.onJsonstoreUpdate,
-					scope: me
-				},
-				add: {
-					fn: me.onJsonstoreAdd,
-					scope: me
-				},
-				remove: {
-					fn: me.onJsonstoreRemove,
 					scope: me
 				}
 			}
 		}, cfg)]);
-	},
-
-	onJsonstoreLoad: function(store, records, successful, operation, options) {
-		if(store.navigationNode){
-			Ext.each(records, function(record, index){
-				var node = store.navigationNode.appendChild({
-					id: record.data._id,
-					name: record.data.name,
-					nodeType: 'Distribution',
-					nodeId: record.data._id,
-					nodeStoreId: store.storeId,
-					leaf: true,
-					draggable: true
-				});
-				record.node = node;
-			});
-		}else{
-			console.info('Store is not bound to a navigation node. Nothing to render there.');
-		}
 	},
 
 	onJsonstoreDataChangeD: function(abstractstore, options) {
@@ -111,46 +76,6 @@ Ext.define('C.store.Distributions', {
 		}
 		});*/
 		//abstractstore.navigationNode.childNodes
-	},
-
-	onJsonstoreUpdate: function(abstractstore, record, operation, options) {
-		console.info('Distribution data updated.', abstractstore, record, operation, options);
-		if(record.node){
-			if(operation=='edit'){
-				Ext.each(options, function(k){
-					record.node.set(k, record.get(k));
-					//Ext.getCmp('uiNavigationTreePanel').getStore().getNodeById(record.get('_id')).set(k, record.get(k));
-				});
-			}
-		}else{
-			console.info('Record is not bound to a node. Skipping.');
-		}
-	},
-
-	onJsonstoreAdd: function(store, records, index, options) {
-		console.info('Distribution added.', store, records, index, options);
-		Ext.each(records, function(record){
-			//	var nodeExisting = Ext.getCmp('uiNavigationTreePanel').store.tree.getNodeById(record.data._id);
-			//	console.info('Scenario record.', record, nodeExisting);
-			//	if(!nodeExisting){
-			console.info('++ Node does not exist. Creating it.');
-			var node = store.navigationNode.appendChild({
-				id: record.data._id,
-				name: record.data.name,
-				nodeType: 'Distribution',
-				nodeId: record.data._id,
-				nodeStoreId: store.storeId,
-				expanded: false,
-				leaf: true,
-				draggable: true
-			});
-			record.node = node;
-			//	}
-		});
-	},
-
-	onJsonstoreRemove: function(store, record, index, options) {
-		store.navigationNode.removeChild(record.node);
 	}
 
 });

@@ -21,6 +21,7 @@ Ext.define('C.view.Viewport', {
 		'C.view.ActmodPropertiesForm',
 		'C.view.ActivityModelForm',
 		'C.view.ScenarioForm',
+		'C.view.ProjectForm',
 		'C.view.PersonForm',
 		'C.view.ActivityForm',
 		'C.view.SimulationParamsForm',

@@ -116,6 +116,7 @@ Ext.define('C.store.Runs', {
 	onJsonstoreUpdate: function(abstractstore, record, operation, options) {
 		console.info('Run data updated.', abstractstore, record, operation, options);
 		if(record.node){
+			record.node.set({id : record.data._id, 'node_id': record.data._id});
 			if(operation=='edit'){
 				Ext.each(options, function(k){
 					record.node.set(k, record.get(k));

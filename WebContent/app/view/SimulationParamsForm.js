@@ -62,6 +62,7 @@ Ext.define('C.view.SimulationParamsForm', {
 								},
 								{
 									xtype: 'numberfield',
+									hidden: true,
 									width: 246,
 									name: 'numberOfDays',
 									readOnly: false,
@@ -71,9 +72,16 @@ Ext.define('C.view.SimulationParamsForm', {
 								{
 									xtype: 'datefield',
 									width: 246,
-									name: 'formCalendar',
+									name: 'dateStarted',
 									readOnly: false,
-									fieldLabel: 'Calendar'
+									fieldLabel: 'Date Started'
+								},
+								{
+									xtype: 'datefield',
+									width: 246,
+									name: 'dateEnds',
+									readOnly: false,
+									fieldLabel: 'Date Ends'
 								},
 								{
 									xtype: 'button',
@@ -105,13 +113,15 @@ Ext.define('C.view.SimulationParamsForm', {
 
 
 		myForm.updateRecord();console.info(record);
+		var calendar = {};
+		var duration = 0;
 
-		var date = myForm.getFieldValues().formCalendar;
-		if (date) {
-			var day = date.getDate();
-			var month = date.getMonth()+1;
-			var year = date.getFullYear();
-			var weekdayNumb = date.getDay( );
+		var dateStarted = myForm.getFieldValues().dateStarted;
+		if (dateStarted) {
+			var day = dateStarted.getDate();
+			var month = dateStarted.getMonth()+1;
+			var year = dateStarted.getFullYear();
+			var weekdayNumb = dateStarted.getDay( );
 			var weekday = '';
 			switch (weekdayNumb) {
 				case 0: weekday = 'Sunday';break;
@@ -123,10 +133,14 @@ Ext.define('C.view.SimulationParamsForm', {
 				case 6: weekday = 'Saturday';break;
 			}
 			calendar = {'year':year, 'month': month, 'weekday': weekday, 'dayOfMonth':day};
+			var dateEnds = myForm.getFieldValues().dateEnds;
+			if (dateEnds) {
+				var one_day=1000*60*60*24;
+				duration = (dateEnds.getTime() - dateStarted.getTime()) / one_day;
+			}
 		}
-		else
-		calendar = {};
-		record.set('calendar', calendar);
+
+		record.set({'calendar': calendar, 'numberOfDays': duration});
 		//record.save();
 	}
 

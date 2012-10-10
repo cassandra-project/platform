@@ -127,12 +127,12 @@ Ext.define('C.view.MyViewport', {
 			var parent_idKey = '';
 			switch(record.raw.nodeType){
 				case 'Scenario': parent_idKey = 'project_id'; break;
+				case 'SimulationParam': parent_idKey = 'scenario_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
 				case 'Activity': parent_idKey = 'pers_id'; break;
 				case 'ActivityModel': parent_idKey = 'act_id'; break;
-				case 'Distribution': parent_idKey = 'actmod_id'; break;
 				case 'ConsumptionModel': parent_idKey = 'app_id'; break;
 				default: return false;
 			}
@@ -390,7 +390,7 @@ Ext.define('C.view.MyViewport', {
 						}
 					});
 					break;
-					case 'ActivityModel':
+					/*case 'ActivityModel':
 					//record.removeAll();
 					console.info('Creating dummy nodes for activity model.');
 					record.appendChild({
@@ -415,7 +415,7 @@ Ext.define('C.view.MyViewport', {
 							actmod_id: record.parentNode.get('nodeId')
 						}
 					});
-					break;
+					break;*/
 					case 'AppliancesCollection':
 					//record.removeAll();
 					console.info('Creating store for installations.');
@@ -469,8 +469,6 @@ Ext.define('C.view.MyViewport', {
 	onUiNavigationTreePanelItemClick: function(tablepanel, record, item, index, e, options) {
 		console.info('Navigation node single click.',tablepanel, record, item, index, e, options);
 
-
-		record.expand();
 		C.app.createForm(record);
 
 

@@ -60,6 +60,7 @@ Ext.define('C.view.DistributionForm', {
 							width: 128,
 							name: 'distrType',
 							readOnly: false,
+							allowBlank: false,
 							displayField: 'distrType',
 							queryMode: 'local',
 							store: 'DistrTypeStore',
@@ -102,14 +103,31 @@ Ext.define('C.view.DistributionForm', {
 		var record = myForm.getRecord(),
 		values = myForm.getFieldValues();
 
-		record.store.proxy.url = '/cassandra/api/distr/';
-		//record.setDirty();
-		myForm.updateRecord();
+		var parameters = JSON.parse(myForm.getFieldValues().params);
+		var valuesDistr = JSON.parse(myForm.getFieldValues().val);
 
-		parameters = JSON.parse(myForm.getFieldValues().params);
-		valuesDistr = JSON.parse(myForm.getFieldValues().val);
-		record.set({'parameters': parameters, 'values': valuesDistr});
-		record.set('values', valuesDistr);
+		if (record) {
+			myForm.updateRecord();
+			record.set({'parameters': parameters, 'values': valuesDistr});
+		}
+		else {
+			var actmod_record = propertiesCmp.getForm().getRecord();
+			var distr_store = actmod_record.c.store;
+			distr_store.insert(0,{
+				name:values.name,
+				type: values.type,
+				description: values.description,
+				distrType: values.distrType,
+				values:valuesDistr, 
+				parameters: parameters,
+				actmod_id:actmod_record.get('_id')
+			});
+			distr_type = this.distr_type;
+			distr_store.on('update', function(records) {
+				actmod_record.set(distr_type,records.data.items[0].get('_id') );
+			});							  
+		}
+
 		//record.save();dxtsdrt
 	}
 

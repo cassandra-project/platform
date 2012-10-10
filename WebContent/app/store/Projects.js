@@ -25,7 +25,7 @@ Ext.define('C.store.Projects', {
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
 			autoLoad: false,
-			autoSync: false,
+			autoSync: true,
 			storeId: 'ProjectsStore',
 			model: 'C.model.Project',
 			clearOnPageLoad: false,
@@ -46,6 +46,14 @@ Ext.define('C.store.Projects', {
 				load: {
 					fn: me.onJsonstoreLoad,
 					scope: me
+				},
+				datachanged: {
+					fn: me.onJsonstoreDataChangeD,
+					scope: me
+				},
+				update: {
+					fn: me.onJsonstoreUpdate,
+					scope: me
 				}
 			}
 		}, cfg)]);
@@ -54,7 +62,7 @@ Ext.define('C.store.Projects', {
 	onJsonstoreLoad: function(store, records, successful, operation, options) {
 		if(store.navigationNode){
 			Ext.each(records, function(record, index){
-				store.navigationNode.appendChild({
+				var node = store.navigationNode.appendChild({
 					id: record.data._id,
 					name: record.data.name,
 					nodeType: 'Project',
@@ -66,9 +74,33 @@ Ext.define('C.store.Projects', {
 					fakeChildren: true,
 					draggable: false
 				});
+				record.node = node;
 			});
 		}else{
 			console.info('Store is not bound to a navigation node. Nothing to render there.');
+		}
+
+
+	},
+
+	onJsonstoreDataChangeD: function(abstractstore, options) {
+		console.info('Projects data changed.', abstractstore, options);
+		var store = abstractstore;
+	},
+
+	onJsonstoreUpdate: function(abstractstore, record, operation, options) {
+		console.info('Projects data updated.', abstractstore, record, operation, options);
+		if(record.node) {
+			record.node.set({id : record.data._id, 'node_id': record.data._id});
+			if(operation=='edit'){
+				Ext.each(options, function(k){
+					record.node.set(k, record.get(k));
+					//Ext.getCmp('uiNavigationTreePanel').getStore().getNodeById(record.get('_id')).set(k, record.get(k));
+				});
+			}
+		}
+		else {
+			console.info('Record is not bound to a node. Skipping.');
 		}
 	}
 

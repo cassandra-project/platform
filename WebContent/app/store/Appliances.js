@@ -118,6 +118,7 @@ Ext.define('C.store.Appliances', {
 		console.info('Appliance data updated.', abstractstore, record, operation, options);
 		if(record.node){
 			if(operation=='edit'){
+				record.node.set({id : record.data._id, 'node_id': record.data._id});
 				Ext.each(options, function(k){
 					record.node.set(k, record.get(k));
 					//Ext.getCmp('uiNavigationTreePanel').getStore().getNodeById(record.get('_id')).set(k, record.get(k));
