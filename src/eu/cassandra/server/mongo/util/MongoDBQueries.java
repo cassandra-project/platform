@@ -41,6 +41,7 @@ import eu.cassandra.server.mongo.MongoSimParam;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -205,7 +206,7 @@ public class MongoDBQueries {
 			}
 		}
 		cursorDoc.close();
-	
+
 		Vector<DBObject> data = new Vector<DBObject>();
 		for(String type : counterMap.keySet()) {
 			BasicDBObject d = new BasicDBObject();
@@ -884,7 +885,7 @@ public class MongoDBQueries {
 	}
 
 	/**
-	 * curl -i 'http://localhost:8080/cassandra/api/results?inst_id=instID_&aggr_unit=3&metric=1&from=3&to=100'
+	 * curl -i  --header "dbname:run_id" 'http://localhost:8080/cassandra/api/results?inst_id=instID_&aggr_unit=3&metric=1&from=3&to=100'
 	 * 
 	 * @param installationId
 	 * @param metric
@@ -893,13 +894,11 @@ public class MongoDBQueries {
 	 * @param toTick
 	 * @return
 	 */
-	public DBObject mongoResultQuery(HttpHeaders httpHeaders, String runId, String installationId, 
+	public DBObject mongoResultQuery(HttpHeaders httpHeaders, String installationId, 
 			String metricS, String aggregationUnitS, String fromTickS, String toTickS) {
 		try {
-			if(runId != null && installationId != null)
-				throw new RestQueryParamMissingException(
-						"Either run_id or installation_id should be null");
-			else if(runId == null && installationId == null)
+			String runId = getDbNameFromHTTPHeader(httpHeaders);
+			if(runId == null && installationId == null)
 				throw new RestQueryParamMissingException(
 						"Both run_id and installation_id are null");
 
@@ -937,15 +936,16 @@ public class MongoDBQueries {
 			//	}
 			//)
 			BasicDBObject condition = null; 
-			if(installationId != null || fromTick != null || toTick != null)
+			if( installationId != null || fromTick != null || toTick != null)
 				condition =	new BasicDBObject();
-			if(runId != null)
-				condition.append("run_id",runId);
 			if(installationId != null)
 				condition.append("inst_id",installationId);
-			if(fromTick != null)
+
+			if(fromTick != null && toTick != null)
+				condition.append("tick",BasicDBObjectBuilder.start("$gte", fromTick).add("$lte", toTick).get());
+			else if(fromTick != null)
 				condition.append("tick",new BasicDBObject("$gte",fromTick));
-			if(toTick != null)
+			else if(toTick != null)
 				condition.append("tick",new BasicDBObject("$lte",toTick));
 
 			BasicDBObject groupCmd = new BasicDBObject("ns",coll);
@@ -954,6 +954,7 @@ public class MongoDBQueries {
 				groupCmd.append("cond", condition); 
 			groupCmd.append("$reduce", "function(obj,prev){prev.y+=obj." + yMetric + "}");
 			groupCmd.append("initial",  new BasicDBObject("y",0));
+			System.out.println(groupCmd);
 			@SuppressWarnings("deprecation")
 			BasicDBList dbList = (BasicDBList)DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)
 					).getCollection(coll).group(groupCmd);
