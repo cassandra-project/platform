@@ -16,8 +16,13 @@
 Ext.define('C.view.ActmodPropertiesForm', {
 	extend: 'Ext.form.Panel',
 
+	margin: '10px 0',
 	padding: '',
-	width: 295,
+	width: 687,
+	autoScroll: true,
+	layout: {
+		type: 'auto'
+	},
 	bodyPadding: '10px',
 
 	initComponent: function() {
@@ -26,64 +31,82 @@ Ext.define('C.view.ActmodPropertiesForm', {
 		Ext.applyIf(me, {
 			items: [
 				{
-					xtype: 'fieldset',
-					itemId: 'actmodFieldset',
-					title: 'Properties',
+					xtype: 'container',
+					layout: {
+						align: 'middle',
+						pack: 'center',
+						type: 'hbox'
+					},
 					items: [
 						{
-							xtype: 'textfield',
-							width: 246,
-							name: 'name',
-							fieldLabel: 'Name'
-						},
-						{
-							xtype: 'textfield',
-							width: 246,
-							name: 'type',
-							fieldLabel: 'Type'
-						},
-						{
-							xtype: 'textareafield',
-							width: 246,
-							name: 'description',
-							fieldLabel: 'Description'
-						},
-						{
-							xtype: 'combobox',
-							width: 246,
-							name: 'day_type',
-							fieldLabel: 'Day type',
-							displayField: 'day_type',
-							queryMode: 'local',
-							store: 'DayTypeStore',
-							valueField: 'day_type'
-						},
-						{
-							xtype: 'checkboxfield',
-							name: 'shiftable',
-							fieldLabel: 'Shiftable',
-							boxLabel: ''
-						},
-						{
-							xtype: 'displayfield',
-							width: 246,
-							name: 'appliancesLabel',
-							fieldLabel: 'Appliances'
-						},
-						{
-							xtype: 'button',
-							margin: '10px 0 0 140px',
-							width: 70,
-							autoWidth: false,
-							text: 'Update',
-							listeners: {
-								click: {
-									fn: me.onButtonClick2,
-									scope: me
+							xtype: 'fieldset',
+							height: 220,
+							itemId: 'actmodFieldset',
+							width: 300,
+							title: 'Properties',
+							items: [
+								{
+									xtype: 'textfield',
+									width: 246,
+									name: 'name',
+									fieldLabel: 'Name'
+								},
+								{
+									xtype: 'textfield',
+									width: 246,
+									name: 'type',
+									fieldLabel: 'Type'
+								},
+								{
+									xtype: 'textareafield',
+									width: 246,
+									name: 'description',
+									fieldLabel: 'Description'
+								},
+								{
+									xtype: 'combobox',
+									width: 246,
+									name: 'day_type',
+									fieldLabel: 'Day type',
+									displayField: 'day_type',
+									queryMode: 'local',
+									store: 'DayTypeStore',
+									valueField: 'day_type'
+								},
+								{
+									xtype: 'checkboxfield',
+									name: 'shiftable',
+									fieldLabel: 'Shiftable',
+									boxLabel: ''
 								}
-							}
+							]
+						},
+						{
+							xtype: 'fieldset',
+							margins: '0 10px',
+							height: 220,
+							itemId: 'appliancesFieldset',
+							width: 300,
+							autoScroll: true,
+							layout: {
+								type: 'auto'
+							},
+							title: 'Appliances'
 						}
 					]
+				},
+				{
+					xtype: 'button',
+					margin: '10px 0 0 290px',
+					width: 70,
+					autoWidth: false,
+					text: 'Update',
+					listeners: {
+						click: {
+							fn: me.onButtonClick2,
+							scope: me
+						}
+					}
 				}
 			]
 		});

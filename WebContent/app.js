@@ -55,20 +55,8 @@ Ext.application({
 	],
 	views: [
 		'MyViewport',
-		'ScenariosGrid',
-		'InstallationsGrid',
-		'PersonsGrid',
-		'AppliancesGrid',
-		'ActivitiesGrid',
-		'DistributionsGrid',
-		'ConsumptionModelsGrid',
-		'SimulationParamsGrid',
-		'RunsGrid',
-		'ActivityModelsGrid',
-		'ActivityModelForm',
 		'RelationsGrid',
 		'DistributionForm',
-		'DistributionInActivityGrid',
 		'DynamicGrid',
 		'ScenarioForm',
 		'InstallationForm',
@@ -86,58 +74,70 @@ Ext.application({
 	createForm: function(record) {
 		record.expand();//basic in order to be rendered
 
-		var breadcrumb = record.getPath('name');
+		var breadcrumb = record.getPath();
+		var namesBreadcrumb = record.getPath('name');
 		var tabs = Ext.getCmp('MainTabPanel');
-		var cmpToAdd;
-
-		if (record.get('nodeType').search('Collection') > 0 ) {
-			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(record.c.store);
-			cmpToAdd = grid;
-		}
-		else {
-			var myForm;
-			var cur_record;
-			switch(record.get('nodeType')) {
-				case 'Project': 
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
-				myForm = C.app.getProjectForm(cur_record);
-				break;
-				case 'Scenario':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
-				myForm = C.app.getScenarioForm(cur_record);
-				break;
-				case 'Installation':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
-				myForm = C.app.getInstallationForm(cur_record);
-				break;
-				case 'Appliance':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
-				myForm = C.app.getApplianceForm(cur_record);
-				break;
-				case 'Person':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
-				myForm = C.app.getPersonForm(cur_record);
-				break;
-				case 'Activity':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
-				myForm = C.app.getActivityForm(cur_record);
-				break;
-				case 'ActivityModel':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
-				myForm = C.app.getActivityModelForm(cur_record);
-				break;
-				case 'SimulationParam':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
-				myForm = C.app.getSimulationParamsForm(cur_record);
-				break;
+		var isOpen = false;
+		Ext.each (tabs.items.items, function(item, index) {
+			if (item.pathToMe == breadcrumb) {
+				tabs.setActiveTab(item);
+				isOpen = true;
+				return false;
 			}
+		});
+		if (!isOpen) {
+			var cmpToAdd;
 
-			cmpToAdd = myForm;
+			if (record.get('nodeType').search('Collection') > 0 ) {
+				var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(record.c.store);
+				cmpToAdd = grid;
+			}
+			else {
+				var myForm;
+				var cur_record;
+				switch(record.get('nodeType')) {
+					case 'Project': 
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					myForm = C.app.getProjectForm(cur_record);
+					break;
+					case 'Scenario':
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					myForm = C.app.getScenarioForm(cur_record);
+					break;
+					case 'Installation':
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					myForm = C.app.getInstallationForm(cur_record);
+					break;
+					case 'Appliance':
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					myForm = C.app.getApplianceForm(cur_record);
+					break;
+					case 'Person':
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					myForm = C.app.getPersonForm(cur_record);
+					break;
+					case 'Activity':
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					myForm = C.app.getActivityForm(cur_record);
+					break;
+					case 'ActivityModel':
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					myForm = C.app.getActivityModelForm(cur_record);
+					break;
+					case 'SimulationParam':
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					myForm = C.app.getSimulationParamsForm(cur_record);
+					break;
+				}
+
+				cmpToAdd = myForm;
+			}
+			cmpToAdd.pathToMe = breadcrumb;
+			cmpToAdd.setTitle(namesBreadcrumb.split('/').join(' >'));
+			tabs.add(cmpToAdd);
+			tabs.setActiveTab(cmpToAdd);
+			tabs.getActiveTab().setTitle(record.get('name'));
 		}
-		cmpToAdd.setTitle(breadcrumb);
-		tabs.add(cmpToAdd);
-		tabs.setActiveTab(cmpToAdd);
-		tabs.getActiveTab().setTitle(record.get('name'));
 	},
 
 	getScenarioForm: function(record) {
@@ -374,7 +374,7 @@ Ext.application({
 		repeats_store.proxy.url += '/' + record.get('repeatsNrOfTime');
 		repeats_store.load();*/
 		record.c = {store: distr_store};
-		propertiesCmp.getComponent('actmodFieldset').insert(6,grid);
+		propertiesCmp.items.items[0].getComponent('appliancesFieldset').insert(1,grid);
 		myFormCmp.getComponent('properties_and_appliances').add(propertiesCmp);
 		myFormCmp.getComponent('distributionsFieldSet').add(myDurationCmp);	
 		myFormCmp.getComponent('distributionsFieldSet').add(myStartCmp);

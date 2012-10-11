@@ -42,6 +42,7 @@ Ext.define('C.view.ActivityForm', {
 						{
 							xtype: 'fieldset',
 							padding: '10px',
+							width: 400,
 							title: 'Properties',
 							items: [
 								{
