@@ -17,7 +17,8 @@ Ext.define('C.view.PersonForm', {
 	extend: 'Ext.form.Panel',
 
 	height: 442,
-	width: 315,
+	minWidth: 400,
+	width: 424,
 	layout: {
 		type: 'auto'
 	},
@@ -32,6 +33,7 @@ Ext.define('C.view.PersonForm', {
 			items: [
 				{
 					xtype: 'container',
+					width: 400,
 					autoScroll: true,
 					layout: {
 						type: 'anchor'
@@ -40,6 +42,7 @@ Ext.define('C.view.PersonForm', {
 						{
 							xtype: 'fieldset',
 							padding: '10px',
+							width: 400,
 							title: 'Properties',
 							items: [
 								{

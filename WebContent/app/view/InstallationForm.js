@@ -18,9 +18,6 @@ Ext.define('C.view.InstallationForm', {
 
 	height: 442,
 	autoScroll: true,
-	layout: {
-		type: 'auto'
-	},
 	bodyPadding: 10,
 	closable: true,
 	title: 'My Form',
@@ -32,7 +29,8 @@ Ext.define('C.view.InstallationForm', {
 			items: [
 				{
 					xtype: 'container',
-					maxWidth: 500,
+					minWidth: 400,
+					width: 400,
 					autoScroll: true,
 					layout: {
 						type: 'anchor'
@@ -41,6 +39,7 @@ Ext.define('C.view.InstallationForm', {
 						{
 							xtype: 'fieldset',
 							padding: '10px',
+							width: 400,
 							title: 'Properties',
 							items: [
 								{

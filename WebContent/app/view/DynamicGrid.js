@@ -18,9 +18,10 @@ Ext.define('C.view.DynamicGrid', {
 
 	height: 250,
 	margin: '10px 0 0 0',
+	minWidth: 400,
 	width: 400,
 	autoScroll: true,
-	closable: true,
+	closable: false,
 	title: 'My Grid Panel',
 	forceFit: false,
 	store: 'Scenarios',
@@ -120,10 +121,8 @@ Ext.define('C.view.DynamicGrid', {
 			var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.raw.nodeId);
 			var node = Ext.getStore(record.raw.nodeStoreId).getAt(index);console.info(node);
 
-			data.copy = true;
-
-			var dataToAdd = node.data;
-			delete dataToAdd['_id'];
+			var dataToAdd = JSON.parse(JSON.stringify(node.data));
+			delete dataToAdd._id;
 			var parent_id = this.store.navigationNode.parentNode.get('id');
 			switch(this.store.navigationNode.get('nodeType')){
 				case 'ScenariosCollection': dataToAdd.project_id = parent_id; break;
@@ -138,7 +137,6 @@ Ext.define('C.view.DynamicGrid', {
 			}
 
 			this.store.add(dataToAdd);
-			this.store.sync();
 			dropFunction.cancelDrop();
 			return 0;
 		}

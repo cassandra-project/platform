@@ -16,16 +16,20 @@
 Ext.define('C.view.DistributionForm', {
 	extend: 'Ext.form.Panel',
 
+	border: '0 0 0 0',
 	frame: false,
 	height: 340,
 	margin: '10px',
+	style: 'border: none',
 	width: 170,
 	layout: {
 		type: 'auto'
 	},
-	bodyBorder: true,
+	bodyBorder: false,
+	bodyCls: 'x-panel-mc',
 	bodyPadding: 10,
 	closable: false,
+	collapsible: false,
 	titleCollapse: false,
 
 	initComponent: function() {

@@ -16,12 +16,12 @@
 Ext.define('C.view.RelationsGrid', {
 	extend: 'Ext.grid.Panel',
 
+	frame: false,
 	margin: '10px 0',
-	maxHeight: 300,
 	maxWidth: 250,
-	minHeight: 20,
-	width: 303,
+	autoScroll: true,
 	forceFit: true,
+	hideHeaders: true,
 	store: 'ActmodAppliances',
 
 	initComponent: function() {
@@ -29,6 +29,11 @@ Ext.define('C.view.RelationsGrid', {
 
 		Ext.applyIf(me, {
 			viewConfig: {
+				autoShow: false,
+				hidden: false,
+				maxHeight: 300,
+				minHeight: 20,
+				autoScroll: true,
 				plugins: [
 					Ext.create('Ext.grid.plugin.DragDrop', {
 						ptype: 'gridviewdragdrop',
@@ -50,6 +55,7 @@ Ext.define('C.view.RelationsGrid', {
 			columns: [
 				{
 					xtype: 'gridcolumn',
+					hidden: true,
 					dataIndex: '_id',
 					text: '_id'
 				},
