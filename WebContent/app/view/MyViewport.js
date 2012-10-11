@@ -136,8 +136,10 @@ Ext.define('C.view.MyViewport', {
 				case 'ConsumptionModel': parent_idKey = 'app_id'; break;
 				default: return false;
 			}
-			var recordRawData = node.data;
+			//var recordRawData = node.data;
+			var recordRawData = JSON.parse(JSON.stringify(node.data));
 			delete recordRawData._id;
+			//delete recordRawData._id;
 			// TODO Make damn sure that parentId actually exists all around.
 			recordRawData[parent_idKey] = overModel.data.parentId; 
 			overModel.c.store.add(recordRawData);

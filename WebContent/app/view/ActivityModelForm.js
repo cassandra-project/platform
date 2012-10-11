@@ -36,6 +36,7 @@ Ext.define('C.view.ActivityModelForm', {
 					xtype: 'container',
 					id: '',
 					itemId: 'properties_and_appliances',
+					minWidth: 400,
 					layout: {
 						align: 'middle',
 						type: 'hbox'
@@ -51,25 +52,25 @@ Ext.define('C.view.ActivityModelForm', {
 					width: 687,
 					autoScroll: false,
 					layout: {
-						align: 'middle',
 						type: 'hbox'
 					},
 					title: 'Distributions',
 					items: [
 						{
 							xtype: 'container',
+							margin: '47px 0 0 0',
 							padding: '10px',
 							width: 93,
 							items: [
 								{
 									xtype: 'displayfield',
-									margin: '0 0 20px 0',
 									width: 245,
 									name: 'name',
 									fieldLabel: 'Name'
 								},
 								{
 									xtype: 'displayfield',
+									margin: '10px 0',
 									width: 246,
 									name: 'type',
 									fieldLabel: 'Type'
@@ -77,20 +78,21 @@ Ext.define('C.view.ActivityModelForm', {
 								{
 									xtype: 'displayfield',
 									height: 41,
-									margin: '20px 0',
+									margin: '',
 									width: 246,
 									name: 'description',
 									fieldLabel: 'Description'
 								},
 								{
 									xtype: 'displayfield',
+									margin: '5px 0',
 									width: 246,
 									name: 'distrType',
 									fieldLabel: 'Types'
 								},
 								{
 									xtype: 'displayfield',
-									margin: '20px 0',
+									margin: '10px 0 30px 0',
 									width: 239,
 									name: 'val',
 									fieldLabel: 'Values'

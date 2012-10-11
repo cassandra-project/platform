@@ -17,7 +17,7 @@ Ext.define('C.view.ProjectForm', {
 	extend: 'Ext.form.Panel',
 
 	height: 442,
-	width: 308,
+	width: 438,
 	autoScroll: true,
 	layout: {
 		type: 'auto'
@@ -42,6 +42,7 @@ Ext.define('C.view.ProjectForm', {
 						{
 							xtype: 'fieldset',
 							padding: '10px',
+							width: 400,
 							title: 'Properties',
 							items: [
 								{
