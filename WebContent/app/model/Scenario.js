@@ -43,17 +43,5 @@ Ext.define('C.model.Scenario', {
 			defaultValue: true,
 			type: 'boolean'
 		}
-	],
-
-	validations: [
-		{
-			type: 'inclusion',
-			field: 'setup',
-			list: [
-				'static',
-				'dynamic',
-				''
-			]
-		}
 	]
 });

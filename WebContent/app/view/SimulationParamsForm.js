@@ -47,7 +47,13 @@ Ext.define('C.view.SimulationParamsForm', {
 									xtype: 'textfield',
 									width: 246,
 									name: 'name',
-									fieldLabel: 'Name'
+									fieldLabel: 'Name',
+									listeners: {
+										change: {
+											fn: me.onTextfieldChange1111,
+											scope: me
+										}
+									}
 								},
 								{
 									xtype: 'textareafield',
@@ -105,6 +111,10 @@ Ext.define('C.view.SimulationParamsForm', {
 		});
 
 		me.callParent(arguments);
+	},
+
+	onTextfieldChange1111: function(field, newValue, oldValue, options) {
+		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {
