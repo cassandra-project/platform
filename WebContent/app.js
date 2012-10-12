@@ -46,12 +46,12 @@ Ext.application({
 		'Runs',
 		'DayTypeStore',
 		'ActmodAppliances',
-		'DistributionInActivity',
 		'DistrTypeStore',
 		'SetupStore',
 		'EnergyClassStore',
 		'PersonTypesStore',
-		'ApplianceTypesStore'
+		'ApplianceTypesStore',
+		'SeasonsStore'
 	],
 	views: [
 		'MyViewport',
@@ -147,6 +147,9 @@ Ext.application({
 
 		myForm.loadRecord(record);
 
+		if (myForm.findField('setup').value)
+		myForm.findField('setup').readOnly = true;
+
 		/*var out='';
 		var params = record.get('model').params;
 		for (var param_key in params) {
@@ -166,7 +169,7 @@ Ext.application({
 			}
 		});
 		myPersonPie = new C.view.TypesPieChart({store: myPersonTypesStore, legend: {position:'right'}});
-		myFormCmp.add(myPersonPie);
+		myFormCmp.getComponent('pieChartContainer').insert(1, myPersonPie);
 
 		myApplianceTypesStore = new C.store.ApplianceTypesStore({});
 		myApplianceTypesStore.load({
@@ -175,7 +178,7 @@ Ext.application({
 			}
 		});
 		myAppliancePie = new C.view.TypesPieChart({store: myApplianceTypesStore, legend: {position:'right'}});
-		myFormCmp.add(myAppliancePie);
+		myFormCmp.getComponent('pieChartContainer').insert(3, myAppliancePie);
 
 		Ext.each (record.node.childNodes, function(childNode, index) {
 			if(!childNode.c){
@@ -204,8 +207,9 @@ Ext.application({
 				});
 			}
 			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
+			grid.closable = false;
 			grid.setTitle(childNode.get('name'));
-			myFormCmp.insert(index + 1, grid);
+			myFormCmp.getComponent('dataContainer').insert(index + 1, grid);
 		});
 
 		console.info(record);
@@ -420,6 +424,7 @@ Ext.application({
 				});
 			}
 			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
+			grid.closable = false;
 			grid.setTitle(childNode.get('name'));
 			myFormCmp.insert(index + 1, grid);
 		});
@@ -508,6 +513,7 @@ Ext.application({
 		}
 
 		var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
+		grid.closable = false;
 		grid.setTitle(childNode.get('name'));
 		myFormCmp.insert(1, grid);
 
@@ -542,6 +548,7 @@ Ext.application({
 		}
 
 		var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
+		grid.closable = false;
 		grid.setTitle(childNode.get('name'));
 		myFormCmp.insert(1, grid);
 
@@ -616,6 +623,7 @@ Ext.application({
 				});
 			}
 			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
+			grid.closable = false;
 			grid.setTitle(childNode.get('name'));
 			myFormCmp.insert(index + 1, grid);
 		});

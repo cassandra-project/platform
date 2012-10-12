@@ -16,11 +16,13 @@
 Ext.define('C.view.TypesPieChart', {
 	extend: 'Ext.chart.Chart',
 
+	border: '1px',
 	height: 300,
-	width: 400,
+	width: 350,
 	shadow: true,
+	autoSize: true,
 	animate: true,
-	insetPadding: 20,
+	insetPadding: 25,
 	store: 'PersonTypesStore',
 
 	initComponent: function() {

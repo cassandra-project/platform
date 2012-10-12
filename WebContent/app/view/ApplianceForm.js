@@ -50,7 +50,13 @@ Ext.define('C.view.ApplianceForm', {
 									xtype: 'textfield',
 									width: 246,
 									name: 'name',
-									fieldLabel: 'Name'
+									fieldLabel: 'Name',
+									listeners: {
+										change: {
+											fn: me.onTextfieldChange111111,
+											scope: me
+										}
+									}
 								},
 								{
 									xtype: 'textfield',
@@ -152,6 +158,10 @@ Ext.define('C.view.ApplianceForm', {
 		});
 
 		me.callParent(arguments);
+	},
+
+	onTextfieldChange111111: function(field, newValue, oldValue, options) {
+		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {
