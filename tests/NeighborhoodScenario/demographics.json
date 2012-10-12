@@ -3,7 +3,7 @@
     "description" : "Small demographics file for 10 houses",
     "type" : "apps",
     "scn_id" : "5045dc26e4b058c3f86c32df",
-    "numberOfEntities" : 10,
+    "numberOfEntities" : 150,
     "generators" : [
         {
             "entity_id" : "5045e1aee4b058c3f86c32e2",
