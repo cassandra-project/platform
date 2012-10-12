@@ -40,6 +40,12 @@ Ext.define('C.store.Scenarios', {
 				},
 				writer: {
 					type: 'json'
+				},
+				listeners: {
+					exception: {
+						fn: me.onRestproxyException,
+						scope: me
+					}
 				}
 			},
 			listeners: {
@@ -65,6 +71,12 @@ Ext.define('C.store.Scenarios', {
 				}
 			}
 		}, cfg)]);
+	},
+
+	onRestproxyException: function(server, response, operation, options) {
+		var errors;
+		errors = Ext.JSON.decode(response.responseText).message;
+		console.info(errors);
 	},
 
 	onJsonstoreLoad: function(store, records, successful, operation, options) {

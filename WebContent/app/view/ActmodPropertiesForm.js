@@ -49,7 +49,13 @@ Ext.define('C.view.ActmodPropertiesForm', {
 									xtype: 'textfield',
 									width: 246,
 									name: 'name',
-									fieldLabel: 'Name'
+									fieldLabel: 'Name',
+									listeners: {
+										change: {
+											fn: me.onTextfieldChange11,
+											scope: me
+										}
+									}
 								},
 								{
 									xtype: 'textfield',
@@ -91,7 +97,14 @@ Ext.define('C.view.ActmodPropertiesForm', {
 							layout: {
 								type: 'auto'
 							},
-							title: 'Appliances'
+							title: 'Appliances',
+							items: [
+								{
+									xtype: 'label',
+									style: 'font-size:11px; font-style:italic;',
+									text: '*Appliances can be added by droping them from the main tree on the following appliances grid:'
+								}
+							]
 						}
 					]
 				},
@@ -112,6 +125,10 @@ Ext.define('C.view.ActmodPropertiesForm', {
 		});
 
 		me.callParent(arguments);
+	},
+
+	onTextfieldChange11: function(field, newValue, oldValue, options) {
+		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {

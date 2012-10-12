@@ -21,7 +21,7 @@ Ext.define('C.view.DynamicGrid', {
 	minWidth: 400,
 	width: 400,
 	autoScroll: true,
-	closable: false,
+	closable: true,
 	title: 'My Grid Panel',
 	forceFit: false,
 	store: 'Scenarios',
@@ -126,7 +126,7 @@ Ext.define('C.view.DynamicGrid', {
 			var parent_id = this.store.navigationNode.parentNode.get('id');
 			switch(this.store.navigationNode.get('nodeType')){
 				case 'ScenariosCollection': dataToAdd.project_id = parent_id; break;
-				case 'SimulationParamsCollection': dataToAdd.scenario_id = parent_id; break;
+				case 'SimulationParamsCollection': dataToAdd.scn_id = parent_id; break;
 				case 'InstallationsCollection': dataToAdd.scenario_id = parent_id; break;
 				case 'PersonsCollection': dataToAdd.inst_id = parent_id; break;
 				case 'AppliancesCollection': dataToAdd.inst_id = parent_id; break;
@@ -187,11 +187,15 @@ Ext.define('C.view.DynamicGrid', {
 			default: return false;
 		}
 		var currentModel = this.store.getProxy().getModel();
+
 		this.store.insert(0, new currentModel(inputArray));
 		var cur_record = this.store.getAt(0);
 		C.app.createForm(cur_record.node);
 
 		this.plugins[0].startEdit(0, 0);
+
+
+
 
 	},
 
