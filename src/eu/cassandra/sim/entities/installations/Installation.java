@@ -146,7 +146,7 @@ public class Installation extends Entity {
     	obj.put("name", name);
     	obj.put("description", description);
     	obj.put("type", type);
-    	obj.put("scenarioId", parentId);
+    	obj.put("scenario_id", parentId);
     	if(locationInfo != null) {
     		obj.put("location", locationInfo.getName());
     		obj.put("x", locationInfo.getLocation().getLatitude());
