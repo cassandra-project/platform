@@ -130,7 +130,7 @@ public class Runs {
 			query = new BasicDBObject();
 			query.put("scn_id", scn_id);
 			String setup = (String)scn.get("setup");
-			String prj_id = (String)scn.get("project?_id");
+			String prj_id = (String)scn.get("project_id");
 			boolean isDynamic = setup.equalsIgnoreCase("dynamic");
 			if(isDynamic) {
 				DBObject demog = DBConn.getConn().getCollection(MongoDemographics.COL_DEMOGRAPHICS).findOne(query);
