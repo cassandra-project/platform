@@ -296,6 +296,7 @@ public class MongoDBQueries {
 				coll,query,fields, successMsg, sort, limit, skip, count);
 	}
 
+
 	//	
 	//	public DBObject getEntity(String coll, String qKey, String qValue, 
 	//				String successMsg, int limit, int offset, Vector<SortingInfo> sortingInfo, String...fieldNames) {
@@ -419,16 +420,8 @@ public class MongoDBQueries {
 	 */
 	public DBObject executeFindQuery(HttpHeaders httpHeaders, String collection, 
 			BasicDBObject dbObj1, BasicDBObject dbObj2, String successMsg) {
-		DBCursor cursorDoc;
-		if(dbObj2 == null) {
-			cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-					getCollection(collection).find(dbObj1);
-		}
-		else {
-			cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-					getCollection(collection).find(dbObj1,dbObj2);
-		}
-		return jSON2Rrn.createJSON(cursorDoc,successMsg);
+		return executeFindQuery(httpHeaders,collection,dbObj1, dbObj2, 
+				successMsg,null, 0, 0, false); 
 	}
 
 	/**
@@ -455,8 +448,14 @@ public class MongoDBQueries {
 			return 	 jSON2Rrn.createJSON(dbObject, successMsg);
 		}
 		else {
-			cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-					getCollection(collection).find(dbObj1);
+			if(dbObj2 == null) {
+				cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+						getCollection(collection).find(dbObj1);
+			}
+			else {
+				cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+						getCollection(collection).find(dbObj1,dbObj2);
+			}
 		}
 		if(sort != null)	{
 			try{
@@ -470,7 +469,31 @@ public class MongoDBQueries {
 			cursorDoc =	cursorDoc.skip(skip);
 		if(limit != 0)
 			cursorDoc =	cursorDoc.limit(limit);
-		return jSON2Rrn.createJSON(cursorDoc,successMsg);
+
+		Vector<DBObject> recordsVec = new Vector<DBObject>();
+		while (cursorDoc.hasNext()) {
+			DBObject obj = cursorDoc.next();
+			if(obj.containsField("_id"))
+				obj = addChildrenCounts(httpHeaders,collection, obj);
+			recordsVec.add(obj);
+		}
+		cursorDoc.close();
+		return jSON2Rrn.createJSON(recordsVec,successMsg);
+	}
+
+
+	private DBObject addChildrenCounts(HttpHeaders httpHeaders,String coll, DBObject data) {
+		SchemaInfo schemaInfo = MongoSchema.getSchemaInfo(coll);
+		if(schemaInfo != null) {
+			String id = ((ObjectId)data.get("_id")).toString();
+			for(int i=0;i<schemaInfo.childCollection.length;i++) {
+				BasicDBObject q = new BasicDBObject(schemaInfo.refKeys[i], id);
+				int counter = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection(
+						schemaInfo.getChildCollection()[i]).find(q).count();
+				data.put(schemaInfo.getChildCollection()[i] + "_counter", counter);
+			}
+		}
+		return data;
 	}
 
 	/**

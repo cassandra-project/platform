@@ -27,6 +27,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoRuns {
 	
 	public final static String COL_RUNS = "runs";
+	public final static String REF_PROJECT = "prj_id";
 	
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/runs/4fec747cdf4ffdb8d1d1ce55
@@ -42,7 +43,7 @@ public class MongoRuns {
 					new RestQueryParamMissingException("prj_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(httpHeaders,COL_RUNS,"project_id", project_id, 
+			return new MongoDBQueries().getEntity(httpHeaders,COL_RUNS,"prj_id", project_id, 
 					"Runs retrieved successfully",count).toString();
 		}
 	}

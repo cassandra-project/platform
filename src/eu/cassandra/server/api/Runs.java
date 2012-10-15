@@ -55,7 +55,6 @@ import eu.cassandra.server.mongo.MongoSimParam;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.Simulation;
-import eu.cassandra.sim.utilities.RNG;
 
 @Path("runs")
 @Produces(MediaType.APPLICATION_JSON)
