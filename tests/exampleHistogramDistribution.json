@@ -1,0 +1,8 @@
+{
+    "name" : "Cleaning",
+    "type" : "weekday",
+    "distrType" : "Histogram",
+    "parameters" : [
+        {	"values": [0.33,0.33,0.33]     	}
+     ]
+}
