@@ -36,7 +36,7 @@ public class JSONtoReturn {
 	public DBObject createJSONError(String data, Exception ex) {
 		return  createJSONError(data, ex.getMessage() );
 	}
-
+	
 	/**
 	 * 
 	 * @param data
@@ -46,7 +46,14 @@ public class JSONtoReturn {
 	public DBObject createJSONError(String data, String ex) {
 		DBObject errorMessage = new BasicDBObject();
 		errorMessage.put("success", false);
-		errorMessage.put("exception", ex);
+		String error = "Exception";
+		String errorDescr = ex;
+		if(ex.matches("(\\S)+:(\\s)(.)*")) {
+			String d[] = ex.split(": ",2);
+			error = d[0];
+			errorDescr = d[1];
+		}
+		errorMessage.put("exception", new BasicDBObject(error,errorDescr));
 		errorMessage.put("message", data);
 		return errorMessage;
 	}
