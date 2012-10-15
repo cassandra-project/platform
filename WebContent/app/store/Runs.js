@@ -72,7 +72,7 @@ Ext.define('C.store.Runs', {
 			Ext.each(records, function(record, index){
 				var node = store.navigationNode.appendChild({
 					id: record.data._id,
-					name: record.data.name,
+					name: record.data._id,
 					nodeType: 'Run',
 					nodeId: record.data._id,
 					nodeStoreId: store.storeId,
@@ -80,10 +80,12 @@ Ext.define('C.store.Runs', {
 					draggable: true
 				});
 				record.node = node;
+
 			});
 		}else{
 			console.info('Store is not bound to a navigation node. Nothing to render there.');
 		}
+
 	},
 
 	onJsonstoreDataChangeD: function(abstractstore, options) {
@@ -137,7 +139,7 @@ Ext.define('C.store.Runs', {
 			console.info('++ Node does not exist. Creating it.');
 			var node = store.navigationNode.appendChild({
 				id: record.data._id,
-				name: record.data.name,
+				name: record.data._id,
 				nodeType: 'Run',
 				nodeId: record.data._id,
 				nodeStoreId: store.storeId,

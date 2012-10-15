@@ -20,16 +20,21 @@ Ext.define('C.model.Run', {
 
 	fields: [
 		{
-			name: '_id'
+			name: '_id',
+			type: 'string'
 		},
 		{
-			name: 'status'
+			name: 'started'
 		},
 		{
-			name: 'percentage'
+			name: 'ended'
 		},
 		{
-			name: 'project_id'
+			name: 'percentage',
+			type: 'int'
+		},
+		{
+			name: 'prj_id'
 		}
 	]
 });

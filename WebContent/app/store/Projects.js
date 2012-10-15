@@ -54,6 +54,14 @@ Ext.define('C.store.Projects', {
 				update: {
 					fn: me.onJsonstoreUpdate,
 					scope: me
+				},
+				add: {
+					fn: me.onJsonstoreAdd,
+					scope: me
+				},
+				remove: {
+					fn: me.onJsonstoreRemove,
+					scope: me
 				}
 			}
 		}, cfg)]);
@@ -102,6 +110,34 @@ Ext.define('C.store.Projects', {
 		else {
 			console.info('Record is not bound to a node. Skipping.');
 		}
+	},
+
+	onJsonstoreAdd: function(store, records, index, options) {
+		console.info('Project added.', store, records, index, options);
+		Ext.each(records, function(record){
+			//	var nodeExisting = Ext.getCmp('uiNavigationTreePanel').store.tree.getNodeById(record.data._id);
+			//	console.info('Scenario record.', record, nodeExisting);
+			//	if(!nodeExisting){
+			console.info('++ Node does not exist. Creating it.');
+			var node = store.navigationNode.appendChild({
+				id: record.get('_id'),
+				name: record.data.name,
+				nodeType: 'Project',
+				nodeId: record.data._id,
+				nodeStoreId: store.storeId,
+				expanded: false,
+				leaf: false,
+				expandable: true,
+				fakeChildren: true,
+				draggable: false
+			});
+			record.node = node;
+			//	}
+		});
+	},
+
+	onJsonstoreRemove: function(store, record, index, options) {
+		store.navigationNode.removeChild(record.node);
 	}
 
 });

@@ -16,7 +16,7 @@
 Ext.define('C.view.SimulationParamsForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 296,
+	height: 323,
 	width: 431,
 	layout: {
 		type: 'auto'
@@ -91,17 +91,40 @@ Ext.define('C.view.SimulationParamsForm', {
 									fieldLabel: 'Date Ends'
 								},
 								{
-									xtype: 'button',
-									margin: '10px 0 0 185px',
-									width: 70,
-									autoWidth: false,
-									text: 'Update',
-									listeners: {
-										click: {
-											fn: me.onButtonClick2,
-											scope: me
+									xtype: 'container',
+									margin: '20px 0',
+									layout: {
+										align: 'middle',
+										pack: 'center',
+										type: 'hbox'
+									},
+									items: [
+										{
+											xtype: 'button',
+											width: 70,
+											autoWidth: false,
+											text: 'Update',
+											listeners: {
+												click: {
+													fn: me.onButtonClick2,
+													scope: me
+												}
+											}
+										},
+										{
+											xtype: 'button',
+											margins: '0 0 0 10px',
+											width: 70,
+											autoWidth: false,
+											text: 'Run',
+											listeners: {
+												click: {
+													fn: me.onButtonClick21,
+													scope: me
+												}
+											}
 										}
-									}
+									]
 								}
 							]
 						}
@@ -114,7 +137,7 @@ Ext.define('C.view.SimulationParamsForm', {
 	},
 
 	onTextfieldChange1111: function(field, newValue, oldValue, options) {
-		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
+		this.setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {
@@ -146,13 +169,21 @@ Ext.define('C.view.SimulationParamsForm', {
 			calendar = {'year':year, 'month': month, 'weekday': weekday, 'dayOfMonth':day};
 			var dateEnds = myForm.getFieldValues().dateEnds;
 			if (dateEnds) {
-				var one_day=1000*60*60*24;
+				var one_day = 1000*60*60*24;
 				duration = (dateEnds.getTime() - dateStarted.getTime()) / one_day;
 			}
 		}
 
 		record.set({'calendar': calendar, 'numberOfDays': duration});
 		//record.save();
+	},
+
+	onButtonClick21: function(button, e, options) {
+		var project_node = this.getForm().getRecord().node.parentNode.parentNode.parentNode.parentNode;
+		if (! (project_node.lastChild.c) ) project_node.lastChild.expand();
+		var run_store = project_node.lastChild.c.store;
+		run_store.insert(0, new C.model.Run({prj_id : project_node.get('id'),
+		started: new Date().getTime()}));
 	}
 
 });
