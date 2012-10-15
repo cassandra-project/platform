@@ -52,6 +52,14 @@ Ext.define('C.model.Installation', {
 		},
 		{
 			name: '_id'
+		},
+		{
+			name: 'appliances_counter',
+			type: 'int'
+		},
+		{
+			name: 'persons_counter',
+			type: 'int'
 		}
 	]
 });

@@ -101,7 +101,7 @@ Ext.define('C.view.ActivityForm', {
 	},
 
 	onTextfieldChange111: function(field, newValue, oldValue, options) {
-		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
+		this.setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {

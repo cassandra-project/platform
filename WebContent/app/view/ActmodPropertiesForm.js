@@ -128,7 +128,7 @@ Ext.define('C.view.ActmodPropertiesForm', {
 	},
 
 	onTextfieldChange11: function(field, newValue, oldValue, options) {
-		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
+		this.setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {

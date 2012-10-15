@@ -42,6 +42,14 @@ Ext.define('C.model.Scenario', {
 			name: 'editable',
 			defaultValue: true,
 			type: 'boolean'
+		},
+		{
+			name: 'installations_counter',
+			type: 'int'
+		},
+		{
+			name: 'sim_param_counter',
+			type: 'int'
 		}
 	]
 });

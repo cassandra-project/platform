@@ -36,6 +36,10 @@ Ext.define('C.model.Activity', {
 		},
 		{
 			name: 'pers_id'
+		},
+		{
+			name: 'act_models_counter',
+			type: 'int'
 		}
 	]
 });

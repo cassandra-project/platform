@@ -107,8 +107,8 @@ Ext.define('C.view.DistributionForm', {
 		var record = myForm.getRecord(),
 		values = myForm.getFieldValues();
 
-		var parameters = JSON.parse(myForm.getFieldValues().params);
-		var valuesDistr = JSON.parse(myForm.getFieldValues().val);
+		var parameters = (myForm.getFieldValues().params) ? JSON.parse(myForm.getFieldValues().params) : [];
+		var valuesDistr = (myForm.getFieldValues().val) ? JSON.parse(myForm.getFieldValues().val) : [];
 
 		if (record) {
 			myForm.updateRecord();
@@ -122,7 +122,7 @@ Ext.define('C.view.DistributionForm', {
 				type: values.type,
 				description: values.description,
 				distrType: values.distrType,
-				values:valuesDistr, 
+				values: valuesDistr, 
 				parameters: parameters,
 				actmod_id:actmod_record.get('_id')
 			});
