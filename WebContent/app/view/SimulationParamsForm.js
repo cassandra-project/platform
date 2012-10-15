@@ -182,7 +182,7 @@ Ext.define('C.view.SimulationParamsForm', {
 		var project_node = this.getForm().getRecord().node.parentNode.parentNode.parentNode.parentNode;
 		if (! (project_node.lastChild.c) ) project_node.lastChild.expand();
 		var run_store = project_node.lastChild.c.store;
-		run_store.insert(0, new C.model.Run({prj_id : project_node.get('id'),
+		run_store.insert(0, new C.model.Run({smp_id : this.getForm().getRecord().node.get('id'),
 		started: new Date().getTime()}));
 	}
 
