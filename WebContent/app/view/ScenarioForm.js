@@ -16,11 +16,10 @@
 Ext.define('C.view.ScenarioForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 442,
-	width: 308,
+	height: 713,
 	autoScroll: true,
 	layout: {
-		type: 'auto'
+		type: 'hbox'
 	},
 	bodyPadding: 10,
 	closable: true,
@@ -33,6 +32,7 @@ Ext.define('C.view.ScenarioForm', {
 			items: [
 				{
 					xtype: 'container',
+					itemId: 'dataContainer',
 					maxWidth: 500,
 					autoScroll: true,
 					layout: {
@@ -42,13 +42,20 @@ Ext.define('C.view.ScenarioForm', {
 						{
 							xtype: 'fieldset',
 							padding: '10px',
+							width: 400,
 							title: 'Properties',
 							items: [
 								{
 									xtype: 'textfield',
 									width: 246,
 									name: 'name',
-									fieldLabel: 'Name'
+									fieldLabel: 'Name',
+									listeners: {
+										change: {
+											fn: me.onTextfieldChange1,
+											scope: me
+										}
+									}
 								},
 								{
 									xtype: 'textareafield',
@@ -84,6 +91,36 @@ Ext.define('C.view.ScenarioForm', {
 							]
 						}
 					]
+				},
+				{
+					xtype: 'container',
+					itemId: 'pieChartContainer',
+					margin: '0 0 0 20px',
+					minHeight: 500,
+					layout: {
+						align: 'center',
+						padding: '10px',
+						type: 'vbox'
+					},
+					items: [
+						{
+							xtype: 'label',
+							style: 'font-size:20px;font-weight:bold;',
+							text: 'Charts'
+						},
+						{
+							xtype: 'label',
+							flex: 1,
+							width: 162,
+							text: 'Pie Chart 1: Person Types'
+						},
+						{
+							xtype: 'label',
+							flex: 1,
+							width: 162,
+							text: 'Pie Chart 2: Appliance Types'
+						}
+					]
 				}
 			]
 		});
@@ -91,13 +128,24 @@ Ext.define('C.view.ScenarioForm', {
 		me.callParent(arguments);
 	},
 
+	onTextfieldChange1: function(field, newValue, oldValue, options) {
+		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
+	},
+
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
 		var record = myForm.getRecord(),
 		values = myForm.getFieldValues();
-
-
-		myForm.updateRecord();console.info(record);
+		//	updatedRecord = record.store.getProxy().getModel().create();
+		//var errors = updatedRecord.validate(); //validate the object
+		//if (errors.isValid()) { //if the object is valid, then save the data to the model associated with the form.
+		myForm.updateRecord();
+		//	myForm.findField('setup').readOnly = true;
+		//}
+		//else {
+		//	myForm.markInvalid(errors);
+		//}
+		console.info(record);
 		//record.save();
 	}
 

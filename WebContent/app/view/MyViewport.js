@@ -30,6 +30,7 @@ Ext.define('C.view.MyViewport', {
 					region: 'center',
 					id: 'MainTabPanel',
 					itemId: 'MainTabPanel',
+					closable: false,
 					activeTab: 0
 				},
 				{
@@ -127,7 +128,7 @@ Ext.define('C.view.MyViewport', {
 			var parent_idKey = '';
 			switch(record.raw.nodeType){
 				case 'Scenario': parent_idKey = 'project_id'; break;
-				case 'SimulationParam': parent_idKey = 'scenario_id'; break;
+				case 'SimulationParam': parent_idKey = 'scn_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;

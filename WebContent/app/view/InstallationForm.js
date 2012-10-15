@@ -46,7 +46,13 @@ Ext.define('C.view.InstallationForm', {
 									xtype: 'textfield',
 									width: 246,
 									name: 'name',
-									fieldLabel: 'Name'
+									fieldLabel: 'Name',
+									listeners: {
+										change: {
+											fn: me.onTextfieldChange11111,
+											scope: me
+										}
+									}
 								},
 								{
 									xtype: 'textfield',
@@ -99,6 +105,10 @@ Ext.define('C.view.InstallationForm', {
 		});
 
 		me.callParent(arguments);
+	},
+
+	onTextfieldChange11111: function(field, newValue, oldValue, options) {
+		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {
