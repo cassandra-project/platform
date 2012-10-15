@@ -57,7 +57,7 @@ public class MongoRuns {
 	public String createRun(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_RUNS, dataToInsert,
 				"Run created successfully", 
-				MongoProjects.COL_PROJECTS ,"project_id", -1).toString();
+				MongoProjects.COL_PROJECTS ,"prj_id", -1).toString();
 		// TODO -1 needs to change when the REST for runs is completed
 	}
 	
@@ -92,7 +92,7 @@ public class MongoRuns {
 		// pause or resume
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_RUNS, "Scenarios updated successfully", 
-				MongoProjects.COL_PROJECTS ,"project_id",JSONValidator.SCENARIO_SCHEMA).toString(); 
+				MongoProjects.COL_PROJECTS ,"prj_id",JSONValidator.SCENARIO_SCHEMA).toString(); 
 	}
 
 }

@@ -35,6 +35,7 @@ import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.server.mongo.MongoRuns;
 import eu.cassandra.server.mongo.util.DBConn;
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel;
@@ -92,6 +93,7 @@ public class Simulation implements Runnable {
   
 	public Simulation(String ascenario, String adbname) {
 		scenario = ascenario;
+		System.out.println(PrettyJSONPrinter.prettyPrint(ascenario));
 		dbname = adbname;
 		m = new MongoResults(dbname);
   		RNG.init();
@@ -111,7 +113,7 @@ public class Simulation implements Runnable {
 //  			System.out.println(tick);
   			// If it is the beginning of the day create the events
   			if (tick % Constants.MIN_IN_DAY == 0) {
-  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
+  				//System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
   				for (Installation installation: installations) {
 //  					System.out.println(installation.getName());
   					installation.updateDailySchedule(tick, queue);
@@ -241,13 +243,13 @@ public class Simulation implements Runnable {
 	    	                  personType, inst).build();
 	    	inst.addPerson(person);
 	    	int actcount = ((Integer)personDoc.get("activitycount")).intValue();
-	    	System.out.println("Act-Count: " + actcount);
+	    	//System.out.println("Act-Count: " + actcount);
 	    	for (int j = 1; j <= actcount; j++) {
 	    		DBObject activityDoc = (DBObject)personDoc.get("activity"+j);
 	    		String activityName = (String)activityDoc.get("name");
 	    		String activityType = (String)activityDoc.get("type");
 	    		int actmodcount = ((Integer)activityDoc.get("actmodcount")).intValue();
-	    		System.out.println("Act-Mod-Count: " + actmodcount);
+	    		//System.out.println("Act-Mod-Count: " + actmodcount);
 	    		Activity act = new Activity.Builder(activityName, "", 
 	    				activityType, simulationWorld).build();
 	    		ProbabilityDistribution startDist;
@@ -260,13 +262,13 @@ public class Simulation implements Runnable {
 	    			String actmodDayType = (String)actmodDoc.get("day_type");
 	    			DBObject duration = (DBObject)actmodDoc.get("duration");
 	    			durDist = json2dist(duration);
-	    			System.out.println(durDist.getPrecomputedBin());
+	    			//System.out.println(durDist.getPrecomputedBin());
 	    			DBObject start = (DBObject)actmodDoc.get("start");
 	    			startDist = json2dist(start);
-	    			System.out.println(startDist.getPrecomputedBin());
+	    			//System.out.println(startDist.getPrecomputedBin());
 	    			DBObject rep = (DBObject)actmodDoc.get("repetitions");
 	    			timesDist = json2dist(rep);
-	    			System.out.println(timesDist.getPrecomputedBin());
+	    			//System.out.println(timesDist.getPrecomputedBin());
 	    			act.addDuration(actmodDayType, durDist);
 	    			act.addStartTime(actmodDayType, startDist);
 	    			act.addTimes(actmodDayType, timesDist);
@@ -298,7 +300,7 @@ public class Simulation implements Runnable {
   		BasicDBList generators = (BasicDBList) demog.get("generators");
   		// Initialize simulation variables
   		int numOfInstallations = ((Integer)demog.get("numberOfEntities")).intValue();
-  		System.out.println(numOfInstallations+"");
+  		//System.out.println(numOfInstallations+"");
   		queue = new PriorityBlockingQueue<Event>(2 * numOfInstallations);
   		for (int i = 1; i <= numOfInstallations; i++) {
 	    	DBObject instDoc = (DBObject)jsonScenario.get("inst"+1);
@@ -352,7 +354,7 @@ public class Simulation implements Runnable {
 	    			    	cm.setParentId(app_id);
 	    			    	String cm_id = addEntity(cm);
 	    			    	cm.setId(cm_id);
-	    			    	System.out.println(existing.get(entityId).getName());
+	    			    	//System.out.println(existing.get(entityId).getName());
 	    				}
 	    			}
 	    		}
@@ -373,7 +375,7 @@ public class Simulation implements Runnable {
 		    	        		  personDescription,
 		    	                  personType, inst).build();
 		    	int actcount = ((Integer)personDoc.get("activitycount")).intValue();
-		    	System.out.println("Act-Count: " + actcount);
+		    	//System.out.println("Act-Count: " + actcount);
 		    	for (int k = 1; k <= actcount; k++) {
 		    		DBObject activityDoc = (DBObject)personDoc.get("activity"+k);
 		    		String activityName = (String)activityDoc.get("name");
@@ -393,15 +395,15 @@ public class Simulation implements Runnable {
 		    			DBObject duration = (DBObject)actmodDoc.get("duration");
 		    			act.addDurations(duration);
 		    			durDist = json2dist(duration);
-		    			System.out.println(durDist.getPrecomputedBin());
+		    			//System.out.println(durDist.getPrecomputedBin());
 		    			DBObject start = (DBObject)actmodDoc.get("start");
 		    			act.addStarts(start);
 		    			startDist = json2dist(start);
-		    			System.out.println(startDist.getPrecomputedBin());
+		    			//System.out.println(startDist.getPrecomputedBin());
 		    			DBObject rep = (DBObject)actmodDoc.get("repetitions");
 		    			act.addTimes(rep);
 		    			timesDist = json2dist(rep);
-		    			System.out.println(timesDist.getPrecomputedBin());
+		    			//System.out.println(timesDist.getPrecomputedBin());
 		    			act.addDuration(actmodDayType, durDist);
 		    			act.addStartTime(actmodDayType, startDist);
 		    			act.addTimes(actmodDayType, timesDist);
@@ -478,7 +480,7 @@ public class Simulation implements Runnable {
   			double std = ((Double)normalDoc.get("std")).doubleValue();
   			Gaussian normal = new Gaussian(mean, std);
   			normal.precompute(0, 1439, 1440);
-  			System.out.println("A");
+  			//System.out.println("A");
   			return normal;
         case ("uniform"):
    			BasicDBList unifList = (BasicDBList)distribution.get("parameters");
@@ -487,7 +489,7 @@ public class Simulation implements Runnable {
    			double to = ((Double)unifDoc.get("to")).doubleValue();
    			Uniform uniform = new Uniform(from, to);
    			uniform.precompute(from, to, (int) to + 1);
-   			System.out.println("B");
+   			//System.out.println("B");
    			return uniform;
    		case ("mixture"):
         	 BasicDBList mixList = (BasicDBList)distribution.get("parameters");
@@ -502,7 +504,7 @@ public class Simulation implements Runnable {
          		stds[i] = ((Double)tuple.get("std")).doubleValue();
     		} 
          	GaussianMixtureModels gmm = new GaussianMixtureModels(length, w, means, stds);
-         	System.out.println("C");
+         	//System.out.println("C");
          	gmm.precompute(0, 1439, 1440);
          	return gmm;
         default:

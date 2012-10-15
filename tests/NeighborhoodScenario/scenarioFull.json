@@ -1,0 +1,1522 @@
+{
+  "sim_params": {
+    "_id": {
+      "$oid": "50503d55e4b0eeb457722c91"
+    },
+    "calendar": {
+      "dayOfMonth": 23,
+      "dayOfWeek": "Monday",
+      "month": 7,
+      "year": 2012
+    },
+    "locationInfo": "Thessaloniki",
+    "name": "Run for 10 days",
+    "numberOfDays": 10,
+    "scn_id": "5045dc26e4b058c3f86c32df"
+  },
+  "scenario": {
+    "_id": {
+      "$oid": "5045dc26e4b058c3f86c32df"
+    },
+    "description": "A small scale dynamic scenario",
+    "editable": true,
+    "name": "Baseline scenario",
+    "project_id": "5045db20e4b058c3f86c32de",
+    "setup": "dynamic",
+    "sim_param": {
+      "name": "Run for 1000 days",
+      "numberOfDays": 1000,
+      "scn_id": "5045dc26e4b058c3f86c32df",
+      "locationInfo": "Thessaloniki",
+      "calendar": {
+        "dayOfMonth": 23,
+        "dayOfWeek": "Monday",
+        "month": 7,
+        "year": 2012
+      },
+      "cid": {
+        "$oid": "5045dc7ae4b058c3f86c32e0"
+      }
+    }
+  },
+  "demog": {
+    "_id": {
+      "$oid": "505039e0e4b03b4e70bbd1f6"
+    },
+    "name": "Neighborhood Demographics",
+    "description": "Small demographics file for 10 houses",
+    "type": "apps",
+    "scn_id": "5045dc26e4b058c3f86c32df",
+    "numberOfEntities": 10,
+    "generators": [
+      {
+        "entity_id": "5045e1aee4b058c3f86c32e2",
+        "probability": 0.5
+      },
+      {
+        "entity_id": "5045e1c6e4b058c3f86c32e3",
+        "probability": 0.8
+      },
+      {
+        "entity_id": "5045e212e4b058c3f86c32e4",
+        "probability": 0.4
+      },
+      {
+        "entity_id": "5045e21ee4b058c3f86c32e5",
+        "probability": 0.3
+      },
+      {
+        "entity_id": "5045e22ce4b058c3f86c32e6",
+        "probability": 0.95
+      },
+      {
+        "entity_id": "5045e4e2e4b058c3f86c32ec",
+        "probability": 0.6
+      },
+      {
+        "entity_id": "5045e4f6e4b058c3f86c32ed",
+        "probability": 0.4
+      }
+    ]
+  },
+  "inst1": {
+    "_id": {
+      "$oid": "5045e189e4b058c3f86c32e1"
+    },
+    "name": "Collection",
+    "type": "A collection of appliances and persons",
+    "description": "Installation description",
+    "scenario_id": "5045dc26e4b058c3f86c32df",
+    "person1": {
+      "_id": {
+        "$oid": "5045e4e2e4b058c3f86c32ec"
+      },
+      "name": "Student A",
+      "type": "Student",
+      "inst_id": "5045e189e4b058c3f86c32e1",
+      "activity1": {
+        "_id": {
+          "$oid": "5045eb9de4b058c3f86c32ee"
+        },
+        "name": "Cleaning",
+        "type": "Cleaning",
+        "pers_id": "5045e4e2e4b058c3f86c32ec",
+        "actmod1": {
+          "_id": {
+            "$oid": "5045f2b4e4b058c3f86c3301"
+          },
+          "name": "Cleaning model",
+          "type": "cleaning",
+          "day_type": "working",
+          "act_id": "5045eb9de4b058c3f86c32ee",
+          "containsAppliances": [
+            "5045e21ee4b058c3f86c32e5"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "5045f08be4b058c3f86c32fa"
+            },
+            "name": "cleaning",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 9.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "5045f08be4b058c3f86c32f9",
+          "repeatsNrOfTime": "5045f08be4b058c3f86c32fb",
+          "start": {
+            "_id": {
+              "$oid": "5045f08be4b058c3f86c32f9"
+            },
+            "name": "Cleaning",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 665.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5045f08be4b058c3f86c32fb"
+            },
+            "name": "Cleaning",
+            "type": "weekday",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmod2": {
+          "_id": {
+            "$oid": "5045f2b5e4b058c3f86c3302"
+          },
+          "name": "Cleaning model",
+          "type": "cleaning",
+          "day_type": "nonworking",
+          "act_id": "5045eb9de4b058c3f86c32ee",
+          "containsAppliances": [
+            "5045e21ee4b058c3f86c32e5"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "5045f08be4b058c3f86c32fa"
+            },
+            "name": "cleaning",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 9.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "5045f08be4b058c3f86c32f9",
+          "repeatsNrOfTime": "5045f08fe4b058c3f86c32fc",
+          "start": {
+            "_id": {
+              "$oid": "5045f08be4b058c3f86c32f9"
+            },
+            "name": "Cleaning",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 665.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5045f08fe4b058c3f86c32fc"
+            },
+            "name": "Cleaning",
+            "type": "weekend",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmodcount": 2
+      },
+      "activity2": {
+        "_id": {
+          "$oid": "5045ebdae4b058c3f86c32f0"
+        },
+        "name": "Washing",
+        "type": "Washing",
+        "pers_id": "5045e4e2e4b058c3f86c32ec",
+        "actmod1": {
+          "_id": {
+            "$oid": "50460fdee4b058c3f86c3325"
+          },
+          "name": "Washing model",
+          "type": "washing",
+          "day_type": "working",
+          "act_id": "5045ebdae4b058c3f86c32f0",
+          "containsAppliances": [
+            "5045e21ee4b058c3f86c32e5"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "50460b38e4b058c3f86c331e"
+            },
+            "name": "Washing",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 180.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "50460b38e4b058c3f86c331d",
+          "repeatsNrOfTime": "50460b38e4b058c3f86c331f",
+          "start": {
+            "_id": {
+              "$oid": "50460b38e4b058c3f86c331d"
+            },
+            "name": "Washing",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 500.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "50460b38e4b058c3f86c331f"
+            },
+            "name": "Washing",
+            "type": "weekday",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmod2": {
+          "_id": {
+            "$oid": "50460fdfe4b058c3f86c3326"
+          },
+          "name": "Washing model",
+          "type": "washing",
+          "day_type": "nonworking",
+          "act_id": "5045ebdae4b058c3f86c32f0",
+          "containsAppliances": [
+            "5045e21ee4b058c3f86c32e5"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "50460b38e4b058c3f86c331e"
+            },
+            "name": "Washing",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 180.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "50460b38e4b058c3f86c331d",
+          "repeatsNrOfTime": "50460b38e4b058c3f86c3320",
+          "start": {
+            "_id": {
+              "$oid": "50460b38e4b058c3f86c331d"
+            },
+            "name": "Washing",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 500.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "50460b38e4b058c3f86c3320"
+            },
+            "name": "Washing",
+            "type": "weekend",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmodcount": 2
+      },
+      "activity3": {
+        "_id": {
+          "$oid": "5045ebf7e4b058c3f86c32f2"
+        },
+        "name": "Entertainment A",
+        "type": "Entertainment",
+        "pers_id": "5045e4e2e4b058c3f86c32ec",
+        "actmod1": {
+          "_id": {
+            "$oid": "5045f8eae4b058c3f86c330d"
+          },
+          "name": "Entertainment 1 model",
+          "type": "entertainment",
+          "day_type": "working",
+          "act_id": "5045ebf7e4b058c3f86c32f2",
+          "containsAppliances": [
+            "5045e212e4b058c3f86c32e4"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "5045f626e4b058c3f86c3306"
+            },
+            "name": "Enter 1",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 120.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "5045f626e4b058c3f86c3305",
+          "repeatsNrOfTime": "5045f626e4b058c3f86c3307",
+          "start": {
+            "_id": {
+              "$oid": "5045f626e4b058c3f86c3305"
+            },
+            "name": "Enter 1",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 300.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5045f626e4b058c3f86c3307"
+            },
+            "name": "Enter 1",
+            "type": "weekday",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmod2": {
+          "_id": {
+            "$oid": "5045f8eae4b058c3f86c330e"
+          },
+          "name": "Entertainment 1 model",
+          "type": "entertainment",
+          "day_type": "nonworking",
+          "act_id": "5045ebf7e4b058c3f86c32f2",
+          "containsAppliances": [
+            "5045e212e4b058c3f86c32e4"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "5045f626e4b058c3f86c3306"
+            },
+            "name": "Enter 1",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 120.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "5045f626e4b058c3f86c3305",
+          "repeatsNrOfTime": "5045f626e4b058c3f86c3308",
+          "start": {
+            "_id": {
+              "$oid": "5045f626e4b058c3f86c3305"
+            },
+            "name": "Enter 1",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 300.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5045f626e4b058c3f86c3308"
+            },
+            "name": "Enter 1",
+            "type": "weekend",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmodcount": 2
+      },
+      "activity4": {
+        "_id": {
+          "$oid": "5045ec0ae4b058c3f86c32f4"
+        },
+        "name": "Entertainment B",
+        "type": "Entertainment",
+        "pers_id": "5045e4e2e4b058c3f86c32ec",
+        "actmod1": {
+          "_id": {
+            "$oid": "50460ae8e4b058c3f86c3319"
+          },
+          "name": "Entertainment 2 model",
+          "type": "entertainment",
+          "day_type": "working",
+          "act_id": "5045ec0ae4b058c3f86c32f4",
+          "containsAppliances": [
+            "5045e212e4b058c3f86c32e4"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "500e7deae4b072419315898f"
+            },
+            "name": "Enter 2",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 200.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "500e7dffe4b0724193158990",
+          "repeatsNrOfTime": "500e7dd9e4b072419315898e",
+          "start": {
+            "_id": {
+              "$oid": "500e7dffe4b0724193158990"
+            },
+            "name": "Enter 2",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 750.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "500e7dd9e4b072419315898e"
+            },
+            "name": "Enter 1",
+            "type": "weekday",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmod2": {
+          "_id": {
+            "$oid": "50460ae8e4b058c3f86c331a"
+          },
+          "name": "Entertainment 2 model",
+          "type": "entertainment",
+          "day_type": "nonworking",
+          "act_id": "5045ec0ae4b058c3f86c32f4",
+          "containsAppliances": [
+            "5045e212e4b058c3f86c32e4"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "500e7deae4b072419315898f"
+            },
+            "name": "Enter 2",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 200.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "500e7dffe4b0724193158990",
+          "repeatsNrOfTime": "500e7dcae4b072419315898d",
+          "start": {
+            "_id": {
+              "$oid": "500e7dffe4b0724193158990"
+            },
+            "name": "Enter 2",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 750.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "500e7dcae4b072419315898d"
+            },
+            "name": "Enter 2",
+            "type": "weekend",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmodcount": 2
+      },
+      "activity5": {
+        "_id": {
+          "$oid": "5045ef98e4b058c3f86c32f7"
+        },
+        "name": "Working",
+        "type": "Working",
+        "pers_id": "5045e4e2e4b058c3f86c32ec",
+        "actmod1": {
+          "_id": {
+            "$oid": "50461152e4b058c3f86c3331"
+          },
+          "name": "Working model",
+          "type": "working",
+          "day_type": "working",
+          "act_id": "5045ef98e4b058c3f86c32f7",
+          "containsAppliances": [
+            "5045e1c6e4b058c3f86c32e3"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "50461062e4b058c3f86c332e"
+            },
+            "name": "Working",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 800.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "50461062e4b058c3f86c332d",
+          "repeatsNrOfTime": "50461062e4b058c3f86c332f",
+          "start": {
+            "_id": {
+              "$oid": "50461062e4b058c3f86c332d"
+            },
+            "name": "Working",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 400.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "50461062e4b058c3f86c332f"
+            },
+            "name": "Working",
+            "type": "weekday",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmod2": {
+          "_id": {
+            "$oid": "50461152e4b058c3f86c3332"
+          },
+          "name": "Working model",
+          "type": "working",
+          "day_type": "nonworking",
+          "act_id": "5045ef98e4b058c3f86c32f7",
+          "containsAppliances": [
+            "5045e1c6e4b058c3f86c32e3"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "50461062e4b058c3f86c332e"
+            },
+            "name": "Working",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 800.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "50461062e4b058c3f86c332d",
+          "repeatsNrOfTime": "50461062e4b058c3f86c3330",
+          "start": {
+            "_id": {
+              "$oid": "50461062e4b058c3f86c332d"
+            },
+            "name": "Working",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 400.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "50461062e4b058c3f86c3330"
+            },
+            "name": "Working",
+            "type": "weekend",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmodcount": 2
+      },
+      "activitycount": 5
+    },
+    "person2": {
+      "_id": {
+        "$oid": "5045e4f6e4b058c3f86c32ed"
+      },
+      "name": "Student B",
+      "type": "Student",
+      "inst_id": "5045e189e4b058c3f86c32e1",
+      "activity1": {
+        "_id": {
+          "$oid": "5045ebaee4b058c3f86c32ef"
+        },
+        "name": "Cleaning",
+        "type": "Cleaning",
+        "pers_id": "5045e4f6e4b058c3f86c32ed",
+        "actmod1": {
+          "_id": {
+            "$oid": "5045f2b5e4b058c3f86c3303"
+          },
+          "name": "Cleaning model",
+          "type": "cleaning",
+          "day_type": "working",
+          "act_id": "5045ebaee4b058c3f86c32ef",
+          "containsAppliances": [
+            "5045e21ee4b058c3f86c32e5"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "5045f23ee4b058c3f86c32fe"
+            },
+            "name": "cleaning",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 10.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "5045f23ee4b058c3f86c32fd",
+          "repeatsNrOfTime": "5045f23ee4b058c3f86c32ff",
+          "start": {
+            "_id": {
+              "$oid": "5045f23ee4b058c3f86c32fd"
+            },
+            "name": "Cleaning",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 800.0,
+                "std": 2.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5045f23ee4b058c3f86c32ff"
+            },
+            "name": "Cleaning",
+            "type": "weekday",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 2.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmod2": {
+          "_id": {
+            "$oid": "5045f2b5e4b058c3f86c3304"
+          },
+          "name": "Cleaning model",
+          "type": "cleaning",
+          "day_type": "nonworking",
+          "act_id": "5045ebaee4b058c3f86c32ef",
+          "containsAppliances": [
+            "5045e21ee4b058c3f86c32e5"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "5045f23ee4b058c3f86c32fe"
+            },
+            "name": "cleaning",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 10.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "5045f23ee4b058c3f86c32fd",
+          "repeatsNrOfTime": "5045f23ee4b058c3f86c3300",
+          "start": {
+            "_id": {
+              "$oid": "5045f23ee4b058c3f86c32fd"
+            },
+            "name": "Cleaning",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 800.0,
+                "std": 2.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5045f23ee4b058c3f86c3300"
+            },
+            "name": "Cleaning",
+            "type": "weekend",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 2.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmodcount": 2
+      },
+      "activity2": {
+        "_id": {
+          "$oid": "5045ebe3e4b058c3f86c32f1"
+        },
+        "name": "Washing",
+        "type": "Washing",
+        "pers_id": "5045e4f6e4b058c3f86c32ed",
+        "actmod1": {
+          "_id": {
+            "$oid": "50460fdfe4b058c3f86c3327"
+          },
+          "name": "Washing model",
+          "type": "washing",
+          "day_type": "working",
+          "act_id": "5045ebe3e4b058c3f86c32f1",
+          "containsAppliances": [
+            "5045e21ee4b058c3f86c32e5"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "50460b44e4b058c3f86c3322"
+            },
+            "name": "Washing",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 90.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "50460b44e4b058c3f86c3321",
+          "repeatsNrOfTime": "50460b44e4b058c3f86c3323",
+          "start": {
+            "_id": {
+              "$oid": "50460b44e4b058c3f86c3321"
+            },
+            "name": "Washing",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 400.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "50460b44e4b058c3f86c3323"
+            },
+            "name": "Washing",
+            "type": "weekday",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 2.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmod2": {
+          "_id": {
+            "$oid": "50460fdfe4b058c3f86c3328"
+          },
+          "name": "Washing model",
+          "type": "washing",
+          "day_type": "nonworking",
+          "act_id": "5045ebe3e4b058c3f86c32f1",
+          "containsAppliances": [
+            "5045e21ee4b058c3f86c32e5"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "50460b44e4b058c3f86c3322"
+            },
+            "name": "Washing",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 90.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "50460b44e4b058c3f86c3321",
+          "repeatsNrOfTime": "50460b44e4b058c3f86c3324",
+          "start": {
+            "_id": {
+              "$oid": "50460b44e4b058c3f86c3321"
+            },
+            "name": "Washing",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 400.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "50460b44e4b058c3f86c3324"
+            },
+            "name": "Washing",
+            "type": "weekend",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmodcount": 2
+      },
+      "activity3": {
+        "_id": {
+          "$oid": "5045ebffe4b058c3f86c32f3"
+        },
+        "name": "Entertainment A",
+        "type": "Entertainment",
+        "pers_id": "5045e4f6e4b058c3f86c32ed",
+        "actmod1": {
+          "_id": {
+            "$oid": "5045f8eae4b058c3f86c330f"
+          },
+          "name": "Entertainment 1 model",
+          "type": "entertainment",
+          "day_type": "working",
+          "act_id": "5045ebffe4b058c3f86c32f3",
+          "containsAppliances": [
+            "5045e212e4b058c3f86c32e4"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "5045f64ae4b058c3f86c330a"
+            },
+            "name": "Enter 1",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 150.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "5045f64ae4b058c3f86c3309",
+          "repeatsNrOfTime": "5045f64ae4b058c3f86c330b",
+          "start": {
+            "_id": {
+              "$oid": "5045f64ae4b058c3f86c3309"
+            },
+            "name": "Enter 1",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 200.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5045f64ae4b058c3f86c330b"
+            },
+            "name": "Enter 1",
+            "type": "weekday",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 2.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmod2": {
+          "_id": {
+            "$oid": "5045f8eae4b058c3f86c3310"
+          },
+          "name": "Entertainment 1 model",
+          "type": "entertainment",
+          "day_type": "nonworking",
+          "act_id": "5045ebffe4b058c3f86c32f3",
+          "containsAppliances": [
+            "5045e212e4b058c3f86c32e4"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "5045f64ae4b058c3f86c330a"
+            },
+            "name": "Enter 1",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 150.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "5045f64ae4b058c3f86c3309",
+          "repeatsNrOfTime": "5045f64ae4b058c3f86c330c",
+          "start": {
+            "_id": {
+              "$oid": "5045f64ae4b058c3f86c3309"
+            },
+            "name": "Enter 1",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 200.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5045f64ae4b058c3f86c330c"
+            },
+            "name": "Enter 1",
+            "type": "weekend",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 2.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmodcount": 2
+      },
+      "activity4": {
+        "_id": {
+          "$oid": "5045ec17e4b058c3f86c32f5"
+        },
+        "name": "Entertainment B",
+        "type": "Entertainment",
+        "pers_id": "5045e4f6e4b058c3f86c32ed",
+        "actmod1": {
+          "_id": {
+            "$oid": "50460ae8e4b058c3f86c331b"
+          },
+          "name": "Entertainment 2 model",
+          "type": "entertainment",
+          "day_type": "working",
+          "act_id": "5045ec17e4b058c3f86c32f5",
+          "containsAppliances": [
+            "5045e212e4b058c3f86c32e4"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "500e7deae4b072419315898f"
+            },
+            "name": "Enter 2",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 200.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "500e7dffe4b0724193158990",
+          "repeatsNrOfTime": "5045f979e4b058c3f86c3317",
+          "start": {
+            "_id": {
+              "$oid": "500e7dffe4b0724193158990"
+            },
+            "name": "Enter 2",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 750.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5045f979e4b058c3f86c3317"
+            },
+            "name": "Enter 1",
+            "type": "weekday",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmod2": {
+          "_id": {
+            "$oid": "50460ae8e4b058c3f86c331c"
+          },
+          "name": "Entertainment 2 model",
+          "type": "entertainment",
+          "day_type": "nonworking",
+          "act_id": "5045ec17e4b058c3f86c32f5",
+          "containsAppliances": [
+            "5045e212e4b058c3f86c32e4"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "500e7deae4b072419315898f"
+            },
+            "name": "Enter 2",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 200.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "500e7dffe4b0724193158990",
+          "repeatsNrOfTime": "5045f979e4b058c3f86c3318",
+          "start": {
+            "_id": {
+              "$oid": "500e7dffe4b0724193158990"
+            },
+            "name": "Enter 2",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 750.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5045f979e4b058c3f86c3318"
+            },
+            "name": "Enter 2",
+            "type": "weekend",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmodcount": 2
+      },
+      "activity5": {
+        "_id": {
+          "$oid": "5045ef9fe4b058c3f86c32f8"
+        },
+        "name": "Working",
+        "type": "Working",
+        "pers_id": "5045e4f6e4b058c3f86c32ed",
+        "actmod1": {
+          "_id": {
+            "$oid": "50461152e4b058c3f86c3333"
+          },
+          "name": "Working model",
+          "type": "working",
+          "day_type": "working",
+          "act_id": "5045ef9fe4b058c3f86c32f8",
+          "containsAppliances": [
+            "5045e1c6e4b058c3f86c32e3"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "5046101ee4b058c3f86c332a"
+            },
+            "name": "Working",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 600.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "5046101ee4b058c3f86c3329",
+          "repeatsNrOfTime": "5046101ee4b058c3f86c332b",
+          "start": {
+            "_id": {
+              "$oid": "5046101ee4b058c3f86c3329"
+            },
+            "name": "Working",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 600.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5046101ee4b058c3f86c332b"
+            },
+            "name": "Working",
+            "type": "weekday",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 2.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmod2": {
+          "_id": {
+            "$oid": "50461152e4b058c3f86c3334"
+          },
+          "name": "Working model",
+          "type": "working",
+          "day_type": "nonworking",
+          "act_id": "5045ef9fe4b058c3f86c32f8",
+          "containsAppliances": [
+            "5045e1c6e4b058c3f86c32e3"
+          ],
+          "duration": {
+            "_id": {
+              "$oid": "5046101ee4b058c3f86c332a"
+            },
+            "name": "Working",
+            "type": "duration",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 600.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "startTime": "5046101ee4b058c3f86c3329",
+          "repeatsNrOfTime": "5046101ee4b058c3f86c332c",
+          "start": {
+            "_id": {
+              "$oid": "5046101ee4b058c3f86c3329"
+            },
+            "name": "Working",
+            "type": "start",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 600.0,
+                "std": 1.0E-5
+              }
+            ]
+          },
+          "repetitions": {
+            "_id": {
+              "$oid": "5046101ee4b058c3f86c332c"
+            },
+            "name": "Working",
+            "type": "weekend",
+            "distrType": "normal",
+            "parameters": [
+              {
+                "mean": 1.0,
+                "std": 1.0E-5
+              }
+            ]
+          }
+        },
+        "actmodcount": 2
+      },
+      "activitycount": 5
+    },
+    "personcount": 2,
+    "app1": {
+      "_id": {
+        "$oid": "5045e1aee4b058c3f86c32e2"
+      },
+      "name": "refridgerator",
+      "standy_consumption": 0.0,
+      "controllable": false,
+      "shiftable": false,
+      "base": true,
+      "type": "fridge",
+      "inst_id": "5045e189e4b058c3f86c32e1",
+      "consmod": {
+        "_id": {
+          "$oid": "5045e309e4b058c3f86c32e7"
+        },
+        "name": "Refridgerator CM",
+        "app_id": "5045e1aee4b058c3f86c32e2",
+        "model": {
+          "n": 0,
+          "params": [
+            {
+              "n": 1,
+              "values": [
+                {
+                  "p": 140.0,
+                  "d": 20,
+                  "s": 0.0
+                },
+                {
+                  "p": 117.0,
+                  "d": 18,
+                  "s": 0.0
+                },
+                {
+                  "p": 0.0,
+                  "d": 73,
+                  "s": 0.0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "app2": {
+      "_id": {
+        "$oid": "5045e1c6e4b058c3f86c32e3"
+      },
+      "name": "laptop",
+      "standy_consumption": 0.0,
+      "controllable": false,
+      "shiftable": false,
+      "base": false,
+      "type": "PC",
+      "inst_id": "5045e189e4b058c3f86c32e1",
+      "consmod": {
+        "_id": {
+          "$oid": "5045e31ae4b058c3f86c32e8"
+        },
+        "name": "Laptop consumption model",
+        "app_id": "5045e1c6e4b058c3f86c32e3",
+        "model": {
+          "n": 0,
+          "params": [
+            {
+              "n": 1,
+              "values": [
+                {
+                  "p": 100,
+                  "d": 10,
+                  "s": 0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "app3": {
+      "_id": {
+        "$oid": "5045e212e4b058c3f86c32e4"
+      },
+      "name": "tv",
+      "standy_consumption": 0.0,
+      "controllable": false,
+      "shiftable": false,
+      "base": false,
+      "type": "tv",
+      "inst_id": "5045e189e4b058c3f86c32e1",
+      "consmod": {
+        "_id": {
+          "$oid": "5045e330e4b058c3f86c32e9"
+        },
+        "name": "TV CM",
+        "app_id": "5045e212e4b058c3f86c32e4",
+        "model": {
+          "n": 0,
+          "params": [
+            {
+              "n": 1,
+              "values": [
+                {
+                  "p": 60.0,
+                  "d": 200,
+                  "s": 0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "app4": {
+      "_id": {
+        "$oid": "5045e21ee4b058c3f86c32e5"
+      },
+      "name": "vacuum cleaner",
+      "standy_consumption": 0.0,
+      "controllable": false,
+      "shiftable": false,
+      "base": false,
+      "type": "vacuum-cleaner",
+      "inst_id": "5045e189e4b058c3f86c32e1",
+      "consmod": {
+        "_id": {
+          "$oid": "5045e33ee4b058c3f86c32ea"
+        },
+        "name": "Vacuum cleaner CM",
+        "app_id": "5045e21ee4b058c3f86c32e5",
+        "model": {
+          "n": 0,
+          "params": [
+            {
+              "n": 1,
+              "values": [
+                {
+                  "p": 1000.0,
+                  "d": 10,
+                  "s": 0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "app5": {
+      "_id": {
+        "$oid": "5045e22ce4b058c3f86c32e6"
+      },
+      "name": "washing",
+      "standy_consumption": 0.0,
+      "controllable": false,
+      "shiftable": false,
+      "base": false,
+      "type": "washing",
+      "inst_id": "5045e189e4b058c3f86c32e1",
+      "consmod": {
+        "_id": {
+          "$oid": "5045e34ce4b058c3f86c32eb"
+        },
+        "name": "Washing machine CM",
+        "app_id": "5045e22ce4b058c3f86c32e6",
+        "model": {
+          "n": 1,
+          "params": [
+            {
+              "n": 1,
+              "values": [
+                {
+                  "p": 1800.0,
+                  "d": 30,
+                  "s": 0
+                },
+                {
+                  "p": 0.0,
+                  "d": 10,
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "n": 7,
+              "values": [
+                {
+                  "p": 300.0,
+                  "d": 10,
+                  "s": 0
+                },
+                {
+                  "p": 0.0,
+                  "d": 10,
+                  "s": 0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "appcount": 5
+  },
+  "instcount": 1
+}

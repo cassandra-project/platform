@@ -403,7 +403,7 @@ public class MongoDBQueries {
 					return jSON2Rrn.createJSON(internalEntity,successMsg) ;
 				}
 			}
-			throw new MongoRefNotFoundException("Cannot get internal entity " +  entityName + 
+			throw new MongoRefNotFoundException("RefNotFound: Cannot get internal entity " +  entityName + 
 					" with cid=" + cid + " from collection: " + coll);
 		}catch(Exception e) {
 			return jSON2Rrn.createJSONError("Cannot get internal entity " +  entityName + 
@@ -737,7 +737,7 @@ public class MongoDBQueries {
 			return null;
 		DBObject obj = getEntity(refColl, refKey);
 		if(obj == null)
-			throw new MongoRefNotFoundException("RefID: " + refKeyName + 
+			throw new MongoRefNotFoundException("RefNotFound: " + refKeyName + 
 					" not found for collection: " + refColl);
 		else
 			return obj;
@@ -761,7 +761,7 @@ public class MongoDBQueries {
 			DBObject parent = cursor.next();
 			ObjectId objID =  (ObjectId)parent.get("_id");
 			if(!objID.toString().equalsIgnoreCase(parentKey)) {
-				throw new MongoRefNotFoundException("Error in reference IDs (" + 
+				throw new MongoRefNotFoundException("RefNotFound: Error in reference IDs (" + 
 						parentKey + "!=" + objID + ")");
 			}
 		}
@@ -893,7 +893,7 @@ public class MongoDBQueries {
 			deletedField = getEntity(null,coll,fieldName + ".cid", cid, "Simulation Parameter " +
 					"with cid=" + cid + " removed successfully", false, new String[]{ fieldName});
 			if(!deletedField.containsField("data"))
-				throw new MongoInvalidObjectId("invalid ObjectId [" + cid + "]");
+				throw new MongoInvalidObjectId("InvalidObjectid: [" + cid + "]");
 			Vector<?> data = (Vector<?>)deletedField.get("data");
 			if(data.size()==0)
 				deletedField = null;
@@ -923,7 +923,7 @@ public class MongoDBQueries {
 			String runId = getDbNameFromHTTPHeader(httpHeaders);
 			if(runId == null && installationId == null)
 				throw new RestQueryParamMissingException(
-						"Both run_id and installation_id are null");
+						"QueryParamMissing: Both run_id and installation_id are null");
 
 			Integer aggregationUnit = null;
 			if(aggregationUnitS != null)
@@ -1000,7 +1000,7 @@ public class MongoDBQueries {
 	 */
 	public String getRefKey(String key, DBObject data) throws MongoRefNotFoundException {
 		if(!data.containsField(key))
-			throw new MongoRefNotFoundException(key + " not found");
+			throw new MongoRefNotFoundException("RefNotFound: " + key + " not found");
 		return data.get(key).toString();
 	}
 
