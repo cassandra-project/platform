@@ -30,11 +30,13 @@ Ext.define('C.model.Run', {
 			name: 'ended'
 		},
 		{
-			name: 'percentage',
-			type: 'int'
+			name: 'percentage'
 		},
 		{
 			name: 'prj_id'
+		},
+		{
+			name: 'smp_id'
 		}
 	]
 });
