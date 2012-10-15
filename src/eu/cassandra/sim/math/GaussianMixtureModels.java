@@ -172,6 +172,29 @@ public class GaussianMixtureModels implements ProbabilityDistribution
     }
     return -1;
   }
+  
+  public void precompute (int endValue)
+  {
+    if (endValue == 0) {
+      // TODO Throw an exception or whatever.
+      return;
+    }
+    int startValue = 0;
+    int nBins = endValue;
+    
+    precompute(startValue, endValue,nBins);
+    
+  }
+  
+  public double[] getHistogram ()
+  {
+	if (precomputed == false){
+		System.out.println("Not computed yet!");
+		return null;		
+	}
+	  
+    return histogram;
+  }
 
   public void status ()
   {

@@ -1,0 +1,11 @@
+{
+    "name" : "Cleaning",
+    "type" : "weekday",
+    "distrType" : "Gaussian Mixture Models",
+    "parameters" : [
+        {	"pi": [0.33,0.33,0.33],
+            "means" : [100.0, 200.0, 300.0],
+            "sigmas" : [50.0, 50.0, 50.0]
+        }
+     ]
+}
