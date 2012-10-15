@@ -43,15 +43,47 @@ Ext.define('C.view.MyViewport', {
 
 						// Create columns for new store
 						Ext.Array.forEach(fields, function (f) {
-							cols.push({
-								header: f.name,
-								dataIndex: (f.mapping) ? f.mapping : f.name,
-								hidden: (f.type.type == 'auto') ? true : false
-							});
+							if (f.name == 'percentage') {
+								cols.push({
+									header: 'Progress',
+									dataIndex: f.name,
+									width: 210,
+									renderer: function (v, m, r) {
+										var id = Ext.id();
+										Ext.defer(function () {
+											Ext.widget('progressbar', {
+												text: v+'% Completed',
+												renderTo: id,
+												value: v / 100,
+												width: 200
+											});
+										}, 50);
+										return Ext.String.format('<div id="{0}"></div>', id);
+									}
+								});
+							}
+							else if (f.name == 'started' || f.name == 'ended'){
+								cols.push({
+									header: f.name,
+									dataIndex: (f.mapping) ? f.mapping : f.name,
+									renderer: function (v, m, r) {
+										return (new Date(v) == 'Invalid Date') ? '' : new Date(v);
+									}
+								});
+							}			  
+							else {
+								cols.push({
+									header: f.name,
+									dataIndex: (f.mapping) ? f.mapping : f.name,
+									hidden: (f.type.type == 'auto') ? true : false
+								});
+							}
 						});
 
 						grid.reconfigure(store, cols); 
 						return grid;
+
+
 					},
 					region: 'west',
 					draggable: true,

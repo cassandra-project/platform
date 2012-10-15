@@ -87,7 +87,7 @@ Ext.define('C.view.ProjectForm', {
 	},
 
 	onTextfieldChange: function(field, newValue, oldValue, options) {
-		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
+		this.setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {

@@ -75,11 +75,12 @@ Ext.application({
 		record.expand();//basic in order to be rendered
 
 		var breadcrumb = record.getPath();
+		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
 		var namesBreadcrumb = record.getPath('name');
 		var tabs = Ext.getCmp('MainTabPanel');
 		var isOpen = false;
 		Ext.each (tabs.items.items, function(item, index) {
-			if (item.pathToMe == breadcrumb) {
+			if (item.pathToMe == pathToMe) {
 				tabs.setActiveTab(item);
 				isOpen = true;
 				return false;
@@ -90,6 +91,9 @@ Ext.application({
 
 			if (record.get('nodeType').search('Collection') > 0 ) {
 				var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(record.c.store);
+				if (record.get('nodeType') == 'RunsCollection') {
+					grid.getDockedItems()[0].hidden = true;
+				}
 				cmpToAdd = grid;
 			}
 			else {
@@ -132,7 +136,7 @@ Ext.application({
 
 				cmpToAdd = myForm;
 			}
-			cmpToAdd.pathToMe = breadcrumb;
+			cmpToAdd.pathToMe = pathToMe;
 			cmpToAdd.setTitle(namesBreadcrumb.split('/').join(' >'));
 			tabs.add(cmpToAdd);
 			tabs.setActiveTab(cmpToAdd);

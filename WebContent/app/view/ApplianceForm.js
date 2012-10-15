@@ -161,7 +161,7 @@ Ext.define('C.view.ApplianceForm', {
 	},
 
 	onTextfieldChange111111: function(field, newValue, oldValue, options) {
-		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
+		this.setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {

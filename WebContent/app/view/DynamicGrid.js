@@ -172,10 +172,11 @@ Ext.define('C.view.DynamicGrid', {
 	onButtonClick: function(button, e, options) {
 		console.info('Add clicked.', this, button, e, options);
 
-		var parent_id = this.store.navigationNode.parentNode.get('id');
+		var parent_id = (this.store.navigationNode.get('nodeType') == 'ProjectsCollection')?'':this.store.navigationNode.parentNode.get('id');
 		var inputArray = {};
 		var tabs = Ext.getCmp('MainTabPanel');
 		switch(this.store.navigationNode.get('nodeType')){
+			case 'ProjectsCollection': inputArray = {};break;
 			case 'ScenariosCollection': inputArray = {'project_id' : parent_id};break;
 			case 'InstallationsCollection': inputArray = {'scenario_id' : parent_id}; break;
 			case 'SimulationParamsCollection': inputArray = {'scn_id' : parent_id, calendar: {}}; break;
