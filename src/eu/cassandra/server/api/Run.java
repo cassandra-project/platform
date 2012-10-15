@@ -29,7 +29,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.cassandra.server.mongo.MongoRuns;
-import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 @Path("runs/{run_id: [a-z0-9][a-z0-9]*}")

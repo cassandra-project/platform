@@ -27,6 +27,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoRuns {
 	
 	public final static String COL_RUNS = "runs";
+	public final static String REF_PROJECT = "prj_id";
 	
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/runs/4fec747cdf4ffdb8d1d1ce55
@@ -42,7 +43,7 @@ public class MongoRuns {
 					new RestQueryParamMissingException("prj_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(httpHeaders,COL_RUNS,"project_id", project_id, 
+			return new MongoDBQueries().getEntity(httpHeaders,COL_RUNS,"prj_id", project_id, 
 					"Runs retrieved successfully",count).toString();
 		}
 	}
@@ -56,7 +57,7 @@ public class MongoRuns {
 	public String createRun(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_RUNS, dataToInsert,
 				"Run created successfully", 
-				MongoProjects.COL_PROJECTS ,"project_id", -1).toString();
+				MongoProjects.COL_PROJECTS ,"prj_id", -1).toString();
 		// TODO -1 needs to change when the REST for runs is completed
 	}
 	
@@ -91,7 +92,7 @@ public class MongoRuns {
 		// pause or resume
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_RUNS, "Scenarios updated successfully", 
-				MongoProjects.COL_PROJECTS ,"project_id",JSONValidator.SCENARIO_SCHEMA).toString(); 
+				MongoProjects.COL_PROJECTS ,"prj_id",JSONValidator.SCENARIO_SCHEMA).toString(); 
 	}
 
 }

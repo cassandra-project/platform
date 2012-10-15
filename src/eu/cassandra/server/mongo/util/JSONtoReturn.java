@@ -1,3 +1,19 @@
+/*   
+   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package eu.cassandra.server.mongo.util;
 
 import java.util.Vector;
@@ -6,7 +22,6 @@ import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 public class JSONtoReturn {
@@ -21,7 +36,7 @@ public class JSONtoReturn {
 	public DBObject createJSONError(String data, Exception ex) {
 		return  createJSONError(data, ex.getMessage() );
 	}
-
+	
 	/**
 	 * 
 	 * @param data
@@ -31,7 +46,14 @@ public class JSONtoReturn {
 	public DBObject createJSONError(String data, String ex) {
 		DBObject errorMessage = new BasicDBObject();
 		errorMessage.put("success", false);
-		errorMessage.put("exception", ex);
+		String error = "Exception";
+		String errorDescr = ex;
+		if(ex.matches("(\\S)+:(\\s)(.)*")) {
+			String d[] = ex.split(": ",2);
+			error = d[0];
+			errorDescr = d[1];
+		}
+		errorMessage.put("exception", new BasicDBObject(error,errorDescr));
 		errorMessage.put("message", data);
 		return errorMessage;
 	}
@@ -71,26 +93,26 @@ public class JSONtoReturn {
 		return postSuccessMessage;
 	}
 
-	/**
-	 * 
-	 * @param cursorDoc
-	 * @param descr
-	 * @return
-	 */
-	public DBObject createJSON(DBCursor cursorDoc, String descr) {
-		DBObject successMessage = new BasicDBObject();
-		successMessage.put("success", true);
-		successMessage.put("message", descr + ((cursorDoc.size()==0)?" (No data were found though)":""));
-		successMessage.put("size", cursorDoc.size());
-		Vector<DBObject> recordsVec = new Vector<DBObject>();
-		while (cursorDoc.hasNext()) {
-			DBObject obj = cursorDoc.next();
-			recordsVec.add(changeObjectIdToString(obj));
-		}
-		cursorDoc.close();
-		successMessage.put("data", recordsVec);
-		return successMessage;
-	}
+//	/**
+//	 * 
+//	 * @param cursorDoc
+//	 * @param descr
+//	 * @return
+//	 */
+//	public DBObject createJSON(DBCursor cursorDoc, String descr) {
+//		DBObject successMessage = new BasicDBObject();
+//		successMessage.put("success", true);
+//		successMessage.put("message", descr + ((cursorDoc.size()==0)?" (No data were found though)":""));
+//		successMessage.put("size", cursorDoc.size());
+//		Vector<DBObject> recordsVec = new Vector<DBObject>();
+//		while (cursorDoc.hasNext()) {
+//			DBObject obj = cursorDoc.next();
+//			recordsVec.add(changeObjectIdToString(obj));
+//		}
+//		cursorDoc.close();
+//		successMessage.put("data", recordsVec);
+//		return successMessage;
+//	}
 
 	/**
 	 * 
@@ -99,12 +121,9 @@ public class JSONtoReturn {
 	 * @return
 	 */
 	public DBObject createJSON(DBObject dbObject, String descr) {
-		DBObject successMessage = new BasicDBObject();
-		successMessage.put("success", true);
-		successMessage.put("message", descr);
-		successMessage.put("size", 1);
-		successMessage.put("data", changeObjectIdToString(dbObject));
-		return successMessage;
+		Vector<DBObject> dbObjects = new Vector<DBObject>();
+		dbObjects.add(dbObject);
+		return createJSON(dbObjects, descr);
 	}
 
 	/**
@@ -114,9 +133,12 @@ public class JSONtoReturn {
 	 * @return
 	 */
 	public DBObject createJSON(Vector<DBObject> dbObjects, String descr) {
+		for(int i=0;i<dbObjects.size();i++) {
+			dbObjects.set(i, changeObjectIdToString(dbObjects.get(i)));
+		}
 		DBObject successMessage = new BasicDBObject();
 		successMessage.put("success", true);
-		successMessage.put("message", descr);
+		successMessage.put("message", descr + ((dbObjects.size()==0)?" (No data were found though)":""));
 		successMessage.put("size", dbObjects.size());
 		successMessage.put("data", dbObjects);
 		return successMessage;

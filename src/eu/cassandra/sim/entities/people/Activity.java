@@ -204,14 +204,14 @@ public class Activity extends Entity {
 		Vector<Appliance> vector;
 
 		if (simulationWorld.getSimCalendar().isWeekend(tick)) {
-			System.out.println("isWeekend");
+			//System.out.println("isWeekend");
 			numOfTimesProb = nTimesGivenDay.get("nonworking");
 			startProb = probStartTime.get("nonworking");
 			durationProb = probDuration.get("nonworking");
 			probVector = probApplianceUsed.get("nonworking");
 			vector = appliances.get("nonworking");
 		} else {
-			System.out.println("isNotWeekend");
+			//System.out.println("isNotWeekend");
 			numOfTimesProb = nTimesGivenDay.get("working");
 			startProb = probStartTime.get("working");
 			durationProb = probDuration.get("working");
@@ -219,11 +219,11 @@ public class Activity extends Entity {
 			vector = appliances.get("working");
 		}
 
-		System.out.println("POINT A");
-		System.out.println(numOfTimesProb.getNumberOfParameters());
+		//System.out.println("POINT A");
+		//System.out.println(numOfTimesProb.getNumberOfParameters());
 		int numOfTimes = numOfTimesProb.getPrecomputedBin();
-		System.out.println("POINT B");
-		System.out.println(numOfTimes);
+		//System.out.println("POINT B");
+		//System.out.println(numOfTimes);
 		/*
 		 * Decide the duration and start time for each activity activation
 		 */

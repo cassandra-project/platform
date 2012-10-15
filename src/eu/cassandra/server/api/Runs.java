@@ -55,7 +55,6 @@ import eu.cassandra.server.mongo.MongoSimParam;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.Simulation;
-import eu.cassandra.sim.utilities.RNG;
 
 @Path("runs")
 @Produces(MediaType.APPLICATION_JSON)
@@ -131,6 +130,7 @@ public class Runs {
 			query = new BasicDBObject();
 			query.put("scn_id", scn_id);
 			String setup = (String)scn.get("setup");
+			String prj_id = (String)scn.get("project_id");
 			boolean isDynamic = setup.equalsIgnoreCase("dynamic");
 			if(isDynamic) {
 				DBObject demog = DBConn.getConn().getCollection(MongoDemographics.COL_DEMOGRAPHICS).findOne(query);
@@ -255,6 +255,7 @@ public class Runs {
 			run.put("_id", objid);
 			run.put("started", System.currentTimeMillis());
 			run.put("ended", -1);
+			run.put("prj_id", prj_id);
 			run.put("percentage", 0);
 			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
 			return "{ \"message\": \"Sim creation successful \" }";

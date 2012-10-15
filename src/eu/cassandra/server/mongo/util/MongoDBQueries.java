@@ -296,6 +296,7 @@ public class MongoDBQueries {
 				coll,query,fields, successMsg, sort, limit, skip, count);
 	}
 
+
 	//	
 	//	public DBObject getEntity(String coll, String qKey, String qValue, 
 	//				String successMsg, int limit, int offset, Vector<SortingInfo> sortingInfo, String...fieldNames) {
@@ -402,7 +403,7 @@ public class MongoDBQueries {
 					return jSON2Rrn.createJSON(internalEntity,successMsg) ;
 				}
 			}
-			throw new MongoRefNotFoundException("Cannot get internal entity " +  entityName + 
+			throw new MongoRefNotFoundException("RefNotFound: Cannot get internal entity " +  entityName + 
 					" with cid=" + cid + " from collection: " + coll);
 		}catch(Exception e) {
 			return jSON2Rrn.createJSONError("Cannot get internal entity " +  entityName + 
@@ -419,16 +420,8 @@ public class MongoDBQueries {
 	 */
 	public DBObject executeFindQuery(HttpHeaders httpHeaders, String collection, 
 			BasicDBObject dbObj1, BasicDBObject dbObj2, String successMsg) {
-		DBCursor cursorDoc;
-		if(dbObj2 == null) {
-			cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-					getCollection(collection).find(dbObj1);
-		}
-		else {
-			cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-					getCollection(collection).find(dbObj1,dbObj2);
-		}
-		return jSON2Rrn.createJSON(cursorDoc,successMsg);
+		return executeFindQuery(httpHeaders,collection,dbObj1, dbObj2, 
+				successMsg,null, 0, 0, false); 
 	}
 
 	/**
@@ -455,8 +448,14 @@ public class MongoDBQueries {
 			return 	 jSON2Rrn.createJSON(dbObject, successMsg);
 		}
 		else {
-			cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-					getCollection(collection).find(dbObj1);
+			if(dbObj2 == null) {
+				cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+						getCollection(collection).find(dbObj1);
+			}
+			else {
+				cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+						getCollection(collection).find(dbObj1,dbObj2);
+			}
 		}
 		if(sort != null)	{
 			try{
@@ -470,7 +469,31 @@ public class MongoDBQueries {
 			cursorDoc =	cursorDoc.skip(skip);
 		if(limit != 0)
 			cursorDoc =	cursorDoc.limit(limit);
-		return jSON2Rrn.createJSON(cursorDoc,successMsg);
+
+		Vector<DBObject> recordsVec = new Vector<DBObject>();
+		while (cursorDoc.hasNext()) {
+			DBObject obj = cursorDoc.next();
+			if(obj.containsField("_id"))
+				obj = addChildrenCounts(httpHeaders,collection, obj);
+			recordsVec.add(obj);
+		}
+		cursorDoc.close();
+		return jSON2Rrn.createJSON(recordsVec,successMsg);
+	}
+
+
+	private DBObject addChildrenCounts(HttpHeaders httpHeaders,String coll, DBObject data) {
+		SchemaInfo schemaInfo = MongoSchema.getSchemaInfo(coll);
+		if(schemaInfo != null) {
+			String id = ((ObjectId)data.get("_id")).toString();
+			for(int i=0;i<schemaInfo.childCollection.length;i++) {
+				BasicDBObject q = new BasicDBObject(schemaInfo.refKeys[i], id);
+				int counter = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection(
+						schemaInfo.getChildCollection()[i]).find(q).count();
+				data.put(schemaInfo.getChildCollection()[i] + "_counter", counter);
+			}
+		}
+		return data;
 	}
 
 	/**
@@ -714,7 +737,7 @@ public class MongoDBQueries {
 			return null;
 		DBObject obj = getEntity(refColl, refKey);
 		if(obj == null)
-			throw new MongoRefNotFoundException("RefID: " + refKeyName + 
+			throw new MongoRefNotFoundException("RefNotFound: " + refKeyName + 
 					" not found for collection: " + refColl);
 		else
 			return obj;
@@ -738,7 +761,7 @@ public class MongoDBQueries {
 			DBObject parent = cursor.next();
 			ObjectId objID =  (ObjectId)parent.get("_id");
 			if(!objID.toString().equalsIgnoreCase(parentKey)) {
-				throw new MongoRefNotFoundException("Error in reference IDs (" + 
+				throw new MongoRefNotFoundException("RefNotFound: Error in reference IDs (" + 
 						parentKey + "!=" + objID + ")");
 			}
 		}
@@ -870,7 +893,7 @@ public class MongoDBQueries {
 			deletedField = getEntity(null,coll,fieldName + ".cid", cid, "Simulation Parameter " +
 					"with cid=" + cid + " removed successfully", false, new String[]{ fieldName});
 			if(!deletedField.containsField("data"))
-				throw new MongoInvalidObjectId("invalid ObjectId [" + cid + "]");
+				throw new MongoInvalidObjectId("InvalidObjectid: [" + cid + "]");
 			Vector<?> data = (Vector<?>)deletedField.get("data");
 			if(data.size()==0)
 				deletedField = null;
@@ -900,7 +923,7 @@ public class MongoDBQueries {
 			String runId = getDbNameFromHTTPHeader(httpHeaders);
 			if(runId == null && installationId == null)
 				throw new RestQueryParamMissingException(
-						"Both run_id and installation_id are null");
+						"QueryParamMissing: Both run_id and installation_id are null");
 
 			Integer aggregationUnit = null;
 			if(aggregationUnitS != null)
@@ -977,7 +1000,7 @@ public class MongoDBQueries {
 	 */
 	public String getRefKey(String key, DBObject data) throws MongoRefNotFoundException {
 		if(!data.containsField(key))
-			throw new MongoRefNotFoundException(key + " not found");
+			throw new MongoRefNotFoundException("RefNotFound: " + key + " not found");
 		return data.get(key).toString();
 	}
 
