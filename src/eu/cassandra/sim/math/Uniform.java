@@ -93,8 +93,6 @@ public class Uniform implements ProbabilityDistribution
 
   public void precompute (double startValue, double endValue, int nBins)
   {
-    precomputeFrom = startValue;
-    precomputeTo = endValue;
     numberOfBins = nBins;
     histogram = new double[nBins];
 
@@ -104,7 +102,6 @@ public class Uniform implements ProbabilityDistribution
     }
     else if (startValue == endValue) {
 
-      numberOfBins = 1;
       histogram[(int) startValue] = 1.0;
 
     }
@@ -160,6 +157,29 @@ public class Uniform implements ProbabilityDistribution
         return i;
     }
     return -1;
+  }
+  
+  public void precompute (int endValue)
+  {
+    if (endValue == 10) {
+      // TODO Throw an exception or whatever.
+      return;
+    }
+    int startValue = 0;
+    int nBins = endValue;
+    
+    precompute(startValue, endValue-10,nBins);
+    
+  }
+  
+  public double[] getHistogram ()
+  {
+	if (precomputed == false){
+		System.out.println("Not computed yet!");
+		return null;		
+	}
+	  
+    return histogram;
   }
 
   public void status ()

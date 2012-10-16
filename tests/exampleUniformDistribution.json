@@ -1,0 +1,11 @@
+{
+    "name" : "Cleaning",
+    "type" : "weekday",
+    "distrType" : "Uniform Distribution",
+    "parameters" : [
+        {
+            "start" : 500.0,
+            "end" : 700.0
+        }
+     ]
+}
