@@ -36,6 +36,11 @@ Ext.define('C.model.Person', {
 		},
 		{
 			name: 'inst_id'
+		},
+		{
+			name: 'activities',
+			mapping: 'activities_counter',
+			type: 'int'
 		}
 	]
 });

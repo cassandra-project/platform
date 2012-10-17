@@ -628,6 +628,7 @@ Ext.application({
 			}
 			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
 			grid.closable = false;
+			if (childNode.get('nodeType') == 'RunsCollection') grid.getDockedItems()[0].hidden = true;
 			grid.setTitle(childNode.get('name'));
 			myFormCmp.insert(index + 1, grid);
 		});

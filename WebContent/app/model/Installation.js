@@ -54,11 +54,13 @@ Ext.define('C.model.Installation', {
 			name: '_id'
 		},
 		{
-			name: 'appliances_counter',
+			name: 'appliances',
+			mapping: 'appliances_counter',
 			type: 'int'
 		},
 		{
-			name: 'persons_counter',
+			name: 'persons',
+			mapping: 'persons_counter',
 			type: 'int'
 		}
 	]
