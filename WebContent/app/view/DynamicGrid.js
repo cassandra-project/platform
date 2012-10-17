@@ -120,24 +120,48 @@ Ext.define('C.view.DynamicGrid', {
 			var record = data.records[0];
 			var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.raw.nodeId);
 			var node = Ext.getStore(record.raw.nodeStoreId).getAt(index);console.info(node);
-
-			var dataToAdd = JSON.parse(JSON.stringify(node.data));
-			delete dataToAdd._id;
 			var parent_id = this.store.navigationNode.parentNode.get('id');
-			switch(this.store.navigationNode.get('nodeType')){
-				case 'ScenariosCollection': dataToAdd.project_id = parent_id; break;
-				case 'SimulationParamsCollection': dataToAdd.scn_id = parent_id; break;
-				case 'InstallationsCollection': dataToAdd.scenario_id = parent_id; break;
-				case 'PersonsCollection': dataToAdd.inst_id = parent_id; break;
-				case 'AppliancesCollection': dataToAdd.inst_id = parent_id; break;
-				case 'ActivitiesCollection': dataToAdd.pers_id = parent_id; break;
-				case 'ActivityModelsCollection': dataToAdd.act_id = parent_id; break;
-				case 'ConsumptionModelsCollection': dataToAdd.app_id = parent_id; break;
-				default: return false;
-			}
+			if (1==2) {
+				var dataToAdd = JSON.parse(JSON.stringify(node.data));
+				delete dataToAdd._id;
+				switch(this.store.navigationNode.get('nodeType')){
+					case 'ScenariosCollection': dataToAdd.project_id = parent_id; break;
+					case 'SimulationParamsCollection': dataToAdd.scn_id = parent_id; break;
+					case 'InstallationsCollection': dataToAdd.scenario_id = parent_id; break;
+					case 'PersonsCollection': dataToAdd.inst_id = parent_id; break;
+					case 'AppliancesCollection': dataToAdd.inst_id = parent_id; break;
+					case 'ActivitiesCollection': dataToAdd.pers_id = parent_id; break;
+					case 'ActivityModelsCollection': dataToAdd.act_id = parent_id; break;
+					case 'ConsumptionModelsCollection': dataToAdd.app_id = parent_id; break;
+					default: return false;
+				}
 
-			this.store.add(dataToAdd);
-			dropFunction.cancelDrop();
+				this.store.add(dataToAdd);
+				dropFunction.cancelDrop();
+			} else {
+				data.copy = true;
+				var targetID = '';
+				var meId = '';
+				switch(record.raw.nodeType){
+					case 'Scenario': targetID = 'PrjID'; meID = 'scnID';break;
+					case 'SimulationParam': targetID = 'ScnID'; meID = 'smpID'; break;
+					case 'Installation': targetID = 'ScnID'; meID = 'instID'; break;
+					case 'Person': targetID = 'InstID'; meID = 'persID'; break;
+					case 'Appliance': targetID = 'InstID'; meID = 'appID'; break;
+					case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
+					case 'ActivityModel': targetID = 'ActID'; meID = 'actmodID'; break;
+					case 'ConsumptionModel': targetID = 'AppID'; meID = 'consmodID'; break;
+					default: return false;
+				}
+				Ext.Ajax.request({
+					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&to'+ targetID+'='+parent_id,
+					method: 'POST',
+					scope: this,
+					success: function(response, opts) {	
+						this.store.load();
+					}
+				});
+			}
 			return 0;
 		}
 		return false;

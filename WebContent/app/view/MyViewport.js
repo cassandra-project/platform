@@ -52,10 +52,42 @@ Ext.define('C.view.MyViewport', {
 										var id = Ext.id();
 										Ext.defer(function () {
 											Ext.widget('progressbar', {
+												id: 'progressbar' + r.get('_id'),
 												text: v+'% Completed',
 												renderTo: id,
 												value: v / 100,
 												width: 200
+											});
+										}, 50);
+										return Ext.String.format('<div id="{0}"></div>', id);
+									}
+								},
+								{
+									header: '',
+									width: 120,
+									renderer: function (v, m, r) {
+										var id = Ext.id();
+										Ext.defer(function () {
+											Ext.widget('button', {
+												renderTo: id,
+												text: 'Refresh percentage',
+												width: 110,
+												disabled: (r.get('percentage') == 100) ? true : false,
+												handler: function () { 
+
+													Ext.Ajax.request({
+														url: '/cassandra/api/runs/' + r.get('_id'),
+														method: 'GET',
+														scope: this,
+														success: function(response, opts) {
+															var o = Ext.decode(response.responseText);
+															Ext.getCmp('progressbar'+r.get('_id')).updateProgress(o.data[0].percentage / 100);
+															Ext.getCmp('progressbar'+r.get('_id')).updateText(o.data[0].percentage+'% Completed');
+															if (o.data[0].percentage == 100) r.set('ended', o.data[0].ended);
+														}
+													});
+
+												}
 											});
 										}, 50);
 										return Ext.String.format('<div id="{0}"></div>', id);
@@ -65,16 +97,16 @@ Ext.define('C.view.MyViewport', {
 							else if (f.name == 'started' || f.name == 'ended'){
 								cols.push({
 									header: f.name,
-									dataIndex: (f.mapping) ? f.mapping : f.name,
+									dataIndex: f.name,
 									renderer: function (v, m, r) {
-										return (new Date(v) == 'Invalid Date') ? '' : new Date(v);
+										return (v == -1) ? '' : new Date(v);
 									}
 								});
 							}			  
 							else {
 								cols.push({
 									header: f.name,
-									dataIndex: (f.mapping) ? f.mapping : f.name,
+									dataIndex: f.name,
 									hidden: (f.type.type == 'auto') ? true : false
 								});
 							}
@@ -157,29 +189,59 @@ Ext.define('C.view.MyViewport', {
 			// TODO Epic SWITCH-CASE statement goes here to get the *_id key for the parent.
 			// 		ex. scenario_id in the Installation case.
 			// TODO Move this epic thigie to each model as config?
-			var parent_idKey = '';
-			switch(record.raw.nodeType){
-				case 'Scenario': parent_idKey = 'project_id'; break;
-				case 'SimulationParam': parent_idKey = 'scn_id'; break;
-				case 'Installation': parent_idKey = 'scenario_id'; break;
-				case 'Person': parent_idKey = 'inst_id'; break;
-				case 'Appliance': parent_idKey = 'inst_id'; break;
-				case 'Activity': parent_idKey = 'pers_id'; break;
-				case 'ActivityModel': parent_idKey = 'act_id'; break;
-				case 'ConsumptionModel': parent_idKey = 'app_id'; break;
-				default: return false;
+			if (1==2) {
+				var parent_idKey = '';
+				switch(record.raw.nodeType){
+					case 'Scenario': parent_idKey = 'project_id'; break;
+					case 'SimulationParam': parent_idKey = 'scn_id'; break;
+					case 'Installation': parent_idKey = 'scenario_id'; break;
+					case 'Person': parent_idKey = 'inst_id'; break;
+					case 'Appliance': parent_idKey = 'inst_id'; break;
+					case 'Activity': parent_idKey = 'pers_id'; break;
+					case 'ActivityModel': parent_idKey = 'act_id'; break;
+					case 'ConsumptionModel': parent_idKey = 'app_id'; break;
+					default: return false;
+				}
+				//var recordRawData = node.data;
+				var recordRawData = JSON.parse(JSON.stringify(node.data));
+				delete recordRawData._id;
+				//delete recordRawData._id;
+				// TODO Make damn sure that parentId actually exists all around.
+				recordRawData[parent_idKey] = overModel.data.parentId; 
+				overModel.c.store.add(recordRawData);
+				dropFunction.cancelDrop();
 			}
-			//var recordRawData = node.data;
-			var recordRawData = JSON.parse(JSON.stringify(node.data));
-			delete recordRawData._id;
-			//delete recordRawData._id;
-			// TODO Make damn sure that parentId actually exists all around.
-			recordRawData[parent_idKey] = overModel.data.parentId; 
-			overModel.c.store.add(recordRawData);
-			dropFunction.cancelDrop();
+			else {
+				data.copy = true;
+				var targetID = '';
+				var meId = '';
+				switch(record.raw.nodeType){
+					case 'Scenario': targetID = 'PrjID'; meID = 'scnID';break;
+					case 'SimulationParam': targetID = 'ScnID'; meID = 'smpID'; break;
+					case 'Installation': targetID = 'ScnID'; meID = 'instID'; break;
+					case 'Person': targetID = 'InstID'; meID = 'persID'; break;
+					case 'Appliance': targetID = 'InstID'; meID = 'appID'; break;
+					case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
+					case 'ActivityModel': targetID = 'ActID'; meID = 'actmodID'; break;
+					case 'ConsumptionModel': targetID = 'AppID'; meID = 'consmodID'; break;
+					default: return false;
+				}
+				Ext.Ajax.request({
+					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&to'+ targetID+'='+overModel.data.parentId,
+					method: 'POST',
+					scope: this,
+					success: function(response, opts) {	
+						this.store.load();
+					}
+				});
+			}
 		}else{
 			return false;
 		}
+
+
+
+
 	},
 
 	onTreeviewBeforeItemMouseEnter: function(dataview, record, item, index, e, options) {
