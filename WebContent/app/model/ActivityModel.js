@@ -16,10 +16,6 @@
 Ext.define('C.model.ActivityModel', {
 	extend: 'Ext.data.Model',
 
-	uses: [
-		'C.model.Appliance'
-	],
-
 	idProperty: '_id',
 
 	fields: [
@@ -61,6 +57,11 @@ Ext.define('C.model.ActivityModel', {
 		},
 		{
 			name: 'repeatsNrOfTime'
+		},
+		{
+			name: 'distributions',
+			mapping: 'distributions_counter',
+			type: 'int'
 		}
 	],
 
@@ -73,13 +74,5 @@ Ext.define('C.model.ActivityModel', {
 				'nonworking'
 			]
 		}
-	],
-
-	hasMany: {
-		model: 'C.model.Appliance',
-		primaryKey: '_id',
-		autoLoad: true,
-		filterProperty: 'containsAppliances',
-		name: 'appliances'
-	}
+	]
 });
