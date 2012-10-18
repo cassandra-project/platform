@@ -70,6 +70,9 @@ Ext.application({
 	],
 	autoCreateViewport: true,
 	name: 'C',
+	controllers: [
+		'setDbName'
+	],
 
 	createForm: function(record) {
 		record.expand();//basic in order to be rendered
@@ -132,6 +135,12 @@ Ext.application({
 					cur_record = record.parentNode.c.store.getById(record.get('id'));
 					myForm = C.app.getSimulationParamsForm(cur_record);
 					break;
+					case 'Run':
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					if (cur_record.get('percentage') == 100) C.app.newRunWindow(cur_record);
+					return false;
+					default:
+					return false;
 				}
 
 				cmpToAdd = myForm;
@@ -391,7 +400,10 @@ Ext.application({
 	},
 
 	launch: function() {
+		this.dbname = window.location.hash.replace('#','');
 		C.app = this;
+
+		//C.dbname = window.location.hash.replace('#','');
 	},
 
 	getInstallationForm: function(record) {
@@ -635,6 +647,15 @@ Ext.application({
 
 		console.info(record);
 		return myFormCmp;
+	},
+
+	newRunWindow: function(record) {
+		var url = document.URL+'#'+record.get('_id');
+		var wname = 'cassandra';
+		var wfeatures = 'menubar=yes,resizable=yes,scrollbars=yes,status=yes,location=yes';
+		var win = window.open(url,wname,wfeatures);
+
+
 	}
 
 });

@@ -61,6 +61,7 @@ Ext.define('C.model.ActivityModel', {
 		{
 			name: 'distributions',
 			mapping: 'distributions_counter',
+			persist: false,
 			type: 'int'
 		}
 	],

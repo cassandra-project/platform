@@ -56,11 +56,13 @@ Ext.define('C.model.Installation', {
 		{
 			name: 'appliances',
 			mapping: 'appliances_counter',
+			persist: false,
 			type: 'int'
 		},
 		{
 			name: 'persons',
 			mapping: 'persons_counter',
+			persist: false,
 			type: 'int'
 		}
 	]
