@@ -18,6 +18,7 @@ Ext.define('C.view.Viewport', {
 	renderTo: Ext.getBody(),
 	requires: [
 		'C.view.ActmodPropertiesForm',
+		'C.view.DemographicForm',
 		'C.view.ActivityModelForm',
 		'C.view.ScenarioForm',
 		'C.view.ProjectForm',
@@ -27,6 +28,7 @@ Ext.define('C.view.Viewport', {
 		'C.view.InstallationForm',
 		'C.view.ApplianceForm',
 		'C.view.RelationsGrid',
+		'C.view.EntitiesGrid',
 		'C.view.DistributionForm',
 		'C.view.DynamicGrid',
 		'C.view.MyViewport',
