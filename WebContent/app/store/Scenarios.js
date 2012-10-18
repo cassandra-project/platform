@@ -68,6 +68,10 @@ Ext.define('C.store.Scenarios', {
 				remove: {
 					fn: me.onJsonstoreRemove,
 					scope: me
+				},
+				beforeload: {
+					fn: me.onJsonstoreBeforeLoad,
+					scope: me
 				}
 			}
 		}, cfg)]);
@@ -147,6 +151,7 @@ Ext.define('C.store.Scenarios', {
 	onJsonstoreAdd: function(store, records, index, options) {
 		console.info('Scenario added.', store, records, index, options);
 		Ext.each(records, function(record){
+
 			//	var nodeExisting = Ext.getCmp('uiNavigationTreePanel').store.tree.getNodeById(record.data._id);
 			//	console.info('Scenario record.', record, nodeExisting);
 			//	if(!nodeExisting){
@@ -170,6 +175,10 @@ Ext.define('C.store.Scenarios', {
 
 	onJsonstoreRemove: function(store, record, index, options) {
 		store.navigationNode.removeChild(record.node);
+	},
+
+	onJsonstoreBeforeLoad: function(store, operation, options) {
+		if (C.dbname) this.proxy.headers = {"dbname": C.dbname};
 	}
 
 });

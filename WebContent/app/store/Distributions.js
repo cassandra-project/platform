@@ -46,6 +46,10 @@ Ext.define('C.store.Distributions', {
 				datachanged: {
 					fn: me.onJsonstoreDataChangeD,
 					scope: me
+				},
+				beforeload: {
+					fn: me.onJsonstoreBeforeLoad,
+					scope: me
 				}
 			}
 		}, cfg)]);
@@ -76,6 +80,10 @@ Ext.define('C.store.Distributions', {
 		}
 		});*/
 		//abstractstore.navigationNode.childNodes
+	},
+
+	onJsonstoreBeforeLoad: function(store, operation, options) {
+		if (C.dbname) this.proxy.headers = {"dbname": C.dbname};
 	}
 
 });

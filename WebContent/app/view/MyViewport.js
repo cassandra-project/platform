@@ -189,52 +189,52 @@ Ext.define('C.view.MyViewport', {
 			// TODO Epic SWITCH-CASE statement goes here to get the *_id key for the parent.
 			// 		ex. scenario_id in the Installation case.
 			// TODO Move this epic thigie to each model as config?
-			if (1==2) {
-				var parent_idKey = '';
-				switch(record.raw.nodeType){
-					case 'Scenario': parent_idKey = 'project_id'; break;
-					case 'SimulationParam': parent_idKey = 'scn_id'; break;
-					case 'Installation': parent_idKey = 'scenario_id'; break;
-					case 'Person': parent_idKey = 'inst_id'; break;
-					case 'Appliance': parent_idKey = 'inst_id'; break;
-					case 'Activity': parent_idKey = 'pers_id'; break;
-					case 'ActivityModel': parent_idKey = 'act_id'; break;
-					case 'ConsumptionModel': parent_idKey = 'app_id'; break;
-					default: return false;
-				}
-				//var recordRawData = node.data;
-				var recordRawData = JSON.parse(JSON.stringify(node.data));
-				delete recordRawData._id;
-				//delete recordRawData._id;
-				// TODO Make damn sure that parentId actually exists all around.
-				recordRawData[parent_idKey] = overModel.data.parentId; 
-				overModel.c.store.add(recordRawData);
-				dropFunction.cancelDrop();
+			//if (1==2) {
+			var parent_idKey = '';
+			switch(record.raw.nodeType){
+				case 'Scenario': parent_idKey = 'project_id'; break;
+				case 'SimulationParam': parent_idKey = 'scn_id'; break;
+				case 'Installation': parent_idKey = 'scenario_id'; break;
+				case 'Person': parent_idKey = 'inst_id'; break;
+				case 'Appliance': parent_idKey = 'inst_id'; break;
+				case 'Activity': parent_idKey = 'pers_id'; break;
+				case 'ActivityModel': parent_idKey = 'act_id'; break;
+				case 'ConsumptionModel': parent_idKey = 'app_id'; break;
+				default: return false;
 			}
+			//var recordRawData = node.data;
+			var recordRawData = JSON.parse(JSON.stringify(node.data));
+			delete recordRawData._id;
+			//delete recordRawData._id;
+			// TODO Make damn sure that parentId actually exists all around.
+			recordRawData[parent_idKey] = overModel.data.parentId; 
+			overModel.c.store.add(recordRawData);
+			dropFunction.cancelDrop();
+			/*}
 			else {
-				data.copy = true;
-				var targetID = '';
-				var meId = '';
-				switch(record.raw.nodeType){
-					case 'Scenario': targetID = 'PrjID'; meID = 'scnID';break;
-					case 'SimulationParam': targetID = 'ScnID'; meID = 'smpID'; break;
-					case 'Installation': targetID = 'ScnID'; meID = 'instID'; break;
-					case 'Person': targetID = 'InstID'; meID = 'persID'; break;
-					case 'Appliance': targetID = 'InstID'; meID = 'appID'; break;
-					case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
-					case 'ActivityModel': targetID = 'ActID'; meID = 'actmodID'; break;
-					case 'ConsumptionModel': targetID = 'AppID'; meID = 'consmodID'; break;
-					default: return false;
-				}
-				Ext.Ajax.request({
-					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&to'+ targetID+'='+overModel.data.parentId,
-					method: 'POST',
-					scope: this,
-					success: function(response, opts) {	
-						this.store.load();
-					}
-				});
+			data.copy = true;
+			var targetID = '';
+			var meId = '';
+			switch(record.raw.nodeType){
+			case 'Scenario': targetID = 'PrjID'; meID = 'scnID';break;
+			case 'SimulationParam': targetID = 'ScnID'; meID = 'smpID'; break;
+			case 'Installation': targetID = 'ScnID'; meID = 'instID'; break;
+			case 'Person': targetID = 'InstID'; meID = 'persID'; break;
+			case 'Appliance': targetID = 'InstID'; meID = 'appID'; break;
+			case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
+			case 'ActivityModel': targetID = 'ActID'; meID = 'actmodID'; break;
+			case 'ConsumptionModel': targetID = 'AppID'; meID = 'consmodID'; break;
+			default: return false;
 			}
+			Ext.Ajax.request({
+			url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&to'+ targetID+'='+overModel.data.parentId,
+			method: 'POST',
+			scope: this,
+			success: function(response, opts) {	
+			this.store.load();
+			}
+			});
+			}*/
 		}else{
 			return false;
 		}
