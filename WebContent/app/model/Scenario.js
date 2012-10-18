@@ -46,11 +46,13 @@ Ext.define('C.model.Scenario', {
 		{
 			name: 'installations',
 			mapping: 'installations_counter',
+			persist: false,
 			type: 'int'
 		},
 		{
 			name: 'simulationParameters',
 			mapping: 'sim_param_counter',
+			persist: false,
 			type: 'int'
 		}
 	]

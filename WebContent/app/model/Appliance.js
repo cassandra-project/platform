@@ -60,11 +60,13 @@ Ext.define('C.model.Appliance', {
 		{
 			name: 'activityModels',
 			mapping: 'act_models_counter',
+			persist: false,
 			type: 'int'
 		},
 		{
 			name: 'consumptionModels',
 			mapping: 'cons_models_counter',
+			persist: false,
 			type: 'int'
 		}
 	]
