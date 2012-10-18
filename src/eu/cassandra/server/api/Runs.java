@@ -49,6 +49,7 @@ import eu.cassandra.server.mongo.MongoDemographics;
 import eu.cassandra.server.mongo.MongoDistributions;
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.MongoPersons;
+import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.MongoRuns;
 import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.MongoSimParam;
@@ -124,13 +125,20 @@ public class Runs {
 			query.put("_id", new ObjectId(scn_id));
 			DBObject scn = DBConn.getConn().getCollection(MongoScenarios.COL_SCENARIOS).findOne(query);
 			db.getCollection(MongoScenarios.COL_SCENARIOS).insert(scn);
-			scenario.put("scenario", scn);	
+			scenario.put("scenario", scn);
+			
+			// Project
+			String prj_id = (String)scn.get("project_id");
+			query.put("_id", new ObjectId(prj_id));
+			DBObject project = DBConn.getConn().getCollection(MongoProjects.COL_PROJECTS).findOne(query);
+			db.getCollection(MongoProjects.COL_PROJECTS).insert(project);
+			scenario.put("project", project);
 			
 			// Demographics
 			query = new BasicDBObject();
 			query.put("scn_id", scn_id);
 			String setup = (String)scn.get("setup");
-			String prj_id = (String)scn.get("project_id");
+			
 			boolean isDynamic = setup.equalsIgnoreCase("dynamic");
 			if(isDynamic) {
 				DBObject demog = DBConn.getConn().getCollection(MongoDemographics.COL_DEMOGRAPHICS).findOne(query);
