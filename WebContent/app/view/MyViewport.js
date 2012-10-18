@@ -31,7 +31,12 @@ Ext.define('C.view.MyViewport', {
 					id: 'MainTabPanel',
 					itemId: 'MainTabPanel',
 					closable: false,
-					activeTab: 0
+					listeners: {
+						add: {
+							fn: me.onMainTabPanelAdd,
+							scope: me
+						}
+					}
 				},
 				{
 					xtype: 'treepanel',
@@ -173,6 +178,19 @@ Ext.define('C.view.MyViewport', {
 		me.callParent(arguments);
 	},
 
+	onMainTabPanelAdd: function(abstractcontainer, component, index, options) {
+		if (C.dbname) {
+			this.query('.button').forEach(function(c){if (c.xtype!='tab')c.disabled = true;});
+			this.query('.field').forEach(function(c){c.readOnly = true;});
+			/*this.query('.grid').forEach(function(c){
+			c.view.plugins.forEach(function(plugin){
+			if (plugin.ptype == 'gridviewdragdrop')
+			plugin.disable();
+			});
+			});*/
+		}
+	},
+
 	onTreedragdroppluginBeforeDrop: function(node, data, overModel, dropPosition, dropFunction, options) {
 		console.info('Before node drop.', this, node, data, overModel, dropPosition, dropFunction, options);
 		// TODO Rename ALL the collections to itemCollection instead of itemsCollection
@@ -285,6 +303,7 @@ Ext.define('C.view.MyViewport', {
 	onUiNavigationTreePanelBeforeRender: function(abstractcomponent, options) {
 		console.info('Before render treepanel.', this, abstractcomponent, options);
 
+
 		abstractcomponent.on('nodedragover', function(dragEvent) {
 			dragEvent.cancel = true;
 		});
@@ -313,6 +332,7 @@ Ext.define('C.view.MyViewport', {
 						fakeChildren: true,
 						draggable: false
 					});
+					if(!C.dbname)
 					record.appendChild({
 						name: 'Runs',
 						nodeType: 'RunsCollection',
@@ -372,6 +392,19 @@ Ext.define('C.view.MyViewport', {
 						fakeChildren: true,
 						draggable: false
 					});
+					var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.raw.nodeId);
+					var dataRecord = Ext.getStore(record.raw.nodeStoreId).getAt(index);
+					if (dataRecord.get('setup') == 'dynamic') {
+						record.appendChild({
+							name: 'Demographics',
+							nodeType: 'DemographicsCollection',
+							expanded: false,
+							leaf: false,
+							expandable: true,
+							fakeChildren: true,
+							draggable: false
+						});
+					}
 					break;
 					case 'SimulationParamsCollection':
 					//record.removeAll();
@@ -398,8 +431,21 @@ Ext.define('C.view.MyViewport', {
 							scn_id: record.parentNode.get('nodeId')
 						}
 					});
-					//Ext.getCmp('MainTabPanel').add(new C.view.InstallationsGrid({store: record.c.store}));
 					break;
+					case 'DemographicsCollection':
+					//record.removeAll();
+					console.info('Creating store for Demographics.');
+					record.c.store = new C.store.Demographics({
+						storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
+						navigationNode: record
+					});
+					record.c.store.load({
+						params: {
+							scn_id: record.parentNode.get('nodeId')
+						}
+					});
+					break;
+					//Ext.getCmp('MainTabPanel').add(new C.view.InstallationsGrid({store: record.c.store}));
 					case 'Installation':
 					//record.removeAll();
 					console.info('Creating dummy nodes for installation.');

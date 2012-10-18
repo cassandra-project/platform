@@ -217,7 +217,7 @@ Ext.define('C.view.DynamicGrid', {
 		var cur_record = this.store.getAt(0);
 		C.app.createForm(cur_record.node);
 
-		this.plugins[0].startEdit(0, 0);
+		//this.plugins[0].startEdit(0, 0);
 
 
 
