@@ -1,6 +1,7 @@
 package eu.cassandra.sim.entities.appliances;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -39,9 +40,16 @@ public class ConsumptionModel extends Entity {
 	
 	private String model;
 	
+	public ConsumptionModel() {}
+	
 	public ConsumptionModel(String amodel) {
 		model = amodel;
 		DBObject modelObj = (DBObject) JSON.parse(model);
+		init(modelObj);
+	}
+	
+	public void init (DBObject modelObj) {
+
 		outerN = ((Integer)modelObj.get("n")).intValue();
 		BasicDBList patternsObj = (BasicDBList)modelObj.get("params");
 		patternN = patternsObj.size();
@@ -71,6 +79,7 @@ public class ConsumptionModel extends Entity {
 				patterns[i].add(t);
 			}
 		}
+
 	}
 	
 	public int getTotalDuration() { return totalDuration; }
@@ -100,6 +109,16 @@ public class ConsumptionModel extends Entity {
 		// TODO [TEST] check is parsing is done correctly
 	}
 
+	public void status(){
+		
+		System.out.println("Outer N:" + outerN);
+		System.out.println("Total Duration:" + totalDuration);
+		System.out.println("Number of Patterns:" + patternN);
+		System.out.println("Pattern Times: " + Arrays.toString(n) );
+		System.out.println("Pattern Durations: " + Arrays.toString(patternDuration) );
+		
+	}
+	
 	@Override
 	public BasicDBObject toDBObject() {
 		BasicDBObject obj = new BasicDBObject();
