@@ -10,7 +10,6 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 import eu.cassandra.sim.entities.appliances.ConsumptionModel.Tripplet;
-import eu.cassandra.sim.utilities.Charts;
 
 public class GUIConsumptionModel {
 
@@ -78,8 +77,7 @@ public class GUIConsumptionModel {
 		
 		Double[] temp = cm.getValues();
 
-		Charts.createHistogram("Be", "a", "b", temp);
-
+		
 	}
 
 
