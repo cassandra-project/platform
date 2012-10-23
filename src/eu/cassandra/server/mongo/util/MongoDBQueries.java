@@ -48,8 +48,8 @@ import com.mongodb.util.JSON;
 
 public class MongoDBQueries {
 
-	public final static int ACTIVE_POWER_P = 0;
-	public final static int REACTIVE_POWER_Q = 1;
+	public final static String ACTIVE_POWER_P = "p";
+	public final static String REACTIVE_POWER_Q = "q";
 
 	private JSONtoReturn jSON2Rrn = new JSONtoReturn();
 
@@ -928,9 +928,6 @@ public class MongoDBQueries {
 			Integer aggregationUnit = null;
 			if(aggregationUnitS != null)
 				aggregationUnit = Integer.parseInt(aggregationUnitS);
-			Integer metric = null;
-			if(metricS != null)
-				metric = Integer.parseInt(metricS);
 			Integer fromTick = null;
 			if(fromTickS != null)
 				fromTick = Integer.parseInt(fromTickS);
@@ -943,9 +940,9 @@ public class MongoDBQueries {
 			if(installationId != null)
 				coll = MongoResults.COL_INSTRESULTS;
 
-			String yMetric = "p";
-			if(metric != null && metric == REACTIVE_POWER_Q)
-				yMetric = "q";
+			String yMetric = ACTIVE_POWER_P;
+			if(metricS != null && metricS.equalsIgnoreCase(REACTIVE_POWER_Q))
+				yMetric = REACTIVE_POWER_Q;
 			//db.inst_results.find({inst_id:"dszfs123",tick:{$gt:1}}).sort({tick:1}).pretty()
 			//db.inst_results.group(
 			//	{
