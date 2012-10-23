@@ -23,6 +23,7 @@ import javax.ws.rs.core.HttpHeaders;
 
 import org.bson.types.ObjectId;
 
+import eu.cassandra.server.api.exceptions.JSONSchemaNotValidException;
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
@@ -38,6 +39,8 @@ import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.MongoSimParam;
+import eu.cassandra.sim.entities.appliances.GUIConsumptionModel;
+import eu.cassandra.sim.math.GUIDistribution;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -406,7 +409,7 @@ public class MongoDBQueries {
 			throw new MongoRefNotFoundException("RefNotFound: Cannot get internal entity " +  entityName + 
 					" with cid=" + cid + " from collection: " + coll);
 		}catch(Exception e) {
-			return jSON2Rrn.createJSONError("Cannot get internal entity " +  entityName + 
+			return jSON2Rrn.createJSONError("GetInternalEntityError: Cannot get internal entity " +  entityName + 
 					" with cid=" + cid + " from collection: " + coll, e);
 		}
 	}
@@ -440,48 +443,103 @@ public class MongoDBQueries {
 	public DBObject executeFindQuery(HttpHeaders httpHeaders,String collection, 
 			DBObject dbObj1, DBObject dbObj2, String successMsg,
 			String sort, int limit, int skip, boolean count) {
-		DBCursor cursorDoc = null;
-		if(count) {
-			BasicDBObject dbObject = new BasicDBObject(); 
-			dbObject.put("count", DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-					getCollection(collection).find(dbObj1).count());
-			return 	 jSON2Rrn.createJSON(dbObject, successMsg);
-		}
-		else {
-			if(dbObj2 == null) {
-				cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-						getCollection(collection).find(dbObj1);
+		try {
+			DBCursor cursorDoc = null;
+			if(count) {
+				BasicDBObject dbObject = new BasicDBObject(); 
+				dbObject.put("count", DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+						getCollection(collection).find(dbObj1).count());
+				return 	 jSON2Rrn.createJSON(dbObject, successMsg);
 			}
 			else {
-				cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-						getCollection(collection).find(dbObj1,dbObj2);
+				if(dbObj2 == null) {
+					cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+							getCollection(collection).find(dbObj1);
+				}
+				else {
+					cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+							getCollection(collection).find(dbObj1,dbObj2);
+				}
 			}
-		}
-		if(sort != null)	{
-			try{
-				DBObject sortObj = (DBObject)JSON.parse(sort);
-				cursorDoc = cursorDoc.sort(sortObj);
-			}catch(Exception e) {
-				return jSON2Rrn.createJSONError("Error in filtering JSON sorting object: " + sort, e);
+			if(sort != null)	{
+				try{
+					DBObject sortObj = (DBObject)JSON.parse(sort);
+					cursorDoc = cursorDoc.sort(sortObj);
+				}catch(Exception e) {
+					return jSON2Rrn.createJSONError("Error in filtering JSON sorting object: " + sort, e);
+				}
 			}
-		}
-		if(skip != 0)
-			cursorDoc =	cursorDoc.skip(skip);
-		if(limit != 0)
-			cursorDoc =	cursorDoc.limit(limit);
+			if(skip != 0)
+				cursorDoc =	cursorDoc.skip(skip);
+			if(limit != 0)
+				cursorDoc =	cursorDoc.limit(limit);
 
-		Vector<DBObject> recordsVec = new Vector<DBObject>();
-		while (cursorDoc.hasNext()) {
-			DBObject obj = cursorDoc.next();
-			if(obj.containsField("_id"))
-				obj = addChildrenCounts(httpHeaders,collection, obj);
-			recordsVec.add(obj);
+			Vector<DBObject> recordsVec = new Vector<DBObject>();
+			while (cursorDoc.hasNext()) {
+				DBObject obj = cursorDoc.next();
+
+				if(collection.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS) &&
+						dbObj1.containsField("_id")) {
+					obj = getValues(obj,httpHeaders,obj.get("_id").toString(),MongoDistributions.COL_DISTRIBUTIONS);
+				}
+				else if(collection.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS) &&
+						dbObj1.containsField("_id")) {
+					obj = getValues(obj,httpHeaders,obj.get("_id").toString(),MongoConsumptionModels.COL_CONSMODELS);
+				}
+
+				if(obj.containsField("_id"))
+					obj = addChildrenCounts(httpHeaders,collection, obj);
+				recordsVec.add(obj);
+			}
+			cursorDoc.close();
+			return jSON2Rrn.createJSON(recordsVec,successMsg);
 		}
-		cursorDoc.close();
-		return jSON2Rrn.createJSON(recordsVec,successMsg);
+		catch(Exception e) {
+			e.printStackTrace();
+			return jSON2Rrn.createJSONError("MongoQueryError: Cannot execute find query for collection: " + collection + 
+					" with qKey=" + dbObj1 + " and qValue=" + dbObj2,e);
+		}
+	}
+
+	/**
+	 * 
+	 * @param dBObject
+	 * @param httpHeaders
+	 * @param id
+	 * @return
+	 * @throws JSONSchemaNotValidException 
+	 */
+	private DBObject getValues(DBObject dBObject, HttpHeaders httpHeaders,
+			String id, String coll) throws JSONSchemaNotValidException {
+		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
+			String type = MongoActivityModels.REF_DISTR_STARTTIME ;
+			if(DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
+					findOne(new BasicDBObject("duration._id",new ObjectId(id) )) != null) {
+				type = MongoActivityModels.REF_DISTR_DURATION;
+			}
+			else if (DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
+					findOne(new BasicDBObject("repeatsNrOfTime._id",new ObjectId(id))) != null) {
+				type = MongoActivityModels.REF_DISTR_REPEATS;
+			}
+			double valuesDistr[] = new GUIDistribution(type,dBObject).getValues();
+			dBObject.put("values", valuesDistr);
+		}
+		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS) && 
+				dBObject.containsField("model")) {
+			Double[] valuesConsModel = new GUIConsumptionModel((DBObject) dBObject.get("model")).getValues();
+			dBObject.put("values", valuesConsModel);
+		}
+		return dBObject;
 	}
 
 
+	/**
+	 * 
+	 * @param httpHeaders
+	 * @param coll
+	 * @param data
+	 * @return
+	 */
 	private DBObject addChildrenCounts(HttpHeaders httpHeaders,String coll, DBObject data) {
 		SchemaInfo schemaInfo = MongoSchema.getSchemaInfo(coll);
 		if(schemaInfo != null) {
@@ -1002,7 +1060,7 @@ public class MongoDBQueries {
 				groupCmd.append("cond", condition); 
 			groupCmd.append("$reduce", "function(obj,prev){prev.y+=obj." + yMetric + "}");
 			groupCmd.append("initial",  new BasicDBObject("y",0));
-			System.out.println(groupCmd);
+
 			@SuppressWarnings("deprecation")
 			BasicDBList dbList = (BasicDBList)DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)
 					).getCollection(coll).group(groupCmd);
@@ -1015,7 +1073,7 @@ public class MongoDBQueries {
 			}
 			return jSON2Rrn.createJSONPlot(dbList, "Data for plot retrieved successfully", 
 					"Consumption " + (yMetric.equalsIgnoreCase(REACTIVE_POWER_Q)?"Reactive Power":"Active Power"), 
-					"Time" + aggrUnit, "Watt",aggregationUnit); 
+					"Time" + aggrUnit, "Watt",aggregationUnit,fromTick,toTick); 
 
 		}catch(Exception e) {
 			e.printStackTrace();

@@ -154,7 +154,8 @@ public class JSONtoReturn {
 	 * @return
 	 */
 	public DBObject createJSONPlot(BasicDBList dbObjects, String descr, 
-			String title, String xAxisLabel, String yAxisLabel, int aggrUnit) {
+			String title, String xAxisLabel, String yAxisLabel, 
+			int aggrUnit,Integer fromTick, Integer toTick) {
 		DBObject successMessage = new BasicDBObject();
 		successMessage.put("success", true);
 		successMessage.put("message", descr);
@@ -162,6 +163,8 @@ public class JSONtoReturn {
 		successMessage.put("xAxisLabel", xAxisLabel);
 		successMessage.put("yAxisLabel", yAxisLabel);
 		successMessage.put("aggregationUnit", aggrUnit);
+		successMessage.put("fromTick", (fromTick==null?0:fromTick));
+		successMessage.put("toTick", (toTick==null?dbObjects.size()-1:toTick));
 		successMessage.put("size", dbObjects.size());
 		successMessage.put("data", dbObjects);
 		System.out.println(PrettyJSONPrinter.prettyPrint(successMessage));

@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.server.mongo;
 
 
@@ -29,7 +29,7 @@ public class MongoDistributions {
 
 	public final static String COL_DISTRIBUTIONS = "distributions";
 	public final static String REF_ACTIVITYMODEL = "actmod_id";
-	
+
 
 	/**
 	 * curl -i --data  @distribution.json    --header Content-type:application/json http://localhost:8080/cassandra/api/distr
@@ -49,7 +49,6 @@ public class MongoDistributions {
 	 * @return
 	 */
 	public String getDistribution(HttpHeaders httpHeaders,String id) {
-		System.out.println(id);
 		return new MongoDBQueries().getEntity(httpHeaders,COL_DISTRIBUTIONS,"_id", 
 				id, "Distribution retrieved successfully").toString();
 	}

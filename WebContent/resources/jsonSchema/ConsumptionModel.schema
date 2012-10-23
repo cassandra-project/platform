@@ -71,5 +71,13 @@
             }
         }
     },
+    "values": {
+        "type": "array",
+        "description": "Values of the distribution",
+        "items": {
+        "type": "number"
+        },
+        "optional" : true
+    },
     "additionalProperties" : false
 }
