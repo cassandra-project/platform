@@ -35,9 +35,9 @@ public class GUIDistribution {
 			endValue = 10;
 			break;
 		default:
-			throw new JSONSchemaNotValidException("Invalid distribution type: " + type);
+			throw new JSONSchemaNotValidException("Invalid distr type: " + type);
 		}
-
+distrType = "Normal Distribution";
 		switch(distrType){
 		case "Normal Distribution":
 			double mean = (double)parameters.get("mean");
@@ -69,7 +69,7 @@ public class GUIDistribution {
 			prob = new Histogram(values);
 			break;
 		default:
-			throw new JSONSchemaNotValidException("Invalid distribution type: " + type);
+			throw new JSONSchemaNotValidException("Invalid distribution2 type: " + distrType);
 
 		}
 	}
