@@ -48,8 +48,8 @@ import com.mongodb.util.JSON;
 
 public class MongoDBQueries {
 
-	public final static int ACTIVE_POWER_P = 0;
-	public final static int REACTIVE_POWER_Q = 1;
+	public final static String ACTIVE_POWER_P = "p";
+	public final static String REACTIVE_POWER_Q = "q";
 
 	private JSONtoReturn jSON2Rrn = new JSONtoReturn();
 
@@ -925,12 +925,37 @@ public class MongoDBQueries {
 				throw new RestQueryParamMissingException(
 						"QueryParamMissing: Both run_id and installation_id are null");
 
+			String aggrUnit = " (Minute)";
 			Integer aggregationUnit = null;
-			if(aggregationUnitS != null)
+			if(aggregationUnitS != null) {
 				aggregationUnit = Integer.parseInt(aggregationUnitS);
-			Integer metric = null;
-			if(metricS != null)
-				metric = Integer.parseInt(metricS);
+				aggrUnit = " " + aggregationUnit + " Minute" + (aggregationUnit==1?"":"s") + ")";
+			}
+			if(aggregationUnit == null) {
+				int numberOfDays = Integer.parseInt(DBConn.getConn(runId).
+						getCollection("sim_param").findOne().get("numberOfDays").toString());
+				if(numberOfDays == 1) {
+					aggregationUnit = 5;
+					aggrUnit = " (5 Minutes)";
+				}
+				else if(numberOfDays <= 5) {
+					aggregationUnit = 15;
+					aggrUnit = " (15 Minutes)";
+				}
+				else if(numberOfDays <= 20) {
+					aggregationUnit = 60;
+					aggrUnit = " (1 Hour)";
+				}
+				else if(numberOfDays <= 60) {
+					aggregationUnit = 180;
+					aggrUnit = " (3 Hours)";
+				}
+				else if(numberOfDays <= 360) {
+					aggregationUnit = 720;
+					aggrUnit = " (12 Hours)";
+				}
+			}
+
 			Integer fromTick = null;
 			if(fromTickS != null)
 				fromTick = Integer.parseInt(fromTickS);
@@ -943,9 +968,9 @@ public class MongoDBQueries {
 			if(installationId != null)
 				coll = MongoResults.COL_INSTRESULTS;
 
-			String yMetric = "p";
-			if(metric != null && metric == REACTIVE_POWER_Q)
-				yMetric = "q";
+			String yMetric = ACTIVE_POWER_P;
+			if(metricS != null && metricS.equalsIgnoreCase(REACTIVE_POWER_Q))
+				yMetric = REACTIVE_POWER_Q;
 			//db.inst_results.find({inst_id:"dszfs123",tick:{$gt:1}}).sort({tick:1}).pretty()
 			//db.inst_results.group(
 			//	{
@@ -981,8 +1006,16 @@ public class MongoDBQueries {
 			@SuppressWarnings("deprecation")
 			BasicDBList dbList = (BasicDBList)DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)
 					).getCollection(coll).group(groupCmd);
+
+			if(aggregationUnit > 1) {
+				for(int i=0;i<dbList.size();i++) {
+					BasicDBObject obj = (BasicDBObject)dbList.get(i);
+					obj.put("y", Double.parseDouble(obj.get("y").toString())/aggregationUnit);
+				}
+			}
 			return jSON2Rrn.createJSONPlot(dbList, "Data for plot retrieved successfully", 
-					"title", "xAxisLabel", "yAxisLabel"); 
+					"Consumption " + (yMetric.equalsIgnoreCase(REACTIVE_POWER_Q)?"Reactive Power":"Active Power"), 
+					"Time" + aggrUnit, "Watt",aggregationUnit); 
 
 		}catch(Exception e) {
 			e.printStackTrace();

@@ -1,0 +1,1027 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.cassandra-fp7.eu"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     ontologyIRI="http://www.cassandra-fp7.eu">
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="dc" IRI="http://purl.org/dc/elements/1.1/"/>
+    <Prefix name="gn" IRI="http://www.geonames.org/ontology#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="foaf" IRI="http://xmlns.com/foaf/0.1/"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <Class IRI="foaf:Agent"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Activity"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ActivityModel"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Appliance"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#CSN"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Calendar"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ConsumptionModel"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Demographic"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Distribution"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#EntityLink"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Generator"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Installation"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Library"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#LocationInfo"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#PricingScheme"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Project"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Rate"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Scenario"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Simulation"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#UtilityFunction"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#UtilityModel"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#gn:SpatialThing"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#appliesTo"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#belongsToConsumerGroup"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#belongsToInstallation"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#containsAgent"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#containsAppliance"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasActivity"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasActivityModel"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasCSN"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasCalendar"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasConsumptionModel"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasDSM"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasDemographics"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasDuration"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasEntity"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasGenerator"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasInstallation"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasLocationInfo"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasRate"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasScenario"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasSimulation"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasSpatialThing"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasStartTime"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasSubInstallation"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasUtilityFunction"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasUtilityModel"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#linkFrom"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#linkTo"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#repeatsNrOfTimes"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#belongsToGroup"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#dayOfMonth"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#dayOfWeek"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasDatabaseURI"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasDayType"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasDescription"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasDistributionParameters"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasDistributionType"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasEnergyClass"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasID"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasNegativeFactor"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasNumberOfRuns"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasOntologyURI"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasPositiveFactor"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasProbability"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasStandbyConsumption"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasSteps"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasType"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasUtilityOperation"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasValues"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#isControllable"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#isShiftable"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#linkIsDirected"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#linkType"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#linkWeight"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#month"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#numberOfInstallations"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#rateHasValues"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#rateVariableName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#version"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#year"/>
+    </Declaration>
+    <SubClassOf>
+        <Class IRI="#Activity"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#CSN"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Calendar"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ConsumptionModel"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Demographic"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Distribution"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Generator"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Library"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#LocationInfo"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#PricingScheme"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Rate"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Scenario"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Simulation"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#gn:SpatialThing"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#hasConsumptionModel"/>
+        <ObjectProperty abbreviatedIRI="owl:topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#appliesTo"/>
+        <Class IRI="#PricingScheme"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#belongsToConsumerGroup"/>
+        <Class IRI="foaf:Agent"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#belongsToInstallation"/>
+        <Class IRI="#Installation"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#containsAgent"/>
+        <Class IRI="#Installation"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#containsAppliance"/>
+        <Class IRI="#ActivityModel"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#containsAppliance"/>
+        <Class IRI="#Installation"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasActivity"/>
+        <Class IRI="foaf:Agent"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasActivityModel"/>
+        <Class IRI="#Activity"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasCSN"/>
+        <Class IRI="#Scenario"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasCalendar"/>
+        <Class IRI="#Simulation"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasConsumptionModel"/>
+        <Class IRI="#Appliance"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasDSM"/>
+        <Class IRI="#Scenario"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasDemographics"/>
+        <Class IRI="#Scenario"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasDuration"/>
+        <Class IRI="#ActivityModel"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasEntity"/>
+        <Class IRI="#Generator"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasEntity"/>
+        <Class IRI="#Library"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasGenerator"/>
+        <Class IRI="#Demographic"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasInstallation"/>
+        <Class IRI="#Scenario"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasLocationInfo"/>
+        <Class IRI="#Simulation"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasRate"/>
+        <Class IRI="#PricingScheme"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasScenario"/>
+        <Class IRI="#Project"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasSimulation"/>
+        <Class IRI="#Scenario"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasSpatialThing"/>
+        <Class IRI="#Installation"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasStartTime"/>
+        <Class IRI="#ActivityModel"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasSubInstallation"/>
+        <Class IRI="#Installation"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasUtilityFunction"/>
+        <Class IRI="#UtilityModel"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasUtilityModel"/>
+        <Class IRI="foaf:Agent"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#linkFrom"/>
+        <Class IRI="#EntityLink"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#linkTo"/>
+        <Class IRI="#EntityLink"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#repeatsNrOfTimes"/>
+        <Class IRI="#ActivityModel"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#appliesTo"/>
+        <Class IRI="#CSN"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#appliesTo"/>
+        <Class IRI="#Installation"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#belongsToConsumerGroup"/>
+        <Class IRI="#CSN"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#belongsToInstallation"/>
+        <Class IRI="#Installation"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#containsAgent"/>
+        <Class IRI="foaf:Agent"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#containsAppliance"/>
+        <Class IRI="#Appliance"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasActivity"/>
+        <Class IRI="#Activity"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasActivityModel"/>
+        <Class IRI="#ActivityModel"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasCSN"/>
+        <Class IRI="#CSN"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasCalendar"/>
+        <Class IRI="#Calendar"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasConsumptionModel"/>
+        <Class IRI="#ConsumptionModel"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasDSM"/>
+        <Class IRI="#PricingScheme"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasDemographics"/>
+        <Class IRI="#Demographic"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasDuration"/>
+        <Class IRI="#Distribution"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasEntity"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasGenerator"/>
+        <Class IRI="#Generator"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasInstallation"/>
+        <Class IRI="#Installation"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasLocationInfo"/>
+        <Class IRI="#LocationInfo"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasRate"/>
+        <Class IRI="#Rate"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasScenario"/>
+        <Class IRI="#Scenario"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasSimulation"/>
+        <Class IRI="#Simulation"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasSpatialThing"/>
+        <Class IRI="#gn:SpatialThing"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasStartTime"/>
+        <Class IRI="#Distribution"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasSubInstallation"/>
+        <Class IRI="#Installation"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasUtilityFunction"/>
+        <Class IRI="#UtilityFunction"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasUtilityModel"/>
+        <Class IRI="#UtilityModel"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#repeatsNrOfTimes"/>
+        <Class IRI="#Distribution"/>
+    </ObjectPropertyRange>
+    <DataPropertyDomain>
+        <DataProperty IRI="#belongsToGroup"/>
+        <Class IRI="#Installation"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#dayOfMonth"/>
+        <Class IRI="#Calendar"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#dayOfWeek"/>
+        <Class IRI="#Calendar"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasDatabaseURI"/>
+        <Class IRI="#Project"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasDayType"/>
+        <Class IRI="#ActivityModel"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasDistributionParameters"/>
+        <Class IRI="#Distribution"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasDistributionType"/>
+        <Class IRI="#Distribution"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasEnergyClass"/>
+        <Class IRI="#Appliance"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasID"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasName"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasNegativeFactor"/>
+        <Class IRI="#UtilityModel"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasNumberOfRuns"/>
+        <Class IRI="#Simulation"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasOntologyURI"/>
+        <Class IRI="#Project"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasPositiveFactor"/>
+        <Class IRI="#UtilityModel"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasProbability"/>
+        <Class IRI="#Generator"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasStandbyConsumption"/>
+        <Class IRI="#Appliance"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasSteps"/>
+        <Class IRI="#ConsumptionModel"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasType"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasUtilityOperation"/>
+        <Class IRI="#UtilityModel"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasValues"/>
+        <Class IRI="#Distribution"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#isControllable"/>
+        <Class IRI="#Appliance"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#isShiftable"/>
+        <Class IRI="#ActivityModel"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#isShiftable"/>
+        <Class IRI="#Appliance"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#linkIsDirected"/>
+        <Class IRI="#EntityLink"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#linkType"/>
+        <Class IRI="#EntityLink"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#linkWeight"/>
+        <Class IRI="#EntityLink"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#month"/>
+        <Class IRI="#Calendar"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#numberOfInstallations"/>
+        <Class IRI="#Demographic"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#rateHasValues"/>
+        <Class IRI="#Rate"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#rateVariableName"/>
+        <Class IRI="#Rate"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#version"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#year"/>
+        <Class IRI="#Calendar"/>
+    </DataPropertyDomain>
+    <DataPropertyRange>
+        <DataProperty IRI="#belongsToGroup"/>
+        <Datatype abbreviatedIRI="xsd:long"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#dayOfMonth"/>
+        <Datatype abbreviatedIRI="xsd:long"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#dayOfWeek"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasDatabaseURI"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasDayType"/>
+        <DataOneOf>
+            <Literal datatypeIRI="&rdf;PlainLiteral">nonworking</Literal>
+            <Literal datatypeIRI="&rdf;PlainLiteral">working</Literal>
+        </DataOneOf>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasDescription"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasDistributionParameters"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasDistributionType"/>
+        <DataOneOf>
+            <Literal datatypeIRI="&rdf;PlainLiteral">Gaussian</Literal>
+            <Literal datatypeIRI="&rdf;PlainLiteral">Histogram</Literal>
+            <Literal datatypeIRI="&rdf;PlainLiteral">Mixture of Gaussians</Literal>
+            <Literal datatypeIRI="&rdf;PlainLiteral">Other</Literal>
+            <Literal datatypeIRI="&rdf;PlainLiteral">Uniform</Literal>
+        </DataOneOf>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasEnergyClass"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasID"/>
+        <Datatype abbreviatedIRI="xsd:long"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasName"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasNegativeFactor"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasNumberOfRuns"/>
+        <Datatype abbreviatedIRI="xsd:long"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasOntologyURI"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasPositiveFactor"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasProbability"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasStandbyConsumption"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasSteps"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasType"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasUtilityOperation"/>
+        <DataOneOf>
+            <Literal datatypeIRI="&rdf;PlainLiteral">Copy</Literal>
+        </DataOneOf>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasValues"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#isControllable"/>
+        <Datatype abbreviatedIRI="xsd:boolean"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#isShiftable"/>
+        <Datatype abbreviatedIRI="xsd:boolean"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#linkIsDirected"/>
+        <Datatype abbreviatedIRI="xsd:boolean"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#linkType"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#linkWeight"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#month"/>
+        <Datatype abbreviatedIRI="xsd:long"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#numberOfInstallations"/>
+        <Datatype abbreviatedIRI="xsd:long"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#rateHasValues"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#rateVariableName"/>
+        <DataOneOf>
+            <Literal datatypeIRI="&rdf;PlainLiteral">Daily</Literal>
+            <Literal datatypeIRI="&rdf;PlainLiteral">EnergyConsumption</Literal>
+            <Literal datatypeIRI="&rdf;PlainLiteral">Hourly</Literal>
+            <Literal datatypeIRI="&rdf;PlainLiteral">Monthly</Literal>
+        </DataOneOf>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#version"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#year"/>
+        <Datatype abbreviatedIRI="xsd:long"/>
+    </DataPropertyRange>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>foaf:Agent</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Entity that represents a single (real or equivalent) consumer in Cassandra</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Activity</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Consumer activities. These have a set of  associated activity models (ActivityModel entity) and a set of utility models (UtilityModel entity). These correspond in pairs (hasActivityModel property of UtilityModel and hasUtilityModel property of ActivityModel)</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#ActivityModel</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">An activity model describes how an activity is carried out using a start time distribution and a duration distribution. Each activity model corresponds to a different day type (e.g., working/non-working).
+
+An ActivityModel has an associated UtilityModel entity.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Appliance</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Appliances belong to Installations and consume power when switched on according to a ConsumptionModel.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#CSN</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Consumer Social Network. Represents a consumer group.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Calendar</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Used for defining the simulation days.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#ConsumptionModel</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A ConsumptionModel consists of a number of steps, represented by a structured character string. Refer to the annotation for the &quot;hasSteps&quot; property.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Demographic</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Demographics are used for automatically generating entities according to specific statistics (cardinalities and probabilities).</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Distribution</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A probability distribution represented either in a parametric form or as a histogram.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#EntityLink</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Used for defining arbitrary weighted edges between entities (thus allowing the formation of weighted graphs between instances).</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Generator</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Used by the Demographic class.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Installation</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">In Cassandra, an Installation is the consumption unit for which measurements are available. In that sense, a home is an Installation, an entire commercial building is an installation and a small shop in a commercial building is also an installation.
+
+An Installation contains &lt;foaf:Agent&gt; instances and Appliances. It may also contain subInstallations or it may belong to a group of Installations (which is also an Installation).</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Library</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A collection of re-usable entities</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#LocationInfo</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Provide location metadata for a scenario. This information is currently not affect the way the simulation runs.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#PricingScheme</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A pricing scheme has corresponds to a set of different Rates for pricing energy consumption. It also applies to a consumer group.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Project</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A Cassandra project consists of multiple scenarios.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Rate</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Class for defining pricing rates. These depend on a single parameter at a time (but multiple Rates may apply in a PricingScheme). See the attributes comments for details.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Scenario</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A Scenario consists of a set of entities (e.g., Installations, foaf:Agents, Appliances) and a set of Simulation parameters.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Simulation</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Collection of simulation parameters</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#UtilityFunction</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Utility function is similar to distribution, but its sum may not be 1 and its values may not be in rage 0-1</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#belongsToGroup</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">For specifying group id</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#belongsToInstallation</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Used to describe groups of installations as an Installation</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#gn:SpatialThing</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Provides information about the location of an Installation</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#hasDatabaseURI</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">For storing the unique key of a project in the database</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#hasDistributionParameters</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Depends on the distribution type. To be defined. In any case the parameters will be provided in a predefined structured string format.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#hasDistributionType</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Predefined distribution type.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#hasID</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Must correspond to an ID in the database.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#hasSteps</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Insert the Vector  {NumberOfIterations{Power;DurationOfSteps;Slope;NumberOfIterations}};{NumberOfIterations{Power;DurationOfSteps;Slope;NumberOfIterations}}....
+(-1 is for infine)
+e.g.:
+{5{100.4;4;0.2;3},{20.5;3;1}};{1{40.2;2;0.3},{40.5;3;-1}}
+
+The inner brackets represent step functions. The outer brackets represent cycles. The cycles are consequtively executed, after they have been repeated NumberOfIterations times.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#hasValues</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">e.g.:
+{0.1;0.2;0.4;0.3}
+
+These values correspond to a histogram of a pdf.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#isControllable</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">An appliance is controllable if the operation point can change as a result of application of a  DSM scheme. For example, the AC level may change and the AC is therefore controllable. However, even if the oven scale may change, an oven is not controllable since it needs to be at a specific scale in order to cook successfully.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#isShiftable</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">The appliance can be switched on at a different time as a result of application of a DSM scheme.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#linkIsDirected</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">For directed/undirected graphs.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#linkTo</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">For directed graphs.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#rateHasValues</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">{(X1,Y1),(X2,Y2),...}
+
+These define a set of levels of price y wrt variable x. The pairs above mean that y = Y1 for X1 &lt;= x &lt; X2 etc.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#rateVariableName</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Name of the x-axis variable in the rate function</Literal>
+    </AnnotationAssertion>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.3.1957) http://owlapi.sourceforge.net -->
+
