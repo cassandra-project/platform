@@ -26,7 +26,7 @@ import com.mongodb.DBObject;
 
 import eu.cassandra.server.mongo.MongoActivities;
 import eu.cassandra.sim.Event;
-import eu.cassandra.sim.SimulationWorld;
+import eu.cassandra.sim.SimulationParams;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.math.ProbabilityDistribution;
@@ -41,7 +41,7 @@ public class Activity extends Entity {
 	private final HashMap<String, ProbabilityDistribution> probDuration;
 	private HashMap<String, Vector<Appliance>> appliances;
 	private HashMap<String, Vector<Double>> probApplianceUsed;
-	private SimulationWorld simulationWorld;
+	private SimulationParams simulationWorld;
 	
 	private Vector<DBObject> activityModels;
 	private Vector<DBObject> starts;
@@ -63,9 +63,9 @@ public class Activity extends Entity {
 		private Vector<DBObject> starts;
 		private Vector<DBObject> durations;
 		private Vector<DBObject> times;
-		private SimulationWorld simulationWorld;
+		private SimulationParams simulationWorld;
 
-		public Builder (String aname, String adesc, String atype, SimulationWorld world) {
+		public Builder (String aname, String adesc, String atype, SimulationParams world) {
 			name = aname;
 			description = adesc;
 			type = atype;
@@ -186,7 +186,7 @@ public class Activity extends Entity {
 		return type;
 	}
 
-	public SimulationWorld getSimulationWorld () {
+	public SimulationParams getSimulationWorld () {
 		return simulationWorld;
 	}
 

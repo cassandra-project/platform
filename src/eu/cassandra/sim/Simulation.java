@@ -69,7 +69,7 @@ public class Simulation implements Runnable {
   
 	private MongoResults m;
 
-	private SimulationWorld simulationWorld;
+	private SimulationParams simulationWorld;
 	
 	private String scenario;
 	
@@ -99,7 +99,7 @@ public class Simulation implements Runnable {
   		RNG.init();
 	}
   
-  	public SimulationWorld getSimulationWorld () {
+  	public SimulationParams getSimulationWorld () {
   		return simulationWorld;
   	}
 
@@ -173,7 +173,7 @@ public class Simulation implements Runnable {
   		installations = new Vector<Installation>();
     
   		/* TODO  Change the Simulation Calendar initialization */
-  		simulationWorld = new SimulationWorld();
+  		simulationWorld = new SimulationParams();
     
   		DBObject jsonScenario = (DBObject) JSON.parse(scenario);
   		DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
