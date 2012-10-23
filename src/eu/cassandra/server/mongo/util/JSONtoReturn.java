@@ -50,10 +50,10 @@ public class JSONtoReturn {
 		String errorDescr = ex;
 		if(ex.matches("(\\S)+:(\\s)(.)*")) {
 			String d[] = ex.split(": ",2);
-			error = d[0];
+			error = d[0].replace("$.", "");
 			errorDescr = d[1];
 		}
-		errorMessage.put("exception", new BasicDBObject(error,errorDescr));
+		errorMessage.put("errors", new BasicDBObject(error,errorDescr));
 		errorMessage.put("message", data);
 		return errorMessage;
 	}
