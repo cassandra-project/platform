@@ -23,6 +23,7 @@ import javax.ws.rs.core.HttpHeaders;
 
 import org.bson.types.ObjectId;
 
+import eu.cassandra.server.api.exceptions.JSONSchemaNotValidException;
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
@@ -38,6 +39,7 @@ import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.MongoSimParam;
+import eu.cassandra.sim.math.GUIDistribution;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -406,7 +408,7 @@ public class MongoDBQueries {
 			throw new MongoRefNotFoundException("RefNotFound: Cannot get internal entity " +  entityName + 
 					" with cid=" + cid + " from collection: " + coll);
 		}catch(Exception e) {
-			return jSON2Rrn.createJSONError("Cannot get internal entity " +  entityName + 
+			return jSON2Rrn.createJSONError("GetInternalEntityError: Cannot get internal entity " +  entityName + 
 					" with cid=" + cid + " from collection: " + coll, e);
 		}
 	}
@@ -440,48 +442,88 @@ public class MongoDBQueries {
 	public DBObject executeFindQuery(HttpHeaders httpHeaders,String collection, 
 			DBObject dbObj1, DBObject dbObj2, String successMsg,
 			String sort, int limit, int skip, boolean count) {
-		DBCursor cursorDoc = null;
-		if(count) {
-			BasicDBObject dbObject = new BasicDBObject(); 
-			dbObject.put("count", DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-					getCollection(collection).find(dbObj1).count());
-			return 	 jSON2Rrn.createJSON(dbObject, successMsg);
-		}
-		else {
-			if(dbObj2 == null) {
-				cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-						getCollection(collection).find(dbObj1);
+		try {
+			DBCursor cursorDoc = null;
+			if(count) {
+				BasicDBObject dbObject = new BasicDBObject(); 
+				dbObject.put("count", DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+						getCollection(collection).find(dbObj1).count());
+				return 	 jSON2Rrn.createJSON(dbObject, successMsg);
 			}
 			else {
-				cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
-						getCollection(collection).find(dbObj1,dbObj2);
+				if(dbObj2 == null) {
+					cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+							getCollection(collection).find(dbObj1);
+				}
+				else {
+					cursorDoc = DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).
+							getCollection(collection).find(dbObj1,dbObj2);
+				}
 			}
-		}
-		if(sort != null)	{
-			try{
-				DBObject sortObj = (DBObject)JSON.parse(sort);
-				cursorDoc = cursorDoc.sort(sortObj);
-			}catch(Exception e) {
-				return jSON2Rrn.createJSONError("Error in filtering JSON sorting object: " + sort, e);
+			if(sort != null)	{
+				try{
+					DBObject sortObj = (DBObject)JSON.parse(sort);
+					cursorDoc = cursorDoc.sort(sortObj);
+				}catch(Exception e) {
+					return jSON2Rrn.createJSONError("Error in filtering JSON sorting object: " + sort, e);
+				}
 			}
-		}
-		if(skip != 0)
-			cursorDoc =	cursorDoc.skip(skip);
-		if(limit != 0)
-			cursorDoc =	cursorDoc.limit(limit);
+			if(skip != 0)
+				cursorDoc =	cursorDoc.skip(skip);
+			if(limit != 0)
+				cursorDoc =	cursorDoc.limit(limit);
 
-		Vector<DBObject> recordsVec = new Vector<DBObject>();
-		while (cursorDoc.hasNext()) {
-			DBObject obj = cursorDoc.next();
-			if(obj.containsField("_id"))
-				obj = addChildrenCounts(httpHeaders,collection, obj);
-			recordsVec.add(obj);
+			Vector<DBObject> recordsVec = new Vector<DBObject>();
+			while (cursorDoc.hasNext()) {
+				DBObject obj = cursorDoc.next();
+				if(collection.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS) &&
+						dbObj1.containsField("_id")) {
+					obj = getDistributionValues(obj,httpHeaders,obj.get("_id").toString());
+				}
+				if(obj.containsField("_id"))
+					obj = addChildrenCounts(httpHeaders,collection, obj);
+				recordsVec.add(obj);
+			}
+			cursorDoc.close();
+			return jSON2Rrn.createJSON(recordsVec,successMsg);
 		}
-		cursorDoc.close();
-		return jSON2Rrn.createJSON(recordsVec,successMsg);
+		catch(Exception e) {
+			return jSON2Rrn.createJSONError("MongoQueryError: Cannot execute find query for collection: " + collection + 
+					" with qKey=" + dbObj1 + " and qValue=" + dbObj2,e);
+		}
+	}
+
+	/**
+	 * 
+	 * @param dBObject
+	 * @param httpHeaders
+	 * @param id
+	 * @return
+	 * @throws JSONSchemaNotValidException 
+	 */
+	private DBObject getDistributionValues(DBObject dBObject, HttpHeaders httpHeaders,String id) throws JSONSchemaNotValidException {
+		String type = MongoActivityModels.REF_DISTR_STARTTIME ;
+		if(DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
+				findOne(new BasicDBObject("duration._id",new ObjectId(id) )) != null) {
+			type = MongoActivityModels.REF_DISTR_DURATION;
+		}
+		else if (DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
+				findOne(new BasicDBObject("repeatsNrOfTime._id",new ObjectId(id))) != null) {
+			type = MongoActivityModels.REF_DISTR_REPEATS;
+		}
+		double values[] = new GUIDistribution(type,dBObject).getValues();
+		dBObject.put("values", values);
+		return dBObject;
 	}
 
 
+	/**
+	 * 
+	 * @param httpHeaders
+	 * @param coll
+	 * @param data
+	 * @return
+	 */
 	private DBObject addChildrenCounts(HttpHeaders httpHeaders,String coll, DBObject data) {
 		SchemaInfo schemaInfo = MongoSchema.getSchemaInfo(coll);
 		if(schemaInfo != null) {
