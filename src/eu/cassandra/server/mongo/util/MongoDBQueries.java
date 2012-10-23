@@ -925,9 +925,37 @@ public class MongoDBQueries {
 				throw new RestQueryParamMissingException(
 						"QueryParamMissing: Both run_id and installation_id are null");
 
+			String aggrUnit = " (Minute)";
 			Integer aggregationUnit = null;
-			if(aggregationUnitS != null)
+			if(aggregationUnitS != null) {
 				aggregationUnit = Integer.parseInt(aggregationUnitS);
+				aggrUnit = " " + aggregationUnit + " Minute" + (aggregationUnit==1?"":"s") + ")";
+			}
+			if(aggregationUnit == null) {
+				int numberOfDays = Integer.parseInt(DBConn.getConn(runId).
+						getCollection("sim_param").findOne().get("numberOfDays").toString());
+				if(numberOfDays == 1) {
+					aggregationUnit = 5;
+					aggrUnit = " (5 Minutes)";
+				}
+				else if(numberOfDays <= 5) {
+					aggregationUnit = 15;
+					aggrUnit = " (15 Minutes)";
+				}
+				else if(numberOfDays <= 20) {
+					aggregationUnit = 60;
+					aggrUnit = " (1 Hour)";
+				}
+				else if(numberOfDays <= 60) {
+					aggregationUnit = 180;
+					aggrUnit = " (3 Hours)";
+				}
+				else if(numberOfDays <= 360) {
+					aggregationUnit = 720;
+					aggrUnit = " (12 Hours)";
+				}
+			}
+
 			Integer fromTick = null;
 			if(fromTickS != null)
 				fromTick = Integer.parseInt(fromTickS);
@@ -978,8 +1006,16 @@ public class MongoDBQueries {
 			@SuppressWarnings("deprecation")
 			BasicDBList dbList = (BasicDBList)DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)
 					).getCollection(coll).group(groupCmd);
+
+			if(aggregationUnit > 1) {
+				for(int i=0;i<dbList.size();i++) {
+					BasicDBObject obj = (BasicDBObject)dbList.get(i);
+					obj.put("y", Double.parseDouble(obj.get("y").toString())/aggregationUnit);
+				}
+			}
 			return jSON2Rrn.createJSONPlot(dbList, "Data for plot retrieved successfully", 
-					"title", "xAxisLabel", "yAxisLabel"); 
+					"Consumption " + (yMetric.equalsIgnoreCase(REACTIVE_POWER_Q)?"Reactive Power":"Active Power"), 
+					"Time" + aggrUnit, "Watt",aggregationUnit); 
 
 		}catch(Exception e) {
 			e.printStackTrace();
