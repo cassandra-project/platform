@@ -24,6 +24,7 @@ Ext.define('C.view.Viewport', {
 		'C.view.ProjectForm',
 		'C.view.PersonForm',
 		'C.view.ActivityForm',
+		'C.view.ResultsGraphForm',
 		'C.view.SimulationParamsForm',
 		'C.view.InstallationForm',
 		'C.view.ApplianceForm',
@@ -32,6 +33,7 @@ Ext.define('C.view.Viewport', {
 		'C.view.DistributionForm',
 		'C.view.DynamicGrid',
 		'C.view.MyViewport',
-		'C.view.TypesPieChart'
+		'C.view.TypesPieChart',
+		'C.view.ResultsLineChart'
 	]
 });

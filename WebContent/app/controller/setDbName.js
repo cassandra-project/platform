@@ -18,6 +18,15 @@ Ext.define('C.controller.setDbName', {
 
 	init: function(application) {
 		C.dbname = window.location.hash.replace('#','');
+		Ext.util.Observable.observe(Ext.data.proxy.Rest);
+		Ext.data.proxy.Rest.on('exception', function(server, response,operation) {
+			var errors = Ext.JSON.decode(response.responseText).errors;
+			Ext.MessageBox.alert('Error', JSON.stringify(errors)); 
+		});
+		/*Ext.util.Observable.observe(Ext.form.Panel);
+		Ext.form.Panel.on('beforerender', function(this,eOpts) {
+		this.
+		});*/
 	}
 
 });
