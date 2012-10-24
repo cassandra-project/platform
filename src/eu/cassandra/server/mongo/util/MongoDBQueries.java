@@ -984,34 +984,38 @@ public class MongoDBQueries {
 						"QueryParamMissing: Both run_id and installation_id are null");
 
 			String aggrUnit = " (Minute)";
+			String defaultAggrUnit = " (Minute)";
 			Integer aggregationUnit = null;
+			Integer defaultAggregationUnit = null;
 			if(aggregationUnitS != null) {
 				aggregationUnit = Integer.parseInt(aggregationUnitS);
 				aggrUnit = " " + aggregationUnit + " Minute" + (aggregationUnit==1?"":"s") + ")";
 			}
+			int numberOfDays = Integer.parseInt(DBConn.getConn(runId).
+					getCollection("sim_param").findOne().get("numberOfDays").toString());
+			if(numberOfDays == 1) {
+				defaultAggregationUnit = 5;
+				defaultAggrUnit = " (5 Minutes)";
+			}
+			else if(numberOfDays <= 5) {
+				defaultAggregationUnit = 15;
+				defaultAggrUnit = " (15 Minutes)";
+			}
+			else if(numberOfDays <= 20) {
+				defaultAggregationUnit = 60;
+				defaultAggrUnit = " (1 Hour)";
+			}
+			else if(numberOfDays <= 60) {
+				defaultAggregationUnit = 180;
+				defaultAggrUnit = " (3 Hours)";
+			}
+			else if(numberOfDays <= 360) {
+				defaultAggregationUnit = 720;
+				defaultAggrUnit = " (12 Hours)";
+			}
 			if(aggregationUnit == null) {
-				int numberOfDays = Integer.parseInt(DBConn.getConn(runId).
-						getCollection("sim_param").findOne().get("numberOfDays").toString());
-				if(numberOfDays == 1) {
-					aggregationUnit = 5;
-					aggrUnit = " (5 Minutes)";
-				}
-				else if(numberOfDays <= 5) {
-					aggregationUnit = 15;
-					aggrUnit = " (15 Minutes)";
-				}
-				else if(numberOfDays <= 20) {
-					aggregationUnit = 60;
-					aggrUnit = " (1 Hour)";
-				}
-				else if(numberOfDays <= 60) {
-					aggregationUnit = 180;
-					aggrUnit = " (3 Hours)";
-				}
-				else if(numberOfDays <= 360) {
-					aggregationUnit = 720;
-					aggrUnit = " (12 Hours)";
-				}
+				aggregationUnit = defaultAggregationUnit;
+				aggrUnit = defaultAggrUnit;
 			}
 
 			Integer fromTick = null;
@@ -1073,7 +1077,7 @@ public class MongoDBQueries {
 			}
 			return jSON2Rrn.createJSONPlot(dbList, "Data for plot retrieved successfully", 
 					"Consumption " + (yMetric.equalsIgnoreCase(REACTIVE_POWER_Q)?"Reactive Power":"Active Power"), 
-					"Time" + aggrUnit, "Watt",aggregationUnit,fromTick,toTick); 
+					"Time" + aggrUnit, "Watt",defaultAggregationUnit,numberOfDays); 
 
 		}catch(Exception e) {
 			e.printStackTrace();

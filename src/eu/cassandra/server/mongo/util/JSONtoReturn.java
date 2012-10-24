@@ -155,22 +155,20 @@ public class JSONtoReturn {
 	 */
 	public DBObject createJSONPlot(BasicDBList dbObjects, String descr, 
 			String title, String xAxisLabel, String yAxisLabel, 
-			int aggrUnit,Integer fromTick, Integer toTick) {
+			int defaultAggrUnit,Integer numberOfDays) {
 		DBObject successMessage = new BasicDBObject();
 		successMessage.put("successv", true);
 		successMessage.put("message", descr);
 		successMessage.put("title", title);
 		successMessage.put("xAxisLabel", xAxisLabel);
 		successMessage.put("yAxisLabel", yAxisLabel);
-		successMessage.put("aggregationUnit", aggrUnit);
-		successMessage.put("fromTick", (fromTick==null?0:fromTick));
-		successMessage.put("toTick", (toTick==null?dbObjects.size()-1:toTick));
+		successMessage.put("aggregationUnit", defaultAggrUnit);
+		successMessage.put("numberOfDays", numberOfDays);
 		successMessage.put("size", dbObjects.size());
 		successMessage.put("data", dbObjects);
 		System.out.println(PrettyJSONPrinter.prettyPrint(successMessage));
 		return successMessage;
 	}
-
 
 	/**
 	 * 
