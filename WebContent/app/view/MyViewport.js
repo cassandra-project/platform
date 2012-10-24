@@ -31,7 +31,12 @@ Ext.define('C.view.MyViewport', {
 					id: 'MainTabPanel',
 					itemId: 'MainTabPanel',
 					closable: false,
-					activeTab: 0
+					listeners: {
+						add: {
+							fn: me.onMainTabPanelAdd,
+							scope: me
+						}
+					}
 				},
 				{
 					xtype: 'treepanel',
@@ -173,6 +178,19 @@ Ext.define('C.view.MyViewport', {
 		me.callParent(arguments);
 	},
 
+	onMainTabPanelAdd: function(abstractcontainer, component, index, options) {
+		if (C.dbname) {
+			this.query('.button').forEach(function(c){if (c.xtype!='tab')c.disabled = true;});
+			this.query('.field').forEach(function(c){c.readOnly = true;});
+			/*this.query('.grid').forEach(function(c){
+			c.view.plugins.forEach(function(plugin){
+			if (plugin.ptype == 'gridviewdragdrop')
+			plugin.disable();
+			});
+			});*/
+		}
+	},
+
 	onTreedragdroppluginBeforeDrop: function(node, data, overModel, dropPosition, dropFunction, options) {
 		console.info('Before node drop.', this, node, data, overModel, dropPosition, dropFunction, options);
 		// TODO Rename ALL the collections to itemCollection instead of itemsCollection
@@ -189,52 +207,52 @@ Ext.define('C.view.MyViewport', {
 			// TODO Epic SWITCH-CASE statement goes here to get the *_id key for the parent.
 			// 		ex. scenario_id in the Installation case.
 			// TODO Move this epic thigie to each model as config?
-			if (1==2) {
-				var parent_idKey = '';
-				switch(record.raw.nodeType){
-					case 'Scenario': parent_idKey = 'project_id'; break;
-					case 'SimulationParam': parent_idKey = 'scn_id'; break;
-					case 'Installation': parent_idKey = 'scenario_id'; break;
-					case 'Person': parent_idKey = 'inst_id'; break;
-					case 'Appliance': parent_idKey = 'inst_id'; break;
-					case 'Activity': parent_idKey = 'pers_id'; break;
-					case 'ActivityModel': parent_idKey = 'act_id'; break;
-					case 'ConsumptionModel': parent_idKey = 'app_id'; break;
-					default: return false;
-				}
-				//var recordRawData = node.data;
-				var recordRawData = JSON.parse(JSON.stringify(node.data));
-				delete recordRawData._id;
-				//delete recordRawData._id;
-				// TODO Make damn sure that parentId actually exists all around.
-				recordRawData[parent_idKey] = overModel.data.parentId; 
-				overModel.c.store.add(recordRawData);
-				dropFunction.cancelDrop();
+			//if (1==2) {
+			var parent_idKey = '';
+			switch(record.raw.nodeType){
+				case 'Scenario': parent_idKey = 'project_id'; break;
+				case 'SimulationParam': parent_idKey = 'scn_id'; break;
+				case 'Installation': parent_idKey = 'scenario_id'; break;
+				case 'Person': parent_idKey = 'inst_id'; break;
+				case 'Appliance': parent_idKey = 'inst_id'; break;
+				case 'Activity': parent_idKey = 'pers_id'; break;
+				case 'ActivityModel': parent_idKey = 'act_id'; break;
+				case 'ConsumptionModel': parent_idKey = 'app_id'; break;
+				default: return false;
 			}
+			//var recordRawData = node.data;
+			var recordRawData = JSON.parse(JSON.stringify(node.data));
+			delete recordRawData._id;
+			//delete recordRawData._id;
+			// TODO Make damn sure that parentId actually exists all around.
+			recordRawData[parent_idKey] = overModel.data.parentId; 
+			overModel.c.store.add(recordRawData);
+			dropFunction.cancelDrop();
+			/*}
 			else {
-				data.copy = true;
-				var targetID = '';
-				var meId = '';
-				switch(record.raw.nodeType){
-					case 'Scenario': targetID = 'PrjID'; meID = 'scnID';break;
-					case 'SimulationParam': targetID = 'ScnID'; meID = 'smpID'; break;
-					case 'Installation': targetID = 'ScnID'; meID = 'instID'; break;
-					case 'Person': targetID = 'InstID'; meID = 'persID'; break;
-					case 'Appliance': targetID = 'InstID'; meID = 'appID'; break;
-					case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
-					case 'ActivityModel': targetID = 'ActID'; meID = 'actmodID'; break;
-					case 'ConsumptionModel': targetID = 'AppID'; meID = 'consmodID'; break;
-					default: return false;
-				}
-				Ext.Ajax.request({
-					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&to'+ targetID+'='+overModel.data.parentId,
-					method: 'POST',
-					scope: this,
-					success: function(response, opts) {	
-						this.store.load();
-					}
-				});
+			data.copy = true;
+			var targetID = '';
+			var meId = '';
+			switch(record.raw.nodeType){
+			case 'Scenario': targetID = 'PrjID'; meID = 'scnID';break;
+			case 'SimulationParam': targetID = 'ScnID'; meID = 'smpID'; break;
+			case 'Installation': targetID = 'ScnID'; meID = 'instID'; break;
+			case 'Person': targetID = 'InstID'; meID = 'persID'; break;
+			case 'Appliance': targetID = 'InstID'; meID = 'appID'; break;
+			case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
+			case 'ActivityModel': targetID = 'ActID'; meID = 'actmodID'; break;
+			case 'ConsumptionModel': targetID = 'AppID'; meID = 'consmodID'; break;
+			default: return false;
 			}
+			Ext.Ajax.request({
+			url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&to'+ targetID+'='+overModel.data.parentId,
+			method: 'POST',
+			scope: this,
+			success: function(response, opts) {	
+			this.store.load();
+			}
+			});
+			}*/
 		}else{
 			return false;
 		}
@@ -285,6 +303,7 @@ Ext.define('C.view.MyViewport', {
 	onUiNavigationTreePanelBeforeRender: function(abstractcomponent, options) {
 		console.info('Before render treepanel.', this, abstractcomponent, options);
 
+
 		abstractcomponent.on('nodedragover', function(dragEvent) {
 			dragEvent.cancel = true;
 		});
@@ -313,6 +332,7 @@ Ext.define('C.view.MyViewport', {
 						fakeChildren: true,
 						draggable: false
 					});
+					if(!C.dbname)
 					record.appendChild({
 						name: 'Runs',
 						nodeType: 'RunsCollection',
@@ -372,6 +392,19 @@ Ext.define('C.view.MyViewport', {
 						fakeChildren: true,
 						draggable: false
 					});
+					var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.raw.nodeId);
+					var dataRecord = Ext.getStore(record.raw.nodeStoreId).getAt(index);
+					if (dataRecord.get('setup') == 'dynamic') {
+						record.appendChild({
+							name: 'Demographics',
+							nodeType: 'DemographicsCollection',
+							expanded: false,
+							leaf: false,
+							expandable: true,
+							fakeChildren: true,
+							draggable: false
+						});
+					}
 					break;
 					case 'SimulationParamsCollection':
 					//record.removeAll();
@@ -398,8 +431,21 @@ Ext.define('C.view.MyViewport', {
 							scn_id: record.parentNode.get('nodeId')
 						}
 					});
-					//Ext.getCmp('MainTabPanel').add(new C.view.InstallationsGrid({store: record.c.store}));
 					break;
+					case 'DemographicsCollection':
+					//record.removeAll();
+					console.info('Creating store for Demographics.');
+					record.c.store = new C.store.Demographics({
+						storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
+						navigationNode: record
+					});
+					record.c.store.load({
+						params: {
+							scn_id: record.parentNode.get('nodeId')
+						}
+					});
+					break;
+					//Ext.getCmp('MainTabPanel').add(new C.view.InstallationsGrid({store: record.c.store}));
 					case 'Installation':
 					//record.removeAll();
 					console.info('Creating dummy nodes for installation.');

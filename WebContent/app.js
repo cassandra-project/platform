@@ -29,7 +29,9 @@ Ext.application({
 		'ConsumptionModel',
 		'SimulationParam',
 		'Run',
-		'Distribution'
+		'Distribution',
+		'Demographic',
+		'DemographicEntity'
 	],
 	stores: [
 		'Projects',
@@ -51,7 +53,9 @@ Ext.application({
 		'EnergyClassStore',
 		'PersonTypesStore',
 		'ApplianceTypesStore',
-		'SeasonsStore'
+		'SeasonsStore',
+		'Demographics',
+		'DemographicEntities'
 	],
 	views: [
 		'MyViewport',
@@ -66,10 +70,15 @@ Ext.application({
 		'SimulationParamsForm',
 		'ActmodPropertiesForm',
 		'TypesPieChart',
-		'ProjectForm'
+		'ProjectForm',
+		'DemographicForm',
+		'EntitiesGrid'
 	],
 	autoCreateViewport: true,
 	name: 'C',
+	controllers: [
+		'setDbName'
+	],
 
 	createForm: function(record) {
 		record.expand();//basic in order to be rendered
@@ -132,6 +141,16 @@ Ext.application({
 					cur_record = record.parentNode.c.store.getById(record.get('id'));
 					myForm = C.app.getSimulationParamsForm(cur_record);
 					break;
+					case 'Demographic':
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					myForm = C.app.getDemographicForm(cur_record);
+					break;
+					case 'Run':
+					cur_record = record.parentNode.c.store.getById(record.get('id'));
+					if (cur_record.get('percentage') == 100) C.app.newRunWindow(cur_record);
+					return false;
+					default:
+					return false;
 				}
 
 				cmpToAdd = myForm;
@@ -199,6 +218,12 @@ Ext.application({
 					break;
 					case 'SimulationParamsCollection':
 					childNode.c.store = new C.store.SimulationParams({
+						storeId: childNode.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
+						navigationNode: childNode
+					});
+					break;
+					case 'DemographicsCollection':
+					childNode.c.store = new C.store.Demographics({
 						storeId: childNode.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
 						navigationNode: childNode
 					});
@@ -391,7 +416,10 @@ Ext.application({
 	},
 
 	launch: function() {
+		this.dbname = window.location.hash.replace('#','');
 		C.app = this;
+
+		//C.dbname = window.location.hash.replace('#','');
 	},
 
 	getInstallationForm: function(record) {
@@ -635,6 +663,46 @@ Ext.application({
 
 		console.info(record);
 		return myFormCmp;
+	},
+
+	newRunWindow: function(record) {
+		var url = document.URL+'#'+record.get('_id');
+		var wname = 'cassandra';
+		var wfeatures = 'menubar=yes,resizable=yes,scrollbars=yes,status=yes,location=yes';
+		var win = window.open(url,wname,wfeatures);
+
+
+	},
+
+	getDemographicForm: function(record) {
+		var myFormCmp = new C.view.DemographicForm({});
+		var myForm = myFormCmp.getForm();
+		myForm.loadRecord(record);
+
+		/*var gridStore =  new C.store.DemographicEntities();
+		gridStore.loadData(record.get('generators'));*/
+		var demoGrid = new C.view.EntitiesGrid();
+		demoGrid.store.loadData(record.get('generators'));
+		demoGrid.scenarioId = record.node.parentNode.parentNode.get('nodeId');
+		/*store = gridStore,
+		fields = store.getProxy().getModel().getFields(),
+		cols = [];
+
+
+		// Create columns for new store
+		Ext.Array.forEach(fields, function (f) {
+			cols.push({
+				header: f.name,
+				dataIndex: f.name,
+				hidden: false//(f.type.type == 'auto') ? true : false
+			});
+		});
+
+		demoGrid.reconfigure(store, cols); */
+
+		myFormCmp.items.items[0].getComponent('entitiesFieldset').insert(1,demoGrid);
+		return myFormCmp;
+
 	}
 
 });

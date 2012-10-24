@@ -36,7 +36,7 @@ public class JSONtoReturn {
 	public DBObject createJSONError(String data, Exception ex) {
 		return  createJSONError(data, ex.getMessage() );
 	}
-	
+
 	/**
 	 * 
 	 * @param data
@@ -93,26 +93,26 @@ public class JSONtoReturn {
 		return postSuccessMessage;
 	}
 
-//	/**
-//	 * 
-//	 * @param cursorDoc
-//	 * @param descr
-//	 * @return
-//	 */
-//	public DBObject createJSON(DBCursor cursorDoc, String descr) {
-//		DBObject successMessage = new BasicDBObject();
-//		successMessage.put("success", true);
-//		successMessage.put("message", descr + ((cursorDoc.size()==0)?" (No data were found though)":""));
-//		successMessage.put("size", cursorDoc.size());
-//		Vector<DBObject> recordsVec = new Vector<DBObject>();
-//		while (cursorDoc.hasNext()) {
-//			DBObject obj = cursorDoc.next();
-//			recordsVec.add(changeObjectIdToString(obj));
-//		}
-//		cursorDoc.close();
-//		successMessage.put("data", recordsVec);
-//		return successMessage;
-//	}
+	//	/**
+	//	 * 
+	//	 * @param cursorDoc
+	//	 * @param descr
+	//	 * @return
+	//	 */
+	//	public DBObject createJSON(DBCursor cursorDoc, String descr) {
+	//		DBObject successMessage = new BasicDBObject();
+	//		successMessage.put("success", true);
+	//		successMessage.put("message", descr + ((cursorDoc.size()==0)?" (No data were found though)":""));
+	//		successMessage.put("size", cursorDoc.size());
+	//		Vector<DBObject> recordsVec = new Vector<DBObject>();
+	//		while (cursorDoc.hasNext()) {
+	//			DBObject obj = cursorDoc.next();
+	//			recordsVec.add(changeObjectIdToString(obj));
+	//		}
+	//		cursorDoc.close();
+	//		successMessage.put("data", recordsVec);
+	//		return successMessage;
+	//	}
 
 	/**
 	 * 
@@ -154,15 +154,20 @@ public class JSONtoReturn {
 	 * @return
 	 */
 	public DBObject createJSONPlot(BasicDBList dbObjects, String descr, 
-			String title, String xAxisLabel, String yAxisLabel) {
+			String title, String xAxisLabel, String yAxisLabel, 
+			int aggrUnit,Integer fromTick, Integer toTick) {
 		DBObject successMessage = new BasicDBObject();
 		successMessage.put("success", true);
 		successMessage.put("message", descr);
 		successMessage.put("title", title);
 		successMessage.put("xAxisLabel", xAxisLabel);
 		successMessage.put("yAxisLabel", yAxisLabel);
+		successMessage.put("aggregationUnit", aggrUnit);
+		successMessage.put("fromTick", (fromTick==null?0:fromTick));
+		successMessage.put("toTick", (toTick==null?dbObjects.size()-1:toTick));
 		successMessage.put("size", dbObjects.size());
 		successMessage.put("data", dbObjects);
+		System.out.println(PrettyJSONPrinter.prettyPrint(successMessage));
 		return successMessage;
 	}
 

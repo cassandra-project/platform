@@ -46,6 +46,12 @@
                         "type": "string",
                         "description": "The appliance the value refers to"
                     },
+                    "entity_type" : {
+                        "type": "string",
+                        "description": "The type of the entity: appliance, person, installation",
+                        "optional" : true,
+                        "enum" : ["appliance","person","installation"]
+                    },
                     "probability" : {
                         "type": "number",
                         "description": "The probability of appearance for this appliance"

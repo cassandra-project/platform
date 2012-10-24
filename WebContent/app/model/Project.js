@@ -33,11 +33,13 @@ Ext.define('C.model.Project', {
 		{
 			name: 'scenarios',
 			mapping: 'scenarios_counter',
+			persist: false,
 			type: 'int'
 		},
 		{
 			name: 'runs',
 			mapping: 'runs_counter',
+			persist: false,
 			type: 'int'
 		}
 	]

@@ -46,6 +46,10 @@ Ext.define('C.store.ConsumptionModels', {
 				datachanged: {
 					fn: me.onJsonstoreDataChangeD,
 					scope: me
+				},
+				beforeload: {
+					fn: me.onJsonstoreBeforeLoad,
+					scope: me
 				}
 			}
 		}, cfg)]);
@@ -55,6 +59,10 @@ Ext.define('C.store.ConsumptionModels', {
 		console.info('ConsumptionModel data changed.', abstractstore, options);
 		var store = abstractstore;
 
+	},
+
+	onJsonstoreBeforeLoad: function(store, operation, options) {
+		if (C.dbname) this.proxy.headers = {"dbname": C.dbname};
 	}
 
 });

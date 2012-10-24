@@ -40,6 +40,7 @@ Ext.define('C.model.Activity', {
 		{
 			name: 'activityModels',
 			mapping: 'act_models_counter',
+			persist: false,
 			type: 'int'
 		}
 	]
