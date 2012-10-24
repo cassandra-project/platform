@@ -157,7 +157,7 @@ public class JSONtoReturn {
 			String title, String xAxisLabel, String yAxisLabel, 
 			int aggrUnit,Integer fromTick, Integer toTick) {
 		DBObject successMessage = new BasicDBObject();
-		successMessage.put("success", true);
+		successMessage.put("successv", true);
 		successMessage.put("message", descr);
 		successMessage.put("title", title);
 		successMessage.put("xAxisLabel", xAxisLabel);
