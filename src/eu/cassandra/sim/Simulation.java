@@ -231,7 +231,7 @@ public class Simulation implements Runnable {
 	    		existing.put(appid, app);
 	    		inst.addAppliance(app);
 	    	}
-	    	DBObject personDoc = (DBObject)instDoc.get("person");
+	    	DBObject personDoc = (DBObject)instDoc.get("person1");
 	    	String personid = ((ObjectId)personDoc.get("_id")).toString();
     		String personName = (String)personDoc.get("name");
 	    	String personDescription = (String)personDoc.get("description");
