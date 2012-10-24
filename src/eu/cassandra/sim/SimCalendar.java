@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.sim;
 
 import java.text.DateFormat;
@@ -24,12 +24,12 @@ import java.util.Date;
 public class SimCalendar {
 	private Calendar myCalendar;
 	private Date base;
-	private String granularity;
-	private int granularityValue;
-	
+	private String granularity = "Minute";
+	private int granularityValue = 1;
+	private int duration = 0;
+
 	public SimCalendar() {
-		granularity = "Minute";
-		granularityValue = 1;
+
 		myCalendar = Calendar.getInstance();
 
 		int day = myCalendar.get(Calendar.DAY_OF_MONTH);
@@ -38,6 +38,30 @@ public class SimCalendar {
 
 		myCalendar.set(year, month, day, 0, 0, 0);
 		base = myCalendar.getTime();
+
+	}
+
+	public SimCalendar(Date date, int duration) {
+
+		myCalendar = Calendar.getInstance();
+
+		int day = myCalendar.get(Calendar.DAY_OF_MONTH);
+		int month = myCalendar.get(Calendar.MONTH);
+		int year = myCalendar.get(Calendar.YEAR);
+
+		myCalendar.set(year, month, day, 0, 0, 0);
+		base = myCalendar.getTime();
+		this.duration = duration;
+
+	}
+	
+	public SimCalendar(int day, int month, int year, int duration) {
+
+		myCalendar = Calendar.getInstance();
+
+		myCalendar.set(year, month, day, 0, 0, 0);
+		base = myCalendar.getTime();
+		this.duration = duration;
 
 	}
 
@@ -68,10 +92,10 @@ public class SimCalendar {
 
 		switch (season) {
 		case "Summer":
-			
+
 			month = Calendar.JUNE;
 			break;
-			
+
 		case "Spring":
 
 			month = Calendar.MARCH;
@@ -88,9 +112,9 @@ public class SimCalendar {
 			break;
 
 		default:
-			
+
 			month = Calendar.JANUARY;
-			
+
 		}
 
 		myCalendar.set(year, month, day, 0, 0, 0);
@@ -151,7 +175,7 @@ public class SimCalendar {
 		}
 
 		return 0;
-		
+
 	}
 
 	public int getGranularityValue () {
@@ -178,7 +202,7 @@ public class SimCalendar {
 	public String toString () {
 		String temp =
 				"Base: " + base + " Granularity: " + granularity + 
-				" Granularity Value: " + granularityValue;
+				" Granularity Value: " + granularityValue + " Duration: " + duration;
 		return temp;
 	}
 
@@ -205,5 +229,5 @@ public class SimCalendar {
 		System.out.println(test.isWeekend(1));
 		System.out.println(test.isWeekend(5));
 	}
-	
+
 }
