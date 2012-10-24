@@ -102,7 +102,7 @@ Ext.define('C.view.DemographicForm', {
 							itemId: 'entitiesFieldset',
 							minHeight: 220,
 							width: 300,
-							autoScroll: false,
+							autoScroll: true,
 							layout: {
 								type: 'auto'
 							},

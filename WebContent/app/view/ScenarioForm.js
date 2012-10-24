@@ -69,6 +69,7 @@ Ext.define('C.view.ScenarioForm', {
 									name: 'setup',
 									readOnly: false,
 									fieldLabel: 'Setup',
+									allowBlank: false,
 									displayField: 'setup',
 									forceSelection: true,
 									queryMode: 'local',

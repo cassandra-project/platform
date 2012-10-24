@@ -40,7 +40,6 @@ Ext.define('C.model.ActivityModel', {
 		},
 		{
 			name: 'day_type',
-			defaultValue: 'working',
 			type: 'string'
 		},
 		{
@@ -63,17 +62,6 @@ Ext.define('C.model.ActivityModel', {
 			mapping: 'distributions_counter',
 			persist: false,
 			type: 'int'
-		}
-	],
-
-	validations: [
-		{
-			type: 'inclusion',
-			field: 'day_type',
-			list: [
-				'working',
-				'nonworking'
-			]
 		}
 	]
 });

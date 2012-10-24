@@ -32,8 +32,8 @@ Ext.define('C.view.MyViewport', {
 					itemId: 'MainTabPanel',
 					closable: false,
 					listeners: {
-						add: {
-							fn: me.onMainTabPanelAdd,
+						tabchange: {
+							fn: me.onMainTabPanelTabChange,
 							scope: me
 						}
 					}
@@ -178,9 +178,9 @@ Ext.define('C.view.MyViewport', {
 		me.callParent(arguments);
 	},
 
-	onMainTabPanelAdd: function(abstractcontainer, component, index, options) {
-		if (C.dbname) {
-			this.query('.button').forEach(function(c){if (c.xtype!='tab')c.disabled = true;});
+	onMainTabPanelTabChange: function(tabPanel, newCard, oldCard, options) {
+		if (C.dbname && Ext.getClassName(this.getComponent('MainTabPanel').getActiveTab()) != 'C.view.ResultsGraphForm') {
+			this.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
 			this.query('.field').forEach(function(c){c.readOnly = true;});
 			/*this.query('.grid').forEach(function(c){
 			c.view.plugins.forEach(function(plugin){
@@ -330,7 +330,8 @@ Ext.define('C.view.MyViewport', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false
+						draggable: false,
+						icon: 'resources/icons/scenarios.png'
 					});
 					if(!C.dbname)
 					record.appendChild({
@@ -340,9 +341,19 @@ Ext.define('C.view.MyViewport', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false
+						draggable: false,
+						icon: 'resources/icons/runs.png'
 					});
-					break;
+					else {
+						record.appendChild({
+							name: 'Run Graph',
+							nodeType: 'RunGraph',
+							leaf: true,
+							draggable: false,
+							icon: 'resources/icons/sim_params.png'
+						});
+					}
+					break;	
 					case 'RunsCollection':
 					//record.removeAll();
 					console.info('Creating store for scenarios.');
@@ -381,7 +392,8 @@ Ext.define('C.view.MyViewport', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false
+						draggable: false,
+						icon: 'resources/icons/installations.jpg'
 					});
 					record.appendChild({
 						name: 'Simulation Parameters',
@@ -390,7 +402,8 @@ Ext.define('C.view.MyViewport', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false
+						draggable: false,
+						icon: 'resources/icons/sim_params.png'
 					});
 					var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.raw.nodeId);
 					var dataRecord = Ext.getStore(record.raw.nodeStoreId).getAt(index);
@@ -402,7 +415,8 @@ Ext.define('C.view.MyViewport', {
 							leaf: false,
 							expandable: true,
 							fakeChildren: true,
-							draggable: false
+							draggable: false,
+							icon: 'resources/icons/demographics.jpg'
 						});
 					}
 					break;
@@ -456,7 +470,8 @@ Ext.define('C.view.MyViewport', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false
+						draggable: false,
+						icon: 'resources/icons/persons.png'
 					});
 					record.appendChild({
 						name: 'Appliances',
@@ -465,7 +480,8 @@ Ext.define('C.view.MyViewport', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false
+						draggable: false,
+						icon: 'resources/icons/appliances.png'
 					});
 					break;
 					case 'PersonsCollection':
@@ -491,7 +507,8 @@ Ext.define('C.view.MyViewport', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false
+						draggable: false,
+						icon: 'resources/icons/activities.png'
 					});
 					break;
 					case 'ActivitiesCollection':
@@ -517,7 +534,8 @@ Ext.define('C.view.MyViewport', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false
+						draggable: false,
+						icon: 'resources/icons/activity_models.jpg'
 					});
 					break;
 					case 'ActivityModelsCollection':

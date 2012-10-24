@@ -31,7 +31,8 @@ Ext.application({
 		'Run',
 		'Distribution',
 		'Demographic',
-		'DemographicEntity'
+		'DemographicEntity',
+		'Results'
 	],
 	stores: [
 		'Projects',
@@ -55,7 +56,9 @@ Ext.application({
 		'ApplianceTypesStore',
 		'SeasonsStore',
 		'Demographics',
-		'DemographicEntities'
+		'DemographicEntities',
+		'Results',
+		'MetricStore'
 	],
 	views: [
 		'MyViewport',
@@ -72,7 +75,9 @@ Ext.application({
 		'TypesPieChart',
 		'ProjectForm',
 		'DemographicForm',
-		'EntitiesGrid'
+		'EntitiesGrid',
+		'ResultsLineChart',
+		'ResultsGraphForm'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -106,6 +111,11 @@ Ext.application({
 				cmpToAdd = grid;
 			}
 			else {
+				Ext.QuickTips.init();
+
+				// invalid markers to sides
+				Ext.form.Field.prototype.msgTarget = 'side';
+
 				var myForm;
 				var cur_record;
 				switch(record.get('nodeType')) {
@@ -149,6 +159,9 @@ Ext.application({
 					cur_record = record.parentNode.c.store.getById(record.get('id'));
 					if (cur_record.get('percentage') == 100) C.app.newRunWindow(cur_record);
 					return false;
+					case 'RunGraph':
+					myForm = C.app.getResultsGraphForm();
+					break;
 					default:
 					return false;
 				}
@@ -420,6 +433,7 @@ Ext.application({
 		C.app = this;
 
 		//C.dbname = window.location.hash.replace('#','');
+
 	},
 
 	getInstallationForm: function(record) {
@@ -647,6 +661,7 @@ Ext.application({
 						navigationNode: childNode
 					});
 					break;
+					default: return false;
 				}
 				childNode.c.store.load({
 					params: {
@@ -703,6 +718,25 @@ Ext.application({
 		myFormCmp.items.items[0].getComponent('entitiesFieldset').insert(1,demoGrid);
 		return myFormCmp;
 
+	},
+
+	getResultsGraphForm: function() {
+		var myFormCmp = new C.view.ResultsGraphForm({});
+
+		var myForm = myFormCmp.getForm();
+
+		myResultsStore = new C.store.Results({});
+		/*myResultsStore.load({
+		params: {
+		scn_id: record.node.get('nodeId')
+		}
+		});*/
+
+		myResultsStore.load();
+		myResultsChart = new C.view.ResultsLineChart({store: myResultsStore});
+		myFormCmp.insert(2, myResultsChart);
+
+		return myFormCmp;
 	}
 
 });

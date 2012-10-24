@@ -213,8 +213,8 @@ Ext.define('C.view.DynamicGrid', {
 		}
 		var currentModel = this.store.getProxy().getModel();
 
-		this.store.insert(0, new currentModel(inputArray));
-		var cur_record = this.store.getAt(0);
+		//this.store.insert(0, new currentModel(inputArray));
+		var cur_record = new currentModel(inputArray);
 		C.app.createForm(cur_record.node);
 
 		//this.plugins[0].startEdit(0, 0);

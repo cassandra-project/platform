@@ -74,6 +74,12 @@ Ext.define('C.view.EntitiesGrid', {
 					]
 				}
 			],
+			plugins: [
+				Ext.create('Ext.grid.plugin.RowEditing', {
+					ptype: 'rowediting',
+					clicksToEdit: 1
+				})
+			],
 			columns: [
 				{
 					xtype: 'gridcolumn',
@@ -81,22 +87,20 @@ Ext.define('C.view.EntitiesGrid', {
 					text: 'Entity_id'
 				},
 				{
+					xtype: 'gridcolumn',
+					dataIndex: 'entity_type',
+					text: 'Entity_type'
+				},
+				{
 					xtype: 'numbercolumn',
 					dataIndex: 'probability',
 					text: 'Probability',
 					editor: {
 						xtype: 'numberfield',
-						maxValue: 1,
-						minValue: 0,
-						step: 0.01
+						decimalPrecision: 3,
+						maxValue: 1
 					}
 				}
-			],
-			plugins: [
-				Ext.create('Ext.grid.plugin.RowEditing', {
-					ptype: 'rowediting',
-					clicksToEdit: 1
-				})
 			]
 		});
 
@@ -115,8 +119,6 @@ Ext.define('C.view.EntitiesGrid', {
 		var record = data.records[0];
 
 		if( (record.get('nodeType')=='Appliance' || record.get('nodeType')=='Person')&& record.parentNode.parentNode.parentNode.parentNode.get('nodeId') == this.scenarioId){
-			//var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.raw.nodeId);
-			//var node = Ext.getStore(record.raw.nodeStoreId).getAt(index);
 
 			data.copy = true;
 
@@ -134,7 +136,7 @@ Ext.define('C.view.EntitiesGrid', {
 			default: return false;
 			}*/
 
-			this.store.insert(0, {'entity_id':record.get('nodeId')});
+			this.store.insert(0, {'entity_id':record.get('nodeId'), 'entity_type':record.get('nodeType')});
 			dropFunction.cancelDrop();
 			this.plugins[0].startEdit(0, 0);
 			return 0;
