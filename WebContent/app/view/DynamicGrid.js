@@ -118,7 +118,7 @@ Ext.define('C.view.DynamicGrid', {
 
 		if('C.model.'+data.records[0].get('nodeType')==this.store.model.modelName){
 			var record = data.records[0];
-			var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.raw.nodeId);
+			var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id',record.get('id'));
 			var node = Ext.getStore(record.raw.nodeStoreId).getAt(index);console.info(node);
 			var parent_id = this.store.navigationNode.parentNode.get('id');
 			//if (1==2) {
@@ -213,8 +213,8 @@ Ext.define('C.view.DynamicGrid', {
 		}
 		var currentModel = this.store.getProxy().getModel();
 
-		//this.store.insert(0, new currentModel(inputArray));
-		var cur_record = new currentModel(inputArray);
+		this.store.insert(0, new currentModel(inputArray));
+		var cur_record = this.store.getAt(0);
 		C.app.createForm(cur_record.node);
 
 		//this.plugins[0].startEdit(0, 0);

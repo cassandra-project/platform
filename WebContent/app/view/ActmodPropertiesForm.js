@@ -24,6 +24,7 @@ Ext.define('C.view.ActmodPropertiesForm', {
 		type: 'auto'
 	},
 	bodyPadding: '10px',
+	titleCollapse: true,
 
 	initComponent: function() {
 		var me = this;
@@ -128,7 +129,8 @@ Ext.define('C.view.ActmodPropertiesForm', {
 	},
 
 	onTextfieldChange11: function(field, newValue, oldValue, options) {
-		this.setTitle(newValue);
+		if(this.getBubbleParent())
+		this.getBubbleParent().getBubbleParent().setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {

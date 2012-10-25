@@ -121,8 +121,8 @@ Ext.define('C.store.Appliances', {
 	onJsonstoreUpdate: function(abstractstore, record, operation, options) {
 		console.info('Appliance data updated.', abstractstore, record, operation, options);
 		if(record.node){
+			record.node.set({id : record.data._id, 'node_id': record.data._id});
 			if(operation=='edit'){
-				record.node.set({id : record.data._id, 'node_id': record.data._id});
 				Ext.each(options, function(k){
 					record.node.set(k, record.get(k));
 					//Ext.getCmp('uiNavigationTreePanel').getStore().getNodeById(record.get('_id')).set(k, record.get(k));
@@ -131,6 +131,8 @@ Ext.define('C.store.Appliances', {
 		}else{
 			console.info('Record is not bound to a node. Skipping.');
 		}
+
+
 	},
 
 	onJsonstoreAdd: function(store, records, index, options) {

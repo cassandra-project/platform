@@ -161,7 +161,7 @@ Ext.define('C.view.ApplianceForm', {
 	},
 
 	onTextfieldChange111111: function(field, newValue, oldValue, options) {
-		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(newValue);
+		this.setTitle(newValue);
 	},
 
 	onButtonClick2: function(button, e, options) {
@@ -176,7 +176,9 @@ Ext.define('C.view.ApplianceForm', {
 		var model = JSON.parse(myForm.getFieldValues().expression);
 		var name = myForm.getFieldValues().consmod_name;
 		var description = myForm.getFieldValues().consmod_description;
-		consmod_record = record.c.store.getRange()[0];
+
+
+		var consmod_record = record.c.store.getRange()[0];
 		if (consmod_record) {
 			consmod_record.set({model: model, 'name': name, 'description': description});
 		}
@@ -191,6 +193,7 @@ Ext.define('C.view.ApplianceForm', {
 			})
 			);
 		}
+
 
 		//record.save();
 	}

@@ -86,7 +86,7 @@ Ext.application({
 	],
 
 	createForm: function(record) {
-		record.expand();//basic in order to be rendered
+		if (!record.isExpanded())record.expand();//basic in order to be rendered
 
 		var breadcrumb = record.getPath();
 		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
@@ -523,7 +523,7 @@ Ext.application({
 
 		consmod_store.load({
 			params: {
-				app_id: record.node.get('nodeId')
+				app_id: record.node.get('id')
 			}
 		});
 		record.c = {store: consmod_store};
