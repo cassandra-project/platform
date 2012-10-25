@@ -105,7 +105,7 @@ Ext.define('C.view.RelationsGrid', {
 
 		if('C.model.'+data.records[0].get('nodeType')==this.store.model.modelName){
 			var record = data.records[0];
-			var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.raw.nodeId);
+			var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.get('id'));
 			var node = Ext.getStore(record.raw.nodeStoreId).getAt(index);
 
 			data.copy = true;

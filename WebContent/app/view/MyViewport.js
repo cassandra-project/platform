@@ -158,16 +158,16 @@ Ext.define('C.view.MyViewport', {
 							fn: me.onUiNavigationTreePanelItemAppend,
 							scope: me
 						},
-						itemdblclick: {
-							fn: me.onUiNavigationTreePanelItemDblClick,
-							scope: me
-						},
 						beforerender: {
 							fn: me.onUiNavigationTreePanelBeforeRender,
 							scope: me
 						},
 						itemclick: {
 							fn: me.onUiNavigationTreePanelItemClick,
+							scope: me
+						},
+						beforeitemdblclick: {
+							fn: me.onUiNavigationTreePanelBeforeItemDblClick,
 							scope: me
 						}
 					}
@@ -293,11 +293,6 @@ Ext.define('C.view.MyViewport', {
 		draggable: false
 		});
 		}*/
-	},
-
-	onUiNavigationTreePanelItemDblClick: function(tablepanel, record, item, index, e, options) {
-		console.info('Navigation node double click.',tablepanel, record, item, index, e, options);
-
 	},
 
 	onUiNavigationTreePanelBeforeRender: function(abstractcomponent, options) {
@@ -669,6 +664,10 @@ Ext.define('C.view.MyViewport', {
 		break;
 		}*/
 
+	},
+
+	onUiNavigationTreePanelBeforeItemDblClick: function(tablepanel, record, item, index, e, options) {
+		return false;
 	}
 
 });
