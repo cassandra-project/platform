@@ -1,0 +1,11 @@
+{
+    "name" : "Enter 1",
+    "type" : "weekend",
+    "distrType" : "normal",
+    "parameters" : [
+        {
+            "mean" : 1.0,
+            "std" : 0.00001
+        }
+     ]
+}
