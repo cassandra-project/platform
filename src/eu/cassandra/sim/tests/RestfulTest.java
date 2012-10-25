@@ -24,7 +24,37 @@ import java.net.URL;
 public class RestfulTest
 {
 	
-	public  static void main(String[] args) throws IOException{
+	private static final String CMD = "tests\\TestAHouseScenario\\script2.bat";
+	    public static void main(String args[]) {
+
+	        try {
+	            // Run "netsh" Windows command
+	            Process process = Runtime.getRuntime().exec(CMD);
+
+	            // Get input streams
+	            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+	            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+	            // Read command standard output
+	            String s;
+	            System.out.println("Standard output: ");
+	            while ((s = stdInput.readLine()) != null) {
+	                System.out.println(s);
+	            }
+
+	            // Read command errors
+	            System.out.println("Standard error: ");
+	            while ((s = stdError.readLine()) != null) {
+	                System.out.println(s);
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace(System.err);
+	        }
+	    }
+	
+	
+	
+	/*public  static void main(String[] args) throws IOException{
 		//String cmd= "./tests/TestAHouseScenario/script";
 	System.out.println("Before");
 	
@@ -33,7 +63,7 @@ public class RestfulTest
 	
 	Process proc = Runtime.getRuntime().exec("tests\\TestAHouseScenario\\script2.bat" );
 	
-/*	InputStream stderr = proc.getErrorStream();
+	InputStream stderr = proc.getErrorStream();
 	InputStreamReader isr = new InputStreamReader(stderr);
 BufferedReader br = new BufferedReader(isr);
 	
@@ -51,8 +81,8 @@ BufferedReader br = new BufferedReader(isr);
 	} catch (InterruptedException e) {
 			// ignore for now
 		System.out.println("Error executing script: " + e);
-	}*/
-	System.out.println("After");
 	}
+	System.out.println("After");
+	}*/
 
 }
