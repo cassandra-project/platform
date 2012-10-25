@@ -29,10 +29,9 @@ curl -i -X DELETE http://localhost:8080/cassandra/api/app/500d2108e4b04cef9589f6
 
 
 rem Activities
-curl -i --data @C:\workspace\platform\tests\TestAHouseScenario\cleaning.json --header Content-type:application/json http://localhost:8080/cassandra/api/act
+
 curl -i --data @C:\workspace\platform\tests\TestAHouseScenario\washing.json --header Content-type:application/json http://localhost:8080/cassandra/api/actD
 curl -i --data @C:\workspace\platform\tests\TestAHouseScenario\entertainment1.json --header Content-type:application/json http://localhost:8080/cassandra/api/act
-curl -i --data @C:\workspace\platform\tests\TestAHouseScenario\entertainment2.json --header Content-type:application/json http://localhost:8080/cassandra/api/act
 curl -i --data @C:\workspace\platform\tests\TestAHouseScenario\working.json --header Content-type:application/json http://localhost:8080/cassandra/api/act
 rem Check the insertions
 curl -i -X GET http://localhost:8080/cassandra/api/act?pers_id=500d2e96e4b04cef9589f6d2
