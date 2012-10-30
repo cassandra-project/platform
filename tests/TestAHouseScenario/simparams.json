@@ -1,0 +1,12 @@
+{
+        "name" : "One day of simulation time",
+        "numberOfDays" : 1,
+        "scn_id" : "500d1133e4b087bdfeda0900",
+        "locationInfo" : "Rotterdam",
+        "calendar" : {
+            "dayOfMonth" : 25,
+            "dayOfWeek" : "Thursday",
+            "month" : 10,
+            "year" : 2012
+        }
+}

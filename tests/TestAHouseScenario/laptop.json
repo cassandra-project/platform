@@ -1,0 +1,9 @@
+{
+  "name": "laptop",
+  "standy_consumption": 0.0,
+  "controllable": false,
+  "shiftable": false,
+  "base": false,
+  "type": "PC",
+  "inst_id": "500d1964e4b087bdfeda0902"
+}
