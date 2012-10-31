@@ -533,7 +533,7 @@ public class MongoDBQueries {
 		}
 		BasicDBList list = new BasicDBList();
 		for(int i=0;i<values.length;i++) {
-			BasicDBObject dbObj = new BasicDBObject("x",1);
+			BasicDBObject dbObj = new BasicDBObject("x",i);
 			dbObj.put("y", values[i]);
 			list.add(dbObj);
 		}
