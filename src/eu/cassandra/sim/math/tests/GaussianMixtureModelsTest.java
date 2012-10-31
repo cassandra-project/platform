@@ -86,6 +86,9 @@ public class GaussianMixtureModelsTest
 		assertTrue("Result",1440==tester.getParameters(1)[0]);
 		assertTrue("Result",144==tester.getParameters(1)[1]);
 		assertTrue("Result",0.5==tester.getParameters(1)[2]);
+		assertTrue("Result",1440==tester.getParameters(0)[0]);
+		assertTrue("Result",144==tester.getParameters(0)[1]);
+		assertTrue("Result",0.5==tester.getParameters(0)[2]);
 	}
 	
 	@Test
@@ -133,8 +136,8 @@ public class GaussianMixtureModelsTest
 	     }
 		GaussianMixtureModels tester=new GaussianMixtureModels(num, pi, means, sigmas);
 		tester.precompute(0, 1439, 1440);
-		assertTrue("Result",0.5055384072564862==tester.getPrecomputedProbability(1439));
-		assertTrue("Result2",0==tester.getPrecomputedProbability(2));
+		assertEquals((long)0.5055384072564862,(long)tester.getPrecomputedProbability(1439));
+		assertEquals((long)0,(long)tester.getPrecomputedProbability(2));
 	}
 	
 	@Test

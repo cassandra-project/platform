@@ -511,6 +511,7 @@ public class MongoDBQueries {
 	 */
 	private DBObject getValues(DBObject dBObject, HttpHeaders httpHeaders,
 			String id, String coll) throws JSONSchemaNotValidException {
+		double values[] = null;
 		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
 			String type = MongoActivityModels.REF_DISTR_STARTTIME ;
 			if(DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
@@ -521,14 +522,22 @@ public class MongoDBQueries {
 					findOne(new BasicDBObject("repeatsNrOfTime._id",new ObjectId(id))) != null) {
 				type = MongoActivityModels.REF_DISTR_REPEATS;
 			}
-			double valuesDistr[] = new GUIDistribution(type,dBObject).getValues();
-			dBObject.put("values", valuesDistr);
+			values = new GUIDistribution(type,dBObject).getValues();
 		}
 		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS) && 
 				dBObject.containsField("model")) {
 			Double[] valuesConsModel = new GUIConsumptionModel((DBObject) dBObject.get("model")).getValues();
-			dBObject.put("values", valuesConsModel);
+			values = new double[valuesConsModel.length];
+			for(int i=0;i<valuesConsModel.length;i++)
+				values[i] = valuesConsModel[i];
 		}
+		BasicDBList list = new BasicDBList();
+		for(int i=0;i<values.length;i++) {
+			BasicDBObject dbObj = new BasicDBObject("x",i);
+			dbObj.put("y", values[i]);
+			list.add(dbObj);
+		}
+		dBObject.put("values", list);
 		return dBObject;
 	}
 
