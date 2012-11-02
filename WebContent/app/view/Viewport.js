@@ -34,6 +34,8 @@ Ext.define('C.view.Viewport', {
 		'C.view.DynamicGrid',
 		'C.view.MyViewport',
 		'C.view.TypesPieChart',
-		'C.view.ResultsLineChart'
+		'C.view.ResultsLineChart',
+		'C.view.ConsModChart',
+		'C.view.DistributionChart'
 	]
 });

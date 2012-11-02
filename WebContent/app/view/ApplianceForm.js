@@ -17,9 +17,10 @@ Ext.define('C.view.ApplianceForm', {
 	extend: 'Ext.form.Panel',
 
 	height: 442,
-	width: 586,
+	autoScroll: true,
 	layout: {
-		type: 'auto'
+		align: 'center',
+		type: 'vbox'
 	},
 	bodyPadding: 10,
 	closable: true,
@@ -143,7 +144,7 @@ Ext.define('C.view.ApplianceForm', {
 				},
 				{
 					xtype: 'button',
-					margin: '10px 250px',
+					margin: '10px 0',
 					width: 70,
 					autoWidth: false,
 					text: 'Update',
@@ -153,6 +154,11 @@ Ext.define('C.view.ApplianceForm', {
 							scope: me
 						}
 					}
+				},
+				{
+					xtype: 'label',
+					style: 'font-size:20px;font-weight:bold;',
+					text: 'Consumption Model Power'
 				}
 			]
 		});
@@ -165,35 +171,47 @@ Ext.define('C.view.ApplianceForm', {
 	},
 
 	onButtonClick2: function(button, e, options) {
-		var gridIds = [];
+
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
+		var record = myForm.getRecord();
+
 
 
 		myForm.updateRecord();
-		var expression = myForm.getFieldValues().expression;
-		var model = JSON.parse(myForm.getFieldValues().expression);
+
+		var model = myForm.getFieldValues().expression;
 		var name = myForm.getFieldValues().consmod_name;
 		var description = myForm.getFieldValues().consmod_description;
 
+		//update or insert consmod only if one of it's parameters is set
+		if ( model || name || description) {
 
-		var consmod_record = record.c.store.getRange()[0];
-		if (consmod_record) {
-			consmod_record.set({model: model, 'name': name, 'description': description});
-		}
-		else {
-			var currentModel = record.c.store.getProxy().getModel();
-			record.c.store.insert(0, 
-			new currentModel({
-				'app_id' : record.get('_id'), 
-				model: model, 
-				'description': description, 
-				'name': name
-			})
-			);
-		}
+			try {
+				model = JSON.parse(model);
+			}
+			catch(e) {
+				Ext.MessageBox.alert('Field "Expression" must be an object');
+				return false;
+			}
 
+			var consmod_record = record.c.store.getRange()[0];
+			if (consmod_record) {
+				consmod_record.set({model: model, 'name': name, 'description': description});
+			}
+			else {
+				var currentModel = record.c.store.getProxy().getModel();
+				record.c.store.insert(0, new currentModel({
+					'app_id' : record.get('_id'), 
+					model: model, 
+					'description': description, 
+					'name': name
+				})
+				);
+			}
+			var myConsModChartStore = this.query('chart')[0].store;
+			myConsModChartStore.removeAll();
+			myConsModChartStore.load();
+		}
 
 		//record.save();
 	}

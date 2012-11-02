@@ -136,8 +136,7 @@ Ext.define('C.view.ActmodPropertiesForm', {
 	onButtonClick2: function(button, e, options) {
 		var gridIds = [];
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
+		var record = myForm.getRecord();
 
 		var gridData = this.query('grid')[0].store.data;
 

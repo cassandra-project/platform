@@ -135,8 +135,7 @@ Ext.define('C.view.ScenarioForm', {
 
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
+		var record = myForm.getRecord();
 		//	updatedRecord = record.store.getProxy().getModel().create();
 		//var errors = updatedRecord.validate(); //validate the object
 		//if (errors.isValid()) { //if the object is valid, then save the data to the model associated with the form.

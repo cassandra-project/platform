@@ -41,10 +41,6 @@ Ext.define('C.view.DynamicGrid', {
 					beforedrop: {
 						fn: me.onGriddragdroppluginBeforeDrop,
 						scope: me
-					},
-					drop: {
-						fn: me.onGriddragdroppluginDrop,
-						scope: me
 					}
 				}
 			},
@@ -117,80 +113,66 @@ Ext.define('C.view.DynamicGrid', {
 		*/
 
 		if('C.model.'+data.records[0].get('nodeType')==this.store.model.modelName){
-			var record = data.records[0];
-			var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id',record.get('id'));
-			var node = Ext.getStore(record.raw.nodeStoreId).getAt(index);console.info(node);
-			var parent_id = this.store.navigationNode.parentNode.get('id');
-			//if (1==2) {
-			var dataToAdd = JSON.parse(JSON.stringify(node.data));
-			delete dataToAdd._id;
-			switch(this.store.navigationNode.get('nodeType')){
-				case 'ScenariosCollection': dataToAdd.project_id = parent_id; break;
-				case 'SimulationParamsCollection': dataToAdd.scn_id = parent_id; break;
-				case 'InstallationsCollection': dataToAdd.scenario_id = parent_id; break;
-				case 'PersonsCollection': dataToAdd.inst_id = parent_id; break;
-				case 'AppliancesCollection': dataToAdd.inst_id = parent_id; break;
-				case 'ActivitiesCollection': dataToAdd.pers_id = parent_id; break;
-				case 'ActivityModelsCollection': dataToAdd.act_id = parent_id; break;
-				case 'ConsumptionModelsCollection': dataToAdd.app_id = parent_id; break;
+			dropFunction.cancelDrop();
+			record = data.records[0];
+			var index = Ext.getStore(record.get('nodeStoreId')).findExact('_id',record.get('id'));
+			var node = Ext.getStore(record.get('nodeStoreId')).getAt(index);
+			parent_id = this.store.navigationNode.parentNode.get('id');
+			parent_idKey = '';
+			switch(record.get('nodeType')){
+				case 'Scenario': parent_idKey = 'project_id'; break;
+				case 'SimulationParam': parent_idKey = 'scn_id'; break;
+				case 'Installation': parent_idKey = 'scenario_id'; break;
+				case 'Person': parent_idKey = 'inst_id'; break;
+				case 'Appliance': parent_idKey = 'inst_id'; break;
+				case 'Activity': parent_idKey = 'pers_id'; break;
+				case 'ActivityModel': parent_idKey = 'act_id'; break;
+				case 'ConsumptionModel': parent_idKey = 'app_id'; break;
 				default: return false;
 			}
-
-			this.store.add(dataToAdd);
-			dropFunction.cancelDrop();
-			/*} else {
-			data.copy = true;
-			var targetID = '';
-			var meId = '';
-			switch(record.raw.nodeType){
-			case 'Scenario': targetID = 'PrjID'; meID = 'scnID';break;
-			case 'SimulationParam': targetID = 'ScnID'; meID = 'smpID'; break;
-			case 'Installation': targetID = 'ScnID'; meID = 'instID'; break;
-			case 'Person': targetID = 'InstID'; meID = 'persID'; break;
-			case 'Appliance': targetID = 'InstID'; meID = 'appID'; break;
-			case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
-			case 'ActivityModel': targetID = 'ActID'; meID = 'actmodID'; break;
-			case 'ConsumptionModel': targetID = 'AppID'; meID = 'consmodID'; break;
-			default: return false;
+			if (!event.shiftKey) {
+				var dataToAdd = JSON.parse(JSON.stringify(node.data));
+				delete dataToAdd._id;
+				dataToAdd[parent_idKey] = parent_id;
+				this.store.add(dataToAdd);
+			} 
+			else {
+				data.copy = true;
+				var targetID = '';
+				var meId = '';
+				switch(record.get('nodeType')){
+					case 'Scenario': targetID = 'PrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
+					case 'SimulationParam': targetID = 'ScnID'; meID = 'smpID'; break;
+					case 'Installation': targetID = 'ScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
+					case 'Person': targetID = 'InstID'; meID = 'persID'; break;
+					case 'Appliance': targetID = 'InstID'; meID = 'appID'; break;
+					case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
+					case 'ActivityModel': targetID = 'ActID'; meID = 'actmodID'; break;
+					case 'ConsumptionModel': targetID = 'AppID'; meID = 'consmodID'; break;
+					default: return false;
+				}
+				//TODO See why on failure success function is executed
+				Ext.Ajax.request({
+					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&to'+ targetID+'='+parent_id,
+					method: 'POST',
+					scope: this,
+					callback: function(options, success, response) {	
+						response = JSON.parse(response.responseText);
+						if (response.success) {
+							var params = {};
+							params[parent_idKey] = parent_id;
+							this.store.navigationNode.removeAll();
+							this.store.load( {params : params });
+						}
+						else {
+							Ext.MessageBox.alert('Error', response.errors.Exception);
+						}
+					}
+				});
 			}
-			Ext.Ajax.request({
-			url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&to'+ targetID+'='+parent_id,
-			method: 'POST',
-			scope: this,
-			success: function(response, opts) {	
-			this.store.load();
-			}
-			});
-			}*/
 			return 0;
 		}
 		return false;
-	},
-
-	onGriddragdroppluginDrop: function(node, data, overModel, dropPosition, options) {
-		console.info('Drop.', this, node, data, overModel, dropPosition, options);
-
-		/*if('C.model.'+data.records[0].get('nodeType')==this.store.model.modelName){
-		var record = node.dragData.records[0];
-		var index = Ext.getStore(record.raw.nodeStoreId).findExact('_id', record.raw.nodeId);
-		var node = Ext.getStore(record.raw.nodeStoreId).getAt(index);
-
-		console.log(node);
-
-		this.store.add({
-		'scenario_id': this.store.navigationNode.parentNode.data.id,
-		'name': node.get('name'),
-		'type': node.get('type'),
-		'description': node.get('description'),
-		'belongsToInstallation': node.get('belongsToInstallation'),
-		'location': node.get('location'),
-		'x': node.get('x'),
-		'y': node.get('y')
-		});
-		return 0;
-		}
-		return false;
-		*/
 	},
 
 	onButtonClick: function(button, e, options) {
@@ -198,7 +180,6 @@ Ext.define('C.view.DynamicGrid', {
 
 		var parent_id = (this.store.navigationNode.get('nodeType') == 'ProjectsCollection')?'':this.store.navigationNode.parentNode.get('id');
 		var inputArray = {};
-		var tabs = Ext.getCmp('MainTabPanel');
 		switch(this.store.navigationNode.get('nodeType')){
 			case 'ProjectsCollection': inputArray = {};break;
 			case 'ScenariosCollection': inputArray = {'project_id' : parent_id};break;
