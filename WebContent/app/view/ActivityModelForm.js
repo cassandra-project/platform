@@ -44,7 +44,6 @@ Ext.define('C.view.ActivityModelForm', {
 				},
 				{
 					xtype: 'fieldset',
-					height: 405,
 					id: '',
 					itemId: 'distributionsFieldSet',
 					maxWidth: 1000,

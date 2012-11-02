@@ -99,11 +99,8 @@ Ext.define('C.view.PersonForm', {
 
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
-
-
-		myForm.updateRecord();console.info(record);
+		var record = myForm.getRecord();
+		myForm.updateRecord();
 
 		//record.save();
 	}

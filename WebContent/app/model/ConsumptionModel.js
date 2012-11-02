@@ -35,6 +35,32 @@ Ext.define('C.model.ConsumptionModel', {
 		},
 		{
 			name: 'model'
+		},
+		{
+			name: 'values',
+			persist: false
+		},
+		{
+			convert: function(v, rec) {
+				if (rec.get('values')) {
+					return rec.get('values').x;
+				}
+			},
+			name: 'x',
+			persist: false
+		},
+		{
+			convert: function(v, rec) {
+				if (rec.get('values')) {
+					y=[];
+					Ext.each(rec.get('values'), function(value, index){
+						y.push(value.y);
+					});
+					return y;
+				}
+			},
+			name: 'y',
+			persist: false
 		}
 	]
 });

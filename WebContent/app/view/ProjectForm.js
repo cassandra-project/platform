@@ -92,12 +92,9 @@ Ext.define('C.view.ProjectForm', {
 
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
+		var record = myForm.getRecord();
+		myForm.updateRecord();
 
-
-		myForm.updateRecord();console.info(record);
-		//record.save();
 	}
 
 });

@@ -32,7 +32,8 @@ Ext.application({
 		'Distribution',
 		'Demographic',
 		'DemographicEntity',
-		'Results'
+		'Results',
+		'DistributionResults'
 	],
 	stores: [
 		'Projects',
@@ -58,7 +59,9 @@ Ext.application({
 		'Demographics',
 		'DemographicEntities',
 		'Results',
-		'MetricStore'
+		'MetricStore',
+		'ConsumptionModelValues',
+		'DistributionValues'
 	],
 	views: [
 		'MyViewport',
@@ -76,8 +79,9 @@ Ext.application({
 		'ProjectForm',
 		'DemographicForm',
 		'EntitiesGrid',
-		'ResultsLineChart',
-		'ResultsGraphForm'
+		'ResultsGraphForm',
+		'ConsModChart',
+		'DistributionChart'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -280,53 +284,10 @@ Ext.application({
 				gridStore.loadData(o.data, true);
 			}
 		});
-		/*
-		if (record.get('duration')) {
-		Ext.Ajax.request({
-		url: '/cassandra/api/distr/' + record.get('duration'),
-		method: 'GET',
-		scope: this,
-		success: function(response, opts) {
-		var o = Ext.decode(response.responseText);
-		myForm.setValues({ parameter1: JSON.stringify(o.data[0].parameters)});
-		myForm.setValues({distrType1: o.data[0].distrType});
-		}
-		});
-		}
 
-		if (record.get('startTime')) {
-		Ext.Ajax.request({
-		url: '/cassandra/api/distr/' + record.get('startTime'),
-		method: 'GET',
-		scope: this,
-		success: function(response, opts) {
-		var o = Ext.decode(response.responseText);
-		console.info(this, o);
-		myForm.setValues({ parameter2: JSON.stringify(o.data[0].parameters)});
-		myForm.setValues({distrType2: o.data[0].distrType});
-		}
-		});
-		}
-
-		if (record.get('repeatsNrOfTime')) {
-		Ext.Ajax.request({
-		url: '/cassandra/api/distr/' + record.get('repeatsNrOfTime'),
-		method: 'GET',
-		scope: this,
-		success: function(response, opts) {
-		var o = Ext.decode(response.responseText);
-		myForm.setValues({ parameter3: JSON.stringify(o.data[0].parameters)});
-		myForm.setValues({distrType3: o.data[0].distrType});
-		}
-		});
-		}
-		*/
-		var myDurationCmp = new C.view.DistributionForm({distr_type:'duration'});
-		myDurationCmp.setTitle('Duration');
-		var myStartCmp = new C.view.DistributionForm({distr_type:'startTime'});
-		myStartCmp.setTitle('Start Time');
-		var myRepeatsCmp = new C.view.DistributionForm({distr_type:'repeatsNrOfTime'});
-		myRepeatsCmp.setTitle('Repeats Nr of Times');
+		var myDurationCmp = C.app.getDistributionForm('duration', 'Duration');
+		var myStartCmp = C.app.getDistributionForm('startTime', 'Start Time');
+		var myRepeatsCmp = C.app.getDistributionForm('repeatsNrOfTime', 'Repeats Nr of Times');
 
 		distr_store = new C.store.Distributions({
 			storeId: 'DistributionsStore-actmod_id-'+record.node.get('nodeId'),
@@ -334,27 +295,26 @@ Ext.application({
 				'load': 
 				function(store,records,options){console.info(record);
 					Ext.each(records, function(distr_record, index){
+						var myCurrentCmp;
 						if ( distr_record.get('_id') == record.get('duration')) {
-							myDurationCmp.getForm().loadRecord(distr_record);
-							myDurationCmp.getForm().setValues({ 
-								params: JSON.stringify(distr_record.get('parameters')),
-								val: JSON.stringify(distr_record.get('values'))
-							});
+							myCurrentCmp = myDurationCmp;
 						}
 						else if ( distr_record.get('_id') == record.get('startTime')) {
-							myStartCmp.getForm().loadRecord(distr_record);
-							myStartCmp.getForm().setValues({ 
-								params: JSON.stringify(distr_record.get('parameters')),
-								val: JSON.stringify(distr_record.get('values'))
-							});	
+							myCurrentCmp = myStartCmp;
 						}
 						else if ( distr_record.get('_id') == record.get('repeatsNrOfTime')) {
-							myRepeatsCmp.getForm().loadRecord(distr_record);
-							myRepeatsCmp.getForm().setValues({ 
-								params: JSON.stringify(distr_record.get('parameters')),
-								val: JSON.stringify(distr_record.get('values'))
-							});
+							myCurrentCmp = myRepeatsCmp;
 						}
+						else {return false;}
+
+						myCurrentCmp.getForm().loadRecord(distr_record);
+						myCurrentCmp.getForm().setValues({ 
+							params: JSON.stringify(distr_record.get('parameters')),
+							val: JSON.stringify(distr_record.get('values'))
+						});
+						myCurrentCmp.query('chart')[0].store.proxy.url += '/' + distr_record.get('_id');
+						myCurrentCmp.query('chart')[0].store.load();
+
 					});			
 				}
 			}	
@@ -365,60 +325,7 @@ Ext.application({
 				actmod_id: record.node.get('nodeId')
 			}
 		});
-		/*var myDurationCmp = new C.view.DistributionForm({});
-		var myDurationForm = myDurationCmp.getForm();
-		myDurationCmp.setTitle('Duration');
 
-		duration_store = new C.store.Distributions({
-		listeners:{
-		'load': 
-		function(store,records,options){
-		if (records){
-		myDurationForm.loadRecord(records[0]);
-		myDurationForm.setValues({ params: JSON.stringify(records[0].get('parameters')), vals: JSON.stringify(records[0].get('values')) });
-		}		
-		}
-		}	
-		});
-		duration_store.proxy.url += '/' + record.get('duration');
-		duration_store.load();
-
-		var myStartCmp = new C.view.DistributionForm({});
-		var myStartForm = myStartCmp.getForm();
-		myStartCmp.setTitle('Start Time');
-
-		start_store = new C.store.Distributions({
-		listeners:{
-		'load': 
-		function(store,records,options){
-		if (records){
-		myStartForm.loadRecord(records[0]);
-		myStartForm.setValues({ params: JSON.stringify(records[0].get('parameters')), vals: JSON.stringify(records[0].get('values')) });
-
-		}		
-		}
-		}	
-		});
-		start_store.proxy.url += '/' + record.get('startTime');
-		start_store.load();
-
-		var myRepeatsCmp = new C.view.DistributionForm({});
-		var myRepeatsForm = myRepeatsCmp.getForm();
-		myRepeatsCmp.setTitle('Number of Times');
-
-		repeats_store = new C.store.Distributions({
-		listeners:{
-		'load': 
-		function(store,records,options){
-		if (records){
-		myRepeatsForm.loadRecord(records[0]);
-		myRepeatsForm.setValues({ params: JSON.stringify(records[0].get('parameters')), vals: JSON.stringify(records[0].get('values')) });
-		}
-		}	
-		}
-		});
-		repeats_store.proxy.url += '/' + record.get('repeatsNrOfTime');
-		repeats_store.load();*/
 		record.c = {store: distr_store};
 		propertiesCmp.items.items[0].getComponent('appliancesFieldset').insert(1,grid);
 		myFormCmp.getComponent('properties_and_appliances').add(propertiesCmp);
@@ -516,6 +423,14 @@ Ext.application({
 						myForm.setValues({ expression: model});
 						myForm.setValues({ consmod_name: consmod_record.get('name')});
 						myForm.setValues({ consmod_description: consmod_record.get('description')});
+
+						consmodGraphStore = new C.store.ConsumptionModelValues({});
+						consmodGraphStore.proxy.url += '/' + consmod_record.get('_id');
+						consmodGraphStore.load();
+
+						myResultsChart = new C.view.ConsModChart({store: consmodGraphStore});
+						myFormCmp.insert(3, myResultsChart);
+
 					}
 				}
 			}	
@@ -602,17 +517,34 @@ Ext.application({
 		return myFormCmp;
 	},
 
-	getDistributionForm: function(record) {
-		var myFormCmp = new C.view.DistributionForm({});
+	getDistributionForm: function(distr_type, title) {
+		var distrCmp = new C.view.DistributionForm({distr_type: distr_type});
+		distrCmp.setTitle(title);
+		var distrGraphStore = new C.store.DistributionValues({});
 
-		var myForm = myFormCmp.getForm();
+		switch (distr_type) {
+			case 'duration': distrGraphStore.xAxisTitle = 'Duration (Minutes)'; break;
+			case 'startTime': distrGraphStore.xAxisTitle = 'Start Time (Minute of day)'; break;
+			case 'repeatsNrOfTime': distrGraphStore.xAxisTitle = 'Daily Repetitions'; break;
+		}
+		var myResultsChart = new C.view.DistributionChart({store: distrGraphStore});
+		var myChartLabel = new Ext.form.Label({
+			style: 'font-size:10px;',
+			text:''
+		});
+		myChartLabel.html = '<b>Probability</b> (%) Vs <br /><b>'+ distrGraphStore.xAxisTitle +'</b>';
+		var myClickLabel = new Ext.form.Label({
+			style: 'font-size:10px; font-style:italic;',
+			text: 'Click on the chart to enlarge'
+		});
 
-		myForm.loadRecord(record);
+		distrCmp.add(myChartLabel);
+		distrCmp.add(myResultsChart);
+		distrCmp.add(myClickLabel);
 
-		myForm.setValues({ params: JSON.stringify(record.get('parameters')) });
-		myForm.setValues({ vals: JSON.stringify(record.get('values')) });
-		console.info(record);
-		return myFormCmp;
+		return distrCmp;
+
+
 	},
 
 	getSimulationParamsForm: function(record) {
@@ -684,7 +616,7 @@ Ext.application({
 		var url = document.URL+'#'+record.get('_id');
 		var wname = 'cassandra';
 		var wfeatures = 'menubar=yes,resizable=yes,scrollbars=yes,status=yes,location=yes';
-		var win = window.open(url,wname,wfeatures);
+		window.open(url,wname,wfeatures);
 
 
 	},
