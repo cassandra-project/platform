@@ -185,9 +185,7 @@ Ext.define('C.view.ResultsGraphForm', {
 
 		var numberOfDays = myResultsStore.proxy.reader.jsonData.numberOfDays;
 		var dataSize = parseInt(-defaultFrom/defaultAggrUnit) + parseInt( (numberOfDays*1440) / defaultAggrUnit);
-		dataSize = dataSize;
 
-		var defaultTo = (formValues.to) ? formValues.to : dataSize - 1;
 		if (!formValues.to) delete formValues.to;console.info(dataSize);
 
 		if ( dataSize > 1000 ) {

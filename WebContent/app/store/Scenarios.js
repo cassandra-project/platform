@@ -123,7 +123,7 @@ Ext.define('C.store.Scenarios', {
 	onJsonstoreUpdate: function(abstractstore, record, operation, options) {
 		console.info('Scenarios data updated.', abstractstore, record, operation, options);
 		if(record.node) {
-			record.node.set({id : record.data._id, 'node_id': record.data._id});
+			record.node.set({id : record.data._id, 'node_id': record.data._id, 'nodeId':  record.data._id });
 			if(operation=='edit'){
 				Ext.each(options, function(k){
 					record.node.set(k, record.get(k));

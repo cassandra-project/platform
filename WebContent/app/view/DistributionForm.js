@@ -18,7 +18,6 @@ Ext.define('C.view.DistributionForm', {
 
 	border: '0 0 0 0',
 	frame: false,
-	height: 340,
 	margin: '10px',
 	style: 'border: none',
 	width: 170,
@@ -107,12 +106,30 @@ Ext.define('C.view.DistributionForm', {
 		var record = myForm.getRecord(),
 		values = myForm.getFieldValues();
 
-		var parameters = (myForm.getFieldValues().params) ? JSON.parse(myForm.getFieldValues().params) : [];
-		var valuesDistr = (myForm.getFieldValues().val) ? JSON.parse(myForm.getFieldValues().val) : [];
+		var parameters = myForm.getFieldValues().params;
+		var valuesDistr = myForm.getFieldValues().val;
+		var myConsModChartStore = this.query('chart')[0].store;
+
+		try {
+			parameters = JSON.parse(parameters);
+		}
+		catch(e) {
+			Ext.MessageBox.alert('Field "parameters" must be an array');
+			return false;
+		}
+		try {
+			valuesDistr = JSON.parse(valuesDistr);
+		}
+		catch(e) {
+			Ext.MessageBox.alert('Field "values" must be an array');
+			return false;
+		}
 
 		if (record) {
 			myForm.updateRecord();
 			record.set({'parameters': parameters, 'values': valuesDistr});
+			myConsModChartStore.removeAll();
+			myConsModChartStore.load();
 		}
 		else {
 			var actmod_record = propertiesCmp.getForm().getRecord();
@@ -129,10 +146,12 @@ Ext.define('C.view.DistributionForm', {
 			distr_type = this.distr_type;
 			distr_store.on('update', function(records) {
 				actmod_record.set(distr_type,records.data.items[0].get('_id') );
+				myConsModChartStore.proxy.url += '/' + records.data.items[0].get('_id');
+				myConsModChartStore.load();
 			});							  
 		}
 
-		//record.save();dxtsdrt
+
 	}
 
 });

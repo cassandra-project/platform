@@ -112,13 +112,10 @@ Ext.define('C.view.InstallationForm', {
 	},
 
 	onButtonClick2: function(button, e, options) {
-		var gridIds = [];
+
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
-
-
-		myForm.updateRecord();console.info(record);
+		var record = myForm.getRecord();
+		myForm.updateRecord();
 
 		//record.save();
 	}

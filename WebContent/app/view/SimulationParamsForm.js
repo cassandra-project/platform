@@ -142,11 +142,10 @@ Ext.define('C.view.SimulationParamsForm', {
 
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
+		var record = myForm.getRecord();
 
 
-		myForm.updateRecord();console.info(record);
+		myForm.updateRecord();
 		var calendar = {};
 		var duration = 0;
 

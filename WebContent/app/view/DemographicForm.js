@@ -130,8 +130,7 @@ Ext.define('C.view.DemographicForm', {
 	onButtonClick2: function(button, e, options) {
 		var gridGenerators = [];
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
+		var record = myForm.getRecord();
 
 		var gridData = this.query('grid')[0].store.data;
 
