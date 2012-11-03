@@ -21,15 +21,25 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 
-public class RestfulTest
+public class RestfulTestProject
 {
 	
-	private static final String CMD = "tests\\TestAHouseScenario\\script2.bat";
+	private static final String CMD = "tests\\TestAHouseScenario\\RestTestProject.bat";
+	private static final String CMD2 = "tests\\TestAHouseScenario\\RestTestScenario.bat";
+	private static final String CMD3 = "tests\\TestAHouseScenario\\RestTestInstallation.bat";
+	private static final String CMD4 = "tests\\TestAHouseScenario\\RestTestPerson.bat";
+	private static final String CMD5 = "tests\\TestAHouseScenario\\RestTestActivity.bat";
+	private static final String CMD6 = "tests\\TestAHouseScenario\\RestTestAppliance.bat";
+	private static final String CMD7 = "tests\\TestAHouseScenario\\RestTestConsumptionModel.bat";
+	private static final String CMD8 = "tests\\TestAHouseScenario\\RestTestDistr.bat";
+	private static final String CMD9 = "tests\\TestAHouseScenario\\RestTestActivityModel.bat";
+	private static final String CMD10 = "tests\\TestAHouseScenario\\RestTestSimParams.bat";
+	private static final String CMD11 = "tests\\TestAHouseScenario\\RestTestRun.bat";
 	    public static void main(String args[]) {
 
 	        try {
 	            // Run "netsh" Windows command
-	            Process process = Runtime.getRuntime().exec(CMD);
+	            Process process = Runtime.getRuntime().exec(CMD11);
 
 	            // Get input streams
 	            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));

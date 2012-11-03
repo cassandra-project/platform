@@ -1,7 +1,7 @@
 {
     "name" : "Washing",
     "type" : "weekday",
-    "distrType" : "normal",
+    "distrType" : "Normal Distribution",
     "parameters" : [
         {
             "mean" : 1.0,
