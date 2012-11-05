@@ -1,7 +1,7 @@
 {
     "name" : "Washing",
     "type" : "duration",
-    "distrType" : "normal",
+    "distrType" : "Normal Distribution",
     "parameters" : [
         {
             "mean" : 180.0,

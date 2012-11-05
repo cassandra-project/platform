@@ -1,0 +1,1 @@
+curl -i --data @C:\workspace\platform\tests\TestAHouseScenario\simparams.json --header Content-type:application/json http://localhost:8080/cassandra/api/smp/

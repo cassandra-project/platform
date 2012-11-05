@@ -1,0 +1,4 @@
+curl -i --data @C:\workspace\platform\tests\TestAHouseScenario\washing.start.json --header Content-type:application/json http://localhost:8080/cassandra/api/distr
+curl -i --data @C:\workspace\platform\tests\TestAHouseScenario\washing.dur.json --header Content-type:application/json http://localhost:8080/cassandra/api/distr
+curl -i --data @C:\workspace\platform\tests\TestAHouseScenario\washing.day.json --header Content-type:application/json http://localhost:8080/cassandra/api/distr
+curl -i --data @C:\workspace\platform\tests\TestAHouseScenario\washing.end.json --header Content-type:application/json http://localhost:8080/cassandra/api/distr
