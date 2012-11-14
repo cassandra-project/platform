@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # temporary Emacs files
 *~
 
@@ -11,23 +10,3 @@
 bin/
 build/
 *.class
-
-
-/UML
-=======
-# temporary Emacs files
-*~
-
-# hidden files
-.classpath
-.project
-.settings/
-
-# binaries
-bin/
-build/
-*.class
-
-
-/UML
->>>>>>> ea22c5a59e0b8a1e1a792f12cdd002c3f63e1fb0
