@@ -10,7 +10,7 @@ import eu.cassandra.sim.utilities.Utils;
 
 public class GUIDistribution {
 
-	private ProbabilityDistribution prob;	
+	private ProbabilityDistribution prob = null;	
 
 	/**
 	 * 
@@ -21,6 +21,9 @@ public class GUIDistribution {
 	public GUIDistribution(String type, DBObject dbo) throws JSONSchemaNotValidException{
 		String distrType = dbo.get("distrType").toString();
 		BasicDBList tempList = (BasicDBList)dbo.get("parameters");
+		if(tempList.size()==0)
+			return;
+
 		DBObject parameters = (DBObject)JSON.parse(tempList.get(0).toString());
 
 		int endValue = 0;
@@ -37,7 +40,7 @@ public class GUIDistribution {
 		default:
 			throw new JSONSchemaNotValidException("Invalid distr type: " + type);
 		}
-distrType = "Normal Distribution";
+		distrType = "Normal Distribution";
 		switch(distrType){
 		case "Normal Distribution":
 			double mean = (double)parameters.get("mean");
@@ -79,7 +82,10 @@ distrType = "Normal Distribution";
 	 * @return
 	 */
 	public double[] getValues(){
-		return prob.getHistogram();
+		if(prob == null)
+			return null;
+		else
+			return prob.getHistogram();
 	}
 }
 

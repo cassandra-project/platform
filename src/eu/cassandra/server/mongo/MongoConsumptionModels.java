@@ -23,6 +23,7 @@ import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 public class MongoConsumptionModels {
 
@@ -49,13 +50,13 @@ public class MongoConsumptionModels {
 	 */
 	public String getConsumptionModels(HttpHeaders httpHeaders,String app_id, boolean count) {
 		if(app_id == null) {
-			return new JSONtoReturn().createJSONError(
+			return PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError(
 					"Only the Consumption Models of a particular Appliance can be retrieved", 
-					new RestQueryParamMissingException("app_id QueryParam is missing")).toString();
+					new RestQueryParamMissingException("app_id QueryParam is missing")));
 		}
 		else {
-			return new MongoDBQueries().getEntity(httpHeaders,COL_CONSMODELS,"app_id", 
-					app_id, "Consumption Models retrieved successfully",count).toString();
+			return PrettyJSONPrinter.prettyPrint(new MongoDBQueries().getEntity(httpHeaders,COL_CONSMODELS,"app_id", 
+					app_id, "Consumption Models retrieved successfully",count));
 		}
 	}
 
@@ -66,11 +67,10 @@ public class MongoConsumptionModels {
 	 * @return
 	 */
 	public String createConsumptionModel(String dataToInsert) {
-		return new MongoDBQueries().insertData(COL_CONSMODELS ,dataToInsert,
+		return PrettyJSONPrinter.prettyPrint(new MongoDBQueries().insertData(COL_CONSMODELS ,dataToInsert,
 				"Consumption Model created successfully", 
 				MongoAppliances.COL_APPLIANCES,
-				"app_id",JSONValidator.CONSUMPTIONMODEL_SCHEMA
-				).toString();
+				"app_id",JSONValidator.CONSUMPTIONMODEL_SCHEMA));
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class MongoConsumptionModels {
 	 * @return
 	 */
 	public String deleteConsumptionModel(String id) {
-		return new MongoDBQueries().deleteDocument(COL_CONSMODELS, id).toString();
+		return PrettyJSONPrinter.prettyPrint(new MongoDBQueries().deleteDocument(COL_CONSMODELS, id));
 	}
 
 	/**
@@ -91,8 +91,8 @@ public class MongoConsumptionModels {
 	 * @return
 	 */
 	public String updateConsumptionModel(String id,String jsonToUpdate) {
-		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
+		return PrettyJSONPrinter.prettyPrint(new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_CONSMODELS, "Consumption Model updated successfully",
-				MongoAppliances.COL_APPLIANCES ,"app_id",JSONValidator.CONSUMPTIONMODEL_SCHEMA).toString();
+				MongoAppliances.COL_APPLIANCES ,"app_id",JSONValidator.CONSUMPTIONMODEL_SCHEMA));
 	}
 }
