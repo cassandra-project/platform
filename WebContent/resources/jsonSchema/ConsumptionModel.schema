@@ -29,10 +29,12 @@
             "optional": true,
             "properties" : {
                 "n" : {
+                 "optional" : true,
                     "type" : "integer",
                     "description" : "Number of iterations"
                 },
                 "params" : {
+                    "optional" : true,
                     "type" : "array",
                     "description" : "",
                     "items" : {
@@ -40,25 +42,31 @@
                     "description" : "",
                     "properties" : {
                         "n" : {
+                         "optional" : true,
                             "type" : "integer",
                             "description" : "Number of iterations"
                         },
                         "values" : {
+                         "optional" : true,
                             "type" : "array",
                             "description" : "",
                             "items" : {
+                             "optional" : true,
                                 "type" : "object",
                                 "description" : "",
                                 "properties" : {
                                     "p" : {
+                                     "optional" : true,
                                         "type" : "number",
                                         "description" : "power"
                                     },
                                     "d" : {
+                                     "optional" : true,
                                         "type" : "integer",
                                         "description" : "power"
                                     },
                                     "s" : {
+                                     "optional" : true,
                                         "type" : "number",
                                         "description" : "power"
                                     }                                                                     

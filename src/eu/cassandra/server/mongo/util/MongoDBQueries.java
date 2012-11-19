@@ -512,7 +512,6 @@ public class MongoDBQueries {
 	private DBObject getValues(DBObject dBObject, HttpHeaders httpHeaders,
 			String id, String coll) throws JSONSchemaNotValidException {
 		double values[] = null;
-		System.out.println(	PrettyJSONPrinter.prettyPrint(dBObject));
 		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS) && 
 				dBObject.containsField("parameters")) {
 			String type = MongoActivityModels.REF_DISTR_STARTTIME ;
@@ -527,8 +526,7 @@ public class MongoDBQueries {
 			values = new GUIDistribution(type,dBObject).getValues();
 		}
 		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS) && 
-				dBObject.containsField("model") && 
-				dBObject.containsField("params") ) {
+				dBObject.containsField("model") &&  ((DBObject)dBObject.get("model")).containsField("params")) {
 			Double[] valuesConsModel = new GUIConsumptionModel((DBObject) dBObject.get("model")).getValues();
 			values = new double[valuesConsModel.length];
 			for(int i=0;i<valuesConsModel.length;i++)
