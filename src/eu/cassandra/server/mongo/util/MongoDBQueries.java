@@ -41,6 +41,7 @@ import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.MongoSimParam;
 import eu.cassandra.sim.entities.appliances.GUIConsumptionModel;
 import eu.cassandra.sim.math.GUIDistribution;
+import eu.cassandra.sim.utilities.Utils;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -524,13 +525,23 @@ public class MongoDBQueries {
 				type = MongoActivityModels.REF_DISTR_REPEATS;
 			}
 			values = new GUIDistribution(type,dBObject).getValues();
+			
+			if(values == null && dBObject.containsField("values")) {
+				BasicDBList t = (BasicDBList)dBObject.get("values");
+				values = Utils.dblist2doubleArr(t); 
+			}
 		}
 		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS) && 
 				dBObject.containsField("model") &&  ((DBObject)dBObject.get("model")).containsField("params")) {
 			Double[] valuesConsModel = new GUIConsumptionModel((DBObject) dBObject.get("model")).getValues();
 			values = new double[valuesConsModel.length];
-			for(int i=0;i<valuesConsModel.length;i++)
+			for(int i=0;i<valuesConsModel.length;i++) {
 				values[i] = valuesConsModel[i];
+			}
+			if( (values == null || values.length==0)  && dBObject.containsField("values")) {; 
+				BasicDBList t = (BasicDBList)dBObject.get("values");
+				values = Utils.dblist2doubleArr(t); 
+			}
 		}
 		if(values != null) {
 			BasicDBList list = new BasicDBList();
