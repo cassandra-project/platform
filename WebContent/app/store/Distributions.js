@@ -43,43 +43,12 @@ Ext.define('C.store.Distributions', {
 				}
 			},
 			listeners: {
-				datachanged: {
-					fn: me.onJsonstoreDataChangeD,
-					scope: me
-				},
 				beforeload: {
 					fn: me.onJsonstoreBeforeLoad,
 					scope: me
 				}
 			}
 		}, cfg)]);
-	},
-
-	onJsonstoreDataChangeD: function(abstractstore, options) {
-		console.info('Distribution data changed.', abstractstore, options);
-		var store = abstractstore;
-		//x = Ext.getCmp('uiNavigationTreePanel');
-		/*Ext.each(store.data.items, function(record){
-		xr = record; 
-		var nodeExisting = Ext.getCmp('uiNavigationTreePanel').store.tree.getNodeById(record.data._id);
-		console.info('Scenario record.', record, nodeExisting);
-		if(!nodeExisting){
-		console.info('Node does not exist. Creating it.');
-		abstractstore.navigationNode.appendChild({
-		id: record.data._id,
-		name: record.data.name,
-		nodeType: 'Scenario',
-		nodeId: record.data._id,
-		nodeStoreId: store.storeId,
-		expanded: false,
-		leaf: false,
-		expandable: true,
-		fakeChildren: true,
-		draggable: false
-		});
-		}
-		});*/
-		//abstractstore.navigationNode.childNodes
 	},
 
 	onJsonstoreBeforeLoad: function(store, operation, options) {

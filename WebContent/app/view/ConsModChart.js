@@ -53,7 +53,8 @@ Ext.define('C.view.ConsModChart', {
 						}
 					},
 					position: 'left',
-					title: 'Watt'
+					title: 'Watt',
+					minimum: 0
 				}
 			],
 			series: [

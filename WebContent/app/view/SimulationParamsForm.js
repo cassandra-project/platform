@@ -101,6 +101,7 @@ Ext.define('C.view.SimulationParamsForm', {
 									items: [
 										{
 											xtype: 'button',
+											itemId: 'btn',
 											width: 70,
 											autoWidth: false,
 											text: 'Update',
@@ -138,14 +139,14 @@ Ext.define('C.view.SimulationParamsForm', {
 
 	onTextfieldChange1111: function(field, newValue, oldValue, options) {
 		this.setTitle(newValue);
+		this.form.getRecord().node.set({'name':newValue});
 	},
 
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
 		var record = myForm.getRecord();
+		var values = myForm.getValues();
 
-
-		myForm.updateRecord();
 		var calendar = {};
 		var duration = 0;
 
@@ -170,19 +171,34 @@ Ext.define('C.view.SimulationParamsForm', {
 			if (dateEnds) {
 				var one_day = 1000*60*60*24;
 				duration = (dateEnds.getTime() - dateStarted.getTime()) / one_day;
+				if (duration < 0) {
+					Ext.MessageBox.show({
+						title:'Invalid simulation end date', 
+						msg: 'The date that simulation ends cannot be </br>before the one it starts!', 
+						icon: Ext.MessageBox.ERROR
+					});
+					return false;
+				}
 			}
 		}
 
-		record.set({'calendar': calendar, 'numberOfDays': duration});
-		//record.save();
+		record.set({
+			'name': values.name,
+			'description': values.description,
+			'locationInfo': values.locationInfo,
+			'calendar': calendar, 
+			'numberOfDays': duration
+		});
+
+		//clear dirty record
+		record.node.commit();
 	},
 
 	onButtonClick21: function(button, e, options) {
 		var project_node = this.getForm().getRecord().node.parentNode.parentNode.parentNode.parentNode;
 		if (! (project_node.lastChild.c) ) project_node.lastChild.expand();
 		var run_store = project_node.lastChild.c.store;
-		run_store.insert(0, new C.model.Run({smp_id : this.getForm().getRecord().node.get('id'),
-		started: new Date().getTime()}));
+		run_store.insert(0, new C.model.Run({smp_id : this.getForm().getRecord().node.get('id')}));
 	}
 
 });
