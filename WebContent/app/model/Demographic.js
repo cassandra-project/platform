@@ -39,10 +39,14 @@ Ext.define('C.model.Demographic', {
 			type: 'int'
 		},
 		{
-			name: '_id'
+			name: '_id',
+			persist: false
 		},
 		{
-			name: 'generators'
+			name: 'generators',
+			defaultValue: [
+				
+			]
 		}
 	]
 });

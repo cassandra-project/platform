@@ -132,6 +132,7 @@ Ext.define('C.view.MyViewport', {
 					displayField: 'name',
 					useArrows: true,
 					viewConfig: {
+						loadingText: 'loading...',
 						plugins: [
 							Ext.create('Ext.tree.plugin.TreeViewDragDrop', {
 								ptype: 'treeviewdragdrop',
@@ -180,10 +181,11 @@ Ext.define('C.view.MyViewport', {
 
 	onMainTabPanelTabChange: function(tabPanel, newCard, oldCard, options) {
 		if (C.dbname) {
-			if (Ext.getClassName(this.getComponent('MainTabPanel').getActiveTab()) != 'C.view.ResultsGraphForm') {	
-				this.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
-				this.query('.field').forEach(function(c){c.readOnly = true;});
-				this.query('.grid').forEach(function(c){
+			var activeTab = this.getComponent('MainTabPanel').getActiveTab();
+			if (Ext.getClassName(activeTab) != 'C.view.ResultsGraphForm') {	
+				activeTab.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
+				activeTab.query('.field').forEach(function(c){c.readOnly = true;});
+				activeTab.query('.grid').forEach(function(c){
 					c.view.plugins.forEach(function(plugin){
 						if (plugin.ptype == 'gridviewdragdrop') {
 							plugin.dragZone.locked = true;
@@ -228,14 +230,14 @@ Ext.define('C.view.MyViewport', {
 				case 'Scenario': parent_idKey = 'project_id'; break;
 				case 'SimulationParam': parent_idKey = 'scn_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
+				case 'Demographic': parent_idKey = 'scn_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
 				case 'Activity': parent_idKey = 'pers_id'; break;
 				case 'ActivityModel': parent_idKey = 'act_id'; break;
-				case 'ConsumptionModel': parent_idKey = 'app_id'; break;
 				default: return false;
 			}
-			if (!event.shiftKey) {
+			if (!event.shiftKey || record.isLeaf()) {
 				var recordRawData = JSON.parse(JSON.stringify(node.data));
 				delete recordRawData._id;
 				//delete recordRawData._id;
@@ -246,16 +248,12 @@ Ext.define('C.view.MyViewport', {
 			else {
 				data.copy = true;
 				var targetID = '';
-				var meId = '';
+				var meID = '';
 				switch(record.get('nodeType')){
 					case 'Scenario': targetID = 'PrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
-					case 'SimulationParam': targetID = 'ScnID'; meID = 'smpID'; break;
 					case 'Installation': targetID = 'ScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'InstID'; meID = 'persID'; break;
-					case 'Appliance': targetID = 'InstID'; meID = 'appID'; break;
 					case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
-					case 'ActivityModel': targetID = 'ActID'; meID = 'actmodID'; break;
-					case 'ConsumptionModel': targetID = 'AppID'; meID = 'consmodID'; break;
 					default: return false;
 				}
 
@@ -270,14 +268,16 @@ Ext.define('C.view.MyViewport', {
 							params[parent_idKey] = overModel.get('parentId');
 							overModel.removeAll();
 							overModel.c.store.load( {params : params });
+							Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 						}
 						else {
-							Ext.MessageBox.alert('Error', response.errors.Exception);
+							Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
 						}
 					}
 				});
 			}
-		}else{
+		}
+		else {
 			return false;
 		}
 

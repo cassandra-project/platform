@@ -74,8 +74,10 @@ Ext.define('C.view.ActmodPropertiesForm', {
 									xtype: 'combobox',
 									width: 246,
 									name: 'day_type',
-									fieldLabel: 'Day type',
+									fieldLabel: 'Day type  <span style=color:red>*</span>',
+									allowBlank: false,
 									displayField: 'day_type',
+									forceSelection: true,
 									queryMode: 'local',
 									store: 'DayTypeStore',
 									valueField: 'day_type'
@@ -84,7 +86,9 @@ Ext.define('C.view.ActmodPropertiesForm', {
 									xtype: 'checkboxfield',
 									name: 'shiftable',
 									fieldLabel: 'Shiftable',
-									boxLabel: ''
+									boxLabel: '',
+									inputValue: 'true',
+									uncheckedValue: 'false'
 								}
 							]
 						},
@@ -111,6 +115,7 @@ Ext.define('C.view.ActmodPropertiesForm', {
 				},
 				{
 					xtype: 'button',
+					itemId: 'btn',
 					margin: '10px 0 0 290px',
 					width: 70,
 					autoWidth: false,
@@ -131,12 +136,14 @@ Ext.define('C.view.ActmodPropertiesForm', {
 	onTextfieldChange11: function(field, newValue, oldValue, options) {
 		if(this.getBubbleParent())
 		this.getBubbleParent().getBubbleParent().setTitle(newValue);
+		this.form.getRecord().node.set({'name':newValue});
 	},
 
 	onButtonClick2: function(button, e, options) {
 		var gridIds = [];
 		var myForm = this.getForm();
 		var record = myForm.getRecord();
+		var values = myForm.getValues();
 
 		var gridData = this.query('grid')[0].store.data;
 
@@ -144,34 +151,20 @@ Ext.define('C.view.ActmodPropertiesForm', {
 			gridIds.push(index.get('_id'));
 
 		});
+		record.set({
+			'name':values.name,
+			'type': values.type,
+			'description': values.description,
+			'day_type': values.day_type,
+			'shiftable': values.shiftable, 
+			'containsAppliances': gridIds
+		});
 
-		record.set('containsAppliances', gridIds);
+		//clear dirty record
+		record.node.commit();
 
-		//gridData = this.query('grid')[1].store.data;
-		//var duration = gridData.items.length > 0 ? gridData.items[0].get('_id') : '';
-
-
-		/*if (record.get('repeatsNrOfTime')) 
-		Ext.Ajax.request({
-		url: '/cassandra/api/distr/' + record.get('repeatsNrOfTime'),
-		method: 'PUT',
-
-		params: {
-		parameters: myForm.findField('parameter3').getValue(),
-		distrType: myForm.findField('distrType3').getValue()
-		},
-
-		headers: {
-		"Content-Type": "application/json"
-		},
-		scope: this,
-		callback: function(response) {
-		console.log(response.responseText);
-		}
-		});*/
-
-
-		myForm.updateRecord();console.info(record);
+		if (record.isNew)
+		record.isNew = false;
 		//record.save();
 	}
 

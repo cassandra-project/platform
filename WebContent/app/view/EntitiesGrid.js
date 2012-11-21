@@ -19,8 +19,7 @@ Ext.define('C.view.EntitiesGrid', {
 	frame: false,
 	margin: '10px 0',
 	maxWidth: 250,
-	minHeight: 20,
-	autoScroll: true,
+	autoScroll: false,
 	forceFit: true,
 	hideHeaders: false,
 	store: 'DemographicEntities',
@@ -33,7 +32,9 @@ Ext.define('C.view.EntitiesGrid', {
 			viewConfig: {
 				autoShow: false,
 				hidden: false,
+				minHeight: 100,
 				autoScroll: true,
+				loadingText: 'loading..',
 				plugins: [
 					Ext.create('Ext.grid.plugin.DragDrop', {
 						ptype: 'gridviewdragdrop',
@@ -53,7 +54,7 @@ Ext.define('C.view.EntitiesGrid', {
 				}
 			},
 			selModel: Ext.create('Ext.selection.RowModel', {
-
+				mode: 'MULTI'
 			}),
 			dockedItems: [
 				{
@@ -76,13 +77,13 @@ Ext.define('C.view.EntitiesGrid', {
 			],
 			plugins: [
 				Ext.create('Ext.grid.plugin.RowEditing', {
-					ptype: 'rowediting',
-					clicksToEdit: 1
+					ptype: 'rowediting'
 				})
 			],
 			columns: [
 				{
 					xtype: 'gridcolumn',
+					hidden: true,
 					dataIndex: 'entity_id',
 					text: 'Entity_id'
 				},
@@ -122,21 +123,7 @@ Ext.define('C.view.EntitiesGrid', {
 
 			data.copy = true;
 
-			//delete dataToAdd['_id'];
-			/*var parent_id = node.node.parentNode.get('parentId');
-			switch( node.node.parentNode.get('nodeType')){
-			case 'ScenariosCollection': dataToAdd.project_id = parent_id; break;
-			case 'InstallationsCollection': dataToAdd.scenario_id = parent_id; break;
-			case 'PersonsCollection': dataToAdd.inst_id = parent_id; break;
-			case 'AppliancesCollection': dataToAdd.inst_id = parent_id; break;
-			case 'ActivitiesCollection': dataToAdd.pers_id = parent_id; break;
-			case 'ActivityModelsCollection': dataToAdd.act_id = parent_id; break;
-			case 'DistributionsCollection': dataToAdd.actmod_id = parent_id; break;
-			case 'ConsumptionModelsCollection': dataToAdd.app_id = parent_id; break;
-			default: return false;
-			}*/
-
-			this.store.insert(0, {'entity_id':record.get('nodeId'), 'entity_type':record.get('nodeType')});
+			this.store.insert(0, {'entity_id':record.get('nodeId'), 'entity_type':record.get('nodeType').toLowerCase()});
 			dropFunction.cancelDrop();
 			this.plugins[0].startEdit(0, 0);
 			return 0;

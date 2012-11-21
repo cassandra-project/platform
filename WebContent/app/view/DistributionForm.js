@@ -30,9 +30,14 @@ Ext.define('C.view.DistributionForm', {
 	closable: false,
 	collapsible: false,
 	titleCollapse: false,
+	standardSubmit: false,
 
 	initComponent: function() {
 		var me = this;
+
+		me.initialConfig = Ext.apply({
+			standardSubmit: false
+		}, me.initialConfig);
 
 		Ext.applyIf(me, {
 			items: [
@@ -63,7 +68,6 @@ Ext.define('C.view.DistributionForm', {
 							width: 128,
 							name: 'distrType',
 							readOnly: false,
-							allowBlank: false,
 							displayField: 'distrType',
 							queryMode: 'local',
 							store: 'DistrTypeStore',
@@ -83,6 +87,7 @@ Ext.define('C.view.DistributionForm', {
 						},
 						{
 							xtype: 'button',
+							itemId: 'btn',
 							margin: '10px 0 0 50px',
 							text: 'Update',
 							listeners: {
@@ -103,37 +108,67 @@ Ext.define('C.view.DistributionForm', {
 	onButtonClick2: function(button, e, options) {
 
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
+		var record = myForm.getRecord();
+		var values = myForm.getValues();
 
 		var parameters = myForm.getFieldValues().params;
 		var valuesDistr = myForm.getFieldValues().val;
 		var myConsModChartStore = this.query('chart')[0].store;
 
-		try {
-			parameters = JSON.parse(parameters);
+		if(parameters) {
+			try {
+				parameters = JSON.parse(parameters);
+			}
+			catch(e) {
+				Ext.MessageBox.show({
+					title:'Invalid input', 
+					msg: 'A valid input example would be: </br>[{"w":103,"mean":203.3,"std":103.4}]', 
+					icon: Ext.MessageBox.ERROR
+				});
+				return false;
+			}
 		}
-		catch(e) {
-			Ext.MessageBox.alert('Field "parameters" must be an array');
-			return false;
+		else
+		parameters = [];
+
+		if(valuesDistr) {
+			try {
+				valuesDistr = JSON.parse(valuesDistr);
+			}
+			catch(e) {
+				Ext.MessageBox.show({
+					title:'Invalid input', 
+					msg: 'A valid input example would be: [3,4]', 
+					icon: Ext.MessageBox.ERROR
+				});
+				return false;
+			}
 		}
-		try {
-			valuesDistr = JSON.parse(valuesDistr);
-		}
-		catch(e) {
-			Ext.MessageBox.alert('Field "values" must be an array');
-			return false;
-		}
+		else 
+		valuesDistr = [];
 
 		if (record) {
-			myForm.updateRecord();
-			record.set({'parameters': parameters, 'values': valuesDistr});
+			record.set({
+				'name':values.name,
+				'type': values.type,
+				'description': values.description,
+				'distrType': values.distrType,
+				'parameters': parameters, 
+				'values': valuesDistr
+			});
+
+			if (record.isNew)
+			record.isNew = false;
+
 			myConsModChartStore.removeAll();
 			myConsModChartStore.load();
+
 		}
+
 		else {
 			var actmod_record = propertiesCmp.getForm().getRecord();
 			var distr_store = actmod_record.c.store;
+
 			distr_store.insert(0,{
 				name:values.name,
 				type: values.type,
@@ -143,12 +178,20 @@ Ext.define('C.view.DistributionForm', {
 				parameters: parameters,
 				actmod_id:actmod_record.get('_id')
 			});
+
 			distr_type = this.distr_type;
-			distr_store.on('update', function(records) {
-				actmod_record.set(distr_type,records.data.items[0].get('_id') );
-				myConsModChartStore.proxy.url += '/' + records.data.items[0].get('_id');
+
+			distr_store.on(
+			'update', 
+			function(store, record, operation, eOpts ) {
+				actmod_record.set(distr_type,record.get('_id') );
+				myForm.loadRecord(record);
+				myConsModChartStore.proxy.url += '/' + record.get('_id');
 				myConsModChartStore.load();
-			});							  
+			}, 
+			null, 
+			{ single : true }
+			);							  
 		}
 
 

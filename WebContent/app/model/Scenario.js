@@ -20,7 +20,8 @@ Ext.define('C.model.Scenario', {
 
 	fields: [
 		{
-			name: '_id'
+			name: '_id',
+			persist: false
 		},
 		{
 			name: 'project_id'
@@ -35,7 +36,7 @@ Ext.define('C.model.Scenario', {
 		},
 		{
 			name: 'setup',
-			defaultValue: '',
+			defaultValue: 'static',
 			type: 'string'
 		},
 		{

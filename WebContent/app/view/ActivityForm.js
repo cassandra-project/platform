@@ -72,6 +72,7 @@ Ext.define('C.view.ActivityForm', {
 								},
 								{
 									xtype: 'button',
+									itemId: 'btn',
 									margin: '10px 0 0 185px',
 									width: 70,
 									autoWidth: false,
@@ -102,14 +103,20 @@ Ext.define('C.view.ActivityForm', {
 
 	onTextfieldChange111: function(field, newValue, oldValue, options) {
 		this.setTitle(newValue);
+		this.form.getRecord().node.set({'name':newValue});
 	},
 
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
 		var record = myForm.getRecord();
+
 		myForm.updateRecord();
 
-		//record.save();
+		//clear dirty record
+		record.node.commit();
+
+		if (record.isNew)
+		record.isNew = false;
 	}
 
 });

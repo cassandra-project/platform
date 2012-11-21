@@ -20,9 +20,6 @@ Ext.define('C.view.ActivityModelForm', {
 	hidden: false,
 	width: 735,
 	autoScroll: true,
-	layout: {
-		type: 'auto'
-	},
 	bodyPadding: 10,
 	closable: true,
 	title: 'My Form',
