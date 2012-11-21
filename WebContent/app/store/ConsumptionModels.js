@@ -43,22 +43,12 @@ Ext.define('C.store.ConsumptionModels', {
 				}
 			},
 			listeners: {
-				datachanged: {
-					fn: me.onJsonstoreDataChangeD,
-					scope: me
-				},
 				beforeload: {
 					fn: me.onJsonstoreBeforeLoad,
 					scope: me
 				}
 			}
 		}, cfg)]);
-	},
-
-	onJsonstoreDataChangeD: function(abstractstore, options) {
-		console.info('ConsumptionModel data changed.', abstractstore, options);
-		var store = abstractstore;
-
 	},
 
 	onJsonstoreBeforeLoad: function(store, operation, options) {

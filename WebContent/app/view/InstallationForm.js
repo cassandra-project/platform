@@ -76,16 +76,19 @@ Ext.define('C.view.InstallationForm', {
 									xtype: 'numberfield',
 									width: 246,
 									name: 'x',
-									fieldLabel: 'Lat'
+									fieldLabel: 'Lat',
+									step: 0.01
 								},
 								{
 									xtype: 'numberfield',
 									width: 246,
 									name: 'y',
-									fieldLabel: 'Long'
+									fieldLabel: 'Long',
+									step: 0.01
 								},
 								{
 									xtype: 'button',
+									itemId: 'btn',
 									margin: '10px 0 0 185px',
 									width: 70,
 									autoWidth: false,
@@ -109,15 +112,21 @@ Ext.define('C.view.InstallationForm', {
 
 	onTextfieldChange11111: function(field, newValue, oldValue, options) {
 		this.setTitle(newValue);
+		this.form.getRecord().node.set({'name':newValue});
 	},
 
 	onButtonClick2: function(button, e, options) {
 
 		var myForm = this.getForm();
 		var record = myForm.getRecord();
+
 		myForm.updateRecord();
 
-		//record.save();
+		//clear dirty record
+		record.node.commit();
+
+		if (record.isNew)
+		record.isNew = false;
 	}
 
 });

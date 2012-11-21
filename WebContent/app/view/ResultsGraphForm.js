@@ -121,6 +121,7 @@ Ext.define('C.view.ResultsGraphForm', {
 								},
 								{
 									xtype: 'button',
+									itemId: 'btn',
 									margin: '10px 0 0 120px',
 									width: 119,
 									autoWidth: false,

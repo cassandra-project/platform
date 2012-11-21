@@ -20,7 +20,8 @@ Ext.define('C.model.ActivityModel', {
 
 	fields: [
 		{
-			name: '_id'
+			name: '_id',
+			persist: false
 		},
 		{
 			name: 'name',
@@ -40,6 +41,7 @@ Ext.define('C.model.ActivityModel', {
 		},
 		{
 			name: 'day_type',
+			defaultValue: 'working',
 			type: 'string'
 		},
 		{

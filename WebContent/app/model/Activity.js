@@ -20,7 +20,8 @@ Ext.define('C.model.Activity', {
 
 	fields: [
 		{
-			name: '_id'
+			name: '_id',
+			persist: false
 		},
 		{
 			name: 'name',

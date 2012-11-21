@@ -31,6 +31,7 @@ Ext.define('C.view.DynamicGrid', {
 
 		Ext.applyIf(me, {
 			viewConfig: {
+				loadingText: 'loading..',
 				plugins: [
 					Ext.create('Ext.grid.plugin.DragDrop', {
 						ptype: 'gridviewdragdrop',
@@ -122,15 +123,18 @@ Ext.define('C.view.DynamicGrid', {
 			switch(record.get('nodeType')){
 				case 'Scenario': parent_idKey = 'project_id'; break;
 				case 'SimulationParam': parent_idKey = 'scn_id'; break;
-				case 'Installation': parent_idKey = 'scenario_id'; break;
+				case 'Installation': parent_idKey = 'scn_id'; break;
+				case 'Demographic': parent_idKey = 'scenario_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
 				case 'Activity': parent_idKey = 'pers_id'; break;
 				case 'ActivityModel': parent_idKey = 'act_id'; break;
-				case 'ConsumptionModel': parent_idKey = 'app_id'; break;
 				default: return false;
 			}
-			if (!event.shiftKey) {
+			if (!event.shiftKey || record.isLeaf()) {
+
+				//Ext.sliding_box.msg('Drag and Drop info', 'By holding <b>Shift</b> key pressed while copying a node </br> all its childred will be copied as well');
+
 				var dataToAdd = JSON.parse(JSON.stringify(node.data));
 				delete dataToAdd._id;
 				dataToAdd[parent_idKey] = parent_id;
@@ -139,16 +143,12 @@ Ext.define('C.view.DynamicGrid', {
 			else {
 				data.copy = true;
 				var targetID = '';
-				var meId = '';
+				var meID = '';
 				switch(record.get('nodeType')){
 					case 'Scenario': targetID = 'PrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
-					case 'SimulationParam': targetID = 'ScnID'; meID = 'smpID'; break;
 					case 'Installation': targetID = 'ScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'InstID'; meID = 'persID'; break;
-					case 'Appliance': targetID = 'InstID'; meID = 'appID'; break;
 					case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
-					case 'ActivityModel': targetID = 'ActID'; meID = 'actmodID'; break;
-					case 'ConsumptionModel': targetID = 'AppID'; meID = 'consmodID'; break;
 					default: return false;
 				}
 				//TODO See why on failure success function is executed
@@ -163,14 +163,27 @@ Ext.define('C.view.DynamicGrid', {
 							params[parent_idKey] = parent_id;
 							this.store.navigationNode.removeAll();
 							this.store.load( {params : params });
+							Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 						}
 						else {
-							Ext.MessageBox.alert('Error', response.errors.Exception);
+							Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
 						}
 					}
+					/*success: function(response, options) {
+					var message = Ext.JSON.decode(response.responseText).message;
+					var params = {};
+					params[parent_idKey] = parent_id;
+					this.store.navigationNode.removeAll();
+					this.store.load( {params : params });
+					Ext.sliding_box.msg('Success', JSON.stringify(message));
+					},
+					failure: function(response, options) {
+					var errors = Ext.JSON.decode(response.responseText).errors;
+					Ext.MessageBox.show({title:'Error', msg: JSON.stringify(errors), icon: Ext.MessageBox.ERROR});
+					}*/
 				});
+				return 0;
 			}
-			return 0;
 		}
 		return false;
 	},
@@ -184,22 +197,26 @@ Ext.define('C.view.DynamicGrid', {
 			case 'ProjectsCollection': inputArray = {};break;
 			case 'ScenariosCollection': inputArray = {'project_id' : parent_id};break;
 			case 'InstallationsCollection': inputArray = {'scenario_id' : parent_id}; break;
+			case 'DemographicsCollection': inputArray = {'scn_id' : parent_id}; break;
 			case 'SimulationParamsCollection': inputArray = {'scn_id' : parent_id, calendar: {}}; break;
 			case 'PersonsCollection': inputArray = {'inst_id' : parent_id}; break;
 			case 'AppliancesCollection': inputArray = {'inst_id': parent_id}; break;
 			case 'ActivitiesCollection': inputArray = {'pers_id': parent_id}; break;
 			case 'ActivityModelsCollection': inputArray = {'act_id' : parent_id, containsAppliances:[]}; break;
-			case 'DistributionsCollection': inputArray = {'actmod_id' : parent_id, values:[], parameters:[]}; break;
 			default: return false;
 		}
 		var currentModel = this.store.getProxy().getModel();
+		var cur_record = new currentModel(inputArray);
 
-		this.store.insert(0, new currentModel(inputArray));
-		var cur_record = this.store.getAt(0);
-		C.app.createForm(cur_record.node);
+		this.store.insert(0, cur_record);
+
+		/*this.store.on('update', function(records) {
+		var record = this.getAt(0);
+		C.app.createForm(record.node);
+		});	
+		*/
 
 		//this.plugins[0].startEdit(0, 0);
-
 
 
 
@@ -208,9 +225,24 @@ Ext.define('C.view.DynamicGrid', {
 	onButtonClick1: function(button, e, options) {
 		console.info('Delete clicked.', this, button, e, options);
 
-		var selection = this.getView().getSelectionModel().getSelection();
-		if (selection) {
-			this.store.remove(selection);	
+		var tabs = Ext.getCmp('MainTabPanel');
+		var selections = this.getView().getSelectionModel().getSelection();
+
+		if (selections) {
+
+			//check if there are open tabs with selections and if yes, close them
+			Ext.each(selections, function(selection, index) {
+				var node = selection.node;
+				var pathToMe =  node.get('nodeType')+':'+node.getPath();
+				Ext.each (tabs.items.items, function(item, index) {
+					if (item.pathToMe == pathToMe) {
+						item.close();
+						return false;
+					}
+				});
+			});
+
+			this.store.remove(selections);
 		}
 	},
 

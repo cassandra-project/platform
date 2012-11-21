@@ -68,7 +68,6 @@ Ext.application({
 		'RelationsGrid',
 		'DistributionForm',
 		'DynamicGrid',
-		'ScenarioForm',
 		'InstallationForm',
 		'ApplianceForm',
 		'PersonForm',
@@ -187,8 +186,9 @@ Ext.application({
 
 		myForm.loadRecord(record);
 
-		if (myForm.findField('setup').value)
-		myForm.findField('setup').readOnly = true;
+		if (!record.isNew) {
+			myForm.findField('setup').readOnly = true;
+		}
 
 		/*var out='';
 		var params = record.get('model').params;
@@ -282,6 +282,12 @@ Ext.application({
 			success: function(response, opts) {
 				var o = Ext.decode(response.responseText);
 				gridStore.loadData(o.data, true);
+				var successMsg = Ext.JSON.decode(response.responseText).message;
+				Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
+			},
+			failure: function(response, options) {
+				var errors = Ext.JSON.decode(response.responseText).errors;
+				Ext.MessageBox.show({title:'Error', msg: JSON.stringify(errors), icon: Ext.MessageBox.ERROR});
 			}
 		});
 
@@ -305,7 +311,7 @@ Ext.application({
 						else if ( distr_record.get('_id') == record.get('repeatsNrOfTime')) {
 							myCurrentCmp = myRepeatsCmp;
 						}
-						else {return false;}
+						else {return true;}
 
 						myCurrentCmp.getForm().loadRecord(distr_record);
 						myCurrentCmp.getForm().setValues({ 
@@ -412,6 +418,10 @@ Ext.application({
 		}
 		});
 		*/
+		consmodGraphStore = new C.store.ConsumptionModelValues({});
+		myResultsChart = new C.view.ConsModChart({store: consmodGraphStore});
+		myFormCmp.insert(3, myResultsChart);
+
 		consmod_store = new C.store.ConsumptionModels({
 			storeId: 'ConsumptionModelsStore-app_id-'+record.node.get('nodeId'),
 			listeners:{
@@ -424,13 +434,8 @@ Ext.application({
 						myForm.setValues({ consmod_name: consmod_record.get('name')});
 						myForm.setValues({ consmod_description: consmod_record.get('description')});
 
-						consmodGraphStore = new C.store.ConsumptionModelValues({});
 						consmodGraphStore.proxy.url += '/' + consmod_record.get('_id');
 						consmodGraphStore.load();
-
-						myResultsChart = new C.view.ConsModChart({store: consmodGraphStore});
-						myFormCmp.insert(3, myResultsChart);
-
 					}
 				}
 			}	
@@ -654,8 +659,6 @@ Ext.application({
 
 	getResultsGraphForm: function() {
 		var myFormCmp = new C.view.ResultsGraphForm({});
-
-		var myForm = myFormCmp.getForm();
 
 		myResultsStore = new C.store.Results({});
 		/*myResultsStore.load({

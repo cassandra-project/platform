@@ -83,6 +83,7 @@ Ext.define('C.view.DemographicForm', {
 								},
 								{
 									xtype: 'button',
+									itemId: 'btn',
 									margin: '10px 120px',
 									width: 70,
 									autoWidth: false,
@@ -125,12 +126,14 @@ Ext.define('C.view.DemographicForm', {
 
 	onTextfieldChange11: function(field, newValue, oldValue, options) {
 		this.setTitle(newValue);
+		this.form.getRecord().node.set({'name':newValue});
 	},
 
 	onButtonClick2: function(button, e, options) {
 		var gridGenerators = [];
 		var myForm = this.getForm();
 		var record = myForm.getRecord();
+		var values = myForm.getValues();
 
 		var gridData = this.query('grid')[0].store.data;
 
@@ -138,10 +141,18 @@ Ext.define('C.view.DemographicForm', {
 			gridGenerators.push(item.data);
 		});
 
-		record.set('generators', gridGenerators);
+		record.set({
+			'name':values.name,
+			'type': values.type,
+			'description': values.description,
+			'generators': gridGenerators
+		});
 
-		myForm.updateRecord();console.info(record);
-		//record.save();
+		//clear dirty record
+		record.node.commit();
+
+		if (record.isNew)
+		record.isNew = false;
 
 		//TODO: only one request to server
 	}
