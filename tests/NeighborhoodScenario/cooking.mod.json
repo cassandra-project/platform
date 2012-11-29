@@ -1,0 +1,2 @@
+{ "act_id" : "508ba646e4b03c90ac645dd8", "containsAppliances" : [ "508ba467e4b03c90ac645dd0", "508ba476e4b03c90ac645dd1" ], "day_type" : "working", "description" : "", "duration" : "508bd4f5e4b03c90ac645de3", "name" : "Cooking", "repeatsNrOfTime" : "508bd4efe4b03c90ac645de2", "shiftable" : false, "startTime" : "508bd4dae4b03c90ac645de1", "type" : "cooking" }
+

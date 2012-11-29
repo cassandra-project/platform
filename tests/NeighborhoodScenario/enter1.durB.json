@@ -1,10 +1,10 @@
 {
-    "name" : "Enter 1",
+    "name" : "Enter 2",
     "type" : "duration",
-    "distrType" : "normal",
+    "distrType" : "Normal Distribution",
     "parameters" : [
         {
-            "mean" : 150.0,
+            "mean" : 30.0,
             "std" : 0.00001
         }
      ]

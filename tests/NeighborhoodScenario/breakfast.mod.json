@@ -1,0 +1,1 @@
+{ "act_id" : "508ba654e4b03c90ac645dd9", "containsAppliances" : [ "508ba48ee4b03c90ac645dd2" ], "day_type" : "working", "description" : "", "duration" : "508bd353e4b03c90ac645ddf", "name" : "Breakfast cooking", "repeatsNrOfTime" : "508bd359e4b03c90ac645de0", "shiftable" : false, "startTime" : "508bd34ae4b03c90ac645dde", "type" : "cooking" }

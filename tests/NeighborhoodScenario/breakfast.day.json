@@ -1,7 +1,8 @@
     {
-    "name" : "Enter 2",
+    "name" : "Breakfast",
     "type" : "weekday",
     "distrType" : "Normal Distribution",
+        "actmod_id" : "508ba6cee4b03c90ac645ddb",
     "parameters" : [
         {
             "mean" : 1.0,

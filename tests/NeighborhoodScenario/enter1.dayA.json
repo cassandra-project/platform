@@ -1,7 +1,7 @@
     {
     "name" : "Enter 1",
     "type" : "weekday",
-    "distrType" : "normal",
+    "distrType" : "Normal Distribution",
     "parameters" : [
         {
             "mean" : 1.0,

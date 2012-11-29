@@ -1,10 +1,11 @@
 {
-    "name" : "Enter 1",
+    "name" : "Breakfast",
     "type" : "start",
     "distrType" : "Normal Distribution",
+    "actmod_id" : "508ba6cee4b03c90ac645ddb",
     "parameters" : [
         {
-            "mean" : 1200.0,
+            "mean" : 400.0,
             "std" : 0.00001
         }
      ]

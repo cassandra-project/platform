@@ -29,7 +29,7 @@
             "optional": true
         },
         "standy_consumption": {
-            "type": "number",
+            "type": "integer",
             "description": "The values of the standby consumption",
             "optional": true
         },

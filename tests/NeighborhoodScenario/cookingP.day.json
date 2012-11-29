@@ -1,11 +1,12 @@
-{
-    "name" : "Cleaning",
+    {
+    "name" : "Cooking",
     "type" : "weekday",
     "distrType" : "Normal Distribution",
+    "actmod_id" : "508bbecfe4b03c90ac645ddc",
     "parameters" : [
         {
             "mean" : 2.0,
-            "std" : 0.00001
+            "std" : 0.000001
         }
      ]
 }

@@ -104,6 +104,7 @@ public class Simulation implements Runnable {
   	}
 
   	public void run () {
+  		try {
   		long startTime = System.currentTimeMillis();
   		int percentage = 0;
   		DBObject query = new BasicDBObject();
@@ -129,12 +130,12 @@ public class Simulation implements Runnable {
   				if(applied) {
   					if(e.getAction() == Event.SWITCH_ON) {
   						try {
-  							m.addOpenTick(e.getAppliance().getId(), tick);
+  							//m.addOpenTick(e.getAppliance().getId(), tick);
   						} catch (Exception exc) {
   							exc.printStackTrace();
   						}
   					} else if(e.getAction() == Event.SWITCH_OFF){
-  						m.addCloseTick(e.getAppliance().getId(), tick);
+  						//m.addCloseTick(e.getAppliance().getId(), tick);
   					}
   				}
   				top = queue.peek();
@@ -166,6 +167,7 @@ public class Simulation implements Runnable {
   		objRun.put("ended", endTime);
   		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
+  		} catch(Exception e) {e.printStackTrace();}
   	}
 
   	public void setup() throws Exception {
@@ -322,7 +324,13 @@ public class Simulation implements Runnable {
 	    		String appname = (String)applianceDoc.get("name");
 		    	String appdescription = (String)applianceDoc.get("description");
 		    	String apptype = (String)applianceDoc.get("type");
-		    	double standy = ((Double)applianceDoc.get("standy_consumption")).doubleValue();
+		    	double standy = 0.0;
+		    	try {
+		    		standy = (double)((Integer)applianceDoc.get("standy_consumption")).intValue();
+		    	} catch(ClassCastException cce) { }
+		    	try {
+		    		standy = ((Double)applianceDoc.get("standy_consumption")).doubleValue();
+		    	} catch(ClassCastException cce) { }
 		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
 		    	ConsumptionModel consmod = new ConsumptionModel(consModDoc.get("model").toString());
@@ -342,8 +350,8 @@ public class Simulation implements Runnable {
 	    		for(int k = 0; k < generators.size(); k++) {
 	    			DBObject generator = (DBObject)generators.get(k);
 	    			String entityId = (String)generator.get("entity_id");
-	    			double prob = ((Double)generator.get("probability")).doubleValue();
 	    			if(existing.containsKey(entityId)) {
+	    				double prob = ((Double)generator.get("probability")).doubleValue();
 	    				if(RNG.nextDouble() < prob) {
 	    					Appliance selectedApp = existing.get(entityId);
 	    					selectedApp.setParentId(inst.getId());
@@ -412,7 +420,9 @@ public class Simulation implements Runnable {
 			    		for(int m = 0; m < containsAppliances.size(); m++) {
 			    			String containAppId = (String)containsAppliances.get(m);
 			    			Appliance app  = existing.get(containAppId);
-			    			act.addAppliance(actmodDayType,app,1.0/containsAppliances.size());
+			    			System.out.println("Add - " + app.getName() + " " + actmodDayType);
+			    			//act.addAppliance(actmodDayType,app,1.0/containsAppliances.size());
+			    			act.addAppliance(actmodDayType,app,1.0);
 			    		}
 		    		}
 		    		person.addActivity(act);
@@ -425,9 +435,9 @@ public class Simulation implements Runnable {
 	    	for(int k = 0; k < generators.size(); k++) {
 	    		DBObject generator = (DBObject)generators.get(k);
 	    		String entityId = (String)generator.get("entity_id");
-	    		double prob = ((Double)generator.get("probability")).doubleValue();
-	    		sum += prob;
 	    		if(existingPersons.containsKey(entityId)) {
+	    			double prob = ((Double)generator.get("probability")).doubleValue();
+	    			sum += prob;
 	    			if(roulette < sum) {
 	    				Person selectedPerson = existingPersons.get(entityId);
 	    				selectedPerson.setParentId(inst.getId());
@@ -473,16 +483,23 @@ public class Simulation implements Runnable {
 	public static ProbabilityDistribution json2dist(DBObject distribution) {
   		String distType = (String)distribution.get("distrType");
   		switch (distType) {
-  		case ("normal"):
+  		case ("Normal Distribution"):
   			BasicDBList normalList = (BasicDBList)distribution.get("parameters");
   			DBObject normalDoc = (DBObject)normalList.get(0);
   			double mean = ((Double)normalDoc.get("mean")).doubleValue();
-  			double std = ((Double)normalDoc.get("std")).doubleValue();
+  			double std = 0.0;
+  			try {
+  				std = ((Double)normalDoc.get("std")).doubleValue();
+  			} catch(ClassCastException cce) {}
+  			try {
+  				std = (double)((Integer)normalDoc.get("std")).intValue();
+  			} catch(ClassCastException cce) {}
+  			System.out.println(std);
   			Gaussian normal = new Gaussian(mean, std);
   			normal.precompute(0, 1439, 1440);
   			//System.out.println("A");
   			return normal;
-        case ("uniform"):
+        case ("Uniform Distribution"):
    			BasicDBList unifList = (BasicDBList)distribution.get("parameters");
    			DBObject unifDoc = (DBObject)unifList.get(0);
    			double from = ((Double)unifDoc.get("from")).doubleValue();
@@ -491,7 +508,7 @@ public class Simulation implements Runnable {
    			uniform.precompute(from, to, (int) to + 1);
    			//System.out.println("B");
    			return uniform;
-   		case ("mixture"):
+   		case ("Gaussian Mixture Models"):
         	 BasicDBList mixList = (BasicDBList)distribution.get("parameters");
    			int length = mixList.size();
    			double[] w = new double[length];
