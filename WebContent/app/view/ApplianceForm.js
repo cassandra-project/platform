@@ -17,9 +17,10 @@ Ext.define('C.view.ApplianceForm', {
 	extend: 'Ext.form.Panel',
 
 	height: 442,
-	width: 586,
+	autoScroll: true,
 	layout: {
-		type: 'auto'
+		align: 'center',
+		type: 'vbox'
 	},
 	bodyPadding: 10,
 	closable: true,
@@ -85,25 +86,31 @@ Ext.define('C.view.ApplianceForm', {
 									width: 186,
 									name: 'standy_consumption',
 									fieldLabel: 'Stand By',
-									decimalPrecision: 1
+									step: 0.01
 								},
 								{
 									xtype: 'checkboxfield',
 									name: 'base',
 									fieldLabel: 'Base',
-									boxLabel: ''
+									boxLabel: '',
+									inputValue: 'true',
+									uncheckedValue: 'false'
 								},
 								{
 									xtype: 'checkboxfield',
 									name: 'shiftable',
 									fieldLabel: 'Shiftable',
-									boxLabel: ''
+									boxLabel: '',
+									inputValue: 'true',
+									uncheckedValue: 'false'
 								},
 								{
 									xtype: 'checkboxfield',
 									name: 'controllable',
 									fieldLabel: 'Controllable',
-									boxLabel: ''
+									boxLabel: '',
+									inputValue: 'true',
+									uncheckedValue: 'false'
 								}
 							]
 						},
@@ -134,8 +141,7 @@ Ext.define('C.view.ApplianceForm', {
 									width: 242,
 									name: 'expression',
 									readOnly: false,
-									fieldLabel: 'Expression',
-									allowBlank: false
+									fieldLabel: 'Expression'
 								}
 							]
 						}
@@ -143,7 +149,8 @@ Ext.define('C.view.ApplianceForm', {
 				},
 				{
 					xtype: 'button',
-					margin: '10px 250px',
+					itemId: 'btn',
+					margin: '10px 0',
 					width: 70,
 					autoWidth: false,
 					text: 'Update',
@@ -153,6 +160,11 @@ Ext.define('C.view.ApplianceForm', {
 							scope: me
 						}
 					}
+				},
+				{
+					xtype: 'label',
+					style: 'font-size:20px;font-weight:bold;',
+					text: 'Consumption Model Power'
 				}
 			]
 		});
@@ -162,40 +174,72 @@ Ext.define('C.view.ApplianceForm', {
 
 	onTextfieldChange111111: function(field, newValue, oldValue, options) {
 		this.setTitle(newValue);
+		this.form.getRecord().node.set({'name':newValue});
 	},
 
 	onButtonClick2: function(button, e, options) {
-		var gridIds = [];
-		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
 
+		var myForm = this.getForm();
+		var record = myForm.getRecord();
+		var myConsModChartStore = this.query('chart')[0].store;
 
 		myForm.updateRecord();
-		var expression = myForm.getFieldValues().expression;
-		var model = JSON.parse(myForm.getFieldValues().expression);
+
+		//clear dirty record
+		record.node.commit();
+
+		if (record.isNew)
+		record.isNew = false;
+
+		var model = myForm.getFieldValues().expression;
 		var name = myForm.getFieldValues().consmod_name;
 		var description = myForm.getFieldValues().consmod_description;
 
+		//update or insert consmod only if one of it's parameters is set
+		if ( model || name || description) {
 
-		var consmod_record = record.c.store.getRange()[0];
-		if (consmod_record) {
-			consmod_record.set({model: model, 'name': name, 'description': description});
-		}
-		else {
-			var currentModel = record.c.store.getProxy().getModel();
-			record.c.store.insert(0, 
-			new currentModel({
-				'app_id' : record.get('_id'), 
-				model: model, 
-				'description': description, 
-				'name': name
-			})
-			);
-		}
+			if (model) {
+				try {
+					model = JSON.parse(model);
+				}
+				catch(e) {
+					Ext.MessageBox.show({
+						title:'Invalid input', 
+						msg: 'A valid input example would be: </br>{"n":0,"params":[{"n":1,"values":[{"p":60,"d":200,"s":0}]}]}', 
+						icon: Ext.MessageBox.ERROR
+					});
+					return false;
+				}
+			}
+			else 
+			model = {};
 
+			var consmod_record = record.c.store.getRange()[0];
+			if (consmod_record) {
+				consmod_record.set({model: model, 'name': name, 'description': description});
+				if (consmod_record.isNew)
+				consmod_record.isNew = false;
+				myConsModChartStore.removeAll();
+				myConsModChartStore.load();
+			}
+			else {
+				var currentModel = record.c.store.getProxy().getModel();
+				record.c.store.insert(0, new currentModel({
+					'app_id' : record.get('_id'), 
+					'model': model, 
+					'description': description, 
+					'name': name
+				})
+				);
+				record.c.store.on('update', function(records) {
+					myConsModChartStore.proxy.url += '/' + records.data.items[0].get('_id');
+					myConsModChartStore.load();
+				}, null, {single:true});							  
+				}
 
-		//record.save();
+			}
+
+			//record.save();
 	}
 
 });

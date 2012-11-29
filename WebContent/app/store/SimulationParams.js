@@ -47,20 +47,9 @@ Ext.define('C.store.SimulationParams', {
 					fn: me.onJsonstoreLoad,
 					scope: me
 				},
-				datachanged: {
-					fn: me.onJsonstoreDataChangeD,
-					scope: me
-				},
 				update: {
 					fn: me.onJsonstoreUpdate,
-					scope: me
-				},
-				add: {
-					fn: me.onJsonstoreAdd,
-					scope: me
-				},
-				beforesync: {
-					fn: me.onJsonstoreBeforeSync,
+					single: false,
 					scope: me
 				},
 				remove: {
@@ -94,71 +83,25 @@ Ext.define('C.store.SimulationParams', {
 		}
 	},
 
-	onJsonstoreDataChangeD: function(abstractstore, options) {
-		console.info('SimulationParam data changed.', abstractstore, options);
-		var store = abstractstore;
-		//x = Ext.getCmp('uiNavigationTreePanel');
-		/*Ext.each(store.data.items, function(record){
-		xr = record; 
-		var nodeExisting = Ext.getCmp('uiNavigationTreePanel').store.tree.getNodeById(record.data._id);
-		console.info('Scenario record.', record, nodeExisting);
-		if(!nodeExisting){
-		console.info('Node does not exist. Creating it.');
-		abstractstore.navigationNode.appendChild({
-		id: record.data._id,
-		name: record.data.name,
-		nodeType: 'Scenario',
-		nodeId: record.data._id,
-		nodeStoreId: store.storeId,
-		expanded: false,
-		leaf: false,
-		expandable: true,
-		fakeChildren: true,
-		draggable: false
-		});
-		}
-		});*/
-		//abstractstore.navigationNode.childNodes
-	},
-
 	onJsonstoreUpdate: function(abstractstore, record, operation, options) {
 		console.info('SimulationParam data updated.', abstractstore, record, operation, options);
-		if(record.node){
-			record.node.set({id : record.data._id, 'node_id': record.data._id});
-			if(operation=='edit'){
-				Ext.each(options, function(k){
-					record.node.set(k, record.get(k));
-					//Ext.getCmp('uiNavigationTreePanel').getStore().getNodeById(record.get('_id')).set(k, record.get(k));
+		if (!record.node) {
+			if (operation == 'commit') {
+				console.info('++ Node does not exist. Creating it.');
+				var node = abstractstore.navigationNode.appendChild({
+					id: record.get('_id'),
+					name: record.get('name'),
+					nodeType: 'SimulationParam',
+					nodeId: record.get('_id'),
+					nodeStoreId: abstractstore.storeId,
+					leaf: true,
+					draggable: true
 				});
+				record.node = node;
+				C.app.createForm(record.node);
 			}
-		}else{
-			console.info('Record is not bound to a node. Skipping.');
 		}
-	},
 
-	onJsonstoreAdd: function(store, records, index, options) {
-		console.info('SimulationParam added.', store, records, index, options);
-		Ext.each(records, function(record){
-			//	var nodeExisting = Ext.getCmp('uiNavigationTreePanel').store.tree.getNodeById(record.data._id);
-			//	console.info('Scenario record.', record, nodeExisting);
-			//	if(!nodeExisting){
-			console.info('++ Node does not exist. Creating it.');
-			var node = store.navigationNode.appendChild({
-				id: record.data._id,
-				name: record.data.name,
-				nodeType: 'SimulationParam',
-				nodeId: record.data._id,
-				nodeStoreId: store.storeId,
-				leaf: true,
-				draggable: true
-			});
-			record.node = node;
-			//	}
-		});
-	},
-
-	onJsonstoreBeforeSync: function(options, eOpts) {
-		console.info(options, options);
 	},
 
 	onJsonstoreRemove: function(store, record, index, options) {

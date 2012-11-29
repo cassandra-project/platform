@@ -30,10 +30,12 @@ Ext.define('C.view.ResultsLineChart', {
 		Ext.applyIf(me, {
 			axes: [
 				{
-					type: 'Category',
+					type: 'Numeric',
 					fields: [
 						'x'
 					],
+					majorTickSteps: 20,
+					minorTickSteps: 5,
 					position: 'bottom',
 					title: 'Time'
 				},
@@ -58,8 +60,8 @@ Ext.define('C.view.ResultsLineChart', {
 				{
 					type: 'line',
 					highlight: {
-						size: 7,
-						radius: 7
+						size: 4,
+						radius: 4
 					},
 					tips: {
 						trackMouse: true,
@@ -80,6 +82,8 @@ Ext.define('C.view.ResultsLineChart', {
 						radius: 4,
 						'stroke-width': 0
 					},
+					selectionTolerance: 3,
+					showMarkers: false,
 					smooth: 3
 				}
 			],

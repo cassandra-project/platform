@@ -1,7 +1,7 @@
 {
         "name" : "One day of simulation time",
         "numberOfDays" : 1,
-        "scn_id" : "500d1133e4b087bdfeda0900",
+        "scn_id" : "50950d950f8bc2b5969fefe2",
         "locationInfo" : "Rotterdam",
         "calendar" : {
             "dayOfMonth" : 25,

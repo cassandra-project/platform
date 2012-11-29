@@ -18,15 +18,56 @@ Ext.define('C.controller.setDbName', {
 
 	init: function(application) {
 		C.dbname = window.location.hash.replace('#','');
+
 		Ext.util.Observable.observe(Ext.data.proxy.Rest);
 		Ext.data.proxy.Rest.on('exception', function(server, response,operation) {
-			var errors = Ext.JSON.decode(response.responseText).errors;
-			Ext.MessageBox.alert('Error', JSON.stringify(errors)); 
+			var record = response.request.options.operation.records[0];
+			var store = record.store;
+			var action = response.request.options.operation.action;
+			if (action == 'create') {
+				store.remove(record);
+			}
+			else if (action == 'update')
+			store.rejectChanges();
+			Ext.MessageBox.show({title:'Error', msg: JSON.stringify(errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
 		});
-		/*Ext.util.Observable.observe(Ext.form.Panel);
-		Ext.form.Panel.on('beforerender', function(this,eOpts) {
-		this.
-		});*/
+
+
+		Ext.util.Observable.observe(Ext.data.AbstractStore);
+		Ext.data.AbstractStore.on('write', function(store, operation, options) {
+			var successMsg = Ext.JSON.decode(operation.response.responseText).message;
+			Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
+		});
+
+
+		Ext.data.AbstractStore.on('add', function(store, records, index, options) {
+			Ext.each(records, function(record){
+				record.isNew = true;
+			});
+		});
+
+
+		if (!C.dbname) {
+			Ext.util.Observable.observe(Ext.form.Panel);
+			Ext.form.Panel.on('beforeclose', function(panel, options) {
+				var cur_record = panel.getForm().getRecord() ? panel.getForm().getRecord() : panel.query('form')[0].getRecord();
+				if (cur_record.isNew) {
+					Ext.MessageBox.show({
+						title:'Save Changes?',
+						msg: 'You have just created a new record but have not edited<br />any of its fields. <br />Would you like to discard record creation?',
+						buttons: Ext.MessageBox.YESNOCANCEL,
+						fn: function(btn){
+							if (btn == 'yes')
+							cur_record.store.remove(cur_record);
+							else
+							cur_record.isNew = false;
+						},
+						icon: Ext.MessageBox.QUESTION
+					});
+				}	
+			});
+		}
+
 	}
 
 });

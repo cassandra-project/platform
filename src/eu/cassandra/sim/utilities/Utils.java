@@ -28,7 +28,7 @@ public class Utils {
 	public static double[] dblist2doubleArr(BasicDBList list) {
 		double[] arr = new double[list.size()];
 		for(int i = 0; i < list.size(); i++) {
-			arr[i] = ((Double) list.get(i)).doubleValue();
+			arr[i] = Double.parseDouble(list.get(i).toString());
 		}
 		return arr;
 	}

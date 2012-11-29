@@ -21,7 +21,7 @@ Ext.define('C.store.MetricStore', {
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
 			autoLoad: false,
-			storeId: 'MyStore7',
+			storeId: 'MetricStore',
 			data: [
 				{
 					metric: 'p',

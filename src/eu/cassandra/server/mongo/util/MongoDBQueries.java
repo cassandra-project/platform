@@ -41,6 +41,7 @@ import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.MongoSimParam;
 import eu.cassandra.sim.entities.appliances.GUIConsumptionModel;
 import eu.cassandra.sim.math.GUIDistribution;
+import eu.cassandra.sim.utilities.Utils;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -511,24 +512,48 @@ public class MongoDBQueries {
 	 */
 	private DBObject getValues(DBObject dBObject, HttpHeaders httpHeaders,
 			String id, String coll) throws JSONSchemaNotValidException {
+		double values[] = null;
 		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
-			String type = MongoActivityModels.REF_DISTR_STARTTIME ;
-			if(DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
-					findOne(new BasicDBObject("duration._id",new ObjectId(id) )) != null) {
-				type = MongoActivityModels.REF_DISTR_DURATION;
+			if(dBObject.containsField("parameters")){
+				String type = MongoActivityModels.REF_DISTR_STARTTIME ;
+				if(DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
+						findOne(new BasicDBObject("duration._id",new ObjectId(id) )) != null) {
+					type = MongoActivityModels.REF_DISTR_DURATION;
+				}
+				else if (DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
+						findOne(new BasicDBObject("repeatsNrOfTime._id",new ObjectId(id))) != null) {
+					type = MongoActivityModels.REF_DISTR_REPEATS;
+				}
+				values = new GUIDistribution(type,dBObject).getValues();
 			}
-			else if (DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
-					findOne(new BasicDBObject("repeatsNrOfTime._id",new ObjectId(id))) != null) {
-				type = MongoActivityModels.REF_DISTR_REPEATS;
+			if(values == null && dBObject.containsField("values")) {
+				BasicDBList t = (BasicDBList)dBObject.get("values");
+				values = Utils.dblist2doubleArr(t); 
 			}
-			double valuesDistr[] = new GUIDistribution(type,dBObject).getValues();
-			dBObject.put("values", valuesDistr);
 		}
-		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS) && 
-				dBObject.containsField("model")) {
-			Double[] valuesConsModel = new GUIConsumptionModel((DBObject) dBObject.get("model")).getValues();
-			dBObject.put("values", valuesConsModel);
+		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS)  ) {
+			if(dBObject.containsField("model") &&  ((DBObject)dBObject.get("model")).containsField("params")) {
+				Double[] valuesConsModel = new GUIConsumptionModel((DBObject) dBObject.get("model")).getValues();
+				values = new double[valuesConsModel.length];
+				for(int i=0;i<valuesConsModel.length;i++) {
+					values[i] = valuesConsModel[i];
+				}
+			}
+			if( (values == null || values.length==0)  && dBObject.containsField("values")) {; 
+			BasicDBList t = (BasicDBList)dBObject.get("values");
+			values = Utils.dblist2doubleArr(t); 
+			}
 		}
+		if(values != null) {
+			BasicDBList list = new BasicDBList();
+			for(int i=0;i<values.length;i++) {
+				BasicDBObject dbObj = new BasicDBObject("x",i);
+				dbObj.put("y", values[i]);
+				list.add(dbObj);
+			}
+			dBObject.put("values", list);
+		}
+
 		return dBObject;
 	}
 

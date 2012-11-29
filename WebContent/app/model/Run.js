@@ -21,19 +21,24 @@ Ext.define('C.model.Run', {
 	fields: [
 		{
 			name: '_id',
+			persist: false,
 			type: 'string'
 		},
 		{
-			name: 'started'
+			name: 'started',
+			persist: false
 		},
 		{
-			name: 'ended'
+			name: 'ended',
+			persist: false
 		},
 		{
-			name: 'percentage'
+			name: 'percentage',
+			persist: false
 		},
 		{
-			name: 'prj_id'
+			name: 'prj_id',
+			persist: false
 		},
 		{
 			name: 'smp_id'

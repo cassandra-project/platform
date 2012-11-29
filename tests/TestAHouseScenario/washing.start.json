@@ -1,7 +1,7 @@
     {
     "name" : "Washing",
     "type" : "start",
-    "distrType" : "normal",
+    "distrType" : "Normal Distribution",
     "parameters" : [
         {
             "mean" : 500.0,

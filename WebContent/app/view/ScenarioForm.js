@@ -68,16 +68,18 @@ Ext.define('C.view.ScenarioForm', {
 									width: 246,
 									name: 'setup',
 									readOnly: false,
-									fieldLabel: 'Setup',
+									fieldLabel: 'Setup <span style=color:red>*</span>',
 									allowBlank: false,
+									enableKeyEvents: false,
 									displayField: 'setup',
-									forceSelection: true,
+									forceSelection: false,
 									queryMode: 'local',
 									store: 'SetupStore',
 									valueField: 'setup'
 								},
 								{
 									xtype: 'button',
+									itemId: 'btn',
 									margin: '10px 0 0 185px',
 									width: 70,
 									autoWidth: false,
@@ -131,23 +133,23 @@ Ext.define('C.view.ScenarioForm', {
 
 	onTextfieldChange1: function(field, newValue, oldValue, options) {
 		this.setTitle(newValue);
+		this.form.getRecord().node.set({'name':newValue});
 	},
 
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
-		//	updatedRecord = record.store.getProxy().getModel().create();
-		//var errors = updatedRecord.validate(); //validate the object
-		//if (errors.isValid()) { //if the object is valid, then save the data to the model associated with the form.
+		var record = myForm.getRecord();
+
 		myForm.updateRecord();
-		//	myForm.findField('setup').readOnly = true;
-		//}
-		//else {
-		//	myForm.markInvalid(errors);
-		//}
-		console.info(record);
-		//record.save();
+
+		if (record.isNew) {
+			record.isNew = false;
+			myForm.findField('setup').readOnly = true;
+		}
+
+		//clear dirty record
+		record.node.commit();
+
 	}
 
 });

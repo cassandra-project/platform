@@ -43,6 +43,10 @@ Ext.define('C.store.Results', {
 				beforeload: {
 					fn: me.onJsonstoreBeforeLoad,
 					scope: me
+				},
+				load: {
+					fn: me.onJsonstoreLoad,
+					scope: me
 				}
 			}
 		}, cfg)]);
@@ -50,6 +54,19 @@ Ext.define('C.store.Results', {
 
 	onJsonstoreBeforeLoad: function(store, operation, options) {
 		if (C.dbname) this.proxy.headers = {"dbname": C.dbname};
+	},
+
+	onJsonstoreLoad: function(store, records, successful, operation, options) {
+
+		try {
+			var myChart =  Ext.getCmp('MainTabPanel').getActiveTab().query('chart')[0];
+			var myChartsXaxis =myChart.axes.items[0];
+			myChartsXaxis.setTitle(this.proxy.reader.jsonData.xAxisLabel);
+			var myChartsYaxis =myChart.axes.items[1];
+			myChartsYaxis.setTitle(this.proxy.reader.jsonData.yAxisLabel);
+		}
+		catch(e) {}
+
 	}
 
 });

@@ -65,6 +65,7 @@ Ext.define('C.view.ProjectForm', {
 								},
 								{
 									xtype: 'button',
+									itemId: 'btn',
 									margin: '10px 0 0 185px',
 									width: 70,
 									autoWidth: false,
@@ -88,16 +89,20 @@ Ext.define('C.view.ProjectForm', {
 
 	onTextfieldChange: function(field, newValue, oldValue, options) {
 		this.setTitle(newValue);
+		this.form.getRecord().node.set({'name':newValue});
 	},
 
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
-		var record = myForm.getRecord(),
-		values = myForm.getFieldValues();
+		var record = myForm.getRecord();
 
+		myForm.updateRecord();
 
-		myForm.updateRecord();console.info(record);
-		//record.save();
+		//clear dirty record
+		record.node.commit();
+
+		if (record.isNew)
+		record.isNew = false;
 	}
 
 });

@@ -5,16 +5,5 @@
     "distrType" : "Uniform Distribution",
     "actmod_id" : "5045f8eae4b058c3f86c3310",
     "values" : [3,4.4],
-    "parameters" : [
-        {
-            "w" : 23,
-            "mean" : 23.3,
-            "std" : 44.4
-        },
-                {
-            "w" : 23,
-            "mean" : 23.3,
-            "std" : 44.4
-        }
-    ]
+    "parameters" : [    ]
 }

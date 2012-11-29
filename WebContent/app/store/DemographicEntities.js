@@ -24,7 +24,7 @@ Ext.define('C.store.DemographicEntities', {
 		var me = this;
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
-			storeId: 'MyStore6',
+			storeId: 'DemographicEntities',
 			model: 'C.model.DemographicEntity'
 		}, cfg)]);
 	}

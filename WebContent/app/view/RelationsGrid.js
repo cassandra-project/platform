@@ -35,6 +35,7 @@ Ext.define('C.view.RelationsGrid', {
 				autoShow: false,
 				hidden: false,
 				autoScroll: true,
+				loadingText: 'loading..',
 				plugins: [
 					Ext.create('Ext.grid.plugin.DragDrop', {
 						ptype: 'gridviewdragdrop',
@@ -77,6 +78,7 @@ Ext.define('C.view.RelationsGrid', {
 					items: [
 						{
 							xtype: 'button',
+							itemId: 'btn',
 							text: 'Delete',
 							listeners: {
 								click: {
