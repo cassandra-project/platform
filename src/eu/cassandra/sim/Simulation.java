@@ -18,7 +18,10 @@ package eu.cassandra.sim;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
+
+import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -58,6 +61,9 @@ import eu.cassandra.sim.utilities.Utils;
  */
 public class Simulation implements Runnable {
 	static Logger logger = Logger.getLogger(Simulation.class);
+	
+	@javax.ws.rs.core.Context 
+	ServletContext context;
 
 	private Vector<Installation> installations;
 
@@ -167,6 +173,8 @@ public class Simulation implements Runnable {
   		objRun.put("ended", endTime);
   		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
+  		HashMap<String,Future<?>> runs = (HashMap<String,Future<?>>)context.getAttribute("My_RUNS");
+  		runs.remove(dbname);
   		} catch(Exception e) {e.printStackTrace();}
   	}
 
@@ -307,7 +315,7 @@ public class Simulation implements Runnable {
   		for (int i = 1; i <= numOfInstallations; i++) {
 	    	DBObject instDoc = (DBObject)jsonScenario.get("inst"+1);
 	    	String id = i+"";
-	    	String name = (String)instDoc.get("name");
+	    	String name = ((String)instDoc.get("name")) + i;
 	    	String description = (String)instDoc.get("description");
 	    	String type = (String)instDoc.get("type");
 	    	Installation inst = new Installation.Builder(

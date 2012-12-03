@@ -17,7 +17,6 @@
 package eu.cassandra.server.threads;
 
 import java.util.concurrent.ExecutorService;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
@@ -45,10 +44,11 @@ public class ExecutorContextListener implements ServletContextListener {
         	executor = Executors.newFixedThreadPool(nr_executors, daemonFactory);
         }
         context.setAttribute("MY_EXECUTOR", executor);
+        System.out.println("lala");
     }
     
     public void contextDestroyed(ServletContextEvent arg0) {
-        ServletContext context = arg0.getServletContext();
+        //ServletContext context = arg0.getServletContext();
         executor.shutdownNow(); // or process/wait until all pending jobs are done
     }
 

@@ -861,7 +861,7 @@ public class MongoDBQueries {
 		try {
 			DBObject deleteQuery = new BasicDBObject("_id", new ObjectId(id));
 			objRemoved = DBConn.getConn().getCollection(coll).findAndRemove(deleteQuery);
-			objRemoved = cascadeDeletes(coll, id,objRemoved);
+			objRemoved = cascadeDeletes(coll, id, objRemoved);
 		}catch(Exception e) {
 			return jSON2Rrn.createJSONError("remove db." + coll + " with id=" + id,e);
 		}

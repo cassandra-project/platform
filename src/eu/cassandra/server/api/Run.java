@@ -16,6 +16,10 @@
 */
 package eu.cassandra.server.api;
 
+import java.util.HashMap;
+import java.util.concurrent.Future;
+
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 
 import javax.ws.rs.DELETE;
@@ -36,6 +40,9 @@ import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 @Consumes(MediaType.APPLICATION_JSON)
 public class Run {
 	
+	@javax.ws.rs.core.Context 
+	ServletContext context;
+	
 	/**
 	 * 
 	 * Returns the run data based on the run id
@@ -43,8 +50,7 @@ public class Run {
 	 * @return
 	 */
 	@GET
-	public String getRun(@PathParam("run_id") String run_id,
-			@Context HttpHeaders httpHeaders) {
+	public String getRun(@PathParam("run_id") String run_id, @Context HttpHeaders httpHeaders) {
 		return PrettyJSONPrinter.prettyPrint(new MongoRuns().getRun(httpHeaders,run_id));
 	}
 	
@@ -56,9 +62,18 @@ public class Run {
 	 */
 	@PUT
 	public String updateRun(@PathParam("run_id") String run_id) {
+		HashMap<String,Future<?>> runs = (HashMap<String,Future<?>>)context.getAttribute("My_RUNS");
+		if(runs.containsKey(run_id)) {
+			Future<?> future = runs.get(run_id);
+			future.cancel(true);
+			return "{\"success\":true, \"message\":\"Run " + run_id + " cancelled\"}";
+		} else {
+			return "{\"success\":false, \"message\":\"Run " + run_id + " not found in running threads\"}";
+		}
 		// check if paused or resumed
-		String message = null;
-		return  PrettyJSONPrinter.prettyPrint(new MongoRuns().updateRun(run_id, message));
+		//String message = null;
+		//return  PrettyJSONPrinter.prettyPrint(new MongoRuns().updateRun(run_id, message));
+		
 	}
 
 	/**

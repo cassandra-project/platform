@@ -17,7 +17,9 @@
 package eu.cassandra.server.api;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -257,8 +259,10 @@ public class Runs {
 			
 			Simulation sim = new Simulation(scenario.toString(), dbname);
 			sim.setup();
-			ExecutorService executor = (ExecutorService )context.getAttribute("MY_EXECUTOR");
-			executor.submit(sim);
+			ExecutorService executor = (ExecutorService)context.getAttribute("MY_EXECUTOR");
+			Future<?> f = executor.submit(sim);
+			HashMap<String,Future<?>> runs = (HashMap<String,Future<?>>)context.getAttribute("My_RUNS");
+			runs.put(dbname, f);
 			BasicDBObject run = new BasicDBObject();
 			run.put("_id", objid);
 			run.put("started", System.currentTimeMillis());
@@ -266,12 +270,18 @@ public class Runs {
 			run.put("prj_id", prj_id);
 			run.put("percentage", 0);
 			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
-			return "{ \"message\": \"Sim creation successful \" }";
+			String returnMsg = "{ \"success\": true, \"message\": \"Sim creation successful, \"run_id\": \"" + dbname + "\" }";
+			System.out.println(returnMsg);
+			return returnMsg;
 		} catch (UnknownHostException | MongoException e1) {
-			return "{ \"message\": \"Sim creation failed " + e1.getMessage() + "\" }";
+			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed due to: " + e1.getMessage() + "\" }"; 
+			System.out.println(returnMsg);
+			return returnMsg; 
 		} catch(Exception e) {
 			e.printStackTrace();
-			return "{ \"message\": \"Sim creation failed " + e.getMessage() + "\" }";
+			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed due to: " + e.getMessage() + "\" }";
+			System.out.println(returnMsg);
+			return returnMsg;
 		}
 	}
 
