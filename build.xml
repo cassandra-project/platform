@@ -1,0 +1,11 @@
+<project>
+<!-- Under development -->
+  <target name="clean">
+    <delete dir="antbuild" />
+  </target>
+  <target name="prepare">
+    <mkdir name="distr" />
+  </target>
+  <target name="">
+  </target>
+</project>
