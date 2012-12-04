@@ -90,9 +90,10 @@ public class MongoRuns {
 	 */
 	public String updateRun(String id,String jsonToUpdate) {
 		// pause or resume
-		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
-				COL_RUNS, "Scenarios updated successfully", 
-				MongoProjects.COL_PROJECTS ,"prj_id",JSONValidator.SCENARIO_SCHEMA).toString(); 
+//		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
+//				COL_RUNS, "Scenarios updated successfully", 
+//				MongoProjects.COL_PROJECTS ,"prj_id",JSONValidator.SCENARIO_SCHEMA).toString(); 
+		return "";
 	}
 
 }

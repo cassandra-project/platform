@@ -1,10 +1,11 @@
 {
-    "name" : "cleaning",
+    "name" : "Breakfast",
     "type" : "duration",
     "distrType" : "Normal Distribution",
+        "actmod_id" : "508ba6cee4b03c90ac645ddb",
     "parameters" : [
         {
-            "mean" : 60.0,
+            "mean" : 30.0,
             "std" : 0.00001
         }
      ]

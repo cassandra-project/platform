@@ -70,7 +70,11 @@ public class Activity extends Entity {
 			description = adesc;
 			type = atype;
 			appliances = new HashMap<String, Vector<Appliance>>();
+			appliances.put("working", new Vector<Appliance>());
+			appliances.put("nonworking", new Vector<Appliance>());
 			probApplianceUsed = new HashMap<String, Vector<Double>>();
+			probApplianceUsed.put("working", new Vector<Double>());
+			probApplianceUsed.put("nonworking", new Vector<Double>());
 			nTimesGivenDay = new HashMap<String, ProbabilityDistribution>();
 			probStartTime = new HashMap<String, ProbabilityDistribution>();
 			probDuration = new HashMap<String, ProbabilityDistribution>();
@@ -119,14 +123,9 @@ public class Activity extends Entity {
 
 	public void addAppliance (String day, Appliance a, Double prob) {
 		Vector<Appliance> vector = appliances.get(day);
-		if(vector == null) {
-			vector = new Vector<Appliance>(); 
-		}
 		vector.add(a);
+		System.out.println("Vec " + vector.size());
 		Vector<Double> probVector = probApplianceUsed.get(day);
-		if(probVector == null) {
-			probVector = new Vector<Double>(); 
-		}
 		probVector.add(prob);
 	}
 	
@@ -203,25 +202,33 @@ public class Activity extends Entity {
 		Vector<Double> probVector;
 		Vector<Appliance> vector;
 
-		if (simulationWorld.getSimCalendar().isWeekend(tick)) {
-			//System.out.println("isWeekend");
-			numOfTimesProb = nTimesGivenDay.get("nonworking");
-			startProb = probStartTime.get("nonworking");
-			durationProb = probDuration.get("nonworking");
-			probVector = probApplianceUsed.get("nonworking");
-			vector = appliances.get("nonworking");
-		} else {
-			//System.out.println("isNotWeekend");
+//		if (simulationWorld.getSimCalendar().isWeekend(tick)) {
+//			System.out.println("isWeekend");
+//			numOfTimesProb = nTimesGivenDay.get("nonworking");
+//			startProb = probStartTime.get("nonworking");
+//			durationProb = probDuration.get("nonworking");
+//			probVector = probApplianceUsed.get("nonworking");
+//			vector = appliances.get("nonworking");
+//		} else {
+//			System.out.println("isNotWeekend");
 			numOfTimesProb = nTimesGivenDay.get("working");
 			startProb = probStartTime.get("working");
 			durationProb = probDuration.get("working");
 			probVector = probApplianceUsed.get("working");
 			vector = appliances.get("working");
-		}
+//		}
 
+		
 		//System.out.println("POINT A");
 		//System.out.println(numOfTimesProb.getNumberOfParameters());
-		int numOfTimes = numOfTimesProb.getPrecomputedBin();
+		int numOfTimes = 0;
+		try {
+			numOfTimes = numOfTimesProb.getPrecomputedBin();
+			System.out.println(numOfTimes);
+		} catch (Exception e) {
+			System.out.println(name);
+			e.printStackTrace();
+		}
 		//System.out.println("POINT B");
 		//System.out.println(numOfTimes);
 		/*
@@ -230,14 +237,17 @@ public class Activity extends Entity {
 		while (numOfTimes > 0) {
 			int duration = Math.max(durationProb.getPrecomputedBin(), 1);
 			int startTime = startProb.getPrecomputedBin();
+			System.out.println(startTime + " " + duration + " " + vector.size());
 			// Select appliances to be switched on
-			for (int j = 0; j < appliances.size(); j++) {
-				if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
+			for (int j = 0; j < vector.size(); j++) {
+				//if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
+				if (RNG.nextDouble() < 1.0) {
 					Appliance a = vector.get(j);
 					int appDuration = duration;
 					int appStartTime = startTime;
 					String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
 					Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
+					System.out.println("Event " + tick + " " + name);
 					queue.offer(eOn);
 					Event eOff =
 							new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);

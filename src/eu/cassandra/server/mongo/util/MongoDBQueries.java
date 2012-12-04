@@ -513,34 +513,35 @@ public class MongoDBQueries {
 	private DBObject getValues(DBObject dBObject, HttpHeaders httpHeaders,
 			String id, String coll) throws JSONSchemaNotValidException {
 		double values[] = null;
-		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS) && 
-				dBObject.containsField("parameters")) {
-			String type = MongoActivityModels.REF_DISTR_STARTTIME ;
-			if(DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
-					findOne(new BasicDBObject("duration._id",new ObjectId(id) )) != null) {
-				type = MongoActivityModels.REF_DISTR_DURATION;
+		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
+			if(dBObject.containsField("parameters")){
+				String type = MongoActivityModels.REF_DISTR_STARTTIME ;
+				if(DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
+						findOne(new BasicDBObject("duration._id",new ObjectId(id) )) != null) {
+					type = MongoActivityModels.REF_DISTR_DURATION;
+				}
+				else if (DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
+						findOne(new BasicDBObject("repeatsNrOfTime._id",new ObjectId(id))) != null) {
+					type = MongoActivityModels.REF_DISTR_REPEATS;
+				}
+				values = new GUIDistribution(type,dBObject).getValues();
 			}
-			else if (DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
-					findOne(new BasicDBObject("repeatsNrOfTime._id",new ObjectId(id))) != null) {
-				type = MongoActivityModels.REF_DISTR_REPEATS;
-			}
-			values = new GUIDistribution(type,dBObject).getValues();
-			
 			if(values == null && dBObject.containsField("values")) {
 				BasicDBList t = (BasicDBList)dBObject.get("values");
 				values = Utils.dblist2doubleArr(t); 
 			}
 		}
-		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS) && 
-				dBObject.containsField("model") &&  ((DBObject)dBObject.get("model")).containsField("params")) {
-			Double[] valuesConsModel = new GUIConsumptionModel((DBObject) dBObject.get("model")).getValues();
-			values = new double[valuesConsModel.length];
-			for(int i=0;i<valuesConsModel.length;i++) {
-				values[i] = valuesConsModel[i];
+		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS)  ) {
+			if(dBObject.containsField("model") &&  ((DBObject)dBObject.get("model")).containsField("params")) {
+				Double[] valuesConsModel = new GUIConsumptionModel((DBObject) dBObject.get("model")).getValues();
+				values = new double[valuesConsModel.length];
+				for(int i=0;i<valuesConsModel.length;i++) {
+					values[i] = valuesConsModel[i];
+				}
 			}
 			if( (values == null || values.length==0)  && dBObject.containsField("values")) {; 
-				BasicDBList t = (BasicDBList)dBObject.get("values");
-				values = Utils.dblist2doubleArr(t); 
+			BasicDBList t = (BasicDBList)dBObject.get("values");
+			values = Utils.dblist2doubleArr(t); 
 			}
 		}
 		if(values != null) {
@@ -860,7 +861,7 @@ public class MongoDBQueries {
 		try {
 			DBObject deleteQuery = new BasicDBObject("_id", new ObjectId(id));
 			objRemoved = DBConn.getConn().getCollection(coll).findAndRemove(deleteQuery);
-			objRemoved = cascadeDeletes(coll, id,objRemoved);
+			objRemoved = cascadeDeletes(coll, id, objRemoved);
 		}catch(Exception e) {
 			return jSON2Rrn.createJSONError("remove db." + coll + " with id=" + id,e);
 		}

@@ -139,6 +139,7 @@ public class Appliance extends Entity {
 				relativeTick++;		
 				power = ((Tripplet)cm.getPattern(index1).get(index2)).p; 
 			}
+			System.out.println(name + " " + tick + " " + power);
 		} else {
 			power = standByConsumption;
 		}
