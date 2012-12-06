@@ -44,7 +44,6 @@ public class ExecutorContextListener implements ServletContextListener {
         	executor = Executors.newFixedThreadPool(nr_executors, daemonFactory);
         }
         context.setAttribute("MY_EXECUTOR", executor);
-        System.out.println("lala");
     }
     
     public void contextDestroyed(ServletContextEvent arg0) {

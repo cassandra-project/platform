@@ -47,8 +47,8 @@ public class JSONtoReturn {
 		DBObject errorMessage = new BasicDBObject();
 		errorMessage.put("success", false);
 		String error = "Exception";
-		String errorDescr = ex;
-		if(ex.matches("(\\S)+:(\\s)(.)*")) {
+		String errorDescr = ex == null ? "Null": ex;
+		if(ex!= null && ex.matches("(\\S)+:(\\s)(.)*")) {
 			String d[] = ex.split(": ",2);
 			error = d[0].replace("$.", "");
 			errorDescr = d[1];
