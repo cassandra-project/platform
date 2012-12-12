@@ -27,6 +27,11 @@ Ext.define('C.model.DemographicEntity', {
 			type: 'string'
 		},
 		{
+			name: 'entity_name',
+			persist: false,
+			type: 'string'
+		},
+		{
 			name: 'probability',
 			type: 'float'
 		}

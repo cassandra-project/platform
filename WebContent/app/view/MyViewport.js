@@ -144,6 +144,10 @@ Ext.define('C.view.MyViewport', {
 								fn: me.onTreeviewBeforeItemMouseEnter,
 								scope: me
 							},
+							itemdblclick: {
+								fn: me.onTreeviewItemDblClick,
+								scope: me
+							},
 							beforedrop: {
 								fn: me.onTreedragdroppluginBeforeDrop,
 								scope: me
@@ -163,12 +167,8 @@ Ext.define('C.view.MyViewport', {
 							fn: me.onUiNavigationTreePanelBeforeRender,
 							scope: me
 						},
-						itemclick: {
-							fn: me.onUiNavigationTreePanelItemClick,
-							scope: me
-						},
-						beforeitemdblclick: {
-							fn: me.onUiNavigationTreePanelBeforeItemDblClick,
+						itemdblclick: {
+							fn: me.onUiNavigationTreePanelItemDblClick,
 							scope: me
 						}
 					}
@@ -288,6 +288,23 @@ Ext.define('C.view.MyViewport', {
 
 	onTreeviewBeforeItemMouseEnter: function(dataview, record, item, index, e, options) {
 		//console.info('Navigation tree panel before item mouse enter.', dataview, record, item, index, e, options); 
+	},
+
+	onTreeviewItemDblClick: function(dataview, record, item, index, e, options) {
+		var breadcrumb = record.getPath();
+		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
+		var tabs = Ext.getCmp('MainTabPanel');
+		var isOpen = false;
+		Ext.each (tabs.items.items, function(item, index) {
+			if (item.pathToMe == pathToMe) {
+				tabs.setActiveTab(item);
+				isOpen = true;
+				return false;
+			}
+		});
+		if (!isOpen) 
+		C.app.createForm(record);
+
 	},
 
 	onUiNavigationTreePanelAfterRender: function(abstractcomponent, options) {
@@ -647,52 +664,8 @@ Ext.define('C.view.MyViewport', {
 		);
 	},
 
-	onUiNavigationTreePanelItemClick: function(tablepanel, record, item, index, e, options) {
-		console.info('Navigation node single click.',tablepanel, record, item, index, e, options);
+	onUiNavigationTreePanelItemDblClick: function(tablepanel, record, item, index, e, options) {
 
-		C.app.createForm(record);
-
-
-		/*var nodeType = record.get('nodeType');
-		switch(nodeType){
-		case 'ProjectsCollection':
-		break;
-		case 'ScenariosCollection':
-		Ext.getCmp('MainTabPanel').add(new C.view.ScenariosGrid({store: record.c.store}));	
-		break;
-		case 'InstallationsCollection':
-		Ext.getCmp('MainTabPanel').add(new C.view.InstallationsGrid({store: record.c.store}));
-		break;
-		case 'PersonsCollection':
-		Ext.getCmp('MainTabPanel').add(new C.view.PersonsGrid({store: record.c.store}));
-		break;
-		case 'AppliancesCollection':
-		Ext.getCmp('MainTabPanel').add(new C.view.AppliancesGrid({store: record.c.store}));
-		break;
-		case 'ActivitiesCollection':
-		Ext.getCmp('MainTabPanel').add(new C.view.ActivitiesGrid({store: record.c.store}));
-		break;
-		case 'ActivityModelsCollection':
-		Ext.getCmp('MainTabPanel').add(new C.view.ActivityModelsGrid({store: record.c.store}));
-		break;
-		case 'DistributionsCollection':
-		Ext.getCmp('MainTabPanel').add(new C.view.DistributionsGrid({store: record.c.store}));
-		break;
-		case 'ConsumptionModelsCollection':
-		Ext.getCmp('MainTabPanel').add(new C.view.ConsumptionModelsGrid({store: record.c.store}));
-		break;
-		case 'SimulationParamsCollection':
-		Ext.getCmp('MainTabPanel').add(new C.view.SimulationParamsGrid({store: record.c.store}));
-		break;
-		case 'RunsCollection':
-		Ext.getCmp('MainTabPanel').add(new C.view.RunsGrid({store: record.c.store}));
-		break;
-		}*/
-
-	},
-
-	onUiNavigationTreePanelBeforeItemDblClick: function(tablepanel, record, item, index, e, options) {
-		return false;
 	}
 
 });

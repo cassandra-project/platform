@@ -21,15 +21,18 @@ Ext.define('C.controller.setDbName', {
 
 		Ext.util.Observable.observe(Ext.data.proxy.Rest);
 		Ext.data.proxy.Rest.on('exception', function(server, response,operation) {
+			var response_obj = JSON.parse(response.responseText);
 			var record = response.request.options.operation.records[0];
 			var store = record.store;
 			var action = response.request.options.operation.action;
+
 			if (action == 'create') {
 				store.remove(record);
 			}
+
 			else if (action == 'update')
 			store.rejectChanges();
-			Ext.MessageBox.show({title:'Error', msg: JSON.stringify(errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
+			Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
 		});
 
 
