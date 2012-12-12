@@ -46,6 +46,11 @@
                         "type": "string",
                         "description": "The appliance the value refers to"
                     },
+                    "entity_name" : {
+                        "type": "string",
+                        "description": "The name of the entity",
+                        "optional" : true,
+                    },
                     "entity_type" : {
                         "type": "string",
                         "description": "The type of the entity: appliance, person, installation",

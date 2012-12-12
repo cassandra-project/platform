@@ -40,19 +40,18 @@ public class GUIDistribution {
 		default:
 			throw new JSONSchemaNotValidException("Invalid distr type: " + type);
 		}
-		distrType = "Normal Distribution";
 		switch(distrType){
 		case "Normal Distribution":
-			double mean = (double)parameters.get("mean");
-			double std = (double)parameters.get("std");
+			double mean = Double.parseDouble(parameters.get("mean").toString());
+			double std = Double.parseDouble(parameters.get("std").toString());
 			prob = new Gaussian(mean, std);
 			if (type.equalsIgnoreCase("Duration") || type.equalsIgnoreCase("Daily Times")) 
 				endValue = (int)(mean + 4*std);
 			prob.precompute(endValue);
 			break;
 		case "Uniform Distribution":
-			double start = (double)parameters.get("start");
-			double end = (double)parameters.get("end");
+			double start = Double.parseDouble(parameters.get("start").toString());
+			double end = Double.parseDouble(parameters.get("end").toString());
 			prob = new Uniform(start, end);
 			if (type.equalsIgnoreCase("duration")){
 				endValue = (int)end + 10;
