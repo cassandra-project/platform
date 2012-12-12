@@ -93,12 +93,16 @@ Ext.define('C.view.EntitiesGrid', {
 					text: 'Entity_type'
 				},
 				{
+					xtype: 'gridcolumn',
+					dataIndex: 'entity_name',
+					text: 'Entity_name'
+				},
+				{
 					xtype: 'numbercolumn',
 					dataIndex: 'probability',
 					text: 'Probability',
 					editor: {
 						xtype: 'numberfield',
-						decimalPrecision: 3,
 						maxValue: 1
 					}
 				}
@@ -123,7 +127,7 @@ Ext.define('C.view.EntitiesGrid', {
 
 			data.copy = true;
 
-			this.store.insert(0, {'entity_id':record.get('nodeId'), 'entity_type':record.get('nodeType').toLowerCase()});
+			this.store.insert(0, {'entity_id':record.get('nodeId'), 'entity_name':record.get('name'), 'entity_type':record.get('nodeType').toLowerCase()});
 			dropFunction.cancelDrop();
 			this.plugins[0].startEdit(0, 0);
 			return 0;
