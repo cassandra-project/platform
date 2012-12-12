@@ -89,7 +89,7 @@ Ext.application({
 	],
 
 	createForm: function(record) {
-		if (!record.isExpanded())record.expand();//basic in order to be rendered
+		/*if (!record.isExpanded())record.expand();//basic in order to be rendered
 
 		var breadcrumb = record.getPath();
 		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
@@ -97,86 +97,90 @@ Ext.application({
 		var tabs = Ext.getCmp('MainTabPanel');
 		var isOpen = false;
 		Ext.each (tabs.items.items, function(item, index) {
-			if (item.pathToMe == pathToMe) {
-				tabs.setActiveTab(item);
-				isOpen = true;
+		if (item.pathToMe == pathToMe) {
+		tabs.setActiveTab(item);
+		isOpen = true;
+		return false;
+		}
+		});
+		if (!isOpen) {*/
+		var breadcrumb = record.getPath();
+		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
+		var cmpToAdd;
+
+		if (record.get('nodeType').search('Collection') > 0 ) {
+			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(record.c.store);
+			if (record.get('nodeType') == 'RunsCollection') {
+				grid.getDockedItems()[0].hidden = true;
+			}
+			cmpToAdd = grid;
+		}
+		else {
+			Ext.QuickTips.init();
+
+			// invalid markers to sides
+			Ext.form.Field.prototype.msgTarget = 'side';
+
+			var myForm;
+			var cur_record;
+			switch(record.get('nodeType')) {
+				case 'Project': 
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getProjectForm(cur_record);
+				break;
+				case 'Scenario':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getScenarioForm(cur_record);
+				break;
+				case 'Installation':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getInstallationForm(cur_record);
+				break;
+				case 'Appliance':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getApplianceForm(cur_record);
+				break;
+				case 'Person':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getPersonForm(cur_record);
+				break;
+				case 'Activity':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getActivityForm(cur_record);
+				break;
+				case 'ActivityModel':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getActivityModelForm(cur_record);
+				break;
+				case 'SimulationParam':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getSimulationParamsForm(cur_record);
+				break;
+				case 'Demographic':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getDemographicForm(cur_record);
+				break;
+				case 'Run':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				if (cur_record.get('percentage') == 100) C.app.newRunWindow(cur_record);
+				return false;
+				case 'RunGraph':
+				myForm = C.app.getResultsGraphForm();
+				break;
+				default:
 				return false;
 			}
-		});
-		if (!isOpen) {
-			var cmpToAdd;
 
-			if (record.get('nodeType').search('Collection') > 0 ) {
-				var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(record.c.store);
-				if (record.get('nodeType') == 'RunsCollection') {
-					grid.getDockedItems()[0].hidden = true;
-				}
-				cmpToAdd = grid;
-			}
-			else {
-				Ext.QuickTips.init();
-
-				// invalid markers to sides
-				Ext.form.Field.prototype.msgTarget = 'side';
-
-				var myForm;
-				var cur_record;
-				switch(record.get('nodeType')) {
-					case 'Project': 
-					cur_record = record.parentNode.c.store.getById(record.get('id'));
-					myForm = C.app.getProjectForm(cur_record);
-					break;
-					case 'Scenario':
-					cur_record = record.parentNode.c.store.getById(record.get('id'));
-					myForm = C.app.getScenarioForm(cur_record);
-					break;
-					case 'Installation':
-					cur_record = record.parentNode.c.store.getById(record.get('id'));
-					myForm = C.app.getInstallationForm(cur_record);
-					break;
-					case 'Appliance':
-					cur_record = record.parentNode.c.store.getById(record.get('id'));
-					myForm = C.app.getApplianceForm(cur_record);
-					break;
-					case 'Person':
-					cur_record = record.parentNode.c.store.getById(record.get('id'));
-					myForm = C.app.getPersonForm(cur_record);
-					break;
-					case 'Activity':
-					cur_record = record.parentNode.c.store.getById(record.get('id'));
-					myForm = C.app.getActivityForm(cur_record);
-					break;
-					case 'ActivityModel':
-					cur_record = record.parentNode.c.store.getById(record.get('id'));
-					myForm = C.app.getActivityModelForm(cur_record);
-					break;
-					case 'SimulationParam':
-					cur_record = record.parentNode.c.store.getById(record.get('id'));
-					myForm = C.app.getSimulationParamsForm(cur_record);
-					break;
-					case 'Demographic':
-					cur_record = record.parentNode.c.store.getById(record.get('id'));
-					myForm = C.app.getDemographicForm(cur_record);
-					break;
-					case 'Run':
-					cur_record = record.parentNode.c.store.getById(record.get('id'));
-					if (cur_record.get('percentage') == 100) C.app.newRunWindow(cur_record);
-					return false;
-					case 'RunGraph':
-					myForm = C.app.getResultsGraphForm();
-					break;
-					default:
-					return false;
-				}
-
-				cmpToAdd = myForm;
-			}
-			cmpToAdd.pathToMe = pathToMe;
-			cmpToAdd.setTitle(namesBreadcrumb.split('/').join(' >'));
-			tabs.add(cmpToAdd);
-			tabs.setActiveTab(cmpToAdd);
-			tabs.getActiveTab().setTitle(record.get('name'));
+			cmpToAdd = myForm;
 		}
+		var breadcrumb = record.getPath();
+		var namesBreadcrumb = record.getPath('name');
+		cmpToAdd.setTitle(namesBreadcrumb.split('/').join(' >'));
+		Ext.getCmp('MainTabPanel').add(cmpToAdd);
+		cmpToAdd.pathToMe = pathToMe;
+		Ext.getCmp('MainTabPanel').setActiveTab(cmpToAdd);
+		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(record.get('name'));
+		//}
 	},
 
 	getScenarioForm: function(record) {
@@ -631,9 +635,9 @@ Ext.application({
 		var myForm = myFormCmp.getForm();
 		myForm.loadRecord(record);
 
-		/*var gridStore =  new C.store.DemographicEntities();
-		gridStore.loadData(record.get('generators'));*/
-		var demoGrid = new C.view.EntitiesGrid();
+		var gridStore =  new C.store.DemographicEntities();
+		gridStore.loadData(record.get('generators'));
+		var demoGrid = new C.view.EntitiesGrid({store:gridStore});
 		demoGrid.store.loadData(record.get('generators'));
 		demoGrid.scenarioId = record.node.parentNode.parentNode.get('nodeId');
 		/*store = gridStore,
