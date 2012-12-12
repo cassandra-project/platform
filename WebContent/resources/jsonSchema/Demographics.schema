@@ -13,11 +13,6 @@
             "description": "Name of the demographic info",
             "optional": true
         },
-        "name": {
-            "type": "string",
-            "description": "Name of the demographic info",
-            "optional": true
-        },   
         "type": {
             "type": "string",
             "description": "Type of the demographic info",
@@ -49,7 +44,7 @@
                     "entity_name" : {
                         "type": "string",
                         "description": "The name of the entity",
-                        "optional" : true,
+                        "optional" : true
                     },
                     "entity_type" : {
                         "type": "string",
