@@ -65,8 +65,12 @@ public class Run {
 		HashMap<String,Future<?>> runs = (HashMap<String,Future<?>>)context.getAttribute("My_RUNS");
 		if(runs.containsKey(run_id)) {
 			Future<?> future = runs.get(run_id);
-			future.cancel(true);
-			return "{\"success\":true, \"message\":\"Run " + run_id + " cancelled\"}";
+			if(future.isDone()) {
+				return "{\"success\":false, \"message\":\"Run " + run_id + " finished\"}";
+			} else {
+				future.cancel(true);
+				return "{\"success\":true, \"message\":\"Run " + run_id + " cancelled\"}";
+			}
 		} else {
 			return "{\"success\":false, \"message\":\"Run " + run_id + " not found in running threads\"}";
 		}
