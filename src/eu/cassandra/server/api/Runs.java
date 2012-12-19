@@ -257,11 +257,12 @@ public class Runs {
 			scenario.put("instcount", new Integer(countInst));
 			// Scenario building finished
 			
+			HashMap<String,Future<?>> runs = (HashMap<String,Future<?>>)context.getAttribute("MY_RUNS");
 			Simulation sim = new Simulation(scenario.toString(), dbname);
 			sim.setup();
 			ExecutorService executor = (ExecutorService)context.getAttribute("MY_EXECUTOR");
 			Future<?> f = executor.submit(sim);
-			HashMap<String,Future<?>> runs = (HashMap<String,Future<?>>)context.getAttribute("My_RUNS");
+			System.out.println(dbname);
 			runs.put(dbname, f);
 			BasicDBObject run = new BasicDBObject();
 			run.put("_id", objid);

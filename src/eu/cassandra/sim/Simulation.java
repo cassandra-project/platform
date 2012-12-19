@@ -61,9 +61,6 @@ import eu.cassandra.sim.utilities.Utils;
  */
 public class Simulation implements Runnable {
 	static Logger logger = Logger.getLogger(Simulation.class);
-	
-	@javax.ws.rs.core.Context 
-	ServletContext context;
 
 	private Vector<Installation> installations;
 
@@ -165,6 +162,7 @@ public class Simulation implements Runnable {
   			}
   			m.addAggregatedTickResult(tick, sumPower, 0);
   			tick++;
+  			System.out.println(tick + " " + endTick);
   			percentage = (int)(tick * 100.0 / endTick);
   			objRun.put("percentage", percentage);
   	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
@@ -173,8 +171,6 @@ public class Simulation implements Runnable {
   		objRun.put("ended", endTime);
   		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
-  		HashMap<String,Future<?>> runs = (HashMap<String,Future<?>>)context.getAttribute("My_RUNS");
-  		runs.remove(dbname);
   		} catch(Exception e) {e.printStackTrace();}
   	}
 
@@ -225,7 +221,7 @@ public class Simulation implements Runnable {
 	    		String appname = (String)applianceDoc.get("name");
 		    	String appdescription = (String)applianceDoc.get("description");
 		    	String apptype = (String)applianceDoc.get("type");
-		    	double standy = ((Double)applianceDoc.get("standy_consumption")).doubleValue();
+		    	double standy = Double.parseDouble(applianceDoc.get("standy_consumption").toString());
 		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
 		    	ConsumptionModel consmod = new ConsumptionModel(consModDoc.get("model").toString());
@@ -494,7 +490,7 @@ public class Simulation implements Runnable {
   		case ("Normal Distribution"):
   			BasicDBList normalList = (BasicDBList)distribution.get("parameters");
   			DBObject normalDoc = (DBObject)normalList.get(0);
-  			double mean = ((Double)normalDoc.get("mean")).doubleValue();
+  			double mean = Double.parseDouble(normalDoc.get("mean").toString());
   			double std = 0.0;
   			try {
   				std = ((Double)normalDoc.get("std")).doubleValue();
