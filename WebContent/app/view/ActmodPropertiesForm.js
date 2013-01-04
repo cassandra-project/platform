@@ -160,6 +160,7 @@ Ext.define('C.view.ActmodPropertiesForm', {
 			'containsAppliances': gridIds
 		});
 
+		this.dirtyForm = false;
 		//clear dirty record
 		record.node.commit();
 

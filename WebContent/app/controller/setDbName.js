@@ -22,16 +22,16 @@ Ext.define('C.controller.setDbName', {
 		Ext.util.Observable.observe(Ext.data.proxy.Rest);
 		Ext.data.proxy.Rest.on('exception', function(server, response,operation) {
 			var response_obj = JSON.parse(response.responseText);
-			var record = response.request.options.operation.records[0];
-			var store = record.store;
 			var action = response.request.options.operation.action;
-
-			if (action == 'create') {
-				store.remove(record);
+			if (action == 'create' || action == 'update') {
+				var record = response.request.options.operation.records[0];
+				var store = record.store;
+				if (action == 'create') {
+					store.remove(record);
+				}
+				else if (action == 'update')
+				store.rejectChanges();
 			}
-
-			else if (action == 'update')
-			store.rejectChanges();
 			Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
 		});
 
@@ -49,27 +49,56 @@ Ext.define('C.controller.setDbName', {
 			});
 		});
 
-
+		/*
 		if (!C.dbname) {
-			Ext.util.Observable.observe(Ext.form.Panel);
-			Ext.form.Panel.on('beforeclose', function(panel, options) {
-				var cur_record = panel.getForm().getRecord() ? panel.getForm().getRecord() : panel.query('form')[0].getRecord();
-				if (cur_record.isNew) {
-					Ext.MessageBox.show({
-						title:'Save Changes?',
-						msg: 'You have just created a new record but have not edited<br />any of its fields. <br />Would you like to discard record creation?',
-						buttons: Ext.MessageBox.YESNOCANCEL,
-						fn: function(btn){
-							if (btn == 'yes')
-							cur_record.store.remove(cur_record);
-							else
-							cur_record.isNew = false;
-						},
-						icon: Ext.MessageBox.QUESTION
-					});
-				}	
-			});
-		}
+		Ext.util.Observable.observe(Ext.tab.Tab);
+		Ext.tab.Tab.on('beforeclose', function(panel, options) {
+		/*var cur_record = panel.getForm().getRecord() ? panel.getForm().getRecord() : panel.query('form')[0].getRecord();
+		var cur_panel = panel;
+		if (cur_record.isNew) {
+		Ext.MessageBox.show({
+		title:'Save Changes?',
+		msg: 'You have just created a new record but have not edited<br />any of its fields. <br />Would you like to discard record creation?',
+		buttons: Ext.MessageBox.YESNOCANCEL,
+		fn: function(btn){
+		if (btn == 'yes')
+		cur_record.store.remove(cur_record);
+		else
+		cur_record.isNew = false;
+		},
+		icon: Ext.MessageBox.QUESTION
+		});
+		}*/
+		/*if (panel.card.dirtyForm) {
+		cur_panel = panel.card;
+		cur_btn = cur_panel.query('.button')[0];
+		cur_form = cur_panel.query('form')[0] ? cur_panel.query('form')[0] : cur_panel.getForm();
+		var cur_record = cur_form.getRecord();
+		Ext.MessageBox.show({
+		title:'Save Changes?',
+		msg: 'You are closing a tab that may have unsaved changes. <br />Would you like to save those changes?',
+		buttons: Ext.MessageBox.YESNOCANCEL,
+		fn: function(btn){
+		if (btn == 'yes') {
+		cur_btn.fireEvent('click', cur_btn);
+		//return true;
+	}
+	else if (btn == 'no') {
+		if (cur_record.isNew)
+		cur_record.store.remove(cur_record);
+		else
+		cur_record.node.reject();
+		//return true;
+	}
+	/*else 
+	return false;*/
+	/*},
+	icon: Ext.MessageBox.QUESTION		
+	});
+	//return false;
+}
+});
+}*/
 
 	}
 

@@ -41,7 +41,7 @@ Ext.define('C.model.Appliance', {
 		},
 		{
 			name: 'standy_consumption',
-			type: 'float'
+			type: 'int'
 		},
 		{
 			name: 'controllable',

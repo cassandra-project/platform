@@ -25,7 +25,7 @@ Ext.define('C.view.ResultsGraphForm', {
 		type: 'vbox'
 	},
 	bodyPadding: 10,
-	closable: true,
+	closable: false,
 	title: 'My Form',
 	standardSubmit: false,
 
@@ -164,6 +164,7 @@ Ext.define('C.view.ResultsGraphForm', {
 
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
+		this.dirtyForm = false;
 		var formValues = myForm.getValues();
 		var myResultsStore = this.query('chart')[0].store;
 		var powerType = (formValues.metric == 'q') ? 'Reactive' : 'Active';

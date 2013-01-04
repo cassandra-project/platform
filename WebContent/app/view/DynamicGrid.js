@@ -17,14 +17,16 @@ Ext.define('C.view.DynamicGrid', {
 	extend: 'Ext.grid.Panel',
 
 	height: 250,
-	margin: '10px 0 0 0',
+	margin: '0 0 10px 0',
 	minWidth: 400,
 	width: 400,
 	autoScroll: true,
-	closable: true,
+	bodyCls: 'gridbg',
+	closable: false,
 	title: 'My Grid Panel',
-	forceFit: false,
+	forceFit: true,
 	store: 'Scenarios',
+	columnLines: false,
 
 	initComponent: function() {
 		var me = this;
@@ -98,7 +100,13 @@ Ext.define('C.view.DynamicGrid', {
 						}
 					]
 				}
-			]
+			],
+			listeners: {
+				itemdblclick: {
+					fn: me.onGridpanelItemDblClick,
+					scope: me
+				}
+			}
 		});
 
 		me.callParent(arguments);
@@ -131,7 +139,8 @@ Ext.define('C.view.DynamicGrid', {
 				case 'ActivityModel': parent_idKey = 'act_id'; break;
 				default: return false;
 			}
-			if (!event.shiftKey || record.isLeaf()) {
+
+			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'SimulationParam' ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
 
 				//Ext.sliding_box.msg('Drag and Drop info', 'By holding <b>Shift</b> key pressed while copying a node </br> all its childred will be copied as well');
 
@@ -145,15 +154,17 @@ Ext.define('C.view.DynamicGrid', {
 				var targetID = '';
 				var meID = '';
 				switch(record.get('nodeType')){
-					case 'Scenario': targetID = 'PrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
-					case 'Installation': targetID = 'ScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
-					case 'Person': targetID = 'InstID'; meID = 'persID'; break;
-					case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
+					case 'Scenario': targetID = 'toPrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
+					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
+					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
+					case 'Activity': targetID = 'toPersID'; meID = 'actID'; break;
+					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
+					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
 					default: return false;
 				}
 				//TODO See why on failure success function is executed
 				Ext.Ajax.request({
-					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&to'+ targetID+'='+parent_id,
+					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+parent_id,
 					method: 'POST',
 					scope: this,
 					callback: function(options, success, response) {	
@@ -255,6 +266,10 @@ Ext.define('C.view.DynamicGrid', {
 				C.app.createForm(index.node);
 			});
 		}
+	},
+
+	onGridpanelItemDblClick: function(tablepanel, record, item, index, e, options) {
+		C.app.createForm(record.node);
 	}
 
 });
