@@ -23,7 +23,7 @@ Ext.define('C.view.ApplianceForm', {
 		type: 'vbox'
 	},
 	bodyPadding: 10,
-	closable: true,
+	closable: false,
 	title: 'My Form',
 
 	initComponent: function() {
@@ -238,6 +238,8 @@ Ext.define('C.view.ApplianceForm', {
 				}
 
 			}
+
+			this.dirtyForm = false;
 
 			//record.save();
 	}

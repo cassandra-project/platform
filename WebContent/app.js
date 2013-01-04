@@ -89,8 +89,8 @@ Ext.application({
 	],
 
 	createForm: function(record) {
-		/*if (!record.isExpanded())record.expand();//basic in order to be rendered
-
+		if (!record.isExpanded())record.expand();//basic in order to be rendered
+		/*
 		var breadcrumb = record.getPath();
 		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
 		var namesBreadcrumb = record.getPath('name');
@@ -172,14 +172,20 @@ Ext.application({
 			}
 
 			cmpToAdd = myForm;
+			cmpToAdd.dirtyForm = true;
 		}
-		var breadcrumb = record.getPath();
+
 		var namesBreadcrumb = record.getPath('name');
-		cmpToAdd.setTitle(namesBreadcrumb.split('/').join(' >'));
+		cmpToAdd.closable = true;
 		Ext.getCmp('MainTabPanel').add(cmpToAdd);
+		cmpToAdd.setTitle(namesBreadcrumb.split('/').join(" &rsaquo; "));
+		cmpToAdd.tab.setText(record.get('name'));
+		if (record.parentNode && record.parentNode.data.icon)
+		cmpToAdd.tab.setIcon(record.parentNode.data.icon);
+		//cmpToAdd.tab.getEl().addCls('x-tab-strip-closable');
 		cmpToAdd.pathToMe = pathToMe;
 		Ext.getCmp('MainTabPanel').setActiveTab(cmpToAdd);
-		Ext.getCmp('MainTabPanel').getActiveTab().setTitle(record.get('name'));
+		//Ext.getCmp('MainTabPanel').getActiveTab().setTitle(record.get('name'));
 		//}
 	},
 
@@ -274,6 +280,7 @@ Ext.application({
 
 		propertiesCmp = new C.view.ActmodPropertiesForm({});
 		var myForm = propertiesCmp.getForm();
+
 		myForm.loadRecord(record);
 		console.info(record);
 
@@ -464,28 +471,29 @@ Ext.application({
 		myForm.loadRecord(record);
 
 		var childNode = record.node.childNodes[0];
-		if(!childNode.c){
-			console.info('Creating structure for node '+childNode.data.name+'.', childNode);
-			childNode.c = {
-				store: {} // single store, not array (?)
-			};
+		if (childNode) {
+			if(!childNode.c){
+				console.info('Creating structure for node '+childNode.data.name+'.', childNode);
+				childNode.c = {
+					store: {} // single store, not array (?)
+				};
 
-			childNode.c.store = new C.store.Activities({
-				storeId: childNode.data.nodeType+'Store-pers_id-'+childNode.parentNode.get('nodeId'),
-				navigationNode: childNode
-			});
+				childNode.c.store = new C.store.Activities({
+					storeId: childNode.data.nodeType+'Store-pers_id-'+childNode.parentNode.get('nodeId'),
+					navigationNode: childNode
+				});
 
-			childNode.c.store.load({
-				params: {
-					pers_id: childNode.parentNode.get('nodeId')
-				}
-			});
+				childNode.c.store.load({
+					params: {
+						pers_id: childNode.parentNode.get('nodeId')
+					}
+				});
+			}
+			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
+			grid.closable = false;
+			grid.setTitle(childNode.get('name'));
+			myFormCmp.insert(1, grid);
 		}
-
-		var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
-		grid.closable = false;
-		grid.setTitle(childNode.get('name'));
-		myFormCmp.insert(1, grid);
 
 		console.info(record);
 		return myFormCmp;
@@ -499,28 +507,31 @@ Ext.application({
 		myForm.loadRecord(record);
 
 		var childNode = record.node.childNodes[0];
-		if(!childNode.c){
-			console.info('Creating structure for node '+childNode.data.name+'.', childNode);
-			childNode.c = {
-				store: {} // single store, not array (?)
-			};
+		if (childNode) {
+			if(!childNode.c){
+				console.info('Creating structure for node '+childNode.data.name+'.', childNode);
+				childNode.c = {
+					store: {} // single store, not array (?)
+				};
 
-			childNode.c.store = new C.store.ActivityModels({
-				storeId: childNode.data.nodeType+'Store-act_id-'+childNode.parentNode.get('nodeId'),
-				navigationNode: childNode
-			});
+				childNode.c.store = new C.store.ActivityModels({
+					storeId: childNode.data.nodeType+'Store-act_id-'+childNode.parentNode.get('nodeId'),
+					navigationNode: childNode
+				});
 
-			childNode.c.store.load({
-				params: {
-					act_id: childNode.parentNode.get('nodeId')
-				}
-			});
+				childNode.c.store.load({
+					params: {
+						act_id: childNode.parentNode.get('nodeId')
+					}
+				});
+			}
+
+			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
+			grid.closable = false;
+			grid.setTitle(childNode.get('name'));
+			myFormCmp.insert(1, grid);
 		}
 
-		var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
-		grid.closable = false;
-		grid.setTitle(childNode.get('name'));
-		myFormCmp.insert(1, grid);
 
 		console.info(record);
 		return myFormCmp;
@@ -528,6 +539,8 @@ Ext.application({
 
 	getDistributionForm: function(distr_type, title) {
 		var distrCmp = new C.view.DistributionForm({distr_type: distr_type});
+		var myForm = distrCmp.getForm();
+
 		distrCmp.setTitle(title);
 		var distrGraphStore = new C.store.DistributionValues({});
 
@@ -633,6 +646,7 @@ Ext.application({
 	getDemographicForm: function(record) {
 		var myFormCmp = new C.view.DemographicForm({});
 		var myForm = myFormCmp.getForm();
+
 		myForm.loadRecord(record);
 
 		var gridStore =  new C.store.DemographicEntities();

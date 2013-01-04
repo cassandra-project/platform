@@ -19,7 +19,7 @@ Ext.define('C.view.InstallationForm', {
 	height: 442,
 	autoScroll: true,
 	bodyPadding: 10,
-	closable: true,
+	closable: false,
 	title: 'My Form',
 
 	initComponent: function() {
@@ -74,9 +74,11 @@ Ext.define('C.view.InstallationForm', {
 								},
 								{
 									xtype: 'numberfield',
+									formBind: false,
 									width: 246,
 									name: 'x',
 									fieldLabel: 'Lat',
+									hideTrigger: false,
 									step: 0.01
 								},
 								{
@@ -121,6 +123,8 @@ Ext.define('C.view.InstallationForm', {
 		var record = myForm.getRecord();
 
 		myForm.updateRecord();
+
+		this.dirtyForm = false;
 
 		//clear dirty record
 		record.node.commit();

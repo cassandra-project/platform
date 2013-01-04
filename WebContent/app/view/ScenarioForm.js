@@ -22,7 +22,7 @@ Ext.define('C.view.ScenarioForm', {
 		type: 'hbox'
 	},
 	bodyPadding: 10,
-	closable: true,
+	closable: false,
 	title: 'My Form',
 
 	initComponent: function() {
@@ -146,6 +146,8 @@ Ext.define('C.view.ScenarioForm', {
 			record.isNew = false;
 			myForm.findField('setup').readOnly = true;
 		}
+
+		this.dirtyForm = false;
 
 		//clear dirty record
 		record.node.commit();

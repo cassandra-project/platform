@@ -194,7 +194,7 @@ Ext.define('C.view.DistributionForm', {
 			);							  
 		}
 
-
+		this.dirtyForm = false;
 	}
 
 });

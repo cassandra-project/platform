@@ -16,14 +16,13 @@
 Ext.define('C.view.DemographicForm', {
 	extend: 'Ext.form.Panel',
 
-	margin: '10px 0',
 	padding: '',
 	autoScroll: true,
 	layout: {
 		type: 'auto'
 	},
 	bodyPadding: '10px',
-	closable: true,
+	closable: false,
 
 	initComponent: function() {
 		var me = this;
@@ -100,8 +99,8 @@ Ext.define('C.view.DemographicForm', {
 						{
 							xtype: 'fieldset',
 							margins: '0 10px',
+							height: 220,
 							itemId: 'entitiesFieldset',
-							minHeight: 220,
 							width: 300,
 							autoScroll: true,
 							layout: {
@@ -147,6 +146,8 @@ Ext.define('C.view.DemographicForm', {
 			'description': values.description,
 			'generators': gridGenerators
 		});
+
+		this.dirtyForm = false;
 
 		//clear dirty record
 		record.node.commit();
