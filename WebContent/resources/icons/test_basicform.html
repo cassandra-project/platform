@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+<title>Test BasicForm.Submit</title>
+<link rel="stylesheet" type="text/css" href="../../resources/css/ext-all.css" />
+
+<script type="text/javascript" src="../../adapter/yui/yui-utilities.js"></script>
+<script type="text/javascript" src="../../adapter/yui/ext-yui-adapter.js"></script>
+<script type="text/javascript" src="../../adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext-all-debug.js"></script>
+
+</head>
+<body style="padding: 20px;">
+
+
+
+
+
+<script type="text/javascript">
+
+Ext.onReady(function(){
+
+  myform = new Ext.form.FormPanel({
+  	id:		'myform',
+  	renderTo:	document.body,
+  	title:		'Test Form',
+  	url:		'json_ok.html',
+  	items:	[{
+  		xtype:		'textfield',
+  		id:		'tf1',
+  		name:		'testfield',
+  		fieldLabel:	'Test Field',
+  		validator:	function(val) { if( val == 'aaa' ) { return true; } return 'The value is not aaa'; },
+  		msgTarget:	'under'
+  	}, new Ext.Panel({
+  		id:		'pnl1',
+  		header:		false,
+  		layout:		'table',
+  		layoutConfig:	{ columns: 4 },
+  		items: [{
+  			xtype:		'button',
+  			text:		'OK',
+  			handler:	function() { dosubmit(myform.url); }
+  		}, {
+  			xtype:		'button',
+  			text:		'CONNECT_FAILURE',
+  			handler:	function() { dosubmit('invalidurl.abc'); }
+  		}, {
+  			xtype:		'button',
+  			text:		'SERVER_INVALID',
+  			handler:	function() { dosubmit('json_server_invalid.html'); }
+  		}, {
+  			xtype:		'button',
+  			text:		'OTHER',
+  			handler:	function() { dosubmit('json_other.html'); }
+  		}]
+  	})]
+  });
+  		
+  Ext.QuickTips.init();
+  
+  function dosubmit(url) {
+    myform.getForm().url = url;
+    myform.getForm().submit({
+      failure:  failure_handler,
+      success:  success_handler
+    });
+  }
+
+  function failure_handler(frm, act)
+  {
+    var EfA = Ext.form.Action;
+    if( act.failureType == EfA.CLIENT_INVALID )
+    {
+      Ext.Msg.alert( 'Invalid Fields', 'Please check that all fields are filled out correctly');
+    } else if( act.failureType == EfA.SERVER_INVALID )
+    {
+      var msg = "The following fields failed validation at the server:<br />";
+      for( var fld in act.result.errors )
+      {
+        msg += "- " + fld + ": " + act.result.errors[fld] + "<br />";
+      }
+      Ext.Msg.alert( 'Invalid Fields', msg );
+    } else if( act.failureType == EfA.CONNECT_FAILURE )
+    {
+      Ext.Msg.alert( 'Connection Error', 'Either the server was unreachable, a wrong url has been specified or the server disallowed access' );
+    } else {
+      Ext.Msg.alert( 'Unknown Error', 'An unspecified error occurred. Maybe the result was invalid JSON or contained wrong data' );
+    }
+  }
+
+  function success_handler(frm, act)
+  {
+  	Ext.Msg.alert( 'Success', 'Request was successfull. Result is: ' + Ext.encode(act.result) );
+  }
+
+});
+
+</script>
+
+</body>
+</html>
+ 

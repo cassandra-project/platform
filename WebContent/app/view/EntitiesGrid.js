@@ -18,7 +18,6 @@ Ext.define('C.view.EntitiesGrid', {
 
 	frame: false,
 	margin: '10px 0',
-	maxWidth: 250,
 	autoScroll: false,
 	forceFit: true,
 	hideHeaders: false,
@@ -33,7 +32,7 @@ Ext.define('C.view.EntitiesGrid', {
 				autoShow: false,
 				hidden: false,
 				minHeight: 100,
-				autoScroll: true,
+				autoScroll: false,
 				loadingText: 'loading..',
 				plugins: [
 					Ext.create('Ext.grid.plugin.DragDrop', {

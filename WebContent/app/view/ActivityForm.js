@@ -23,7 +23,7 @@ Ext.define('C.view.ActivityForm', {
 		type: 'auto'
 	},
 	bodyPadding: 10,
-	closable: true,
+	closable: false,
 	title: 'My Form',
 
 	initComponent: function() {
@@ -111,6 +111,8 @@ Ext.define('C.view.ActivityForm', {
 		var record = myForm.getRecord();
 
 		myForm.updateRecord();
+
+		this.dirtyForm = false;
 
 		//clear dirty record
 		record.node.commit();

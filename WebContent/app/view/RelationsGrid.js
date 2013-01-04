@@ -19,9 +19,8 @@ Ext.define('C.view.RelationsGrid', {
 	frame: false,
 	margin: '10px 0',
 	maxHeight: 300,
-	maxWidth: 250,
 	minHeight: 20,
-	autoScroll: true,
+	autoScroll: false,
 	forceFit: true,
 	hideHeaders: false,
 	store: 'ActmodAppliances',
@@ -34,7 +33,8 @@ Ext.define('C.view.RelationsGrid', {
 			viewConfig: {
 				autoShow: false,
 				hidden: false,
-				autoScroll: true,
+				minHeight: 50,
+				autoScroll: false,
 				loadingText: 'loading..',
 				plugins: [
 					Ext.create('Ext.grid.plugin.DragDrop', {

@@ -22,7 +22,7 @@ Ext.define('C.view.SimulationParamsForm', {
 		type: 'auto'
 	},
 	bodyPadding: 10,
-	closable: true,
+	closable: false,
 	title: 'My Form',
 
 	initComponent: function() {
@@ -189,6 +189,8 @@ Ext.define('C.view.SimulationParamsForm', {
 			'calendar': calendar, 
 			'numberOfDays': duration
 		});
+
+		this.dirtyForm = false;
 
 		//clear dirty record
 		record.node.commit();

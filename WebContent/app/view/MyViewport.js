@@ -26,11 +26,29 @@ Ext.define('C.view.MyViewport', {
 		Ext.applyIf(me, {
 			items: [
 				{
+					xtype: 'toolbar',
+					region: 'north',
+					height: 111,
+					id: 'top_toolbar',
+					items: [
+						{
+							xtype: 'image',
+							margins: '0 0 0 10px',
+							height: 100,
+							src: 'resources/icons/logo.png'
+						}
+					]
+				},
+				{
 					xtype: 'tabpanel',
 					region: 'center',
+					frame: false,
 					id: 'MainTabPanel',
 					itemId: 'MainTabPanel',
 					closable: false,
+					collapseDirection: 'right',
+					collapsible: true,
+					title: 'Main Panel',
 					listeners: {
 						tabchange: {
 							fn: me.onMainTabPanelTabChange,
@@ -123,15 +141,23 @@ Ext.define('C.view.MyViewport', {
 
 					},
 					region: 'west',
-					draggable: true,
+					floating: false,
+					frame: false,
 					id: 'uiNavigationTreePanel',
 					itemId: 'uiNavigationTreePanel',
 					width: 350,
+					collapseDirection: 'left',
+					collapsible: true,
 					title: 'My Tree Panel',
+					titleCollapse: false,
 					store: 'NavigationTreeStore',
 					displayField: 'name',
 					useArrows: true,
 					viewConfig: {
+						frame: true,
+						height: 91,
+						margin: '5px 0 0 0',
+						width: 200,
 						loadingText: 'loading...',
 						plugins: [
 							Ext.create('Ext.tree.plugin.TreeViewDragDrop', {
@@ -172,6 +198,12 @@ Ext.define('C.view.MyViewport', {
 							scope: me
 						}
 					}
+				},
+				{
+					xtype: 'toolbar',
+					region: 'south',
+					height: 16,
+					id: 'bottom_toolbar'
 				}
 			]
 		});
@@ -237,7 +269,9 @@ Ext.define('C.view.MyViewport', {
 				case 'ActivityModel': parent_idKey = 'act_id'; break;
 				default: return false;
 			}
-			if (!event.shiftKey || record.isLeaf()) {
+
+			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'SimulationParam' ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
+
 				var recordRawData = JSON.parse(JSON.stringify(node.data));
 				delete recordRawData._id;
 				//delete recordRawData._id;
@@ -250,15 +284,16 @@ Ext.define('C.view.MyViewport', {
 				var targetID = '';
 				var meID = '';
 				switch(record.get('nodeType')){
-					case 'Scenario': targetID = 'PrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
-					case 'Installation': targetID = 'ScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
-					case 'Person': targetID = 'InstID'; meID = 'persID'; break;
-					case 'Activity': targetID = 'PersID'; meID = 'actID'; break;
-					default: return false;
+					case 'Scenario': targetID = 'toPrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
+					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
+					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
+					case 'Activity': targetID = 'toPersID'; meID = 'actID'; break;
+					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
+					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
 				}
 
 				Ext.Ajax.request({
-					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&to'+ targetID+'='+overModel.get('parentId'),
+					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+overModel.get('parentId'),
 					method: 'POST',
 					scope: this,
 					callback: function(options, success, response) {	
@@ -309,6 +344,7 @@ Ext.define('C.view.MyViewport', {
 
 	onUiNavigationTreePanelAfterRender: function(abstractcomponent, options) {
 		var record = abstractcomponent.getRootNode();
+
 		record.c = {
 			store: {}
 		};
@@ -340,6 +376,7 @@ Ext.define('C.view.MyViewport', {
 	onUiNavigationTreePanelBeforeRender: function(abstractcomponent, options) {
 		console.info('Before render treepanel.', this, abstractcomponent, options);
 
+		abstractcomponent.getRootNode().data.icon = "resources/icons/projects.png";
 
 		abstractcomponent.on('nodedragover', function(dragEvent) {
 			dragEvent.cancel = true;
@@ -430,7 +467,7 @@ Ext.define('C.view.MyViewport', {
 						expandable: true,
 						fakeChildren: true,
 						draggable: false,
-						icon: 'resources/icons/installations.jpg'
+						icon: 'resources/icons/installations.png'
 					});
 					record.appendChild({
 						name: 'Simulation Parameters',
