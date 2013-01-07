@@ -221,10 +221,12 @@ Ext.define('C.view.DynamicGrid', {
 
 		this.store.insert(0, cur_record);
 
-		/*this.store.on('update', function(records) {
+		/*this.store.on('update', function(abstractstore, records, operation) {
+		if (operation == 'commit') {
 		var record = this.getAt(0);
 		C.app.createForm(record.node);
-		});	
+		}
+		});
 		*/
 
 		//this.plugins[0].startEdit(0, 0);

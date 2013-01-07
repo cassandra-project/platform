@@ -18,7 +18,7 @@ Ext.define('C.view.ConsModChart', {
 
 	height: 397,
 	style: 'background:#fff',
-	width: 719,
+	width: 900,
 	shadow: true,
 	animate: true,
 	insetPadding: 20,
@@ -34,8 +34,7 @@ Ext.define('C.view.ConsModChart', {
 					fields: [
 						'x'
 					],
-					majorTickSteps: 20,
-					minorTickSteps: 5,
+					minorTickSteps: 10,
 					position: 'bottom',
 					title: 'Time'
 				},
@@ -54,46 +53,59 @@ Ext.define('C.view.ConsModChart', {
 					},
 					position: 'left',
 					title: 'Watt',
+					adjustMaximumByMajorUnit: true,
 					minimum: 0
 				}
 			],
 			series: [
 				{
-					type: 'line',
-					highlight: {
-						size: 7,
-						radius: 7
+					type: 'column',
+					highlight: true,
+					label: {
+						contrast: true,
+						display: 'insideEnd',
+						field: 'y',
+						color: '#000',
+						orientation: 'vertical',
+						'text-anchor': 'middle'
 					},
 					tips: {
 						trackMouse: true,
-						width: 160,
-						height: 60,
+						width: 100,
+						height: 40,
 						renderer: function(storeItem, item) {
-							this.setTitle( 'Watt : ' + storeItem.get('y') + '<br />' + 'Operating Minute : ' + storeItem.get('x'));
+							this.setTitle( 'Watt : ' + storeItem.get('y') + '<br />' + 'Time : ' + storeItem.get('x'));
 						}
 					},
 					xField: 'x',
 					yField: [
 						'y'
-					],
-					fill: true,
-					markerConfig: {
-						type: 'cross',
-						size: 4,
-						radius: 4,
-						'stroke-width': 0
-					},
-					selectionTolerance: 3,
-					showMarkers: false,
-					smooth: 3
+					]
 				}
 			],
 			legend: {
 
+			},
+			listeners: {
+				afterrender: {
+					fn: me.onChartAfterRender,
+					scope: me
+				}
 			}
 		});
 
 		me.callParent(arguments);
+	},
+
+	onChartAfterRender: function(abstractcomponent, options) {
+		console.info('on after render', abstractcomponent, options);
+
+		abstractcomponent.store.on(
+		'load',	
+		function(store){
+			if (store.data.length > 150)
+			abstractcomponent.series.items[0].label = {};
+		});
 	}
 
 });

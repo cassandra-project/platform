@@ -234,6 +234,7 @@ Ext.define('C.view.MyViewport', {
 			else {
 				Ext.getCmp('uiNavigationTreePanel').view.plugins.forEach(function(plugin){
 					if (plugin.ptype == 'treeviewdragdrop')
+					plugin.dragZone.locked = false;
 					plugin.dropZone.locked = true;
 				});
 			}
@@ -269,6 +270,7 @@ Ext.define('C.view.MyViewport', {
 				case 'ActivityModel': parent_idKey = 'act_id'; break;
 				default: return false;
 			}
+
 
 			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'SimulationParam' ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
 

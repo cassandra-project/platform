@@ -23,7 +23,7 @@
   <env-entry>
     <env-entry-name>mongo.host.address</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>localhost</env-entry-value>
+    <env-entry-value>10.10.0.200</env-entry-value>
   </env-entry>
   <env-entry>
     <env-entry-name>mongo.db</env-entry-name>
