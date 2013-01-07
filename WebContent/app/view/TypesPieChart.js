@@ -42,7 +42,10 @@ Ext.define('C.view.TypesPieChart', {
 						field: 'type',
 						display: 'rotate',
 						contrast: true,
-						font: '12px Arial'
+						font: '12px Arial',
+						renderer: function(v) {
+						  return Ext.String.ellipsis(v, 12, false);
+					  }
 					},
 					showInLegend: true,
 					tips: {

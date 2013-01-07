@@ -144,6 +144,39 @@ Ext.define('C.view.ScenarioForm', {
 
 		if (record.isNew) {
 			record.isNew = false;
+			record.node.appendChild({
+				name: 'Demographics',
+				nodeType: 'DemographicsCollection',
+				expanded: false,
+				leaf: false,
+				expandable: true,
+				fakeChildren: true,
+				draggable: false,
+				icon: 'resources/icons/demographics.jpg'
+			});
+
+
+			var childNode = record.node.childNodes[2];
+			if(!childNode.c){
+				console.info('Creating structure for node '+childNode.data.name+'.', childNode);
+				childNode.c = {
+					store: {} // single store, not array (?)
+				};
+				childNode.c.store = new C.store.Demographics({
+					storeId: childNode.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
+					navigationNode: childNode
+				});
+				childNode.c.store.load({
+					params: {
+						scn_id: childNode.parentNode.get('nodeId')
+					}
+				});
+			}
+			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
+			grid.closable = false;
+			grid.setTitle(childNode.get('name'));
+			this.getComponent('dataContainer').add(grid);
+
 			myForm.findField('setup').readOnly = true;
 		}
 
@@ -151,6 +184,7 @@ Ext.define('C.view.ScenarioForm', {
 
 		//clear dirty record
 		record.node.commit();
+
 
 	}
 
