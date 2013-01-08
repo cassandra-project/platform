@@ -35,7 +35,15 @@ Ext.define('C.view.MyViewport', {
 							xtype: 'image',
 							margins: '0 0 0 10px',
 							height: 100,
+							width: 185,
 							src: 'resources/icons/logo.png'
+						},
+						{
+							xtype: 'tbtext',
+							height: 29,
+							id: 'logo-text',
+							width: 94,
+							text: 'platform'
 						}
 					]
 				},
@@ -72,17 +80,17 @@ Ext.define('C.view.MyViewport', {
 									dataIndex: f.name,
 									width: 210,
 									renderer: function (v, m, r) {
-										var id = Ext.id();
+										var id1 = Ext.id();
 										Ext.defer(function () {
 											Ext.widget('progressbar', {
 												id: 'progressbar' + r.get('_id'),
 												text: v+'% Completed',
-												renderTo: id,
-												value: v / 100,
+												renderTo: id1,
+												value: v*0.15 / 100,
 												width: 200
 											});
 										}, 50);
-										return Ext.String.format('<div id="{0}"></div>', id);
+										return Ext.String.format('<div id="{0}"></div>', id1);
 									}
 								},
 								{
@@ -104,7 +112,7 @@ Ext.define('C.view.MyViewport', {
 														scope: this,
 														success: function(response, opts) {
 															var o = Ext.decode(response.responseText);
-															Ext.getCmp('progressbar'+r.get('_id')).updateProgress(o.data[0].percentage / 100);
+															Ext.getCmp('progressbar'+r.get('_id')).updateProgress((o.data[0].percentage*0.15) / 100);
 															Ext.getCmp('progressbar'+r.get('_id')).updateText(o.data[0].percentage+'% Completed');
 															if (o.data[0].percentage == 100) r.set('ended', o.data[0].ended);
 														}

@@ -278,7 +278,7 @@ Ext.application({
 		var gridStore = new C.store.ActmodAppliances();
 		var grid = new C.view.RelationsGrid({store:gridStore});
 
-		propertiesCmp = new C.view.ActmodPropertiesForm({});
+		var propertiesCmp = new C.view.ActmodPropertiesForm({});
 		var myForm = propertiesCmp.getForm();
 
 		myForm.loadRecord(record);

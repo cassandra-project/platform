@@ -166,6 +166,7 @@ Ext.define('C.view.DistributionForm', {
 		}
 
 		else {
+			var propertiesCmp = Ext.getCmp('MainTabPanel').getActiveTab().query('form')[0];
 			var actmod_record = propertiesCmp.getForm().getRecord();
 			var distr_store = actmod_record.c.store;
 
