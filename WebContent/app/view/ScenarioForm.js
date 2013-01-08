@@ -144,39 +144,46 @@ Ext.define('C.view.ScenarioForm', {
 
 		if (record.isNew) {
 			record.isNew = false;
-			record.node.appendChild({
-				name: 'Demographics',
-				nodeType: 'DemographicsCollection',
-				expanded: false,
-				leaf: false,
-				expandable: true,
-				fakeChildren: true,
-				draggable: false,
-				icon: 'resources/icons/demographics.jpg'
-			});
+			if (myForm.findField('setup').value == 'dynamic') {
+				record.node.appendChild({
+					name: 'Demographics',
+					nodeType: 'DemographicsCollection',
+					expanded: false,
+					leaf: false,
+					expandable: true,
+					fakeChildren: true,
+					draggable: false,
+					icon: 'resources/icons/demographics.jpg'
+				});
 
 
-			var childNode = record.node.childNodes[2];
-			if(!childNode.c){
-				console.info('Creating structure for node '+childNode.data.name+'.', childNode);
-				childNode.c = {
-					store: {} // single store, not array (?)
-				};
-				childNode.c.store = new C.store.Demographics({
-					storeId: childNode.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
-					navigationNode: childNode
-				});
-				childNode.c.store.load({
-					params: {
-						scn_id: childNode.parentNode.get('nodeId')
-					}
-				});
+				var childNode = record.node.childNodes[2];
+				if(!childNode.c){
+					console.info('Creating structure for node '+childNode.data.name+'.', childNode);
+					childNode.c = {
+						store: {} // single store, not array (?)
+					};
+					childNode.c.store = new C.store.Demographics({
+						storeId: childNode.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
+						navigationNode: childNode
+					});
+					childNode.c.store.load({
+						params: {
+							scn_id: childNode.parentNode.get('nodeId')
+						}
+					});
+				}
+				var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
+				grid.closable = false;
+				grid.setTitle(childNode.get('name'));
+				this.getComponent('dataContainer').add(grid);
 			}
-			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
-			grid.closable = false;
-			grid.setTitle(childNode.get('name'));
-			this.getComponent('dataContainer').add(grid);
-
+			else if (record.node.childNodes.length == 3) {
+				var demoNode = record.node.childNodes[2];
+				record.node.removeChild(demoNode);
+				var demoGrid = this.getComponent('dataContainer').query('grid')[2];
+				this.getComponent('dataContainer').remove(demoGrid);
+			}
 			myForm.findField('setup').readOnly = true;
 		}
 
