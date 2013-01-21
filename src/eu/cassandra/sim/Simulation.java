@@ -17,6 +17,7 @@ package eu.cassandra.sim;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -350,25 +351,31 @@ public class Simulation implements Runnable {
 	            		base).build();
 	    		existing.put(appid, app);
 	    	}
-	    	for (int j = 1; j <= appcount; j++) {
-	    		for(int k = 0; k < generators.size(); k++) {
-	    			DBObject generator = (DBObject)generators.get(k);
-	    			String entityId = (String)generator.get("entity_id");
-	    			if(existing.containsKey(entityId)) {
-	    				double prob = ((Double)generator.get("probability")).doubleValue();
-	    				if(RNG.nextDouble() < prob) {
-	    					Appliance selectedApp = existing.get(entityId);
-	    					selectedApp.setParentId(inst.getId());
-	    			    	String app_id = addEntity(selectedApp);
-	    			    	selectedApp.setId(app_id);
-	    			    	inst.addAppliance(selectedApp);
-	    			    	ConsumptionModel cm = selectedApp.getConsumptionModel();
-	    			    	cm.setParentId(app_id);
-	    			    	String cm_id = addEntity(cm);
-	    			    	cm.setId(cm_id);
-	    			    	//System.out.println(existing.get(entityId).getName());
-	    				}
-	    			}
+	    	
+	    	HashMap<String,Double> gens = new HashMap<String,Double>();
+	    	for(int k = 0; k < generators.size(); k++) {
+    			DBObject generator = (DBObject)generators.get(k);
+    			String entityId = (String)generator.get("entity_id");
+    			double prob = ((Double)generator.get("probability")).doubleValue();
+    			gens.put(entityId, new Double(prob));
+	    	}
+	    	
+	    	Set<String> keys = existing.keySet();
+	    	for(String key : keys) {
+	    		Double prob = gens.get(key);
+	    		if(prob != null) {
+	    			double probValue = prob.doubleValue();
+	    			if(RNG.nextDouble() < probValue) {
+    					Appliance selectedApp = existing.get(key);
+    					selectedApp.setParentId(inst.getId());
+    			    	String app_id = addEntity(selectedApp);
+    			    	selectedApp.setId(app_id);
+    			    	inst.addAppliance(selectedApp);
+    			    	ConsumptionModel cm = selectedApp.getConsumptionModel();
+    			    	cm.setParentId(app_id);
+    			    	String cm_id = addEntity(cm);
+    			    	cm.setId(cm_id);
+    				}
 	    		}
 	    	}
 
