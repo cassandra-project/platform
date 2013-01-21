@@ -17,6 +17,7 @@
 package eu.cassandra.server.api;
 
 import java.net.UnknownHostException;
+
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
