@@ -50,7 +50,7 @@
 	</target>
 
   	<target name="dist" depends="compile" description="generate the distribution (war file)" >
-		<war destfile="cassandra.war" webxml="${webinf}/web.xml">
+		<war destfile="${dist}/cassandra.war" webxml="${webinf}/web.xml">
 			<fileset dir="WebContent/app"/>
 			<fileset dir="WebContent/resource"/>
 		  	<fileset file="WebContent/index.html"/>
