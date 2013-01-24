@@ -28,7 +28,7 @@
   	</target>
 
   	<target name="compile" depends="init" description="compile the source">
-		<javac destdir="${build.bin}" debug="${debug.flag}" deprecation="on">
+		<javac source="7" target="7" destdir="${build.bin}" deprecation="on">
 			<src path="${src}"/>
 			<classpath refid="classpath"/>
 		</javac>
@@ -51,11 +51,7 @@
 
   	<target name="dist" depends="compile" description="generate the distribution (war file)" >
 		<war destfile="${dist}/cassandra.war" webxml="${webinf}/web.xml">
-			<fileset dir="WebContent/app"/>
-			<fileset dir="WebContent/resource"/>
-		  	<fileset file="WebContent/index.html"/>
-	      	<fileset file="WebContent/app.html"/>
-		  	<fileset file="WebContent/app.js"/>
+			<fileset dir="WebContent" excludes="WEB-INF/"/>
 		  	<lib dir="${lib}"></lib>
 		  	<classes dir="${build.bin}"/>
 		</war>
