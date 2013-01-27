@@ -16,8 +16,6 @@
 
 package eu.cassandra.sim;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -25,6 +23,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
+import eu.cassandra.sim.utilities.Utils;
 
 /**
  * The Simulation class can simulate up to 4085 years of simulation.
@@ -49,66 +48,51 @@ public class SimulationParams
   public SimulationParams (DBObject dbo) throws ParseException
   {
 
+    name = dbo.get("name").toString();
+    locationInfo = dbo.get("locationInfo").toString();
+    int duration = Integer.parseInt(dbo.get("numberOfDay").toString());
 
-	  name = dbo.get("name").toString();  
-	  locationInfo = dbo.get("locationInfo").toString();  
-	  int duration = Integer.parseInt(dbo.get("numberOfDay").toString());  
-	  
-	  BasicDBObject tempList = (BasicDBObject)dbo.get("calendar");
+    BasicDBObject tempList = (BasicDBObject) dbo.get("calendar");
 
-	  int day = tempList.getInt("dayOfMonth");
-	  int month = tempList.getInt("month");
-	  int year = tempList.getInt("year");
-	  
-	  simCalendar = new SimCalendar(day,month,year,duration);
-	  
+    int day = tempList.getInt("dayOfMonth");
+    int month = tempList.getInt("month");
+    int year = tempList.getInt("year");
+
+    simCalendar = new SimCalendar(day, month, year, duration);
+
   }
 
   public SimCalendar getSimCalendar ()
   {
     return simCalendar;
   }
-  
+
   public String getName ()
   {
     return name;
   }
-  
+
   public String getLocationInfo ()
   {
     return locationInfo;
   }
 
-  
   /**
-	 * @param args
- * @throws IOException 
- * @throws ParseException 
-	 */
-	public static void main(String[] args) throws IOException, ParseException {
-		String s = readFile("simparam.json");
+   * @param args
+   * @throws IOException
+   * @throws ParseException
+   */
+  public static void main (String[] args) throws IOException, ParseException
+  {
+    String s = Utils.readFile("simparam.json");
 
-		DBObject obj = (DBObject)JSON.parse(s); 
+    DBObject obj = (DBObject) JSON.parse(s);
 
-		SimulationParams sp = new SimulationParams(obj);
-		
-		System.out.println("Name:" + sp.getName());
-		System.out.println("Location Info:" + sp.getLocationInfo());
-		System.out.println("SimCalendar:" + sp.getSimCalendar().toString());
-	}
+    SimulationParams sp = new SimulationParams(obj);
 
+    System.out.println("Name:" + sp.getName());
+    System.out.println("Location Info:" + sp.getLocationInfo());
+    System.out.println("SimCalendar:" + sp.getSimCalendar().toString());
+  }
 
-	private static String readFile( String file ) throws IOException {
-		BufferedReader reader = new BufferedReader( new FileReader (file));
-		String         line = null;
-		StringBuilder  stringBuilder = new StringBuilder();
-		String         ls = System.getProperty("line.separator");
-
-		while( ( line = reader.readLine() ) != null ) {
-			stringBuilder.append( line );
-			stringBuilder.append( ls );
-		}
-
-		return stringBuilder.toString();
-	}
 }
