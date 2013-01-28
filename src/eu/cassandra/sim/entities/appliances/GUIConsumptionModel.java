@@ -39,16 +39,19 @@ public class GUIConsumptionModel
     for (int i = 0; i < times; i++) {
       // System.out.println("Time: " + i);
       // Number of patterns in each repeat
-      int internalTimes = cons.getPatternN();
-      if (internalTimes == 0)
-        internalTimes = 2;
-      for (int j = 0; j < internalTimes; j++) {
+      for (int j = 0; j < cons.getPatternN(); j++) {
         // System.out.println("Pattern: " + j);
-        ArrayList<Tripplet> tripplets = cons.getPattern(j);
-        for (int k = 0; k < tripplets.size(); k++) {
-          // System.out.println("Tripplet: " + k);
-          for (int l = 0; l < tripplets.get(k).d; l++) {
-            temp.add(tripplets.get(k).p);
+        int internalTimes = cons.getN(j);
+        if (internalTimes == 0)
+          internalTimes = 2;
+        // System.out.println("Internal Times: " + k);
+        for (int k = 0; k < internalTimes; k++) {
+          ArrayList<Tripplet> tripplets = cons.getPattern(j);
+          for (int l = 0; l < tripplets.size(); l++) {
+            // System.out.println("Tripplet: " + l);
+            for (int m = 0; m < tripplets.get(l).d; m++) {
+              temp.add(tripplets.get(l).p);
+            }
           }
         }
       }
