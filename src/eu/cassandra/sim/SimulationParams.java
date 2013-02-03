@@ -18,6 +18,7 @@ package eu.cassandra.sim;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Calendar;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -48,16 +49,31 @@ public class SimulationParams
   public SimulationParams (DBObject dbo) throws ParseException
   {
 
+    int day;
+    int month;
+    int year;
+
     name = dbo.get("name").toString();
     locationInfo = dbo.get("locationInfo").toString();
     int duration = Integer.parseInt(dbo.get("numberOfDay").toString());
 
     BasicDBObject tempList = (BasicDBObject) dbo.get("calendar");
 
-    int day = tempList.getInt("dayOfMonth");
-    int month = tempList.getInt("month");
-    int year = tempList.getInt("year");
+    if (tempList == null) {
 
+      simCalendar = new SimCalendar();
+      day = simCalendar.getMyCalendar().get(Calendar.DAY_OF_MONTH);
+      month = simCalendar.getMyCalendar().get(Calendar.MONTH);
+      year = simCalendar.getMyCalendar().get(Calendar.YEAR);
+
+    }
+    else {
+
+      day = tempList.getInt("dayOfMonth");
+      month = tempList.getInt("month");
+      year = tempList.getInt("year");
+
+    }
     simCalendar = new SimCalendar(day, month, year, duration);
 
   }
