@@ -11,11 +11,14 @@
   	<property name="webinf"  location="WebContent/WEB-INF"/>
 	<property name="build.compiler" value="modern"/>
 	
+	
+	
 	<path id="classpath">
 		<fileset dir="${lib}">
 				<include name="**/*.jar"/>
  	 	</fileset>
 	</path>
+	<path id="application" location="${jar.dir}/${ant.project.name}.jar"/> <!--added-->
 
   	<target name="init" depends="clean">
     	<!-- Create the time stamp -->
@@ -62,4 +65,46 @@
     	<delete dir="${build}"/>
     	<delete dir="${dist}"/>
   	</target>
+	
+	
+	
+	
+	   <!-- <target name="junit" depends="compile">
+	        <junit printsummary="yes">
+	            <classpath>
+	                <path refid="classpath"/>
+	            	<path refid="application"/> 
+	            </classpath>
+	            
+	            <batchtest fork="yes">
+	                <fileset dir="${src}" includes="*Test.java"/>
+	            </batchtest>
+	        </junit>
+	    </target>-->
+	
+	<property name="report.dir"  value="${build.dir}/junitreport"/>
+
+	    <target name="junit" depends="compile">
+	        <mkdir dir="${report.dir}"/>
+	        <junit printsummary="yes">
+	            <classpath>
+	                <path refid="classpath"/>
+	                <path refid="application"/>
+	            </classpath>
+	            
+	            <formatter type="xml"/>
+	            
+	            <batchtest fork="yes" todir="${report.dir}">
+	                <fileset dir="${src}" includes="*Test.java"/>
+	            </batchtest>
+	        </junit>
+	    </target>
+	    
+	    <target name="junitreport">
+	        <junitreport todir="${report.dir}">
+	            <fileset dir="${report.dir}" includes="TEST-*.xml"/>
+	            <report todir="${report.dir}"/>
+	        </junitreport>
+	    </target>
+	
 </project>
