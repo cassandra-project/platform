@@ -69,22 +69,31 @@
 	
 	
 	
-	   <!-- <target name="junit" depends="compile">
+	<target name="run" depends="compile">
+	        <java fork="true" classname="${main-class}">
+	            <classpath>
+	                <path refid="classpath"/>
+	                <path id="application" location="${jar.dir}/${ant.project.name}.jar"/>
+	            </classpath>
+	        </java>
+	    </target>
+	    
+	    <target name="junit" depends="compile">
 	        <junit printsummary="yes">
 	            <classpath>
 	                <path refid="classpath"/>
-	            	<path refid="application"/> 
+	                <path refid="application"/>
 	            </classpath>
 	            
 	            <batchtest fork="yes">
 	                <fileset dir="${src}" includes="*Test.java"/>
 	            </batchtest>
 	        </junit>
-	    </target>-->
+	    </target>
 	
-	<property name="report.dir"  value="${build.dir}/junitreport"/>
+	<!-- 	  <property name="report.dir"  value="${build.dir}/junitreport"/>
 
-	    <target name="junit" depends="compile">
+ <target name="junit" depends="compile">
 	        <mkdir dir="${report.dir}"/>
 	        <junit printsummary="yes">
 	            <classpath>
@@ -105,6 +114,6 @@
 	            <fileset dir="${report.dir}" includes="TEST-*.xml"/>
 	            <report todir="${report.dir}"/>
 	        </junitreport>
-	    </target>
+	    </target>-->
 	
 </project>
