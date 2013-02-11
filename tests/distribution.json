@@ -1,0 +1,9 @@
+{
+    "name" : "Distribution 1",
+    "type" : "Normal Distribution",
+    "description" : "lala2",
+    "distrType" : "Uniform Distribution",
+    "actmod_id" : "5045f8eae4b058c3f86c3310",
+    "values" : [3,4.4],
+    "parameters" : [    ]
+}

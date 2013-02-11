@@ -1,0 +1,15 @@
+ {
+        "name": "Vacuum cleaner CM",
+        "app_id" : "5045e21ee4b058c3f86c32e5",
+        "model" : 
+            {
+                "n" : 0,
+                "params" : [{ 
+                            "n" : 1, 
+                            "values" : [
+                                {"p" : 1000.0, "d" : 10, "s": 0}
+                            ]
+                }]
+            }
+        
+}

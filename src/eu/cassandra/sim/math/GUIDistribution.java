@@ -1,0 +1,91 @@
+package eu.cassandra.sim.math;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
+import eu.cassandra.server.api.exceptions.JSONSchemaNotValidException;
+import eu.cassandra.server.mongo.MongoActivityModels;
+import eu.cassandra.sim.utilities.Utils;
+
+public class GUIDistribution {
+
+	private ProbabilityDistribution prob = null;	
+
+	/**
+	 * 
+	 * @param type
+	 * @param dbo
+	 * @throws JSONSchemaNotValidException 
+	 */
+	public GUIDistribution(String type, DBObject dbo) throws JSONSchemaNotValidException{
+		String distrType = dbo.get("distrType").toString();
+		BasicDBList tempList = (BasicDBList)dbo.get("parameters");
+		if(tempList.size()==0)
+			return;
+
+		DBObject parameters = (DBObject)JSON.parse(tempList.get(0).toString());
+
+		int endValue = 0;
+		switch(type){
+		case MongoActivityModels.REF_DISTR_STARTTIME : 
+			endValue = 1440;
+			break;
+		case MongoActivityModels.REF_DISTR_DURATION:	
+			endValue = 180;
+			break;
+		case MongoActivityModels.REF_DISTR_REPEATS :	
+			endValue = 10;
+			break;
+		default:
+			throw new JSONSchemaNotValidException("Invalid distr type: " + type);
+		}
+		switch(distrType){
+		case "Normal Distribution":
+			double mean = Double.parseDouble(parameters.get("mean").toString());
+			double std = Double.parseDouble(parameters.get("std").toString());
+			prob = new Gaussian(mean, std);
+			if (type.equalsIgnoreCase("Duration") || type.equalsIgnoreCase("Daily Times")) 
+				endValue = (int)(mean + 4*std);
+			prob.precompute(endValue);
+			break;
+		case "Uniform Distribution":
+			double start = Double.parseDouble(parameters.get("start").toString());
+			double end = Double.parseDouble(parameters.get("end").toString());
+			prob = new Uniform(start, end);
+			if (type.equalsIgnoreCase("duration")){
+				endValue = (int)end + 10;
+			}
+			prob.precompute(endValue);
+			break;
+
+		case "Gaussian Mixture Models":
+			double[] pi = Utils.dblist2doubleArr((BasicDBList)parameters.get("pi")); 
+			double[] means = Utils.dblist2doubleArr((BasicDBList)parameters.get("means"));
+			double[] sigmas = Utils.dblist2doubleArr((BasicDBList)parameters.get("sigmas"));
+			prob = new GaussianMixtureModels(pi.length ,pi, means, sigmas);
+			prob.precompute(endValue);
+			break;
+		case "Histogram":
+			double[] values = Utils.dblist2doubleArr((BasicDBList)parameters.get("values"));
+			prob = new Histogram(values);
+			break;
+		default:
+			throw new JSONSchemaNotValidException("Invalid distribution2 type: " + distrType);
+
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public double[] getValues(){
+		if(prob == null)
+			return null;
+		else
+			return prob.getHistogram();
+	}
+}
+
+

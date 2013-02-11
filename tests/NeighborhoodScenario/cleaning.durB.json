@@ -1,0 +1,11 @@
+{
+    "name" : "cleaning",
+    "type" : "duration",
+    "distrType" : "Normal Distribution",
+    "parameters" : [
+        {
+            "mean" : 60.0,
+            "std" : 0.00001
+        }
+     ]
+}

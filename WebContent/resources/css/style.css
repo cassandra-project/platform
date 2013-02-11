@@ -1,0 +1,101 @@
+#MainTabPanel-body,  .gridbg{
+/*background-color: #E4EAED !important;
+background-image: -webkit-gradient(linear, 50% 0%, 50% 1, color-stop(100%, #F3F6F7), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 0% 50%, 1 50%, color-stop(100%, #F3F6F7), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 50% 0%, 50% 1, color-stop(100%, rgba(255, 255, 255, 0.3)), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 0% 50%, 1 50%, color-stop(100%, rgba(255, 255, 255, 0.3)), color-stop(100%, rgba(243, 246, 247, 0)));
+background-image: -webkit-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
+background-image: -moz-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -moz-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -moz-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -moz-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
+background-image: -o-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -o-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -o-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -o-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
+background-image: -ms-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -ms-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -ms-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -ms-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
+background-image: linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
+background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+background-position: -2px, -2px, -2px, -2px;*/
+background-image: url(../icons/grid_pattern.png);
+}
+
+#top_toolbar {
+/*background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #8FC33A), color-stop(100%, #739B2E));
+background-image: -webkit-linear-gradient(top, #8FC33A, #739B2E);
+background-image: -moz-linear-gradient(top, #8FC33A, #739B2E);
+background-image: -o-linear-gradient(top, #8FC33A, #739B2E);
+background-image: -ms-linear-gradient(top, #8FC33A, #739B2E);
+background-image: linear-gradient(top, #8FC33A, #739B2E);*/
+background: #739B2E url(../icons/top_pattern.png) repeat-x;	
+border-bottom: 1px solid #567422;
+}
+
+#bottom_toolbar {
+/*background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #8FC33A), color-stop(100%, #739B2E));
+background-image: -webkit-linear-gradient(top, #8FC33A, #739B2E);
+background-image: -moz-linear-gradient(top, #8FC33A, #739B2E);
+background-image: -o-linear-gradient(top, #8FC33A, #739B2E);
+background-image: -ms-linear-gradient(top, #8FC33A, #739B2E);
+background-image: linear-gradient(top, #8FC33A, #739B2E);*/
+background: #739B2E url(../icons/bottom_pattern.png) repeat-x;	
+border-bottom: 1px solid #567422;
+}
+
+#uiNavigationTreePanel-body {
+border-right: 1px solid #D7DCE0;
+}
+
+/*.x-panel-default {
+background-color: #E4EAED;
+background-image: url(../icons/grid_pattern.png);
+
+background-image: -webkit-gradient(linear, 50% 0%, 50% 1, color-stop(100%, #F3F6F7), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 0% 50%, 1 50%, color-stop(100%, #F3F6F7), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 50% 0%, 50% 1, color-stop(100%, rgba(255, 255, 255, 0.3)), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 0% 50%, 1 50%, color-stop(100%, rgba(255, 255, 255, 0.3)), color-stop(100%, rgba(243, 246, 247, 0)));
+background-image: -webkit-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
+background-image: -moz-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -moz-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -moz-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -moz-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
+background-image: -o-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -o-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -o-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -o-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
+background-image: -ms-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -ms-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -ms-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -ms-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
+background-image: linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
+
+background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+}*/
+
+.x-tab button {
+	height: 25px !important;
+	line-height: 25px !important;
+}
+.x-tab button .x-tab-icon {
+	top: auto !important;
+}
+
+/*changed in neptune css
+.x-tab-icon-text-left .x-tab-inner {
+	padding-left: 27px;
+}
+
+.x-tab button .x-tab-icon, .x-tab a .x-tab-icon {
+	width: 25px
+}
+*/
+
+.x-panel-header-default {
+background-image: url(../icons/header_pattern.png);	
+}
+
+.x-tab-close-btn, .x-tab-active .x-tab-close-btn::after {
+background-image: none;
+background-color: #252925 !important;
+}
+
+.x-tab {
+background-image:none;
+background-color: #739B2E !important;
+}
+
+.x-tab-bar {
+background-color: #E4EAED;
+background-image: url(../icons/grid_pattern.png);
+}
+
+.x-tab-top-active {
+background-image: none;
+background-color: #F39926 !important;
+}
+
+#logo-text {
+color: #104b9b !important;
+font-size: 23px; 
+letter-spacing: 1px; 
+font-family: "century gothic", Arial, Verdana, sans-serif;}
+}

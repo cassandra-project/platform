@@ -1,0 +1,12 @@
+    {
+    "name" : "Cooking",
+    "type" : "weekday",
+    "distrType" : "Normal Distribution",
+    "actmod_id" : "508ba646e4b03c90ac645dd8",
+    "parameters" : [
+        {
+            "mean" : 2.0,
+            "std" : 0.000001
+        }
+     ]
+}

@@ -1,0 +1,91 @@
+{
+    "name": "Consumption Model",
+    "type": "object",
+    "description": "The function analysis of an appliance",
+    "properties": {
+        "app_id": {
+            "type": "string",
+            "description": "The Appliance that this consumption model belongs to",
+            "optional": false
+        },    
+        "name": {
+            "type": "string",
+            "description": "Name of the consumption model",
+            "optional": true
+        },
+        "type": {
+            "type": "string",
+            "description": "Type of the consumption model",
+            "optional": true
+        },
+        "description": {
+            "type": "string",
+            "description": "Description of the consumption model",
+            "optional": true
+        },
+        "model" : {
+            "type": "object",
+            "description": "Parameters of the consumption model",
+            "optional": true,
+            "properties" : {
+                "n" : {
+                 "optional" : true,
+                    "type" : "integer",
+                    "description" : "Number of iterations"
+                },
+                "params" : {
+                    "optional" : true,
+                    "type" : "array",
+                    "description" : "",
+                    "items" : {
+                    "type" : "object",
+                    "description" : "",
+                    "properties" : {
+                        "n" : {
+                         "optional" : true,
+                            "type" : "integer",
+                            "description" : "Number of iterations"
+                        },
+                        "values" : {
+                         "optional" : true,
+                            "type" : "array",
+                            "description" : "",
+                            "items" : {
+                             "optional" : true,
+                                "type" : "object",
+                                "description" : "",
+                                "properties" : {
+                                    "p" : {
+                                     "optional" : true,
+                                        "type" : "number",
+                                        "description" : "power"
+                                    },
+                                    "d" : {
+                                     "optional" : true,
+                                        "type" : "integer",
+                                        "description" : "power"
+                                    },
+                                    "s" : {
+                                     "optional" : true,
+                                        "type" : "number",
+                                        "description" : "power"
+                                    }                                                                     
+                                } 
+                            }
+                        }
+                    }
+                    }
+                }
+            }
+        }
+    },
+    "values": {
+        "type": "array",
+        "description": "Values of the distribution",
+        "items": {
+        "type": "number"
+        },
+        "optional" : true
+    },
+    "additionalProperties" : false
+}

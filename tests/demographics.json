@@ -1,0 +1,18 @@
+{
+    "name" : "Demographic Name",
+    "description" : "blabla",
+    "type" : "My type",
+    "scn_id" : "5006dbf5e4b0e2f134dad5ae",
+    "numberOfEntities" : 3,
+    "generators" : [
+        {
+            "entity_id" : "5061c9dfe4b017b914cb0d4a",
+            "probability" : 0.5
+        },
+        {
+            "entity_id" : "4ff5bca7e4b0082c63d08df9",
+            "probability" : 0.7
+        }
+    ]
+    
+}

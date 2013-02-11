@@ -1,0 +1,12 @@
+{
+        "name" : "Run for 10 days",
+        "numberOfDays" : 10,
+        "scn_id" : "5045dc26e4b058c3f86c32df",
+        "locationInfo" : "Thessaloniki",
+        "calendar" : {
+            "dayOfMonth" : 23,
+            "dayOfWeek" : "Monday",
+            "month" : 7,
+            "year" : 2012
+        }
+}

@@ -1,0 +1,11 @@
+{
+    "name" : "Washing",
+    "type" : "weekday",
+    "distrType" : "Normal Distribution",
+    "parameters" : [
+        {
+            "mean" : 2.0,
+            "std" : 0.00001
+        }
+     ]
+}

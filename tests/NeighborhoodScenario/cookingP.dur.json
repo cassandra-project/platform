@@ -1,0 +1,12 @@
+{
+    "name" : "Cooking",
+    "type" : "duration",
+    "distrType" : "Normal Distribution",
+    "actmod_id" : "508bbecfe4b03c90ac645ddc",
+    "parameters" : [
+        {
+            "mean" : 60.0,
+            "std" : 0.00001
+        }
+     ]
+}

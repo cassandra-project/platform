@@ -1,0 +1,119 @@
+<project name="Cassandra" default="dist" basedir=".">
+	<description>Cassandra platform build file</description>
+	
+  	<!-- set global properties for this build -->
+  	<property name="src" location="src"/>
+  	<property name="build" location="build"/>
+  	<property name="build.bin" location="build/bin"/>
+	<property name="build.doc" value="build/doc"/>
+  	<property name="dist"  location="dist"/>
+  	<property name="lib"  location="WebContent/WEB-INF/lib"/>
+  	<property name="webinf"  location="WebContent/WEB-INF"/>
+	<property name="build.compiler" value="modern"/>
+	
+	
+	
+	<path id="classpath">
+		<fileset dir="${lib}">
+				<include name="**/*.jar"/>
+ 	 	</fileset>
+	</path>
+	<path id="application" location="${jar.dir}/${ant.project.name}.jar"/> <!--added-->
+
+  	<target name="init" depends="clean">
+    	<!-- Create the time stamp -->
+    	<tstamp/>
+		<echo message="${TSTAMP}"/>
+    	<!-- Create the build directory structure used by compile -->
+    	<mkdir dir="${build}"/>
+    	<mkdir dir="${build.bin}"/>
+		<mkdir dir="${dist}"/>
+  	</target>
+
+  	<target name="compile" depends="init" description="compile the source">
+		<javac source="7" target="7" destdir="${build.bin}" deprecation="on">
+			<src path="${src}"/>
+			<classpath refid="classpath"/>
+		</javac>
+		<!-- Package the application into a JAR -->
+    	<jar jarfile="${build}/cassandra.jar" basedir="${build.bin}" />
+  	</target>
+
+	<!-- Generate the API documentation-->
+	<target name="javadoc" depends="compile">
+    	<mkdir dir="${build.doc}"/>
+ 	 	<javadoc packagenames="eu.cassandra.*"
+          		sourcepath="${src}"
+	          	destdir="${build.doc}"
+        	   	author="true"
+        	   	version="true"
+        	   	use="true" >
+			<classpath refid="classpath"/>
+  		</javadoc>
+	</target>
+
+  	<target name="dist" depends="compile" description="generate the distribution (war file)" >
+		<war destfile="${dist}/cassandra.war" webxml="${webinf}/web.xml">
+			<fileset dir="WebContent" excludes="WEB-INF/"/>
+		  	<lib dir="${lib}"></lib>
+		  	<classes dir="${build.bin}"/>
+		</war>
+	</target>
+
+  	<target name="clean" description="clean up" >
+    	<!-- Delete the ${build} and ${dist} directory trees -->
+    	<delete dir="${build}"/>
+    	<delete dir="${dist}"/>
+  	</target>
+	
+	
+	
+	
+	<target name="run" depends="compile">
+	        <java fork="true" classname="${main-class}">
+	            <classpath>
+	                <path refid="classpath"/>
+	                <path id="application" location="${jar.dir}/${ant.project.name}.jar"/>
+	            </classpath>
+	        </java>
+	    </target>
+	    
+	    <target name="junit" depends="compile">
+	        <junit printsummary="yes">
+	            <classpath>
+	                <path refid="classpath"/>
+	                <path refid="application"/>
+	            </classpath>
+	            
+	            <batchtest fork="yes">
+	                <fileset dir="${src}" includes="*Test.java"/>
+	            </batchtest>
+	        </junit>
+	    </target>
+	
+	<!-- 	  <property name="report.dir"  value="${build.dir}/junitreport"/>
+
+ <target name="junit" depends="compile">
+	        <mkdir dir="${report.dir}"/>
+	        <junit printsummary="yes">
+	            <classpath>
+	                <path refid="classpath"/>
+	                <path refid="application"/>
+	            </classpath>
+	            
+	            <formatter type="xml"/>
+	            
+	            <batchtest fork="yes" todir="${report.dir}">
+	                <fileset dir="${src}" includes="*Test.java"/>
+	            </batchtest>
+	        </junit>
+	    </target>
+	    
+	    <target name="junitreport">
+	        <junitreport todir="${report.dir}">
+	            <fileset dir="${report.dir}" includes="TEST-*.xml"/>
+	            <report todir="${report.dir}"/>
+	        </junitreport>
+	    </target>-->
+	
+</project>

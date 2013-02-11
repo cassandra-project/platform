@@ -1,0 +1,74 @@
+<class-diagram version="1.0.10" icons="true" automaticImage="PNG" always-add-relationships="false" 
+  generalizations="true" realizations="true" associations="true" dependencies="false" nesting-relationships="true">  
+  <package id="1" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.sim" project="platform" 
+    file="/platform/src/eu/cassandra/sim" binary="false">    
+    <position height="316" width="782" x="11" y="245"/>    
+    <display autosize="false" stereotype="true"/>  
+  </package>  
+  <package id="2" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.sim.entities" project="platform" 
+    file="/platform/src/eu/cassandra/sim/entities" binary="false">    
+    <position height="244" width="336" x="23" y="294"/>    
+    <display autosize="false" stereotype="true"/>  
+  </package>  
+  <package id="3" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.sim.math" project="platform" 
+    file="/platform/src/eu/cassandra/sim/math" binary="false">    
+    <position height="49" width="218" x="379" y="295"/>    
+    <display autosize="false" stereotype="true"/>  
+  </package>  
+  <package id="4" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.sim.utilities" project="platform" 
+    file="/platform/src/eu/cassandra/sim/utilities" binary="false">    
+    <position height="-1" width="-1" x="466" y="378"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="5" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.sim.entities.appliances" project="platform" 
+    file="/platform/src/eu/cassandra/sim/entities/appliances" binary="false">    
+    <position height="-1" width="-1" x="154" y="369"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="6" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.sim.entities.installations" 
+    project="platform" file="/platform/src/eu/cassandra/sim/entities/installations" binary="false">    
+    <position height="-1" width="-1" x="156" y="494"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="7" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.sim.entities.people" project="platform" 
+    file="/platform/src/eu/cassandra/sim/entities/people" binary="false">    
+    <position height="-1" width="-1" x="143" y="431"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="8" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.server" project="platform" 
+    file="/platform/src/eu/cassandra/server" binary="false">    
+    <position height="216" width="781" x="10" y="21"/>    
+    <display autosize="false" stereotype="true"/>  
+  </package>  
+  <package id="9" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.server.api" project="platform" 
+    file="/platform/src/eu/cassandra/server/api" binary="false">    
+    <position height="148" width="253" x="22" y="73"/>    
+    <display autosize="false" stereotype="true"/>  
+  </package>  
+  <package id="10" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.server.mongo" project="platform" 
+    file="/platform/src/eu/cassandra/server/mongo" binary="false">    
+    <position height="147" width="263" x="286" y="74"/>    
+    <display autosize="false" stereotype="true"/>  
+  </package>  
+  <package id="11" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.server.threads" project="platform" 
+    file="/platform/src/eu/cassandra/server/threads" binary="false">    
+    <position height="-1" width="-1" x="673" y="99"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="12" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.server.api.exceptions" project="platform" 
+    file="/platform/src/eu/cassandra/server/api/exceptions" binary="false">    
+    <position height="-1" width="-1" x="144" y="157"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="13" corner="BOTTOM_RIGHT" language="java" name="eu.cassandra.server.mongo.util" project="platform" 
+    file="/platform/src/eu/cassandra/server/mongo/util" binary="false">    
+    <position height="-1" width="-1" x="397" y="159"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true"/>    
+    <operations public="true" package="true" protected="true" private="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

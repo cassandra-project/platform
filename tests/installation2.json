@@ -1,0 +1,10 @@
+ {
+        "name" : "Installation 2",
+        "type" : "Installation Type",
+        "description" : "Installation description 2",
+        "scenario_id" : "5061c8c7e4b017b914cb0d2d",
+        "belongsToInstallation" : "5061c911e4b017b914cb0d2e"
+ }
+ 
+ 
+ 

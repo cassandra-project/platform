@@ -1,0 +1,9 @@
+{
+  "name": "washing",
+  "standy_consumption": 0.0,
+  "controllable": false,
+  "shiftable": false,
+  "base": false,
+  "type": "washing",
+  "inst_id": "50950e900f8bc2b5969fefe3"
+}

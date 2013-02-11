@@ -1,0 +1,9 @@
+{
+  "name": "tv",
+  "standy_consumption": 0.0,
+  "controllable": false,
+  "shiftable": false,
+  "base": false,
+  "type": "tv",
+  "inst_id": "500d1133e4b087bdfeda0900"
+}
