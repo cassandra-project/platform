@@ -67,9 +67,11 @@ public class Simulation implements Runnable {
 
 	private PriorityBlockingQueue<Event> queue;
 
-	private int tick = 0;
+	private int tick;
 
 	private int endTick;
+	
+	private int mcruns;
   
 	private MongoResults m;
 
@@ -109,69 +111,79 @@ public class Simulation implements Runnable {
 
   	public void run () {
   		try {
-  		long startTime = System.currentTimeMillis();
-  		int percentage = 0;
-  		DBObject query = new BasicDBObject();
-  		query.put("_id", new ObjectId(dbname));
-  		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
-  		while (tick < endTick) {
-//  			System.out.println(tick);
-  			// If it is the beginning of the day create the events
-  			if (tick % Constants.MIN_IN_DAY == 0) {
-  				//System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
-  				for (Installation installation: installations) {
-//  					System.out.println(installation.getName());
-  					installation.updateDailySchedule(tick, queue);
-  				}
-//  				System.out.println("Daily queue size: " + queue.size() + "(" + 
-//  				simulationWorld.getSimCalendar().isWeekend(tick) + ")");
-  			}
+  			long startTime = System.currentTimeMillis();
+  			int percentage = 0;
+  			int mccount = 0;
+  			DBObject query = new BasicDBObject();
+  			query.put("_id", new ObjectId(dbname));
+  			DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
+  			for(int i = 0; i < mcruns; i++) {
+  				tick = 0;
+  	  			while (tick < endTick) {
+//  				System.out.println(tick);
+  	  				// If it is the beginning of the day create the events
+  	  				if (tick % Constants.MIN_IN_DAY == 0) {
+//  	  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
+  	  					for (Installation installation: installations) {
+//  						System.out.println(installation.getName());
+  	  						installation.updateDailySchedule(tick, queue);
+  	  					}
+//  					System.out.println("Daily queue size: " + queue.size() + "(" + 
+//  					simulationWorld.getSimCalendar().isWeekend(tick) + ")");
+  	  				}
+  	  				Event top = queue.peek();
+  	  				while (top != null && top.getTick() == tick) {
+  	  					Event e = queue.poll();
+  	  					boolean applied = e.apply();
+  	  					if(applied) {
+  	  						if(e.getAction() == Event.SWITCH_ON) {
+  	  							try {
+  	  								//m.addOpenTick(e.getAppliance().getId(), tick);
+  	  							} catch (Exception exc) {
+  	  								exc.printStackTrace();
+  	  							}
+  	  						} else if(e.getAction() == Event.SWITCH_OFF){
+  	  							//m.addCloseTick(e.getAppliance().getId(), tick);
+  	  						}
+  	  					}
+  	  					top = queue.peek();
+  	  				}
 
-  			Event top = queue.peek();
-  			while (top != null && top.getTick() == tick) {
-  				Event e = queue.poll();
-  				boolean applied = e.apply();
-  				if(applied) {
-  					if(e.getAction() == Event.SWITCH_ON) {
-  						try {
-  							//m.addOpenTick(e.getAppliance().getId(), tick);
-  						} catch (Exception exc) {
-  							exc.printStackTrace();
-  						}
-  					} else if(e.getAction() == Event.SWITCH_OFF){
-  						//m.addCloseTick(e.getAppliance().getId(), tick);
-  					}
+					/*
+					 *  Calculate the total power for this simulation step for all the
+					 *  installations.
+					 */
+					float sumPower = 0;
+		  			for(Installation installation: installations) {
+		  				installation.nextStep(tick);
+		  				double power = installation.getCurrentPower();
+		  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
+		  				sumPower += power;
+		//  				String name = installation.getName();
+		//  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
+		//  				+ "Power: " + power);
+		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
+		//  		  				+ "Power: " + power);
+		  			}
+		  			m.addAggregatedTickResult(tick, sumPower, 0);
+		  			tick++;
+		  			mccount++;
+		  			// System.out.println(tick + " " + endTick);
+		  			percentage = (int)(mccount * 100.0 / (mcruns * endTick));
+		  			objRun.put("percentage", percentage);
+		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
+  	  			}
+  			}
+  			for(int i = 0; i < endTick; i++) {
+  				for(Installation installation: installations) {
+  					m.normalize(i,installation.getId(), mcruns);
   				}
-  				top = queue.peek();
+  				m.normalize(i, mcruns);
   			}
-
-  			/*
-  			 *  Calculate the total power for this simulation step for all the
-  			 *  installations.
-  			 */
-  			float sumPower = 0;
-  			for(Installation installation: installations) {
-  				installation.nextStep(tick);
-  				double power = installation.getCurrentPower();
-  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
-  				sumPower += power;
-//  				String name = installation.getName();
-//  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
-//  				+ "Power: " + power);
-//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
-//  		  				+ "Power: " + power);
-  			}
-  			m.addAggregatedTickResult(tick, sumPower, 0);
-  			tick++;
-  			System.out.println(tick + " " + endTick);
-  			percentage = (int)(tick * 100.0 / endTick);
-  			objRun.put("percentage", percentage);
-  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
-  		}
-  		long endTime = System.currentTimeMillis();
-  		objRun.put("ended", endTime);
-  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
-  		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
+	  		long endTime = System.currentTimeMillis();
+	  		objRun.put("ended", endTime);
+	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
+	  		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
   		} catch(Exception e) {e.printStackTrace();}
   	}
 
@@ -187,8 +199,9 @@ public class Simulation implements Runnable {
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
     
   		int numOfDays = ((Integer)simParamsDoc.get("numberOfDays")).intValue();
-
+  		
   		endTick = Constants.MIN_IN_DAY * numOfDays;
+  		mcruns = ((Integer)simParamsDoc.get("mcruns")).intValue();
 
   		// Check type of setup
   		String setup = (String)scenarioDoc.get("setup"); 
