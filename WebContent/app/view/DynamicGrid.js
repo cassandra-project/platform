@@ -138,7 +138,7 @@ Ext.define('C.view.DynamicGrid', {
 			dropFunction.cancelDrop();
 			var index = Ext.getStore(record.get('nodeStoreId')).findExact('_id',record.get('id'));
 			var node = Ext.getStore(record.get('nodeStoreId')).getAt(index);
-			parent_id = this.store.navigationNode.parentNode.get('id');
+			var parent_id = (this.store.navigationNode.get('nodeType') == 'ProjectsCollection')?'':this.store.navigationNode.parentNode.get('id');
 			parent_idKey = '';
 			switch(record.get('nodeType')){
 				case 'Scenario': parent_idKey = 'project_id'; break;

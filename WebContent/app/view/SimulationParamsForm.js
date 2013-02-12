@@ -16,7 +16,7 @@
 Ext.define('C.view.SimulationParamsForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 323,
+	height: 379,
 	width: 431,
 	layout: {
 		type: 'auto'
@@ -75,6 +75,18 @@ Ext.define('C.view.SimulationParamsForm', {
 									readOnly: false,
 									fieldLabel: 'Duration',
 									allowDecimals: false
+								},
+								{
+									xtype: 'numberfield',
+									hidden: false,
+									width: 246,
+									name: 'mcruns',
+									readOnly: false,
+									value: 1,
+									fieldLabel: 'Monte Carlo Runs',
+									allowDecimals: false,
+									maxValue: 100,
+									minValue: 1
 								},
 								{
 									xtype: 'datefield',
@@ -184,6 +196,7 @@ Ext.define('C.view.SimulationParamsForm', {
 			'name': values.name,
 			'description': values.description,
 			'locationInfo': values.locationInfo,
+			'mcruns':values.mcruns,
 			'calendar': calendar, 
 			'numberOfDays': duration
 		});

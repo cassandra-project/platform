@@ -44,6 +44,11 @@ Ext.define('C.model.SimulationParam', {
 		},
 		{
 			name: 'calendar'
+		},
+		{
+			name: 'mcruns',
+			defaultValue: 1,
+			type: 'int'
 		}
 	]
 });
