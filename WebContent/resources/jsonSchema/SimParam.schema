@@ -27,6 +27,11 @@
             "type": "string",
             "description": "Information about the location",
             "optional": true
+        },
+        "mcruns": {
+            "type": "integer",
+            "description": "Number of Monte Carlo Runs",
+            "optional": false
         }, 
         "calendar": {
             "type": "object",

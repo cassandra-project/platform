@@ -17,6 +17,7 @@ package eu.cassandra.sim;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -66,9 +67,11 @@ public class Simulation implements Runnable {
 
 	private PriorityBlockingQueue<Event> queue;
 
-	private int tick = 0;
+	private int tick;
 
 	private int endTick;
+	
+	private int mcruns;
   
 	private MongoResults m;
 
@@ -108,69 +111,79 @@ public class Simulation implements Runnable {
 
   	public void run () {
   		try {
-  		long startTime = System.currentTimeMillis();
-  		int percentage = 0;
-  		DBObject query = new BasicDBObject();
-  		query.put("_id", new ObjectId(dbname));
-  		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
-  		while (tick < endTick) {
-//  			System.out.println(tick);
-  			// If it is the beginning of the day create the events
-  			if (tick % Constants.MIN_IN_DAY == 0) {
-  				//System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
-  				for (Installation installation: installations) {
-//  					System.out.println(installation.getName());
-  					installation.updateDailySchedule(tick, queue);
-  				}
-//  				System.out.println("Daily queue size: " + queue.size() + "(" + 
-//  				simulationWorld.getSimCalendar().isWeekend(tick) + ")");
-  			}
+  			long startTime = System.currentTimeMillis();
+  			int percentage = 0;
+  			int mccount = 0;
+  			DBObject query = new BasicDBObject();
+  			query.put("_id", new ObjectId(dbname));
+  			DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
+  			for(int i = 0; i < mcruns; i++) {
+  				tick = 0;
+  	  			while (tick < endTick) {
+//  				System.out.println(tick);
+  	  				// If it is the beginning of the day create the events
+  	  				if (tick % Constants.MIN_IN_DAY == 0) {
+//  	  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
+  	  					for (Installation installation: installations) {
+//  						System.out.println(installation.getName());
+  	  						installation.updateDailySchedule(tick, queue);
+  	  					}
+//  					System.out.println("Daily queue size: " + queue.size() + "(" + 
+//  					simulationWorld.getSimCalendar().isWeekend(tick) + ")");
+  	  				}
+  	  				Event top = queue.peek();
+  	  				while (top != null && top.getTick() == tick) {
+  	  					Event e = queue.poll();
+  	  					boolean applied = e.apply();
+  	  					if(applied) {
+  	  						if(e.getAction() == Event.SWITCH_ON) {
+  	  							try {
+  	  								//m.addOpenTick(e.getAppliance().getId(), tick);
+  	  							} catch (Exception exc) {
+  	  								exc.printStackTrace();
+  	  							}
+  	  						} else if(e.getAction() == Event.SWITCH_OFF){
+  	  							//m.addCloseTick(e.getAppliance().getId(), tick);
+  	  						}
+  	  					}
+  	  					top = queue.peek();
+  	  				}
 
-  			Event top = queue.peek();
-  			while (top != null && top.getTick() == tick) {
-  				Event e = queue.poll();
-  				boolean applied = e.apply();
-  				if(applied) {
-  					if(e.getAction() == Event.SWITCH_ON) {
-  						try {
-  							//m.addOpenTick(e.getAppliance().getId(), tick);
-  						} catch (Exception exc) {
-  							exc.printStackTrace();
-  						}
-  					} else if(e.getAction() == Event.SWITCH_OFF){
-  						//m.addCloseTick(e.getAppliance().getId(), tick);
-  					}
+					/*
+					 *  Calculate the total power for this simulation step for all the
+					 *  installations.
+					 */
+					float sumPower = 0;
+		  			for(Installation installation: installations) {
+		  				installation.nextStep(tick);
+		  				double power = installation.getCurrentPower();
+		  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
+		  				sumPower += power;
+		//  				String name = installation.getName();
+		//  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
+		//  				+ "Power: " + power);
+		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
+		//  		  				+ "Power: " + power);
+		  			}
+		  			m.addAggregatedTickResult(tick, sumPower, 0);
+		  			tick++;
+		  			mccount++;
+		  			// System.out.println(tick + " " + endTick);
+		  			percentage = (int)(mccount * 100.0 / (mcruns * endTick));
+		  			objRun.put("percentage", percentage);
+		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
+  	  			}
+  			}
+  			for(int i = 0; i < endTick; i++) {
+  				for(Installation installation: installations) {
+  					m.normalize(i,installation.getId(), mcruns);
   				}
-  				top = queue.peek();
+  				m.normalize(i, mcruns);
   			}
-
-  			/*
-  			 *  Calculate the total power for this simulation step for all the
-  			 *  installations.
-  			 */
-  			float sumPower = 0;
-  			for(Installation installation: installations) {
-  				installation.nextStep(tick);
-  				double power = installation.getCurrentPower();
-  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
-  				sumPower += power;
-//  				String name = installation.getName();
-//  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
-//  				+ "Power: " + power);
-//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
-//  		  				+ "Power: " + power);
-  			}
-  			m.addAggregatedTickResult(tick, sumPower, 0);
-  			tick++;
-  			System.out.println(tick + " " + endTick);
-  			percentage = (int)(tick * 100.0 / endTick);
-  			objRun.put("percentage", percentage);
-  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
-  		}
-  		long endTime = System.currentTimeMillis();
-  		objRun.put("ended", endTime);
-  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
-  		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
+	  		long endTime = System.currentTimeMillis();
+	  		objRun.put("ended", endTime);
+	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
+	  		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
   		} catch(Exception e) {e.printStackTrace();}
   	}
 
@@ -186,8 +199,9 @@ public class Simulation implements Runnable {
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
     
   		int numOfDays = ((Integer)simParamsDoc.get("numberOfDays")).intValue();
-
+  		
   		endTick = Constants.MIN_IN_DAY * numOfDays;
+  		mcruns = ((Integer)simParamsDoc.get("mcruns")).intValue();
 
   		// Check type of setup
   		String setup = (String)scenarioDoc.get("setup"); 
@@ -350,25 +364,31 @@ public class Simulation implements Runnable {
 	            		base).build();
 	    		existing.put(appid, app);
 	    	}
-	    	for (int j = 1; j <= appcount; j++) {
-	    		for(int k = 0; k < generators.size(); k++) {
-	    			DBObject generator = (DBObject)generators.get(k);
-	    			String entityId = (String)generator.get("entity_id");
-	    			if(existing.containsKey(entityId)) {
-	    				double prob = ((Double)generator.get("probability")).doubleValue();
-	    				if(RNG.nextDouble() < prob) {
-	    					Appliance selectedApp = existing.get(entityId);
-	    					selectedApp.setParentId(inst.getId());
-	    			    	String app_id = addEntity(selectedApp);
-	    			    	selectedApp.setId(app_id);
-	    			    	inst.addAppliance(selectedApp);
-	    			    	ConsumptionModel cm = selectedApp.getConsumptionModel();
-	    			    	cm.setParentId(app_id);
-	    			    	String cm_id = addEntity(cm);
-	    			    	cm.setId(cm_id);
-	    			    	//System.out.println(existing.get(entityId).getName());
-	    				}
-	    			}
+	    	
+	    	HashMap<String,Double> gens = new HashMap<String,Double>();
+	    	for(int k = 0; k < generators.size(); k++) {
+    			DBObject generator = (DBObject)generators.get(k);
+    			String entityId = (String)generator.get("entity_id");
+    			double prob = ((Double)generator.get("probability")).doubleValue();
+    			gens.put(entityId, new Double(prob));
+	    	}
+	    	
+	    	Set<String> keys = existing.keySet();
+	    	for(String key : keys) {
+	    		Double prob = gens.get(key);
+	    		if(prob != null) {
+	    			double probValue = prob.doubleValue();
+	    			if(RNG.nextDouble() < probValue) {
+    					Appliance selectedApp = existing.get(key);
+    					selectedApp.setParentId(inst.getId());
+    			    	String app_id = addEntity(selectedApp);
+    			    	selectedApp.setId(app_id);
+    			    	inst.addAppliance(selectedApp);
+    			    	ConsumptionModel cm = selectedApp.getConsumptionModel();
+    			    	cm.setParentId(app_id);
+    			    	String cm_id = addEntity(cm);
+    			    	cm.setId(cm_id);
+    				}
 	    		}
 	    	}
 

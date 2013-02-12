@@ -6,10 +6,13 @@
 .project
 .settings/
 
+# Mac Stuff
+.DS_Store
+
 # binaries
 bin/
 build/
 *.class
 
 # ant build
-antbuild/
+dist/

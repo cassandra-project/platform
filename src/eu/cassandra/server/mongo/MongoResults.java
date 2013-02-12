@@ -76,12 +76,41 @@ public class MongoResults {
 	 */
 	public void addTickResultForInstallation(int tick,
 			String inst_id, double p, double q) {
-		DBObject data = new BasicDBObject();
-		data.put("inst_id",inst_id);
-		data.put("tick",tick);
-		data.put("p",p);
-		data.put("q",q);
-		DBConn.getConn(dbname).getCollection(COL_INSTRESULTS).insert(data);
+		boolean first = false;
+		DBObject query = new BasicDBObject();
+		query.put("inst_id", inst_id);
+		query.put("tick", tick);
+		DBObject data = DBConn.getConn(dbname).getCollection(COL_INSTRESULTS).findOne(query);
+		double newp = p;
+		double newq = q;
+		if(data == null) {
+			data = new BasicDBObject();
+			first = true;
+			data.put("inst_id",inst_id);
+			data.put("tick",tick);
+		} else {
+			newp += ((Double)data.get("p")).doubleValue();
+			newq += ((Double)data.get("q")).doubleValue();
+		}
+		data.put("p",newp);
+		data.put("q",newq);
+		if(first) {
+			DBConn.getConn(dbname).getCollection(COL_INSTRESULTS).insert(data);
+		} else {
+			DBConn.getConn(dbname).getCollection(COL_INSTRESULTS).update(query, data, false, false);
+		}
+	}
+	
+	public void normalize(int tick, String inst_id, int divisor) {
+		DBObject query = new BasicDBObject();
+		query.put("inst_id", inst_id);
+		query.put("tick", tick);
+		DBObject data = DBConn.getConn(dbname).getCollection(COL_INSTRESULTS).findOne(query);
+		double newp = ((Double)data.get("p")).doubleValue() / divisor;
+		double newq = ((Double)data.get("q")).doubleValue() / divisor;
+		data.put("p",newp);
+		data.put("q",newq);
+		DBConn.getConn(dbname).getCollection(COL_INSTRESULTS).update(query, data, false, false);
 	}
 
 	/**
@@ -91,10 +120,38 @@ public class MongoResults {
 	 * @param q
 	 */
 	public void addAggregatedTickResult(int tick, double p, double q) {
-		DBObject data = new BasicDBObject();
-		data.put("tick",tick);
-		data.put("p",p);
-		data.put("q",q);
-		DBConn.getConn(dbname).getCollection(COL_AGGRRESULTS).insert(data);
+		boolean first = false;
+		DBObject query = new BasicDBObject();
+		query.put("tick", tick);
+		DBObject data = DBConn.getConn(dbname).getCollection(COL_AGGRRESULTS).findOne(query);
+		double newp = p;
+		double newq = q;
+		if(data == null) {
+			data = new BasicDBObject();
+			first = true;
+			data.put("tick",tick);
+		} else {
+			newp += ((Double)data.get("p")).doubleValue();
+			newq += ((Double)data.get("q")).doubleValue();
+			
+		}
+		data.put("p",newp);
+		data.put("q",newq);
+		if(first) {
+			DBConn.getConn(dbname).getCollection(COL_AGGRRESULTS).insert(data);
+		} else {
+			DBConn.getConn(dbname).getCollection(COL_AGGRRESULTS).update(query, data, false, false);
+		}
+	}
+	
+	public void normalize(int tick, int divisor) {
+		DBObject query = new BasicDBObject();
+		query.put("tick", tick);
+		DBObject data = DBConn.getConn(dbname).getCollection(COL_AGGRRESULTS).findOne(query);
+		double newp = ((Double)data.get("p")).doubleValue() / divisor;
+		double newq = ((Double)data.get("q")).doubleValue() / divisor;
+		data.put("p",newp);
+		data.put("q",newq);
+		DBConn.getConn(dbname).getCollection(COL_AGGRRESULTS).update(query, data, false, false);
 	}
 }
