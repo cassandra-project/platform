@@ -95,7 +95,11 @@ background-color: #F39926 !important;
 
 #logo-text {
 color: #104b9b !important;
-font-size: 23px; 
+font-size: 20px; 
 letter-spacing: 1px; 
-font-family: "century gothic", Arial, Verdana, sans-serif;}
+font-family: "century gothic", Arial, Verdana, sans-serif;
+}
+
+.treeIcon {
+width: 17px;
 }

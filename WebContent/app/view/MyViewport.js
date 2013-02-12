@@ -28,21 +28,20 @@ Ext.define('C.view.MyViewport', {
 				{
 					xtype: 'toolbar',
 					region: 'north',
-					height: 111,
+					height: 77,
 					id: 'top_toolbar',
 					items: [
 						{
 							xtype: 'image',
 							margins: '0 0 0 10px',
-							height: 100,
-							width: 185,
+							height: 73,
+							width: 130,
 							src: 'resources/icons/logo.png'
 						},
 						{
 							xtype: 'tbtext',
-							height: 29,
+							height: 23,
 							id: 'logo-text',
-							width: 94,
 							text: 'platform'
 						}
 					]
@@ -389,6 +388,7 @@ Ext.define('C.view.MyViewport', {
 		console.info('Before render treepanel.', this, abstractcomponent, options);
 
 		abstractcomponent.getRootNode().data.icon = "resources/icons/projects.png";
+		abstractcomponent.getRootNode().data.iconCls = "treeIcon";
 
 		abstractcomponent.on('nodedragover', function(dragEvent) {
 			dragEvent.cancel = true;
@@ -417,7 +417,8 @@ Ext.define('C.view.MyViewport', {
 						expandable: true,
 						fakeChildren: true,
 						draggable: false,
-						icon: 'resources/icons/scenarios.png'
+						icon: 'resources/icons/scenarios.png',
+						iconCls: 'treeIcon'
 					});
 					if(!C.dbname)
 					record.appendChild({
@@ -428,7 +429,8 @@ Ext.define('C.view.MyViewport', {
 						expandable: true,
 						fakeChildren: true,
 						draggable: false,
-						icon: 'resources/icons/runs.png'
+						icon: 'resources/icons/runs.png',
+						iconCls: 'treeIcon'
 					});
 					else {
 						record.appendChild({
@@ -436,7 +438,8 @@ Ext.define('C.view.MyViewport', {
 							nodeType: 'RunGraph',
 							leaf: true,
 							draggable: false,
-							icon: 'resources/icons/sim_params.png'
+							icon: 'resources/icons/sim_params.png',
+							iconCls: 'treeIcon'
 						});
 					}
 					break;	
@@ -479,7 +482,8 @@ Ext.define('C.view.MyViewport', {
 						expandable: true,
 						fakeChildren: true,
 						draggable: false,
-						icon: 'resources/icons/installations.png'
+						icon: 'resources/icons/installations.png',
+						iconCls: 'treeIcon'
 					});
 					record.appendChild({
 						name: 'Simulation Parameters',
@@ -489,7 +493,8 @@ Ext.define('C.view.MyViewport', {
 						expandable: true,
 						fakeChildren: true,
 						draggable: false,
-						icon: 'resources/icons/sim_params.png'
+						icon: 'resources/icons/sim_params.png',
+						iconCls: 'treeIcon'
 					});
 					var index = Ext.getStore(record.get('nodeStoreId')).findExact('_id', record.get('id'));
 					var dataRecord = Ext.getStore(record.get('nodeStoreId')).getAt(index);
@@ -502,7 +507,8 @@ Ext.define('C.view.MyViewport', {
 							expandable: true,
 							fakeChildren: true,
 							draggable: false,
-							icon: 'resources/icons/demographics.png'
+							icon: 'resources/icons/demographics.png',
+							iconCls: 'treeIcon'
 						});
 					}
 					break;
@@ -557,7 +563,8 @@ Ext.define('C.view.MyViewport', {
 						expandable: true,
 						fakeChildren: true,
 						draggable: false,
-						icon: 'resources/icons/persons.png'
+						icon: 'resources/icons/persons.png',
+						iconCls: 'treeIcon'
 					});
 					record.appendChild({
 						name: 'Appliances',
@@ -567,7 +574,8 @@ Ext.define('C.view.MyViewport', {
 						expandable: true,
 						fakeChildren: true,
 						draggable: false,
-						icon: 'resources/icons/appliances.png'
+						icon: 'resources/icons/appliances.png',
+						iconCls: 'treeIcon'
 					});
 					break;
 					case 'PersonsCollection':
@@ -594,7 +602,8 @@ Ext.define('C.view.MyViewport', {
 						expandable: true,
 						fakeChildren: true,
 						draggable: false,
-						icon: 'resources/icons/activities.png'
+						icon: 'resources/icons/activities.png',
+						iconCls: 'treeIcon'
 					});
 					break;
 					case 'ActivitiesCollection':
@@ -621,7 +630,8 @@ Ext.define('C.view.MyViewport', {
 						expandable: true,
 						fakeChildren: true,
 						draggable: false,
-						icon: 'resources/icons/activity_models.png'
+						icon: 'resources/icons/activity_models.png',
+						iconCls: 'treeIcon'
 					});
 					break;
 					case 'ActivityModelsCollection':
