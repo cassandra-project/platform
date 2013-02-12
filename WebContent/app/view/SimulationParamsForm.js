@@ -192,19 +192,21 @@ Ext.define('C.view.SimulationParamsForm', {
 			}
 		}
 
-		record.set({
-			'name': values.name,
-			'description': values.description,
-			'locationInfo': values.locationInfo,
-			'mcruns':values.mcruns,
-			'calendar': calendar, 
-			'numberOfDays': duration
-		});
+		if (myForm.isValid()) {
+			record.set({
+				'name': values.name,
+				'description': values.description,
+				'locationInfo': values.locationInfo,
+				'mcruns':values.mcruns,
+				'calendar': calendar, 
+				'numberOfDays': duration
+			});
 
-		this.dirtyForm = false;
+			this.dirtyForm = false;
 
-		//clear dirty record
-		record.node.commit();
+			//clear dirty record
+			record.node.commit();
+		}
 	},
 
 	onButtonClick21: function(button, e, options) {
