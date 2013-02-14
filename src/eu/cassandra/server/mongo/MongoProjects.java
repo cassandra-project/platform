@@ -19,7 +19,9 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoProjects {
@@ -33,9 +35,16 @@ public class MongoProjects {
 	 * @param projectID
 	 * @return
 	 */
-	public String getProjects(HttpHeaders httpHeaders,String id, boolean count) {
-		return new MongoDBQueries().getEntity(httpHeaders,COL_PROJECTS, "_id", id, 
-				"Project(s) retrieved successfully",count).toString();
+	public String getProjects(HttpHeaders httpHeaders, String usr_id, boolean count) {
+		if(usr_id == null) {
+			return new JSONtoReturn().createJSONError(
+					"Only the Projects of a particular User can be retrieved", 
+					new RestQueryParamMissingException("usr_id QueryParam is missing")).toString();
+		}
+		else {
+			return new MongoDBQueries().getEntity(httpHeaders,COL_PROJECTS, "usr_id", usr_id, 
+					"Project(s) retrieved successfully",count).toString();
+		}
 	}
 
 	/**

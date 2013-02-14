@@ -3,6 +3,11 @@
     "type": "object",
     "description": "The project of a user containing his scenarios of experiments",
     "properties": {
+        "usr_id": {
+            "type": "string",
+            "description": "The ObjectId of the USer this Project belongs",
+            "optional": false
+        },
         "name": {
             "type": "string",
             "description": "Name of the project",

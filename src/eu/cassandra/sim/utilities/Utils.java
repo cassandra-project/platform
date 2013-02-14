@@ -21,10 +21,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.MongoException;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class Utils
 {
@@ -74,6 +85,48 @@ public class Utils
       e.printStackTrace();
     }
     return hash;
+  }
+  
+  public static DBObject getUser(String username, DB db) {
+	  DBObject query = new BasicDBObject();
+	  query.put("username", username);
+	  return db.getCollection("users").findOne(query);
+  }
+  
+  public static String extractCredentials(HttpHeaders httpHeaders) {
+	  return httpHeaders.getRequestHeader("Authorization").get(0).split(" ")[1];
+  }
+  
+  public static String extractUsername(String headerMessage) {
+	  byte[] bytes = Base64.decodeBase64(headerMessage);
+	  String decodedHeader = new String(bytes);
+	  String[] tokens = decodedHeader.trim().split(":"); // Remove new line char
+	  return tokens[0];
+  }
+  
+  public static String extractPassword(String headerMessage) {
+	  byte[] bytes = Base64.decodeBase64(headerMessage);
+	  String decodedHeader = new String(bytes);
+	  String[] tokens = decodedHeader.trim().split(":"); // Remove new line char
+	  return tokens[1];
+  }
+  
+  public static boolean authenticate(String headerMessage, DB db) {
+	  String username = extractUsername(headerMessage);
+	  String password = extractPassword(headerMessage);
+	  DBObject user = getUser(username, db);
+	  String user_id = user.get("_id").toString();
+	  String passwordHash = user.get("password").toString();
+	  MessageDigest m = DigestUtils.getMd5Digest();
+	  m.update((password + user_id).getBytes(), 0, (password + user_id).length());
+	  String output = new BigInteger(1, m.digest()).toString(16);
+	  return passwordHash.equals(output);
+  }
+  
+  public static String generateMd5Hash(String password, String salt) {
+	  MessageDigest m = DigestUtils.getMd5Digest();
+	  m.update((password + salt).getBytes(), 0, (password + salt).length());
+	  return new BigInteger(1, m.digest()).toString(16);
   }
 
   /*
@@ -125,11 +178,17 @@ public class Utils
 
   /**
    * @param args
+ * @throws MongoException 
+ * @throws UnknownHostException 
+ * @throws UnsupportedEncodingException 
    */
-  public static void main (String[] args)
+  public static void main (String[] args) throws UnknownHostException, MongoException
   {
-    System.out.println(hashcode((new Long(System.currentTimeMillis())
-            .toString())));
+    //System.out.println(hashcode((new Long(System.currentTimeMillis()).toString())));
+	  Mongo m = new Mongo("localhost");
+	  DB db = m.getDB("test");
+	  System.out.println(authenticate("a3lyY2hhOmxhbGExMjM=", db));
+	  System.out.println(generateMd5Hash("demo", "511cf876bf13fde604000000"));
   }
 
 }
