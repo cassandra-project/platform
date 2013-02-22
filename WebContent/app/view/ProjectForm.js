@@ -17,7 +17,7 @@ Ext.define('C.view.ProjectForm', {
 	extend: 'Ext.form.Panel',
 
 	cls: 'gridbg',
-	height: 442,
+	padding: 5,
 	autoScroll: true,
 	layout: {
 		type: 'auto'

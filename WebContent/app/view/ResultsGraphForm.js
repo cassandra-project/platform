@@ -17,7 +17,7 @@ Ext.define('C.view.ResultsGraphForm', {
 	extend: 'Ext.form.Panel',
 
 	draggable: false,
-	height: 511,
+	padding: 5,
 	width: 710,
 	autoScroll: true,
 	layout: {
@@ -124,7 +124,7 @@ Ext.define('C.view.ResultsGraphForm', {
 									itemId: 'btn',
 									margin: '10px 0 0 120px',
 									width: 119,
-									text: 'Refresh Graph Data',
+									text: 'Refresh Graph',
 									listeners: {
 										click: {
 											fn: me.onButtonClick2,

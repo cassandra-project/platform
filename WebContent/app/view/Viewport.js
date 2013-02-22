@@ -32,6 +32,8 @@ Ext.define('C.view.Viewport', {
 		'C.view.EntitiesGrid',
 		'C.view.DistributionForm',
 		'C.view.DynamicGrid',
+		'C.view.MyTabPanel',
+		'C.view.MyTreePanel',
 		'C.view.MyViewport',
 		'C.view.TypesPieChart',
 		'C.view.ResultsLineChart',

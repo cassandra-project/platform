@@ -636,7 +636,7 @@ input, textarea, select {
   background-image: url('../../resources/themes/images/neptune/box/r-blue.gif'); }
 
 /* line 193, ../themes/stylesheets/neptune/default/util/_tool.scss */
-.x-tool-base, .x-tool-maximize, .x-tool-minimize, .x-tool-restore, .x-tool-save, .x-tool-refresh, .x-tool-help, .x-tool-info, .x-tool-search, .x-tool-gear, .x-tool-close, .x-tool-minus, .x-tool-plus, .x-tool-print, .x-tool-up, .x-tool-toggle, .x-tool-collapse, .x-tool-collapse-top, .x-tool-left, .x-tool-prev, .x-tool-down, .x-tool-expand-right, .x-tool-collapse-right, .x-tool-collapse-left, .x-tool-expand-bottom, .x-tool-expand, .x-tool-right, .x-tool-next, .x-tool-collapse-all, .x-tool-expand-all, .x-tool-pin, .x-tool-unpin, .x-collapsed .x-tool-toggle {
+.x-tool-base, .x-tool-maximize, .x-tool-minimize, .x-tool-restore, .x-tool-save, .x-tool-refresh, .x-tool-help, .x-tool-info, .x-tool-search, .x-tool-gear, .x-tool-close, .x-tool-minus, .x-tool-plus, .x-tool-print, .x-tool-up, .x-tool-toggle, .x-tool-collapse, .x-tool-collapse-top, .x-tool-left, .x-tool-prev, .x-tool-down, .x-tool-expand-right, .x-tool-collapse-right, .x-tool-expand-left, .x-tool-collapse-left, .x-tool-expand-bottom, .x-tool-expand, .x-tool-right, .x-tool-next, .x-tool-collapse-all, .x-tool-expand-all, .x-tool-pin, .x-tool-unpin, .x-collapsed .x-tool-toggle {
   width: 16px;
   height: 16px;
   background-image: url('../../resources/themes/images/neptune/tools.png'); }
@@ -12120,10 +12120,10 @@ textarea.x-form-invalid-field {
 .x-tool-collapse-bottom {
   background-position: -240px; }
 
-.x-tool-collapse-left {
+.x-tool-collapse-left, .x-tool-expand-left {
   background-position: -224px; }
 
-.x-tool-expand-right {
+.x-tool-expand-right, .x-tool-collapse-right {
   background-position: -256px; }
 
 /* line 238, ../themes/stylesheets/neptune/default/util/_tool.scss */
