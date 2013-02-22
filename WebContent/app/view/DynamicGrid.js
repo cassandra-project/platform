@@ -16,12 +16,9 @@
 Ext.define('C.view.DynamicGrid', {
 	extend: 'Ext.grid.Panel',
 
-	height: 250,
-	margin: '0 0 10px 0',
-	minWidth: 700,
-	width: 700,
+	minHeight: 250,
+	padding: 5,
 	autoScroll: true,
-	bodyCls: 'gridbg',
 	closable: false,
 	title: 'My Grid Panel',
 	columnLines: false,
@@ -104,6 +101,10 @@ Ext.define('C.view.DynamicGrid', {
 			listeners: {
 				itemdblclick: {
 					fn: me.onGridpanelItemDblClick,
+					scope: me
+				},
+				beforerender: {
+					fn: me.onGridpanelBeforeRender,
 					scope: me
 				}
 			},
@@ -291,6 +292,7 @@ Ext.define('C.view.DynamicGrid', {
 		var gridWindow = new Ext.Window({
 			title : this.header.title,
 			items : this,
+			layout: 'fit',
 			tools: [
 			{
 				xtype: 'tool',
@@ -330,6 +332,15 @@ Ext.define('C.view.DynamicGrid', {
 		tool.hide();
 		this.query("tool")[1].show();
 		*/
+	},
+
+	onGridpanelBeforeRender: function(abstractcomponent, options) {
+		console.info(abstractcomponent);
+		if (!abstractcomponent.tab) {
+			abstractcomponent.setHeight(250);
+			abstractcomponent.margin = '0 0 10px 0';
+		}
+
 	}
 
 });

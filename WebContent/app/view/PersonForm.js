@@ -16,7 +16,7 @@
 Ext.define('C.view.PersonForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 442,
+	padding: 5,
 	autoScroll: true,
 	layout: {
 		type: 'auto'

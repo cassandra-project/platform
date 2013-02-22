@@ -55,10 +55,6 @@ Ext.define('C.store.Activities', {
 				remove: {
 					fn: me.onJsonstoreRemove,
 					scope: me
-				},
-				beforeload: {
-					fn: me.onJsonstoreBeforeLoad,
-					scope: me
 				}
 			}
 		}, cfg)]);
@@ -110,10 +106,6 @@ Ext.define('C.store.Activities', {
 
 	onJsonstoreRemove: function(store, record, index, options) {
 		store.navigationNode.removeChild(record.node);
-	},
-
-	onJsonstoreBeforeLoad: function(store, operation, options) {
-		if (C.dbname) this.proxy.headers = {"dbname": C.dbname};
 	}
 
 });

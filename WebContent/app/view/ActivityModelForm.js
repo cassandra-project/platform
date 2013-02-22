@@ -16,8 +16,8 @@
 Ext.define('C.view.ActivityModelForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 730,
 	hidden: false,
+	padding: 5,
 	width: 735,
 	autoScroll: true,
 	bodyPadding: 10,

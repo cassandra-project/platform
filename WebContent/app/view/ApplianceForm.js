@@ -16,7 +16,7 @@
 Ext.define('C.view.ApplianceForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 442,
+	padding: 5,
 	autoScroll: true,
 	layout: {
 		align: 'center',
@@ -86,6 +86,7 @@ Ext.define('C.view.ApplianceForm', {
 									width: 186,
 									name: 'standy_consumption',
 									fieldLabel: 'Stand By',
+									labelStyle: 'margin-top:10px',
 									step: 0.01
 								},
 								{
