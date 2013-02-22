@@ -80,7 +80,9 @@ Ext.application({
 		'EntitiesGrid',
 		'ResultsGraphForm',
 		'ConsModChart',
-		'DistributionChart'
+		'DistributionChart',
+		'MyTabPanel',
+		'MyTreePanel'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -116,10 +118,6 @@ Ext.application({
 			cmpToAdd = grid;
 		}
 		else {
-			Ext.QuickTips.init();
-
-			// invalid markers to sides
-			Ext.form.Field.prototype.msgTarget = 'side';
 
 			var myForm;
 			var cur_record;
@@ -362,7 +360,6 @@ Ext.application({
 		this.dbname = window.location.hash.replace('#','');
 		C.app = this;
 
-		//C.dbname = window.location.hash.replace('#','');
 
 	},
 
@@ -438,6 +435,7 @@ Ext.application({
 		*/
 		consmodGraphStore = new C.store.ConsumptionModelValues({});
 		myResultsChart = new C.view.ConsModChart({store: consmodGraphStore});
+		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: consmodGraphStore});
 		myFormCmp.insert(3, myResultsChart);
 
 		consmod_store = new C.store.ConsumptionModels({
@@ -698,6 +696,7 @@ Ext.application({
 		myResultsStore.load();
 		myResultsChart = new C.view.ResultsLineChart({store: myResultsStore});
 		myFormCmp.insert(2, myResultsChart);
+		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: myResultsStore});
 
 		return myFormCmp;
 	},
@@ -707,6 +706,7 @@ Ext.application({
 		var formWindow = new Ext.Window({
 			title : windowContent.header.title,
 			items : windowContent,
+			layout: 'fit',
 			tools: [
 			{
 				xtype: 'tool',

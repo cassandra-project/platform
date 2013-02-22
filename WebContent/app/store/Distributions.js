@@ -41,18 +41,7 @@ Ext.define('C.store.Distributions', {
 				writer: {
 					type: 'json'
 				}
-			},
-			listeners: {
-				beforeload: {
-					fn: me.onJsonstoreBeforeLoad,
-					scope: me
-				}
 			}
 		}, cfg)]);
-	},
-
-	onJsonstoreBeforeLoad: function(store, operation, options) {
-		if (C.dbname) this.proxy.headers = {"dbname": C.dbname};
 	}
-
 });

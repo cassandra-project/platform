@@ -16,7 +16,7 @@
 Ext.define('C.view.ScenarioForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 713,
+	padding: 5,
 	autoScroll: true,
 	layout: {
 		type: 'hbox'
@@ -164,7 +164,7 @@ Ext.define('C.view.ScenarioForm', {
 					expandable: true,
 					fakeChildren: true,
 					draggable: false,
-					icon: 'resources/icons/demographics.jpg'
+					icon: 'resources/icons/demographics.png'
 				});
 
 

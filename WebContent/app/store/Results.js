@@ -40,20 +40,12 @@ Ext.define('C.store.Results', {
 				}
 			},
 			listeners: {
-				beforeload: {
-					fn: me.onJsonstoreBeforeLoad,
-					scope: me
-				},
 				load: {
 					fn: me.onJsonstoreLoad,
 					scope: me
 				}
 			}
 		}, cfg)]);
-	},
-
-	onJsonstoreBeforeLoad: function(store, operation, options) {
-		if (C.dbname) this.proxy.headers = {"dbname": C.dbname};
 	},
 
 	onJsonstoreLoad: function(store, records, successful, options) {

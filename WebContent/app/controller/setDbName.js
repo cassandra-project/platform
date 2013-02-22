@@ -19,6 +19,11 @@ Ext.define('C.controller.setDbName', {
 	init: function(application) {
 		C.dbname = window.location.hash.replace('#','');
 
+		Ext.QuickTips.init();
+		// invalid markers to sides
+		Ext.form.Field.prototype.msgTarget = 'side';
+
+
 		Ext.util.Observable.observe(Ext.data.proxy.Rest);
 		Ext.data.proxy.Rest.on('exception', function(server, response,operation) {
 			var response_obj = JSON.parse(response.responseText);
@@ -36,18 +41,28 @@ Ext.define('C.controller.setDbName', {
 		});
 
 
+
 		Ext.util.Observable.observe(Ext.data.AbstractStore);
+
 		Ext.data.AbstractStore.on('write', function(store, operation, options) {
 			var successMsg = Ext.JSON.decode(operation.response.responseText).message;
 			Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
 		});
-
-
+		/*Ext.data.AbstractStore.on('beforeload', function(store, operation, options) {
+		if (store.proxy)
+		store.proxy.headers = (C.dbname) ? {'Authorization': C.auth, "dbname": C.dbname} : {'Authorization': C.auth};				  
+		});*/
 		Ext.data.AbstractStore.on('add', function(store, records, index, options) {
 			Ext.each(records, function(record){
 				record.isNew = true;
 			});
 		});
+
+		Ext.util.Observable.observe(Ext.data.Connection);
+		Ext.data.Connection.on('beforerequest', function(conn, options, eOpts) {
+			options.headers = (C.dbname) ? {'Authorization': C.auth, "dbname": C.dbname} : {'Authorization': C.auth};
+		});
+
 
 
 		/*
