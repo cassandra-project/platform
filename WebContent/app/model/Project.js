@@ -24,6 +24,10 @@ Ext.define('C.model.Project', {
 			persist: false
 		},
 		{
+			name: 'usr_id',
+			persist: false
+		},
+		{
 			name: 'name',
 			type: 'string'
 		},

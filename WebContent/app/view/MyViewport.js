@@ -95,7 +95,7 @@ Ext.define('C.view.MyViewport', {
 									name: 'password',
 									fieldLabel: 'Password',
 									allowBlank: false,
-									minLength: 6,
+									minLength: 4,
 									regexText: 'Password should have at least length 6, and contain one capital letter and a number'
 								},
 								{
@@ -152,7 +152,7 @@ Ext.define('C.view.MyViewport', {
 
 		if (loginForm.isValid()) {
 
-			C.auth = Ext.util.base64.encode(values.username + ':' + values.password);
+			C.auth = 'Basic ' + Ext.util.base64.encode(values.username + ':' + values.password);
 
 			var treePanel = new C.view.MyTreePanel({id: 'uiNavigationTreePanel'});
 			var tabPanel =  new C.view.MyTabPanel({id: 'MainTabPanel'});
