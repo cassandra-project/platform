@@ -31,5 +31,7 @@ public class Constants {
 	public final static int MU = 0;
 	
 	public final static int SIGMA = 1;
+	
+	public final static String AUTHORIZATION_FAIL = "{ \"success\": false, \"message\": \"User authorization failed\", \"exception\": { \"error\": \"User and or password do not match.\" }}";
 
 }

@@ -26,8 +26,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import com.mongodb.DB;
+
 import eu.cassandra.server.mongo.MongoProjects;
+import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Constants;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("prj")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,7 +46,19 @@ public class Projects {
 	@GET
 	public String getProjects(@QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders,null,count));
+		if(httpHeaders == null || httpHeaders.getRequestHeaders() == null ||
+				 httpHeaders.getRequestHeader("Authorization") == null) {
+			return Constants.AUTHORIZATION_FAIL;
+		}
+		DB db = DBConn.getConn();
+		if(Utils.authenticate(Utils.extractCredentials(httpHeaders), db)) {
+			String username = Utils.extractUsername(Utils.extractCredentials(httpHeaders));
+			String usr_id = Utils.getUser(username, db).get("_id").toString();
+			return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, usr_id, count));
+		} else {
+			return Constants.AUTHORIZATION_FAIL;
+		}
+			
 	}
 	
 	/**
