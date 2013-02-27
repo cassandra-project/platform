@@ -18,6 +18,8 @@ package eu.cassandra.server.api;
 
 import java.net.UnknownHostException;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -141,6 +143,7 @@ public class Runs {
 			query = new BasicDBObject();
 			query.put("scn_id", scn_id);
 			String setup = (String)scn.get("setup");
+			String name = (String)scn.get("name");
 			
 			boolean isDynamic = setup.equalsIgnoreCase("dynamic");
 			if(isDynamic) {
@@ -266,7 +269,11 @@ public class Runs {
 			System.out.println(dbname);
 			runs.put(dbname, f);
 			BasicDBObject run = new BasicDBObject();
+			Calendar calendar = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmm");
+			String runName = "Run for " + name + " on " + sdf.format(calendar.getTime());
 			run.put("_id", objid);
+			run.put("name", runName);
 			run.put("started", System.currentTimeMillis());
 			run.put("ended", -1);
 			run.put("prj_id", prj_id);
