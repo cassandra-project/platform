@@ -134,12 +134,6 @@ public class Utils
 	  return passwordHash.equals(output);
   }
   
-  public static String generateMd5Hash(String password, String salt) {
-	  MessageDigest m = DigestUtils.getMd5Digest();
-	  m.update((password + salt).getBytes(), 0, (password + salt).length());
-	  return new BigInteger(1, m.digest()).toString(16);
-  }
-  
   public static String userChecked(HttpHeaders httpHeaders) {
 	  if(httpHeaders == null || httpHeaders.getRequestHeaders() == null ||
 			  httpHeaders.getRequestHeader("Authorization") == null) {
@@ -215,8 +209,8 @@ public class Utils
 	  Mongo m = new Mongo("localhost");
 	  DB db = m.getDB("test");
 	  System.out.println(authenticate("a3lyY2hhOmxhbGExMjM=", db));
-	  System.out.println(generateMd5Hash("demo", "511cf876bf13fde604000000"));
-	  System.out.println(generateMd5Hash("demo", "512df4d4bd32fc4c0c000000"));
+	  System.out.println(MD5HashGenerator.generateMd5Hash("demo", "511cf876bf13fde604000000"));
+	  System.out.println(MD5HashGenerator.generateMd5Hash("demo", "512df4d4bd32fc4c0c000000"));
   }
 
 }
