@@ -201,9 +201,10 @@ public class Utils
    * @param args
  * @throws MongoException 
  * @throws UnknownHostException 
+ * @throws NoSuchAlgorithmException 
  * @throws UnsupportedEncodingException 
    */
-  public static void main (String[] args) throws UnknownHostException, MongoException
+  public static void main (String[] args) throws UnknownHostException, MongoException, NoSuchAlgorithmException
   {
     //System.out.println(hashcode((new Long(System.currentTimeMillis()).toString())));
 	  Mongo m = new Mongo("localhost");
