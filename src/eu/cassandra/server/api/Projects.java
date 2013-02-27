@@ -30,6 +30,7 @@ import com.mongodb.DB;
 
 import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.util.DBConn;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.utilities.Constants;
 import eu.cassandra.sim.utilities.Utils;
@@ -48,8 +49,10 @@ public class Projects {
 			@Context HttpHeaders httpHeaders) {
 		String usr_id = Utils.userChecked(httpHeaders);
 		if(usr_id != null) {
+			System.out.println("OK");
 			return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, usr_id, count));
 		} else {
+			System.out.println("Failed");
 			return Constants.AUTHORIZATION_FAIL;
 		}
 	}
@@ -58,8 +61,25 @@ public class Projects {
 	 * Create a project
 	 */
 	@POST
-	public String createProject(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoProjects().createProject(message));
+	public String createProject(String message, @Context HttpHeaders httpHeaders) {
+		String usr_id = Utils.userChecked(httpHeaders);
+		if(usr_id != null) {
+			System.out.println("OK");
+			String pathcedMessage = message;
+			try {
+				pathcedMessage = Utils.inject(message, "usr_id", usr_id);
+			}catch(com.mongodb.util.JSONParseException e) {
+				JSONtoReturn jSON2Rrn = new JSONtoReturn();
+				return PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError("Error parsing JSON input",e.getMessage()));
+			}catch(Exception e) {
+				JSONtoReturn jSON2Rrn = new JSONtoReturn();
+				return PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError(pathcedMessage, e));
+			}
+			return PrettyJSONPrinter.prettyPrint(new MongoProjects().createProject(pathcedMessage));
+		} else {
+			System.out.println("Failed");
+			return Constants.AUTHORIZATION_FAIL;
+		}
 	}
 
 }

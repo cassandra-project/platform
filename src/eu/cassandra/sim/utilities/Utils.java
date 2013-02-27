@@ -34,6 +34,7 @@ import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+import com.mongodb.util.JSON;
 
 import eu.cassandra.server.mongo.util.DBConn;
 
@@ -42,6 +43,12 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 public class Utils
 {
+	
+	public static String inject(String message, String field, String value) {
+		DBObject data = (DBObject)JSON.parse(message);
+		data.put(field, value);
+		return data.toString();
+	}
 
   public static double[] dblist2doubleArr (BasicDBList list)
   {
@@ -209,6 +216,7 @@ public class Utils
 	  DB db = m.getDB("test");
 	  System.out.println(authenticate("a3lyY2hhOmxhbGExMjM=", db));
 	  System.out.println(generateMd5Hash("demo", "511cf876bf13fde604000000"));
+	  System.out.println(generateMd5Hash("demo", "512df4d4bd32fc4c0c000000"));
   }
 
 }
