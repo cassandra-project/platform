@@ -1,6 +1,5 @@
-package eu.cassandra.sim.entities.appliances.tests;
 /*   
-Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+package eu.cassandra.sim.entities.appliances.tests;
+
 /**
  * 
  * @author Konstantina Valogianni

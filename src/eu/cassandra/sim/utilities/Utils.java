@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package eu.cassandra.sim.utilities;
 
 import java.io.BufferedReader;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -33,6 +34,8 @@ import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+
+import eu.cassandra.server.mongo.util.DBConn;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -115,6 +118,7 @@ public class Utils
 	  String username = extractUsername(headerMessage);
 	  String password = extractPassword(headerMessage);
 	  DBObject user = getUser(username, db);
+	  if(user == null) return false;
 	  String user_id = user.get("_id").toString();
 	  String passwordHash = user.get("password").toString();
 	  MessageDigest m = DigestUtils.getMd5Digest();
@@ -128,6 +132,22 @@ public class Utils
 	  m.update((password + salt).getBytes(), 0, (password + salt).length());
 	  return new BigInteger(1, m.digest()).toString(16);
   }
+  
+  public static String userChecked(HttpHeaders httpHeaders) {
+	  if(httpHeaders == null || httpHeaders.getRequestHeaders() == null ||
+			  httpHeaders.getRequestHeader("Authorization") == null) {
+		  return null;
+	  }
+	  DB db = DBConn.getConn();
+	  if(Utils.authenticate(Utils.extractCredentials(httpHeaders), db)) {
+		  String username = Utils.extractUsername(Utils.extractCredentials(httpHeaders));
+		  String usr_id = Utils.getUser(username, db).get("_id").toString();
+		  return usr_id;
+	  } else {
+		  return null;
+	  }
+	}
+					
 
   /*
     public static void createHistogram (String title, String x, String y,

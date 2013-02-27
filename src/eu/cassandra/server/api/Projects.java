@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,19 +46,12 @@ public class Projects {
 	@GET
 	public String getProjects(@QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
-		if(httpHeaders == null || httpHeaders.getRequestHeaders() == null ||
-				 httpHeaders.getRequestHeader("Authorization") == null) {
-			return Constants.AUTHORIZATION_FAIL;
-		}
-		DB db = DBConn.getConn();
-		if(Utils.authenticate(Utils.extractCredentials(httpHeaders), db)) {
-			String username = Utils.extractUsername(Utils.extractCredentials(httpHeaders));
-			String usr_id = Utils.getUser(username, db).get("_id").toString();
+		String usr_id = Utils.userChecked(httpHeaders);
+		if(usr_id != null) {
 			return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, usr_id, count));
 		} else {
 			return Constants.AUTHORIZATION_FAIL;
 		}
-			
 	}
 	
 	/**
