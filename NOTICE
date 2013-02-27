@@ -1,5 +1,5 @@
    Cassandra Platform
-   Copyright 2011-2012 The Cassandra Consortium
+   Copyright 2011-2013 The Cassandra Consortium
 
    This product includes software developed by
    The Cassandra Consortium (http://www.cassandra-fp7.eu/) under the 
@@ -11,5 +11,9 @@
    vahlasJsonValidation
    jersey
    jackson
+   Sencha ExtJS (http://www.sencha.com/legal/open-source-faq/open-source-license-exception-for-applications/)
+   mockito
+   junit
+   
     
 
