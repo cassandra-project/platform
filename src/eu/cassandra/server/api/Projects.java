@@ -64,20 +64,18 @@ public class Projects {
 	public String createProject(String message, @Context HttpHeaders httpHeaders) {
 		String usr_id = Utils.userChecked(httpHeaders);
 		if(usr_id != null) {
-			System.out.println("OK");
-			String pathcedMessage = message;
+			String patchedMessage = message;
 			try {
-				pathcedMessage = Utils.inject(message, "usr_id", usr_id);
+				patchedMessage = Utils.inject(message, "usr_id", usr_id);
 			}catch(com.mongodb.util.JSONParseException e) {
 				JSONtoReturn jSON2Rrn = new JSONtoReturn();
 				return PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError("Error parsing JSON input",e.getMessage()));
 			}catch(Exception e) {
 				JSONtoReturn jSON2Rrn = new JSONtoReturn();
-				return PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError(pathcedMessage, e));
+				return PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError(patchedMessage, e));
 			}
-			return PrettyJSONPrinter.prettyPrint(new MongoProjects().createProject(pathcedMessage));
+			return PrettyJSONPrinter.prettyPrint(new MongoProjects().createProject(patchedMessage));
 		} else {
-			System.out.println("Failed");
 			return Constants.AUTHORIZATION_FAIL;
 		}
 	}

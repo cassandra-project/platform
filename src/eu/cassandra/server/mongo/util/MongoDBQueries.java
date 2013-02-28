@@ -800,6 +800,7 @@ public class MongoDBQueries {
 		}catch(com.mongodb.util.JSONParseException e) {
 			return jSON2Rrn.createJSONError("Error parsing JSON input",e.getMessage());
 		}catch(Exception e) {
+
 			return jSON2Rrn.createJSONError(dataToInsert,e);
 		}
 		return jSON2Rrn.createJSONInsertPostMessage(successMessage,data) ;
