@@ -114,11 +114,16 @@ public class Simulation implements Runnable {
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
+  			double mcrunsRatio = 1.0/mcruns;
   			DBObject query = new BasicDBObject();
   			query.put("_id", new ObjectId(dbname));
   			DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   			for(int i = 0; i < mcruns; i++) {
   				tick = 0;
+  	  			double maxPower = 0;
+  	  			double avgPower = 0;
+  	  			double energy = 0;
+  	  			double cost = 0;
   	  			while (tick < endTick) {
 //  				System.out.println(tick);
   	  				// If it is the beginning of the day create the events
@@ -157,6 +162,9 @@ public class Simulation implements Runnable {
 		  			for(Installation installation: installations) {
 		  				installation.nextStep(tick);
 		  				double power = installation.getCurrentPower();
+		  				installation.updateMaxPower(power);
+		  				installation.updateAvgPower(power/endTick);
+		  				installation.updateEnergy(power);
 		  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
 		  				sumPower += power;
 		//  				String name = installation.getName();
@@ -165,6 +173,9 @@ public class Simulation implements Runnable {
 		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  		  				+ "Power: " + power);
 		  			}
+		  			if(sumPower > maxPower) maxPower = sumPower;
+		  			avgPower += sumPower/endTick;
+		  			energy += (sumPower/1000.0) * Constants.MINUTE_HOUR_RATIO;
 		  			m.addAggregatedTickResult(tick, sumPower, 0);
 		  			tick++;
 		  			mccount++;
@@ -173,6 +184,18 @@ public class Simulation implements Runnable {
 		  			objRun.put("percentage", percentage);
 		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   	  			}
+  	  			for(Installation installation: installations) {
+  	  				m.addKPIs(installation.getId(), 
+  	  						installation.getMaxPower() * mcrunsRatio, 
+  	  						installation.getAvgPower() * mcrunsRatio, 
+  	  						installation.getEnergy() * mcrunsRatio, 
+  	  						installation.getCost() * mcrunsRatio);
+  	  			}
+  	  			m.addKPIs(MongoResults.AGGR, 
+  	  					maxPower * mcrunsRatio, 
+  	  					avgPower * mcrunsRatio, 
+  	  					energy * mcrunsRatio, 
+  	  					cost * mcrunsRatio);
   			}
   			for(int i = 0; i < endTick; i++) {
   				for(Installation installation: installations) {

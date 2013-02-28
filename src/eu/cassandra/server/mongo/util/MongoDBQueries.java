@@ -1109,6 +1109,34 @@ public class MongoDBQueries {
 			return jSON2Rrn.createJSONError("Error in retrieving results", e.getMessage());
 		}
 	}
+	
+	/**
+	 * curl -i  --header "dbname:run_id" 'http://localhost:8080/cassandra/api/kpis?inst_id=instID'
+	 * curl -i  --header "dbname:run_id" 'http://localhost:8080/cassandra/api/kpis'
+	 * 
+	 * @param installationId
+	 * @return
+	 */
+	public DBObject mongoKPIsQuery(HttpHeaders httpHeaders, String installationId) {
+		try {
+			String runId = getDbNameFromHTTPHeader(httpHeaders);
+			if(runId == null && installationId == null)
+				throw new RestQueryParamMissingException(
+						"QueryParamMissing: Both run_id and installation_id are null");
+			String coll = MongoResults.COL_AGGRKPIS;
+			if(installationId != null) coll = MongoResults.COL_INSTKPIS;
+			DBObject condition = new BasicDBObject();
+			if( installationId != null) {
+				condition.put("inst_id",installationId);
+			}
+			DBObject result = DBConn.getConn(runId).getCollection(coll).findOne(condition);
+			if(result == null) throw new Exception("KPIs not found");
+			return jSON2Rrn.createJSON(result, "KPIs retrieved succesfully.");
+		}catch(Exception e) {
+			e.printStackTrace();
+			return jSON2Rrn.createJSONError("Error in retrieving results", e.getMessage());
+		}
+	}
 
 
 	/**
