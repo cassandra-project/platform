@@ -29,8 +29,8 @@ public class MongoProjects {
 	public final static String COL_PROJECTS = "projects";
 
 	/**
-	 * curl -i http://localhost:8080/cassandra/api/prj/4fec374fdf4ffdb8d1d1ce38
-	 * curl -i http://localhost:8080/cassandra/api/prj
+	 * curl -i https://localhost:8443/cassandra/api/prj/4fec374fdf4ffdb8d1d1ce38
+	 * curl -i https://localhost:8443/cassandra/api/prj
 	 * 
 	 * @param projectID
 	 * @return

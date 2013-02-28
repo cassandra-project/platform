@@ -28,6 +28,9 @@ public class MongoResults {
 	public final static String COL_APPRESULTS = "app_results";
 	public final static String COL_INSTRESULTS = "inst_results";
 	public final static String COL_AGGRRESULTS = "aggr_results";
+	public final static String COL_INSTKPIS = "inst_kpis";
+	public final static String COL_AGGRKPIS = "aggr_kpis";
+	public final static String AGGR = "aggr";
 	
 	private String dbname;
 	
@@ -65,6 +68,51 @@ public class MongoResults {
 		data.put("$set", new BasicDBObject("closetick", closeTick));
 		q.put("closetick:", new BasicDBObject("$exists",false));
 		DBConn.getConn(dbname).getCollection(COL_APPRESULTS).update(q,data,false,false);
+	}
+	
+	/**
+	 * @param inst_id
+	 * @param maxPower
+	 * @param avgPower
+	 * @param energy
+	 */
+	public void addKPIs(String inst_id, double maxPower, double avgPower, double energy, double cost) {
+		boolean first = false;
+		DBObject query = new BasicDBObject();
+		String collection;
+		String id;
+		if(inst_id.equalsIgnoreCase(AGGR)) {
+			id = AGGR;
+			collection = COL_AGGRKPIS;
+		} else {
+			id = inst_id;
+			collection = COL_INSTKPIS;
+		}
+		query.put("inst_id", id);
+		DBObject data = DBConn.getConn(dbname).getCollection(collection).findOne(query);
+		double newMaxPower = maxPower;
+		double newAvgPower = avgPower;
+		double newEnergy = energy;
+		double newCost = cost;
+		if(data == null) {
+			data = new BasicDBObject();
+			first = true;
+			data.put("inst_id", id);
+		} else {
+			newMaxPower += ((Double)data.get("maxPower")).doubleValue();
+			newAvgPower += ((Double)data.get("avgPower")).doubleValue();
+			newEnergy += ((Double)data.get("energy")).doubleValue();
+			newCost += ((Double)data.get("cost")).doubleValue();
+		}
+		data.put("maxPower",newMaxPower);
+		data.put("avgPower",newAvgPower);
+		data.put("energy",newEnergy);
+		data.put("cost",newCost);
+		if(first) {
+			DBConn.getConn(dbname).getCollection(collection).insert(data);
+		} else {
+			DBConn.getConn(dbname).getCollection(collection).update(query, data, false, false);
+		}
 	}
 
 	/**

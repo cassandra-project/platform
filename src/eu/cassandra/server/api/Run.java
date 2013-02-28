@@ -32,7 +32,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import com.mongodb.DB;
+
 import eu.cassandra.server.mongo.MongoRuns;
+import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 @Path("runs/{run_id: [a-z0-9][a-z0-9]*}")
@@ -85,7 +88,8 @@ public class Run {
 	 */
 	@DELETE
 	public String deleteRun(@PathParam("run_id") String run_id) {
-		// TODO delete references
+		DB rundb = DBConn.getConn(run_id);
+		if(rundb != null) rundb.dropDatabase();
 		return PrettyJSONPrinter.prettyPrint(new MongoRuns().deleteRun(run_id));
 	}
 
