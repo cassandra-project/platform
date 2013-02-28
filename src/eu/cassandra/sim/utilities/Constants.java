@@ -28,6 +28,8 @@ public class Constants {
 	
 	public final static int MIN_IN_DAY = 60 * 24;
 	
+	public final static double MINUTE_HOUR_RATIO = 1.0/60.0;
+	
 	public final static int MU = 0;
 	
 	public final static int SIGMA = 1;

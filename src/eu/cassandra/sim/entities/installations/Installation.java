@@ -26,6 +26,7 @@ import eu.cassandra.sim.Event;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.people.Person;
+import eu.cassandra.sim.utilities.Constants;
 
 public class Installation extends Entity {
 	private Vector<Person> persons;
@@ -33,6 +34,10 @@ public class Installation extends Entity {
 	private Vector<Installation> subInstallations;
 	private LocationInfo locationInfo;
 	private double currentPower;
+	private double maxPower = 0;
+	private double avgPower = 0;
+	private double energy = 0;
+	private double cost = 0;
 	
 	public static class Builder {
     	// Required variables
@@ -87,6 +92,34 @@ public class Installation extends Entity {
     		//System.out.println(person.getName());
     		person.updateDailySchedule(tick, queue);
 		}
+    }
+    
+    public void updateMaxPower(double power) {
+    	if(power > maxPower) maxPower = power;
+    }
+    
+    public double getMaxPower() {
+    	return maxPower;
+    }
+    
+    public void updateAvgPower(double powerFraction) {
+    	avgPower += powerFraction;
+    }
+    
+    public double getAvgPower() {
+    	return avgPower;
+    }
+    
+    public void updateEnergy(double power) {
+    	energy += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
+    }
+    
+    public double getEnergy() {
+    	return energy;
+    }
+    
+    public double getCost() {
+    	return cost;
     }
 
 	public void nextStep(int tick) {
