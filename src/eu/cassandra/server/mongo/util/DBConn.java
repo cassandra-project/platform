@@ -17,6 +17,7 @@
 package eu.cassandra.server.mongo.util;
 
 import java.net.UnknownHostException;
+
 import java.util.HashMap;
 
 import javax.naming.InitialContext;
