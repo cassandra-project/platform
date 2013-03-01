@@ -65,7 +65,7 @@ Ext.define('C.store.Runs', {
 			Ext.each(records, function(record, index){
 				var node = store.navigationNode.appendChild({
 					id: record.data._id,
-					name: record.data._id,
+					name: record.data.name,
 					nodeType: 'Run',
 					nodeId: record.data._id,
 					nodeStoreId: store.storeId,
@@ -89,7 +89,7 @@ Ext.define('C.store.Runs', {
 				console.info('++ Node does not exist. Creating it.');
 				var node = abstractstore.navigationNode.appendChild({
 					id: record.get('_id'),
-					name: record.get('_id'),
+					name: record.get('name'),
 					nodeType: 'Run',
 					nodeId: record.get('_id'),
 					nodeStoreId: abstractstore.storeId,

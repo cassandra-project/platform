@@ -82,7 +82,8 @@ Ext.application({
 		'ConsModChart',
 		'DistributionChart',
 		'MyTabPanel',
-		'MyTreePanel'
+		'MyTreePanel',
+		'LoginForm'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -112,9 +113,6 @@ Ext.application({
 
 		if (record.get('nodeType').search('Collection') > 0 ) {
 			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(record.c.store);
-			if (record.get('nodeType') == 'RunsCollection') {
-				grid.getDockedItems()[0].hidden = true;
-			}
 			cmpToAdd = grid;
 		}
 		else {
@@ -299,10 +297,6 @@ Ext.application({
 				gridStore.loadData(o.data, true);
 				var successMsg = Ext.JSON.decode(response.responseText).message;
 				Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
-			},
-			failure: function(response, options) {
-				var errors = Ext.JSON.decode(response.responseText).errors;
-				Ext.MessageBox.show({title:'Error', msg: JSON.stringify(errors), icon: Ext.MessageBox.ERROR});
 			}
 		});
 
