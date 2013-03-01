@@ -21,6 +21,15 @@ Ext.define('C.model.Run', {
 	fields: [
 		{
 			name: '_id',
+			persist: false
+		},
+		{
+			name: 'compare',
+			persist: false,
+			type: 'boolean'
+		},
+		{
+			name: 'name',
 			persist: false,
 			type: 'string'
 		},

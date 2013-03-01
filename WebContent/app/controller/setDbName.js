@@ -38,6 +38,7 @@ Ext.define('C.controller.setDbName', {
 				store.rejectChanges();
 			}
 			Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
+
 		});
 
 
