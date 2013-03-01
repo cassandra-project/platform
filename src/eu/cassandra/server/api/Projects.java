@@ -49,10 +49,8 @@ public class Projects {
 			@Context HttpHeaders httpHeaders) {
 		String usr_id = Utils.userChecked(httpHeaders);
 		if(usr_id != null) {
-			System.out.println("OK");
 			return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, usr_id, count));
 		} else {
-			System.out.println("Failed");
 			return Constants.AUTHORIZATION_FAIL;
 		}
 	}
