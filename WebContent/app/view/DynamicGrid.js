@@ -211,7 +211,24 @@ Ext.define('C.view.DynamicGrid', {
 			case 'ScenariosCollection': inputArray = {'project_id' : parent_id};break;
 			case 'InstallationsCollection': inputArray = {'scenario_id' : parent_id}; break;
 			case 'DemographicsCollection': inputArray = {'scn_id' : parent_id}; break;
-			case 'SimulationParamsCollection': inputArray = {'scn_id' : parent_id, calendar: {}}; break;
+			case 'SimulationParamsCollection': 
+			var dateStarted = new Date();
+			var day = dateStarted.getDate();
+			var month = dateStarted.getMonth()+1;
+			var year = dateStarted.getFullYear();
+			var weekdayNumb = dateStarted.getDay( );
+			var weekday = '';
+			switch (weekdayNumb) {
+				case 0: weekday = 'Sunday';break;
+				case 1: weekday = 'Monday';break;
+				case 2: weekday = 'Tuesday';break;
+				case 3: weekday = 'Wednesday';break;
+				case 4: weekday = 'Thursday';break;
+				case 5: weekday = 'Friday';break;
+				case 6: weekday = 'Saturday';break;
+			}
+			var calendar = {'year':year, 'month': month, 'weekday': weekday, 'dayOfMonth':day};
+			inputArray = {'scn_id' : parent_id, calendar: calendar}; break;
 			case 'PersonsCollection': inputArray = {'inst_id' : parent_id}; break;
 			case 'AppliancesCollection': inputArray = {'inst_id': parent_id}; break;
 			case 'ActivitiesCollection': inputArray = {'pers_id': parent_id}; break;
@@ -232,6 +249,7 @@ Ext.define('C.view.DynamicGrid', {
 		*/
 
 		//this.plugins[0].startEdit(0, 0);
+
 
 
 
