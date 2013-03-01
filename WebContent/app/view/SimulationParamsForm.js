@@ -87,7 +87,6 @@ Ext.define('C.view.SimulationParamsForm', {
 									width: 246,
 									name: 'dateStarted',
 									readOnly: false,
-									value: '03/01/2013',
 									fieldLabel: 'Date Started',
 									allowBlank: false
 								},
