@@ -132,7 +132,7 @@ Ext.define('C.view.MyTreePanel', {
 				}
 
 				Ext.Ajax.request({
-					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+overModel.get('parentId'),
+					url: '/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+overModel.get('parentId'),
 					method: 'POST',
 					scope: this,
 					callback: function(options, success, response) {	
@@ -592,7 +592,7 @@ Ext.define('C.view.MyTreePanel', {
 								handler: function () { 
 
 									Ext.Ajax.request({
-										url: '/cassandra/api/runs/' + r.get('_id'),
+										url: c.baseurl+'api/runs/' + r.get('_id'),
 										method: 'GET',
 										scope: this,
 										success: function(response, opts) {
@@ -618,7 +618,16 @@ Ext.define('C.view.MyTreePanel', {
 						return (v == -1) ? '' : new Date(v);
 					}
 				});
-			}			  
+			}
+			else if (f.name == 'compare'){
+				cols.push({
+					header: f.name,
+					dataIndex: f.name,
+					renderer: function (v, m, r) {
+						return "<input type='checkbox'" + (f.value ? "checked='checked'" : "") + ">";
+					}
+				});
+			}
 			else {
 				cols.push({
 					header: f.name,
@@ -627,6 +636,14 @@ Ext.define('C.view.MyTreePanel', {
 				});
 			}
 		});
+
+		if (store.model.getName() == 'C.model.Run') {
+			var btns = grid.getDockedItems()[0].getChildItemsToDisable();
+			Ext.Array.forEach(btns, function (btn) {
+				if (btn.text != "Delete")
+				btn.hide();
+			});
+		}
 
 		grid.reconfigure(store, cols); 
 		return grid;

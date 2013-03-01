@@ -56,12 +56,6 @@ Ext.define('C.view.SimulationParamsForm', {
 									}
 								},
 								{
-									xtype: 'textareafield',
-									width: 246,
-									name: 'description',
-									fieldLabel: 'Description'
-								},
-								{
 									xtype: 'textfield',
 									width: 246,
 									name: 'locationInfo',
@@ -93,7 +87,9 @@ Ext.define('C.view.SimulationParamsForm', {
 									width: 246,
 									name: 'dateStarted',
 									readOnly: false,
-									fieldLabel: 'Date Started'
+									value: '03/01/2013',
+									fieldLabel: 'Date Started',
+									allowBlank: false
 								},
 								{
 									xtype: 'datefield',
@@ -101,6 +97,12 @@ Ext.define('C.view.SimulationParamsForm', {
 									name: 'dateEnds',
 									readOnly: false,
 									fieldLabel: 'Date Ends'
+								},
+								{
+									xtype: 'textareafield',
+									width: 246,
+									name: 'description',
+									fieldLabel: 'Notes'
 								},
 								{
 									xtype: 'container',

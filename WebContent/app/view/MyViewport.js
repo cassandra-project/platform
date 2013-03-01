@@ -63,64 +63,7 @@ Ext.define('C.view.MyViewport', {
 					region: 'center',
 					id: 'center_panel',
 					collapsible: false,
-					title: 'Main Panel',
-					items: [
-						{
-							xtype: 'form',
-							frame: true,
-							id: 'LoginForm',
-							itemId: 'LoginForm',
-							margin: '50 0 0 100',
-							width: 300,
-							layout: {
-								align: 'center',
-								pack: 'center',
-								type: 'vbox'
-							},
-							bodyPadding: '30 10',
-							title: 'Please login',
-							titleCollapse: false,
-							items: [
-								{
-									xtype: 'textfield',
-									width: 250,
-									name: 'username',
-									fieldLabel: 'Username',
-									allowBlank: false
-								},
-								{
-									xtype: 'textfield',
-									width: 250,
-									inputType: 'password',
-									name: 'password',
-									fieldLabel: 'Password',
-									allowBlank: false,
-									minLength: 4,
-									regexText: 'Password should have at least length 6, and contain one capital letter and a number'
-								},
-								{
-									xtype: 'button',
-									formBind: false,
-									margin: '20 0 0 0',
-									padding: '5 0',
-									width: 93,
-									text: 'Submit',
-									listeners: {
-										click: {
-											fn: me.onButtonClick,
-											scope: me
-										}
-									}
-								}
-							],
-							listeners: {
-								beforerender: {
-									fn: me.onLoginFormBeforeRender,
-									scope: me
-								}
-							}
-						}
-					]
+					title: 'Main Panel'
 				},
 				{
 					xtype: 'panel',
@@ -140,75 +83,33 @@ Ext.define('C.view.MyViewport', {
 					height: 16,
 					id: 'bottom_toolbar'
 				}
-			]
+			],
+			listeners: {
+				afterrender: {
+					fn: me.onViewportAfterRender,
+					scope: me
+				}
+			}
 		});
 
 		me.callParent(arguments);
 	},
 
-	onButtonClick: function(button, e, options) {
-		var loginForm = Ext.getCmp('LoginForm').getForm();
-		var values = loginForm.getValues();
-
-		if (loginForm.isValid()) {
-
-			C.auth = 'Basic ' + Ext.util.base64.encode(values.username + ':' + values.password);
-
-			var treePanel = new C.view.MyTreePanel({id: 'uiNavigationTreePanel'});
-			var tabPanel =  new C.view.MyTabPanel({id: 'MainTabPanel'});
-
-			treePanel.doLayout();
-			this.getComponent('west_panel').add(treePanel);
-
-			tabPanel.doLayout();
-			this.getComponent('center_panel').removeAll();
-			this.getComponent('center_panel').layout = 'fit';
-			this.getComponent('center_panel').add(tabPanel);
-
-			/*Ext.Ajax.request({
-			scope : this,
-			method : 'GET',
-			headers : {
-			'Authorization' : 'Basic ' + values.username + '' + Ext.utils.base64.encode(values.password)
-			}, 
-			url : cassandra/api/prj,
-			success : function(response, options) {
-			var record = abstractcomponent.getRootNode();
-
-			record.c = {
-			store: {}
-			};
-			console.info('Creating new store for projects.');
-			record.c.store = new C.store.Projects({
-			storeId: record.data.nodeType+'Store',
-			navigationNode: record
-			});
-			record.c.store.load({});
-
-			},
-			failure : function(response, options) {
-			C.username = null;
-			C.password = null;
-			Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
-			}
-			});*/
-
-
-		}
-	},
-
-	onLoginFormBeforeRender: function(abstractcomponent, options) {
+	onViewportAfterRender: function(abstractcomponent, options) {
 		if (C.dbname) {
 			var treePanel = new C.view.MyTreePanel({id: 'uiNavigationTreePanel'});
 			var tabPanel =  new C.view.MyTabPanel({id: 'MainTabPanel'});
 
 			treePanel.doLayout();
-			this.getComponent('west_panel').add(treePanel);
+			abstractcomponent.getComponent('west_panel').add(treePanel);
 
 			tabPanel.doLayout();
-			this.getComponent('center_panel').removeAll();
-			this.getComponent('center_panel').layout = 'fit';
-			this.getComponent('center_panel').add(tabPanel);
+			abstractcomponent.getComponent('center_panel').layout = 'fit';
+			abstractcomponent.getComponent('center_panel').add(tabPanel);
+		}
+		else {
+			var loginForm = new C.view.LoginForm({id: 'LoginForm'});
+			abstractcomponent.getComponent('center_panel').add(loginForm);
 		}
 	}
 

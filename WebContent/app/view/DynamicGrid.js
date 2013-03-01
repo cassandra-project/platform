@@ -175,12 +175,13 @@ Ext.define('C.view.DynamicGrid', {
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
 					default: return false;
 				}
-				//TODO See why on failure success function is executed
+
 				Ext.Ajax.request({
-					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+parent_id,
+					url: '/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+parent_id,
 					method: 'POST',
 					scope: this,
 					callback: function(options, success, response) {	
+						//TODO: Change this (also in tree) when response status codes are fixed
 						response = JSON.parse(response.responseText);
 						if (response.success) {
 							var params = {};
@@ -193,18 +194,6 @@ Ext.define('C.view.DynamicGrid', {
 							Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
 						}
 					}
-					/*success: function(response, options) {
-					var message = Ext.JSON.decode(response.responseText).message;
-					var params = {};
-					params[parent_idKey] = parent_id;
-					this.store.navigationNode.removeAll();
-					this.store.load( {params : params });
-					Ext.sliding_box.msg('Success', JSON.stringify(message));
-					},
-					failure: function(response, options) {
-					var errors = Ext.JSON.decode(response.responseText).errors;
-					Ext.MessageBox.show({title:'Error', msg: JSON.stringify(errors), icon: Ext.MessageBox.ERROR});
-					}*/
 				});
 				return 0;
 			}

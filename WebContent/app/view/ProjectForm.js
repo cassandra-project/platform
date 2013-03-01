@@ -59,9 +59,9 @@ Ext.define('C.view.ProjectForm', {
 								},
 								{
 									xtype: 'textareafield',
-									width: 246,
+									width: 300,
 									name: 'description',
-									fieldLabel: 'Description'
+									fieldLabel: 'Notes'
 								},
 								{
 									xtype: 'button',
