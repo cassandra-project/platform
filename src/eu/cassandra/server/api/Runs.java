@@ -120,7 +120,7 @@ public class Runs {
 			query.put("_id", new ObjectId(smp_id));			
 			DBObject simParams = DBConn.getConn().getCollection(MongoSimParam.COL_SIMPARAM).findOne(query);
 			if(simParams == null) {
-				return "{ \"success\": false, \"message\": \"Sim creation failed\", \"exception\": { \"error\": \"No simulation params found\" }}"; 
+				return "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"error\": \"No simulation params found\" }}"; 
 			}
 			db.getCollection(MongoSimParam.COL_SIMPARAM).insert(simParams);
 			scenario.put("sim_params", simParams);
@@ -157,7 +157,7 @@ public class Runs {
 			query.put("scenario_id", scn_id);
 			DBCursor cursor = DBConn.getConn().getCollection(MongoInstallations.COL_INSTALLATIONS).find(query);
 			if(cursor.size() == 0) {
-				return "{ \"success\": false, \"message\": \"Sim creation failed\", \"exception\": { \"error\": \"No istallations found\" }}"; 
+				return "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"error\": \"No istallations found\" }}"; 
 			}
 			int countInst = 0;
 			while(cursor.hasNext()) {
@@ -283,11 +283,11 @@ public class Runs {
 			System.out.println(returnMsg);
 			return returnMsg;
 		} catch (UnknownHostException | MongoException e1) {
-			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed\", \"exception\": { \"hostMongoException\": \""+ e1.getMessage() + "\" } }"; 
+			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"hostMongoException\": \""+ e1.getMessage() + "\" } }"; 
 			System.out.println(returnMsg);
 			return returnMsg; 
 		} catch(Exception e) {
-			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed\", \"exception\": { \"generalException\": \"" + e.getMessage() + "\" } }"; 
+			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"generalException\": \"" + e.getMessage() + "\" } }"; 
 			System.out.println(returnMsg);
 			return returnMsg;
 		}
