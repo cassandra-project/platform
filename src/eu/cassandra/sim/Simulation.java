@@ -99,7 +99,7 @@ public class Simulation implements Runnable {
   
 	public Simulation(String ascenario, String adbname) {
 		scenario = ascenario;
-		System.out.println(PrettyJSONPrinter.prettyPrint(ascenario));
+		//System.out.println(PrettyJSONPrinter.prettyPrint(ascenario));
 		dbname = adbname;
 		m = new MongoResults(dbname);
   		RNG.init();
