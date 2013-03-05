@@ -36,7 +36,7 @@ import eu.cassandra.sim.entities.Entity;
  */
 public class ConsumptionModel extends Entity {
 	
-	/** How many times the patterns repeat */
+	/** How many times the patterns repeats */
 	private int outerN;
 	
 	/** The number of patterns */
@@ -83,7 +83,12 @@ public class ConsumptionModel extends Entity {
 					t.p = ((Double)((DBObject)values.get(j)).get("p")).doubleValue();
 				} catch(ClassCastException e) {
 					t.p = (double)((Integer)((DBObject)values.get(j)).get("p")).intValue();
-				} 
+				}
+//				try {
+//					t.q = ((Double)((DBObject)values.get(j)).get("q")).doubleValue();
+//				} catch(ClassCastException e) {
+//					t.q = (double)((Integer)((DBObject)values.get(j)).get("q")).intValue();
+//				} 
 				t.d = ((Integer)((DBObject)values.get(j)).get("d")).intValue();
 				patternDuration[i] += t.d; 
 				totalDuration += (n[i] * t.d);
@@ -108,13 +113,13 @@ public class ConsumptionModel extends Entity {
 	
 	public int getPatternDuration(int i) { return patternDuration[i]; }
 	
-	public ArrayList getPattern(int i) { return patterns[i]; }
+	public ArrayList<Tripplet> getPattern(int i) { return patterns[i]; }
 	
 	class Tripplet {
-		double p,s;
+		double p, q, s;
 		int d;
 		public Tripplet() {
-			p = s = 0;
+			p = q = s = 0;
 			d = 0;
 		}
 	}

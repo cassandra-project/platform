@@ -512,8 +512,9 @@ public class MongoDBQueries {
 	 */
 	private DBObject getValues(DBObject dBObject, HttpHeaders httpHeaders,
 			String id, String coll) throws JSONSchemaNotValidException {
-		double values[] = null;
 		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
+			double values[] = null;
+			double points[] = null;
 			if(dBObject.containsField("parameters")){
 				String type = MongoActivityModels.REF_DISTR_STARTTIME ;
 				if(DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
@@ -530,28 +531,60 @@ public class MongoDBQueries {
 				BasicDBList t = (BasicDBList)dBObject.get("values");
 				values = Utils.dblist2doubleArr(t); 
 			}
+			if(values != null) {
+				BasicDBList list = new BasicDBList();
+				for(int i=0;i<values.length;i++) {
+					BasicDBObject dbObj = new BasicDBObject("x",i);
+					dbObj.put("y", values[i]);
+					list.add(dbObj);
+				}
+				dBObject.put("values", list);
+			}
 		}
 		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS)  ) {
+			double pvalues[] = null;
+			double qvalues[] = null;
+			double points[] = null;
 			if(dBObject.containsField("model") &&  ((DBObject)dBObject.get("model")).containsField("params")) {
-				Double[] valuesConsModel = new GUIConsumptionModel((DBObject) dBObject.get("model")).getValues();
-				values = new double[valuesConsModel.length];
-				for(int i=0;i<valuesConsModel.length;i++) {
-					values[i] = valuesConsModel[i];
+				GUIConsumptionModel gui = new GUIConsumptionModel((DBObject) dBObject.get("model"));
+				Double[] pvaluesConsModel = gui.getValues(GUIConsumptionModel.P);
+				//Double[] qvaluesConsModel = gui.getValues(GUIConsumptionModel.Q);
+				Double[] pointsConsModel = gui.getPoints(pvaluesConsModel.length);
+				pvalues = new double[pvaluesConsModel.length];
+				//qvalues = new double[qvaluesConsModel.length];
+				points = new double[pointsConsModel.length];
+				for(int i=0; i< pvaluesConsModel.length; i++) {
+					pvalues[i] = pvaluesConsModel[i];
+					//qvalues[i] = qvaluesConsModel[i];
+					points[i] = pointsConsModel[i];
 				}
 			}
-			if( (values == null || values.length==0)  && dBObject.containsField("values")) {; 
-			BasicDBList t = (BasicDBList)dBObject.get("values");
-			values = Utils.dblist2doubleArr(t); 
+			if((pvalues == null || pvalues.length==0) && dBObject.containsField("values")) {; 
+				BasicDBList t = (BasicDBList)dBObject.get("values");
+				pvalues = Utils.dblist2doubleArr(t); 
 			}
-		}
-		if(values != null) {
-			BasicDBList list = new BasicDBList();
-			for(int i=0;i<values.length;i++) {
-				BasicDBObject dbObj = new BasicDBObject("x",i);
-				dbObj.put("y", values[i]);
-				list.add(dbObj);
+//			if((qvalues == null || qvalues.length==0) && dBObject.containsField("qvalues")) {; 
+//				BasicDBList t = (BasicDBList)dBObject.get("qvalues");
+//				qvalues = Utils.dblist2doubleArr(t); 
+//			}
+			if(pvalues != null) {
+				BasicDBList list = new BasicDBList();
+				for(int i=0;i<pvalues.length;i++) {
+					BasicDBObject dbObj = new BasicDBObject("x", points[i]);
+					dbObj.put("y", pvalues[i]);
+					list.add(dbObj);
+				}
+				dBObject.put("values", list);
 			}
-			dBObject.put("values", list);
+//			if(pvalues != null) {
+//				BasicDBList list = new BasicDBList();
+//				for(int i=0;i<qvalues.length;i++) {
+//					BasicDBObject dbObj = new BasicDBObject("x", points[i]);
+//					dbObj.put("y", qvalues[i]);
+//					list.add(dbObj);
+//				}
+//				dBObject.put("qvalues", list);
+//			}
 		}
 
 		return dBObject;
