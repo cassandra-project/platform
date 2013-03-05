@@ -37,9 +37,9 @@ public class GUIConsumptionModel {
    * 	
    * @param obj
    */
-  public GUIConsumptionModel (DBObject obj)
+  public GUIConsumptionModel (DBObject obj, String type)
   {
-    cons.init(obj);
+    cons.init(obj, type);
     cons.status();
   }
 
@@ -69,9 +69,9 @@ public class GUIConsumptionModel {
             // System.out.println("Tripplet: " + l);
             for (int m = 0; m < tripplets.get(l).d; m++) {
             	if(type == Q) {
-            		temp.add(tripplets.get(l).q);
+            		temp.add(tripplets.get(l).v);
             	} else {
-            		temp.add(tripplets.get(l).p);
+            		temp.add(tripplets.get(l).v);
             	}
             }
           }
@@ -111,7 +111,7 @@ public class GUIConsumptionModel {
     DBObject dbo = (DBObject) JSON.parse(s);
     System.out.println(dbo.toString());
 
-    GUIConsumptionModel tester = new GUIConsumptionModel(dbo);
+    GUIConsumptionModel tester = new GUIConsumptionModel(dbo, "p");
     System.out.println(Arrays.toString(tester.getValues(P)));
     // Utils.createHistogram("Test", "Power", "Power", tester.getValues());
 

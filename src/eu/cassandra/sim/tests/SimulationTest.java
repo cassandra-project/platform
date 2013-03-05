@@ -49,8 +49,8 @@ public class SimulationTest {
 	public void SimulationTest() throws Exception {
 		RNG.init();
 		
-		Appliance app1=new Appliance.Builder("Appid1","App1", "App1Desc", "App1Type", inst1, new ConsumptionModel(scenario), 1f, true).build();
-		Appliance app2=new Appliance.Builder("Appid2","App2", "App2Desc", "App2Type", inst1, new ConsumptionModel(scenario), 1f, true).build();
+		Appliance app1=new Appliance.Builder("Appid1","App1", "App1Desc", "App1Type", inst1, new ConsumptionModel(scenario, "p"), null, 1f, true).build();
+		Appliance app2=new Appliance.Builder("Appid2","App2", "App2Desc", "App2Type", inst1, new ConsumptionModel(scenario, "p"), null, 1f, true).build();
 		Person person1=new Person.Builder("Personid1","Person1", "Person1Desc", "Person1Type", inst1).build();
 		Person person2=new Person.Builder("Personid2","App2", "App2Desc", "App2Type", inst1).build();
 		p[0]=inst1;
