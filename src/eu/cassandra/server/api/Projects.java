@@ -25,6 +25,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.mongodb.DB;
 
@@ -36,8 +37,6 @@ import eu.cassandra.sim.utilities.Constants;
 import eu.cassandra.sim.utilities.Utils;
 
 @Path("prj")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class Projects {
 	
 	/**
@@ -45,13 +44,14 @@ public class Projects {
 	 * @return
 	 */
 	@GET
-	public String getProjects(@QueryParam("count") boolean count,
+	public Response getProjects(@QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
 		String usr_id = Utils.userChecked(httpHeaders);
 		if(usr_id != null) {
-			return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, usr_id, count));
+			String json = PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, usr_id, count));
+			return Response.ok(json, MediaType.APPLICATION_JSON).build();
 		} else {
-			return Constants.AUTHORIZATION_FAIL;
+			return Response.status(Response.Status.UNAUTHORIZED).entity("User and or password do not match").build();
 		}
 	}
 	
@@ -59,22 +59,25 @@ public class Projects {
 	 * Create a project
 	 */
 	@POST
-	public String createProject(String message, @Context HttpHeaders httpHeaders) {
+	public Response createProject(String message, @Context HttpHeaders httpHeaders) {
 		String usr_id = Utils.userChecked(httpHeaders);
 		if(usr_id != null) {
 			String patchedMessage = message;
 			try {
 				patchedMessage = Utils.inject(message, "usr_id", usr_id);
 			}catch(com.mongodb.util.JSONParseException e) {
-				JSONtoReturn jSON2Rrn = new JSONtoReturn();
-				return PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError("Error parsing JSON input",e.getMessage()));
+				//JSONtoReturn jSON2Rrn = new JSONtoReturn();
+				//PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError("Error parsing JSON input", e.getMessage()));
+				Response.status(Response.Status.BAD_REQUEST).entity("Error parsing JSON input - " + e.getMessage()).build();
 			}catch(Exception e) {
-				JSONtoReturn jSON2Rrn = new JSONtoReturn();
-				return PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError(patchedMessage, e));
+				//JSONtoReturn jSON2Rrn = new JSONtoReturn();
+				//PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError(patchedMessage, e));
+				Response.status(Response.Status.BAD_REQUEST).entity(patchedMessage + " - " + e.getMessage()).build();
 			}
-			return PrettyJSONPrinter.prettyPrint(new MongoProjects().createProject(patchedMessage));
+			String json = PrettyJSONPrinter.prettyPrint(new MongoProjects().createProject(patchedMessage));
+			return Response.ok(json, MediaType.APPLICATION_JSON).build();
 		} else {
-			return Constants.AUTHORIZATION_FAIL;
+			return Response.status(Response.Status.UNAUTHORIZED).entity("User and or password do not match").build();
 		}
 	}
 
