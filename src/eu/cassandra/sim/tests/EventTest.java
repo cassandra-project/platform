@@ -41,7 +41,7 @@ public class EventTest {
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, true).build();
+		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
 		String hash="0000";
 		Event tester=new Event(1,1,app,hash);
 		assertTrue("Result1", app==tester.getAppliance());
@@ -54,7 +54,7 @@ public class EventTest {
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, true).build();
+		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
 		String hash="0000";
 		Event tester=new Event(1,1,app,hash);
 		assertTrue("Result2", 1==tester.getAction());
@@ -67,7 +67,7 @@ public class EventTest {
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, true).build();
+		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
 		String hash="0000";
 		Event tester=new Event(3,1,app,hash);
 		assertTrue("Result3", 3==tester.getTick());
@@ -79,7 +79,7 @@ public class EventTest {
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, true).build();
+		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
 		String hash="0000";
 		Event tester=new Event(3,1,app,hash);
 		assertTrue("Result4", false==tester.apply());
@@ -92,7 +92,7 @@ public class EventTest {
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, true).build();
+		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
 		String hash="0000";
 		Event tester=new Event(3,1,app,hash);
 		Event tester2=new Event(1,1,app,hash);

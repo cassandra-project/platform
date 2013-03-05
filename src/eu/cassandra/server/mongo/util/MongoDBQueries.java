@@ -545,28 +545,21 @@ public class MongoDBQueries {
 			double pvalues[] = null;
 			double qvalues[] = null;
 			double points[] = null;
-			if(dBObject.containsField("model") &&  ((DBObject)dBObject.get("model")).containsField("params")) {
-				GUIConsumptionModel gui = new GUIConsumptionModel((DBObject) dBObject.get("model"));
-				Double[] pvaluesConsModel = gui.getValues(GUIConsumptionModel.P);
-				//Double[] qvaluesConsModel = gui.getValues(GUIConsumptionModel.Q);
-				Double[] pointsConsModel = gui.getPoints(pvaluesConsModel.length);
+			if(dBObject.containsField("pmodel") &&  ((DBObject)dBObject.get("pmodel")).containsField("params")) {
+				GUIConsumptionModel p = new GUIConsumptionModel((DBObject) dBObject.get("pmodel"), "p");
+				Double[] pvaluesConsModel = p.getValues(GUIConsumptionModel.P);
+				Double[] pointsConsModel = p.getPoints(pvaluesConsModel.length);
 				pvalues = new double[pvaluesConsModel.length];
-				//qvalues = new double[qvaluesConsModel.length];
 				points = new double[pointsConsModel.length];
 				for(int i=0; i< pvaluesConsModel.length; i++) {
 					pvalues[i] = pvaluesConsModel[i];
-					//qvalues[i] = qvaluesConsModel[i];
 					points[i] = pointsConsModel[i];
 				}
 			}
-			if((pvalues == null || pvalues.length==0) && dBObject.containsField("values")) {; 
-				BasicDBList t = (BasicDBList)dBObject.get("values");
+			if((pvalues == null || pvalues.length==0) && dBObject.containsField("pvalues")) {; 
+				BasicDBList t = (BasicDBList)dBObject.get("pvalues");
 				pvalues = Utils.dblist2doubleArr(t); 
 			}
-//			if((qvalues == null || qvalues.length==0) && dBObject.containsField("qvalues")) {; 
-//				BasicDBList t = (BasicDBList)dBObject.get("qvalues");
-//				qvalues = Utils.dblist2doubleArr(t); 
-//			}
 			if(pvalues != null) {
 				BasicDBList list = new BasicDBList();
 				for(int i=0;i<pvalues.length;i++) {
@@ -574,17 +567,32 @@ public class MongoDBQueries {
 					dbObj.put("y", pvalues[i]);
 					list.add(dbObj);
 				}
-				dBObject.put("values", list);
+				dBObject.put("pvalues", list);
 			}
-//			if(pvalues != null) {
-//				BasicDBList list = new BasicDBList();
-//				for(int i=0;i<qvalues.length;i++) {
-//					BasicDBObject dbObj = new BasicDBObject("x", points[i]);
-//					dbObj.put("y", qvalues[i]);
-//					list.add(dbObj);
-//				}
-//				dBObject.put("qvalues", list);
-//			}
+			if(dBObject.containsField("qmodel") &&  ((DBObject)dBObject.get("qmodel")).containsField("params")) {
+				GUIConsumptionModel q = new GUIConsumptionModel((DBObject) dBObject.get("qmodel"), "q");
+				Double[] qvaluesConsModel = q.getValues(GUIConsumptionModel.Q);
+				Double[] pointsConsModel = q.getPoints(qvaluesConsModel.length);
+				qvalues = new double[qvaluesConsModel.length];
+				points = new double[pointsConsModel.length];
+				for(int i=0; i< qvaluesConsModel.length; i++) {
+					qvalues[i] = qvaluesConsModel[i];
+					points[i] = pointsConsModel[i];
+				}
+			}
+			if((qvalues == null || qvalues.length==0) && dBObject.containsField("qvalues")) {; 
+				BasicDBList t = (BasicDBList)dBObject.get("qvalues");
+				qvalues = Utils.dblist2doubleArr(t); 
+			}
+			if(pvalues != null) {
+				BasicDBList list = new BasicDBList();
+				for(int i=0;i<qvalues.length;i++) {
+					BasicDBObject dbObj = new BasicDBObject("x", points[i]);
+					dbObj.put("y", qvalues[i]);
+					list.add(dbObj);
+				}
+				dBObject.put("qvalues", list);
+			}
 		}
 
 		return dBObject;

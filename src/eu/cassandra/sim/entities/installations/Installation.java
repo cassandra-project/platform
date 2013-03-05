@@ -129,7 +129,7 @@ public class Installation extends Entity {
 	public void updateRegistry(int tick) {
 		float power = 0f;
 		for(Appliance appliance : getAppliances()) {
-			power += appliance.getPower(tick);
+			power += appliance.getPower(tick, "p");
 		}
 		currentPower = power;
 	}
