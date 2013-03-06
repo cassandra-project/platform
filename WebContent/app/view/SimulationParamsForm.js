@@ -163,21 +163,7 @@ Ext.define('C.view.SimulationParamsForm', {
 
 		var dateStarted = myForm.getFieldValues().dateStarted;
 		if (dateStarted) {
-			var day = dateStarted.getDate();
-			var month = dateStarted.getMonth()+1;
-			var year = dateStarted.getFullYear();
-			var weekdayNumb = dateStarted.getDay( );
-			var weekday = '';
-			switch (weekdayNumb) {
-				case 0: weekday = 'Sunday';break;
-				case 1: weekday = 'Monday';break;
-				case 2: weekday = 'Tuesday';break;
-				case 3: weekday = 'Wednesday';break;
-				case 4: weekday = 'Thursday';break;
-				case 5: weekday = 'Friday';break;
-				case 6: weekday = 'Saturday';break;
-			}
-			calendar = {'year':year, 'month': month, 'weekday': weekday, 'dayOfMonth':day};
+			calendar = C.app.getCalendar(dateStarted);
 			var dateEnds = myForm.getFieldValues().dateEnds;
 			if (dateEnds) {
 				var one_day = 1000*60*60*24;

@@ -16,10 +16,6 @@
 Ext.define('C.store.ConsumptionModelValues', {
 	extend: 'Ext.data.Store',
 
-	requires: [
-		'C.model.Results'
-	],
-
 	constructor: function(cfg) {
 		var me = this;
 		cfg = cfg || {};
@@ -28,7 +24,6 @@ Ext.define('C.store.ConsumptionModelValues', {
 			autoSync: true,
 			remoteFilter: true,
 			storeId: 'MyJsonStore15',
-			model: 'C.model.Results',
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
@@ -38,7 +33,21 @@ Ext.define('C.store.ConsumptionModelValues', {
 					root: 'data[0].values',
 					totalProperty: 'size'
 				}
-			}
+			},
+			fields: [
+				{
+					name: 'x',
+					type: 'float'
+				},
+				{
+					name: 'p',
+					type: 'float'
+				},
+				{
+					name: 'q',
+					type: 'float'
+				}
+			]
 		}, cfg)]);
 	}
 });

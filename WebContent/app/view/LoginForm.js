@@ -83,6 +83,7 @@ Ext.define('C.view.LoginForm', {
 		if (loginForm.isValid()) {
 
 			C.auth = 'Basic ' + Ext.util.base64.encode(values.username + ':' + values.password);
+			Ext.util.Cookies.set('auth', C.auth);
 
 			Ext.Ajax.request({
 				scope : this,
