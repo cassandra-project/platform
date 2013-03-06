@@ -99,7 +99,7 @@ public class Simulation implements Runnable {
   
 	public Simulation(String ascenario, String adbname) {
 		scenario = ascenario;
-		System.out.println(PrettyJSONPrinter.prettyPrint(ascenario));
+		//System.out.println(PrettyJSONPrinter.prettyPrint(ascenario));
 		dbname = adbname;
 		m = new MongoResults(dbname);
   		RNG.init();
@@ -261,14 +261,16 @@ public class Simulation implements Runnable {
 		    	double standy = Double.parseDouble(applianceDoc.get("standy_consumption").toString());
 		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
-		    	ConsumptionModel consmod = new ConsumptionModel(consModDoc.get("model").toString());
+		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("model").toString(), "p");
+		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("model").toString(), "q");
 	    		Appliance app = new Appliance.Builder(
 	    				appid,
 	    				appname,
 	    				appdescription,
 	    				apptype, 
 	    				inst,
-	    				consmod,
+	    				pconsmod,
+	    				qconsmod,
 	    				standy,
 	            		base).build();
 	    		existing.put(appid, app);
@@ -374,15 +376,16 @@ public class Simulation implements Runnable {
 		    	} catch(ClassCastException cce) { }
 		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
-		    	ConsumptionModel consmod = new ConsumptionModel(consModDoc.get("model").toString());
-		    	
+		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("model").toString(), "p");
+		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("model").toString(), "q");
 	    		Appliance app = new Appliance.Builder(
 	    				appid,
 	    				appname,
 	    				appdescription,
 	    				apptype, 
 	    				inst,
-	    				consmod,
+	    				pconsmod,
+	    				qconsmod,
 	    				standy,
 	            		base).build();
 	    		existing.put(appid, app);
@@ -407,7 +410,7 @@ public class Simulation implements Runnable {
     			    	String app_id = addEntity(selectedApp);
     			    	selectedApp.setId(app_id);
     			    	inst.addAppliance(selectedApp);
-    			    	ConsumptionModel cm = selectedApp.getConsumptionModel();
+    			    	ConsumptionModel cm = selectedApp.getPConsumptionModel();
     			    	cm.setParentId(app_id);
     			    	String cm_id = addEntity(cm);
     			    	cm.setId(cm_id);

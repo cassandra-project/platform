@@ -26,18 +26,20 @@ import com.mongodb.util.JSON;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel.Tripplet;
 import eu.cassandra.sim.utilities.Utils;
 
-public class GUIConsumptionModel
-{
+public class GUIConsumptionModel {
+	
+	public static final int P = 0;
+	public static final int Q = 1;
 
   private ConsumptionModel cons = new ConsumptionModel();
 
   /**
-   * 
+   * 	
    * @param obj
    */
-  public GUIConsumptionModel (DBObject obj)
+  public GUIConsumptionModel (DBObject obj, String type)
   {
-    cons.init(obj);
+    cons.init(obj, type);
     cons.status();
   }
 
@@ -45,7 +47,7 @@ public class GUIConsumptionModel
    * 
    * @return
    */
-  public Double[] getValues ()
+  public Double[] getValues(int type)
   {
     ArrayList<Double> temp = new ArrayList<Double>();
     int times = cons.getOuterN();
@@ -66,16 +68,40 @@ public class GUIConsumptionModel
           for (int l = 0; l < tripplets.size(); l++) {
             // System.out.println("Tripplet: " + l);
             for (int m = 0; m < tripplets.get(l).d; m++) {
-              temp.add(tripplets.get(l).p);
+            	if(type == Q) {
+            		temp.add(tripplets.get(l).v);
+            	} else {
+            		temp.add(tripplets.get(l).v);
+            	}
             }
           }
         }
       }
     }
+    ArrayList<Double> values = new ArrayList<Double>();
+    for(int i = 0; i < temp.size(); i++) {
+    	values.add(temp.get(i));
+    	values.add(temp.get(i));
+    	values.add(temp.get(Math.min(i+1, temp.size()-1)));
+    }
+    Double[] result = new Double[values.size()];
+    values.toArray(result);
+    return result;
+  }
+  
+  public Double[] getPoints(int length)
+  {
+    ArrayList<Double> temp = new ArrayList<Double>();
+    int count = 0;
+    for(int i = 0; i < length; i += 3) {
+    	temp.add(new Double(count-0.01));
+    	temp.add(new Double(count));
+    	temp.add(new Double(count+0.01));
+    	count++;
+    }
     Double[] result = new Double[temp.size()];
     temp.toArray(result);
     return result;
-
   }
 
   public static void main (String[] args) throws IOException
@@ -85,8 +111,8 @@ public class GUIConsumptionModel
     DBObject dbo = (DBObject) JSON.parse(s);
     System.out.println(dbo.toString());
 
-    GUIConsumptionModel tester = new GUIConsumptionModel(dbo);
-    System.out.println(Arrays.toString(tester.getValues()));
+    GUIConsumptionModel tester = new GUIConsumptionModel(dbo, "p");
+    System.out.println(Arrays.toString(tester.getValues(P)));
     // Utils.createHistogram("Test", "Power", "Power", tester.getValues());
 
   }

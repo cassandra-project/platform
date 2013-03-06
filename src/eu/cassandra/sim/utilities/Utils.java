@@ -104,11 +104,17 @@ public class Utils
   }
   
   public static String extractCredentials(HttpHeaders httpHeaders) {
-	  return httpHeaders.getRequestHeader("Authorization").get(0).split(" ")[1];
+	  String authorizationPart = httpHeaders.getRequestHeader("Authorization").get(0);
+	  if(authorizationPart.equalsIgnoreCase("undefined")) {
+		  return null;
+	  } else {
+		  return httpHeaders.getRequestHeader("Authorization").get(0).split(" ")[1];
+	  }
   }
   
   public static String extractUsername(String headerMessage) {
 	  byte[] bytes = Base64.decodeBase64(headerMessage);
+	  if(bytes == null) return null;
 	  String decodedHeader = new String(bytes);
 	  String[] tokens = decodedHeader.trim().split(":"); // Remove new line char
 	  return tokens[0];
@@ -116,6 +122,7 @@ public class Utils
   
   public static String extractPassword(String headerMessage) {
 	  byte[] bytes = Base64.decodeBase64(headerMessage);
+	  if(bytes == null) return null;
 	  String decodedHeader = new String(bytes);
 	  String[] tokens = decodedHeader.trim().split(":"); // Remove new line char
 	  return tokens[1];
@@ -124,6 +131,7 @@ public class Utils
   public static boolean authenticate(String headerMessage, DB db) {
 	  String username = extractUsername(headerMessage);
 	  String password = extractPassword(headerMessage);
+	  if(username == null || password == null) return false;
 	  DBObject user = getUser(username, db);
 	  if(user == null) return false;
 	  String user_id = user.get("_id").toString();
