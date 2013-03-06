@@ -70,7 +70,11 @@ public class ConsumptionModel extends Entity {
 		try {
 			outerN = ((Integer)modelObj.get("n")).intValue();
 		} catch(ClassCastException e ) {
-			outerN = ((Long)modelObj.get("n")).intValue();
+			try {
+				outerN = ((Long)modelObj.get("n")).intValue();
+			} catch(ClassCastException e1 ) {
+				outerN = ((Double)modelObj.get("n")).intValue();
+			}
 		}
 		BasicDBList patternsObj = (BasicDBList)modelObj.get("params");
 		patternN = patternsObj.size();
@@ -81,7 +85,11 @@ public class ConsumptionModel extends Entity {
 			try {
 				n[i] = ((Integer)((DBObject)patternsObj.get(i)).get("n")).intValue();
 			} catch(ClassCastException e ) {
-				n[i] = ((Long)((DBObject)patternsObj.get(i)).get("n")).intValue();
+				try {
+					n[i] = ((Long)((DBObject)patternsObj.get(i)).get("n")).intValue();
+				} catch(ClassCastException e1 ) {
+					n[i] = ((Double)((DBObject)patternsObj.get(i)).get("n")).intValue();
+				}
 			}
 			BasicDBList values = ((BasicDBList)((DBObject)patternsObj.get(i)).get("values"));
 			int tripplets = values.size();

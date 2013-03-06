@@ -279,7 +279,11 @@ public class Runs {
 			run.put("prj_id", prj_id);
 			run.put("percentage", 0);
 			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
-			String returnMsg = "{ \"success\": true, \"message\": \"Sim creation successful\", \"data\": { \"run_id\": \"" + dbname + "\" } }";
+			DBObject returnObj = new BasicDBObject();
+			returnObj.put("success", true);
+			returnObj.put("message", "Sim creation successful");
+			returnObj.put("data", run);
+			String returnMsg = PrettyJSONPrinter.prettyPrint(returnObj);
 			System.out.println(returnMsg);
 			return returnMsg;
 		} catch (UnknownHostException | MongoException e1) {
