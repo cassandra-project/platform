@@ -16,10 +16,6 @@
 Ext.define('C.store.DistributionValues', {
 	extend: 'Ext.data.Store',
 
-	requires: [
-		'C.model.DistributionResults'
-	],
-
 	constructor: function(cfg) {
 		var me = this;
 		cfg = cfg || {};
@@ -28,7 +24,6 @@ Ext.define('C.store.DistributionValues', {
 			autoSync: true,
 			remoteFilter: true,
 			storeId: 'MyJsonStore16',
-			model: 'C.model.DistributionResults',
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
@@ -38,7 +33,20 @@ Ext.define('C.store.DistributionValues', {
 					root: 'data[0].values',
 					totalProperty: 'size'
 				}
-			}
+			},
+			fields: [
+				{
+					name: 'x',
+					type: 'float'
+				},
+				{
+					convert: function(v, rec) {
+						return v*100;
+					},
+					name: 'y',
+					type: 'float'
+				}
+			]
 		}, cfg)]);
 	}
 });

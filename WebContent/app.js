@@ -31,9 +31,7 @@ Ext.application({
 		'Run',
 		'Distribution',
 		'Demographic',
-		'DemographicEntity',
-		'Results',
-		'DistributionResults'
+		'DemographicEntity'
 	],
 	stores: [
 		'Projects',
@@ -428,7 +426,7 @@ Ext.application({
 		});
 		*/
 		consmodGraphStore = new C.store.ConsumptionModelValues({});
-		myResultsChart = new C.view.ConsModChart({store: consmodGraphStore});
+		myResultsChart = new C.view.ConsModChart({store: consmodGraphStore, legend: {position: 'bottom'}});
 		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: consmodGraphStore});
 		myFormCmp.insert(3, myResultsChart);
 
@@ -439,10 +437,14 @@ Ext.application({
 				function(store,records,options){
 					var consmod_record = records[0];
 					if (consmod_record) {
-						var model = JSON.stringify(consmod_record.get('model'));
-						myForm.setValues({ expression: model});
-						myForm.setValues({ consmod_name: consmod_record.get('name')});
-						myForm.setValues({ consmod_description: consmod_record.get('description')});
+						var pmodel = JSON.stringify(consmod_record.get('pmodel'));
+						var qmodel = JSON.stringify(consmod_record.get('qmodel'));
+						myForm.setValues({ 
+							p_expression: pmodel, 
+							q_expression: qmodel, 
+							consmod_name: consmod_record.get('name'), 
+							consmod_description: consmod_record.get('description')
+						});
 
 						consmodGraphStore.proxy.url += '/' + consmod_record.get('_id');
 						consmodGraphStore.load();
@@ -551,6 +553,7 @@ Ext.application({
 			case 'repeatsNrOfTime': distrGraphStore.xAxisTitle = 'Daily Repetitions'; break;
 		}
 		var myResultsChart = new C.view.DistributionChart({store: distrGraphStore});
+
 		var myChartLabel = new Ext.form.Label({
 			style: 'font-size:10px;',
 			text:''
@@ -582,6 +585,7 @@ Ext.application({
 		var month = record.get('calendar').month - 1;
 		var year = record.get('calendar').year;
 		var started = (new Date(year,month,day) == 'Invalid Date') ? '' : new Date(year,month,day);
+		started = started ? started : new Date();
 		if (started) {
 			ended = (record.get('numberOfDays') === 0) ? '' : new Date((started.getTime() + record.get('numberOfDays')*24*60*60*1000));
 		}
@@ -724,6 +728,25 @@ Ext.application({
 		formWindow.show();
 		if (windowContent.hidden) windowContent.show();
 		windowContent.header.hide();
+	},
+
+	getCalendar: function(dateStarted) {
+		var day = dateStarted.getDate();
+		var month = dateStarted.getMonth()+1;
+		var year = dateStarted.getFullYear();
+		var weekdayNumb = dateStarted.getDay( );
+		var weekday = '';
+		switch (weekdayNumb) {
+			case 0: weekday = 'Sunday';break;
+			case 1: weekday = 'Monday';break;
+			case 2: weekday = 'Tuesday';break;
+			case 3: weekday = 'Wednesday';break;
+			case 4: weekday = 'Thursday';break;
+			case 5: weekday = 'Friday';break;
+			case 6: weekday = 'Saturday';break;
+		}
+		var calendar = {'year':year, 'month': month, 'weekday': weekday, 'dayOfMonth':day};
+		return calendar;
 	}
 
 });

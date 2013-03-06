@@ -42,7 +42,7 @@ Ext.define('C.view.ApplianceForm', {
 					items: [
 						{
 							xtype: 'fieldset',
-							height: 309,
+							height: 365,
 							padding: '10px',
 							width: 280,
 							title: 'Properties',
@@ -118,7 +118,7 @@ Ext.define('C.view.ApplianceForm', {
 						{
 							xtype: 'fieldset',
 							margins: '0 0 0 10px',
-							height: 309,
+							height: 365,
 							width: 271,
 							title: 'ConsumptionModel',
 							items: [
@@ -140,9 +140,17 @@ Ext.define('C.view.ApplianceForm', {
 									xtype: 'textareafield',
 									height: 103,
 									width: 242,
-									name: 'expression',
+									name: 'p_expression',
 									readOnly: false,
-									fieldLabel: 'Expression'
+									fieldLabel: 'P-Expression'
+								},
+								{
+									xtype: 'textareafield',
+									height: 103,
+									width: 242,
+									name: 'q_expression',
+									readOnly: false,
+									fieldLabel: 'Q-Expression'
 								}
 							]
 						}
@@ -203,16 +211,17 @@ Ext.define('C.view.ApplianceForm', {
 		if (record.isNew)
 		record.isNew = false;
 
-		var model = myForm.getFieldValues().expression;
+		var pmodel = myForm.getFieldValues().p_expression;
+		var qmodel = myForm.getFieldValues().q_expression;
 		var name = myForm.getFieldValues().consmod_name;
 		var description = myForm.getFieldValues().consmod_description;
 
 		//update or insert consmod only if one of it's parameters is set
-		if ( model || name || description) {
+		if ( pmodel || qmodel || name || description) {
 
-			if (model) {
+			if (pmodel) {
 				try {
-					model = JSON.parse(model);
+					pmodel = JSON.parse(pmodel);
 				}
 				catch(e) {
 					Ext.MessageBox.show({
@@ -224,11 +233,27 @@ Ext.define('C.view.ApplianceForm', {
 				}
 			}
 			else 
-			model = {};
+			pmodel = {};
+
+			if (qmodel) {
+				try {
+					qmodel = JSON.parse(qmodel);
+				}
+				catch(e) {
+					Ext.MessageBox.show({
+						title:'Invalid input', 
+						msg: 'A valid input example would be: </br>{"n":0,"params":[{"n":1,"values":[{"q":60,"d":200,"s":0}]}]}', 
+						icon: Ext.MessageBox.ERROR
+					});
+					return false;
+				}
+			}
+			else 
+			qmodel = {};
 
 			var consmod_record = record.c.store.getRange()[0];
 			if (consmod_record) {
-				consmod_record.set({model: model, 'name': name, 'description': description});
+				consmod_record.set({pmodel: pmodel, qmodel: qmodel, 'name': name, 'description': description});
 				if (consmod_record.isNew)
 				consmod_record.isNew = false;
 				myConsModChartStore.removeAll();
@@ -238,7 +263,8 @@ Ext.define('C.view.ApplianceForm', {
 				var currentModel = record.c.store.getProxy().getModel();
 				record.c.store.insert(0, new currentModel({
 					'app_id' : record.get('_id'), 
-					'model': model, 
+					'pmodel': pmodel, 
+					'qmodel': qmodel,
 					'description': description, 
 					'name': name
 				})

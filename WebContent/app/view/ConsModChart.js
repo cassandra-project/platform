@@ -23,6 +23,7 @@ Ext.define('C.view.ConsModChart', {
 	animate: true,
 	insetPadding: 20,
 	store: 'ConsumptionModelValues',
+	theme: 'Category1',
 
 	initComponent: function() {
 		var me = this;
@@ -34,14 +35,14 @@ Ext.define('C.view.ConsModChart', {
 					fields: [
 						'x'
 					],
-					minorTickSteps: 10,
 					position: 'bottom',
 					title: 'Time'
 				},
 				{
 					type: 'Numeric',
 					fields: [
-						'y'
+						'p',
+						'q'
 					],
 					grid: {
 						odd: {
@@ -51,15 +52,17 @@ Ext.define('C.view.ConsModChart', {
 							'stroke-width': 0.5
 						}
 					},
+					minorTickSteps: 1,
 					position: 'left',
-					title: 'Watt',
-					adjustMaximumByMajorUnit: true,
 					minimum: 0
 				}
 			],
+			legend: {
+
+			},
 			series: [
 				{
-					type: 'column',
+					type: 'line',
 					highlight: true,
 					label: {
 						contrast: true,
@@ -74,38 +77,57 @@ Ext.define('C.view.ConsModChart', {
 						width: 100,
 						height: 40,
 						renderer: function(storeItem, item) {
-							this.setTitle( 'Watt : ' + storeItem.get('y') + '<br />' + 'Time : ' + storeItem.get('x'));
+							this.setTitle( 'VA : ' + storeItem.get('p') + '<br />' + 'Time : ' + storeItem.get('x'));
 						}
 					},
+					title: 'Active Power (W)',
 					xField: 'x',
 					yField: [
-						'y'
-					]
+						'p'
+					],
+					markerConfig: {
+						type: 'cross',
+						size: 4,
+						radius: 4,
+						'stroke-width': 0
+					},
+					selectionTolerance: 19
+				},
+				{
+					type: 'line',
+					highlight: true,
+					label: {
+						contrast: true,
+						display: 'insideEnd',
+						field: 'y',
+						color: '#000',
+						orientation: 'vertical',
+						'text-anchor': 'middle'
+					},
+					tips: {
+						trackMouse: true,
+						width: 100,
+						height: 40,
+						renderer: function(storeItem, item) {
+							this.setTitle( 'VA : ' + storeItem.get('q') + '<br />' + 'Time : ' + storeItem.get('x'));
+						}
+					},
+					title: 'Reactive Power (VA)',
+					xField: 'x',
+					yField: [
+						'q'
+					],
+					markerConfig: {
+						type: 'circle',
+						size: 4,
+						radius: 4,
+						'stroke-width': 0
+					}
 				}
-			],
-			legend: {
-
-			},
-			listeners: {
-				afterrender: {
-					fn: me.onChartAfterRender,
-					scope: me
-				}
-			}
+			]
 		});
 
 		me.callParent(arguments);
-	},
-
-	onChartAfterRender: function(abstractcomponent, options) {
-		console.info('on after render', abstractcomponent, options);
-
-		abstractcomponent.store.on(
-		'load',	
-		function(store){
-			if (store.data.length > 150)
-			abstractcomponent.series.items[0].label = {};
-		});
 	}
 
 });

@@ -565,17 +565,17 @@ Ext.define('C.view.MyTreePanel', {
 					dataIndex: f.name,
 					width: 210,
 					renderer: function (v, m, r) {
-						var id1 = Ext.id();
+						var id = Ext.id();
 						Ext.defer(function () {
 							Ext.widget('progressbar', {
 								id: 'progressbar' + r.get('_id'),
 								text: v+'% Completed',
-								renderTo: id1,
+								renderTo: id,
 								value: v / 100,
 								width: 200
 							});
 						}, 50);
-						return Ext.String.format('<div id="{0}"></div>', id1);
+						return Ext.String.format('<div id="{0}"></div>', id);
 					}
 				},
 				{
@@ -592,7 +592,7 @@ Ext.define('C.view.MyTreePanel', {
 								handler: function () { 
 
 									Ext.Ajax.request({
-										url: c.baseurl+'api/runs/' + r.get('_id'),
+										url: '/cassandra/api/runs/' + r.get('_id'),
 										method: 'GET',
 										scope: this,
 										success: function(response, opts) {
