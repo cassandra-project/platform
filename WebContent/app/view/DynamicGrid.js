@@ -277,6 +277,7 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onGridpanelItemDblClick: function(tablepanel, record, item, index, e, options) {
+		if (record.node)
 		C.app.createForm(record.node);
 	},
 

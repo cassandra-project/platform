@@ -68,7 +68,9 @@ Ext.define('C.view.DistributionForm', {
 							width: 128,
 							name: 'distrType',
 							readOnly: false,
+							allowBlank: false,
 							displayField: 'distrType',
+							forceSelection: true,
 							queryMode: 'local',
 							store: 'DistrTypeStore',
 							valueField: 'distrType'
@@ -111,8 +113,9 @@ Ext.define('C.view.DistributionForm', {
 		var record = myForm.getRecord();
 		var values = myForm.getValues();
 
-		var parameters = myForm.getFieldValues().params;
-		var valuesDistr = myForm.getFieldValues().val;
+		var parameters = myForm.getFieldValues().params.trim();
+		var valuesDistr = myForm.getFieldValues().val.trim();
+		var myConsModChart = this.query('chart')[0];
 		var myConsModChartStore = this.query('chart')[0].store;
 
 		if(parameters) {
@@ -148,6 +151,8 @@ Ext.define('C.view.DistributionForm', {
 		valuesDistr = [];
 
 		if (record) {
+			var distr_store = record.store;
+
 			record.set({
 				'name':values.name,
 				'type': values.type,
@@ -159,9 +164,6 @@ Ext.define('C.view.DistributionForm', {
 
 			if (record.isNew)
 			record.isNew = false;
-
-			myConsModChartStore.removeAll();
-			myConsModChartStore.load();
 
 		}
 
@@ -182,18 +184,42 @@ Ext.define('C.view.DistributionForm', {
 
 			distr_type = this.distr_type;
 
-			distr_store.on(
-			'update', 
+			/*distr_store.on(
+			'add', 
 			function(store, record, operation, eOpts ) {
-				actmod_record.set(distr_type,record.get('_id') );
-				myForm.loadRecord(record);
-				myConsModChartStore.proxy.url += '/' + record.get('_id');
-				myConsModChartStore.load();
+
 			}, 
 			null, 
 			{ single : true }
-			);							  
+			);		*/					  
 		}
+
+		this.remove(myConsModChart);
+		myConsModChartStore.removeAll();
+		switch (values.distrType) {
+			case "Histogram":
+			myConsModChart = new C.view.DistributionHistogramChart({store: myConsModChartStore});
+			break;
+			default:
+			myConsModChart = new C.view.DistributionNormalChart({store: myConsModChartStore});
+			break;
+		}
+		this.insert(2, myConsModChart);
+
+		distr_store.on(
+		'update', 
+		function(store, record, operation, eOpts ) {
+			if (record.isNew) {
+				actmod_record.set(distr_type,record.get('_id') );
+				myForm.loadRecord(record);
+				myConsModChartStore.proxy.url += '/' + record.get('_id');
+			}
+
+			myConsModChartStore.load();
+		}, 
+		null, 
+		{ single : true }
+		);	
 
 		this.dirtyForm = false;
 	}

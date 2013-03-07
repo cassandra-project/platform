@@ -173,8 +173,10 @@ Ext.define('C.view.ResultsGraphForm', {
 			delete formValues.inst_id;
 			this.items.items[1].setText('Total ' + chartTitle);
 		}
-		else 
-		this.items.items[1].setText('Installation ' + chartTitle);
+		else {
+			this.items.items[1].setText('Installation ' + chartTitle);
+			this.down('grid').store.load({params:{'inst_id':  formValues.inst_id}});
+		}
 
 		var defaultAggrUnit = (formValues.aggr_unit)? formValues.aggr_unit : myResultsStore.proxy.reader.jsonData.aggregationUnit;  
 		if (!formValues.aggr_unit) delete formValues.aggr_unit;
