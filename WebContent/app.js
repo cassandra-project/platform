@@ -31,7 +31,8 @@ Ext.application({
 		'Run',
 		'Distribution',
 		'Demographic',
-		'DemographicEntity'
+		'DemographicEntity',
+		'Kpi'
 	],
 	stores: [
 		'Projects',
@@ -59,7 +60,8 @@ Ext.application({
 		'Results',
 		'MetricStore',
 		'ConsumptionModelValues',
-		'DistributionValues'
+		'DistributionValues',
+		'Kpis'
 	],
 	views: [
 		'MyViewport',
@@ -78,10 +80,11 @@ Ext.application({
 		'EntitiesGrid',
 		'ResultsGraphForm',
 		'ConsModChart',
-		'DistributionChart',
+		'DistributionNormalChart',
 		'MyTabPanel',
 		'MyTreePanel',
-		'LoginForm'
+		'LoginForm',
+		'DistributionHistogramChart'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -543,16 +546,30 @@ Ext.application({
 	getDistributionForm: function(distr_type, title) {
 		var distrCmp = new C.view.DistributionForm({distr_type: distr_type});
 		var myForm = distrCmp.getForm();
+		var values = myForm.getValues();
 
 		distrCmp.setTitle(title);
-		var distrGraphStore = new C.store.DistributionValues({});
+		var distrGraphStore = new C.store.DistributionValues();
+
+		switch (values.distrType) {
+			case "Histogram":
+			myResultsChart = new C.view.DistributionHistogramChart({store: myConsModChartStore});
+			break;
+			default:
+			myResultsChart = new C.view.DistributionNormalChart({store: myConsModChartStore});
+			break;
+		}
 
 		switch (distr_type) {
-			case 'duration': distrGraphStore.xAxisTitle = 'Duration (Minutes)'; break;
-			case 'startTime': distrGraphStore.xAxisTitle = 'Start Time (Minute of day)'; break;
-			case 'repeatsNrOfTime': distrGraphStore.xAxisTitle = 'Daily Repetitions'; break;
+			case 'duration': 
+			distrGraphStore.xAxisTitle = 'Duration (Minutes)'; 
+			case 'startTime':
+			distrGraphStore.xAxisTitle = 'Start Time (Minute of day)'; 
+			break;
+			case 'repeatsNrOfTime': 
+			distrGraphStore.xAxisTitle = 'Daily Repetitions'; 
+			break;
 		}
-		var myResultsChart = new C.view.DistributionChart({store: distrGraphStore});
 
 		var myChartLabel = new Ext.form.Label({
 			style: 'font-size:10px;',
@@ -695,6 +712,15 @@ Ext.application({
 		myResultsChart = new C.view.ResultsLineChart({store: myResultsStore});
 		myFormCmp.insert(2, myResultsChart);
 		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: myResultsStore});
+
+		var kpiStore = new C.store.Kpis();
+		kpiStore.load();
+		var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(kpiStore);
+		grid.width = 700;
+		grid.closable = false;
+		grid.setTitle("KPIs");
+		grid.query("tool")[0].hide();
+		myFormCmp.insert(3, grid);
 
 		return myFormCmp;
 	},
