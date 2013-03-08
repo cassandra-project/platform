@@ -19,11 +19,10 @@ Ext.define('C.view.ConsModChart', {
 	height: 397,
 	style: 'background:#fff',
 	width: 900,
-	shadow: true,
+	shadow: false,
 	animate: true,
 	insetPadding: 20,
 	store: 'ConsumptionModelValues',
-	theme: 'Category1',
 
 	initComponent: function() {
 		var me = this;
@@ -36,7 +35,9 @@ Ext.define('C.view.ConsModChart', {
 						'x'
 					],
 					position: 'bottom',
-					title: 'Time'
+					title: 'Time',
+					decimals: 0,
+					minimum: 0
 				},
 				{
 					type: 'Numeric',
@@ -54,6 +55,7 @@ Ext.define('C.view.ConsModChart', {
 					},
 					minorTickSteps: 1,
 					position: 'left',
+					adjustMaximumByMajorUnit: true,
 					minimum: 0
 				}
 			],
@@ -63,14 +65,9 @@ Ext.define('C.view.ConsModChart', {
 			series: [
 				{
 					type: 'line',
-					highlight: true,
-					label: {
-						contrast: true,
-						display: 'insideEnd',
-						field: 'y',
-						color: '#000',
-						orientation: 'vertical',
-						'text-anchor': 'middle'
+					highlight: {
+						size: 2,
+						radius: 2
 					},
 					tips: {
 						trackMouse: true,
@@ -85,24 +82,13 @@ Ext.define('C.view.ConsModChart', {
 					yField: [
 						'p'
 					],
-					markerConfig: {
-						type: 'cross',
-						size: 4,
-						radius: 4,
-						'stroke-width': 0
-					},
-					selectionTolerance: 19
+					showMarkers: false
 				},
 				{
 					type: 'line',
-					highlight: true,
-					label: {
-						contrast: true,
-						display: 'insideEnd',
-						field: 'y',
-						color: '#000',
-						orientation: 'vertical',
-						'text-anchor': 'middle'
+					highlight: {
+						size: 4,
+						radius: 4
 					},
 					tips: {
 						trackMouse: true,
@@ -117,17 +103,27 @@ Ext.define('C.view.ConsModChart', {
 					yField: [
 						'q'
 					],
-					markerConfig: {
-						type: 'circle',
-						size: 4,
-						radius: 4,
-						'stroke-width': 0
-					}
+					showMarkers: false
 				}
-			]
+			],
+			listeners: {
+				afterrender: {
+					fn: me.onChartAfterRender,
+					scope: me
+				}
+			}
 		});
 
 		me.callParent(arguments);
+	},
+
+	onChartAfterRender: function(abstractcomponent, options) {
+		abstractcomponent.store.on('load',function(store, records){
+			var y_axis = abstractcomponent.axes.getRange()[1];
+			var prevMax = y_axis.prevMax;
+			y_axis.maximum = prevMax + prevMax/10;
+			abstractcomponent.redraw();
+		});
 	}
 
 });
