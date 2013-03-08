@@ -106,6 +106,8 @@ Ext.define('C.view.MyViewport', {
 			tabPanel.doLayout();
 			abstractcomponent.getComponent('center_panel').layout = 'fit';
 			abstractcomponent.getComponent('center_panel').add(tabPanel);
+
+			abstractcomponent.getComponent('east_panel').hide();
 		}
 		else {
 			var loginForm = new C.view.LoginForm({id: 'LoginForm'});

@@ -92,28 +92,26 @@ Ext.define('C.view.LoginForm', {
 				success : function(response, options) {
 					var response_obj = JSON.parse(response.responseText);
 
-					//this is only a temporaral solution, to make it work
-					//TODO: Change this when status codes from server are fixed
-					if (!response_obj.errors) {
-						var treePanel = new C.view.MyTreePanel({id: 'uiNavigationTreePanel'});
-						var tabPanel =  new C.view.MyTabPanel({id: 'MainTabPanel'});
+					var treePanel = new C.view.MyTreePanel({id: 'uiNavigationTreePanel'});
+					var tabPanel =  new C.view.MyTabPanel({id: 'MainTabPanel'});
+					var libTreePanel = new C.view.UserLibTreePanel({id: 'userLibTreePanel'});
 
-						treePanel.doLayout();
-						Ext.getCmp('west_panel').add(treePanel);
+					treePanel.doLayout();
+					Ext.getCmp('west_panel').add(treePanel);
 
-						tabPanel.doLayout();
-						Ext.getCmp('center_panel').removeAll();
-						Ext.getCmp('center_panel').layout = 'fit';
-						Ext.getCmp('center_panel').add(tabPanel);
-					}
-					else {
-						Ext.MessageBox.show({
-							title:'Error', 
-							msg: JSON.stringify(response_obj.errors), 
-							icon: Ext.MessageBox.ERROR, 
-							buttons: Ext.MessageBox.OK
-						}); 
-					}
+					tabPanel.doLayout();
+					Ext.getCmp('center_panel').removeAll();
+					Ext.getCmp('center_panel').layout = 'fit';
+					Ext.getCmp('center_panel').add(tabPanel);
+
+
+					libTreePanel.doLayout();
+					Ext.getCmp('east_panel').add(libTreePanel);
+
+
+					//this is a temporal solution until GET /usr is implemented
+					C.usr_id = response_obj.data[0].usr_id;
+					Ext.util.Cookies.set('usr_id', C.usr_id);
 				}
 			});
 
