@@ -569,15 +569,13 @@ public class MongoDBQueries {
 					qpoints[i] = pointsConsModel[i];
 				}
 			}
-			for(int i = 0; i < Math.min(pvalues.length, qvalues.length); i++) {
-				BasicDBObject dbObj = new BasicDBObject("x", ppoints[i]);
-				if(pvalues != null) {
+			if(pvalues != null && qvalues != null) {
+				for(int i = 0; i < Math.min(pvalues.length, qvalues.length); i++) {
+					BasicDBObject dbObj = new BasicDBObject("x", ppoints[i]);
 					dbObj.put("p", pvalues[i]);
-				}
-				if(qvalues != null) {
 					dbObj.put("q", qvalues[i]);
+					list.add(dbObj);
 				}
-				list.add(dbObj);
 			}
 			dBObject.put("values", list);
 			// Obsolete?
@@ -593,7 +591,6 @@ public class MongoDBQueries {
 
 		return dBObject;
 	}
-
 
 	/**
 	 * 
