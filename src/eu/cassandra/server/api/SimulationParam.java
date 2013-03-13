@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoSimParam;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("smp/{smp_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,9 +43,9 @@ public class SimulationParam {
 	 * @return
 	 */
 	@GET
-	public String getSimulationParam(@PathParam("smp_id") String smp_id,
+	public Response getSimulationParam(@PathParam("smp_id") String smp_id,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().getSimParam(httpHeaders,smp_id));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoSimParam().getSimParam(httpHeaders,smp_id)));
 	}
 	
 	/**
@@ -52,16 +54,16 @@ public class SimulationParam {
 	 * @return
 	 */
 	@PUT
-	public String updateSimulationParam(@PathParam("smp_id") String smp_id, String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().updateSimParam(smp_id,message));
+	public Response updateSimulationParam(@PathParam("smp_id") String smp_id, String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoSimParam().updateSimParam(smp_id,message)));
 	}
 	
 	/**
 	 * Delete a simulation param
 	 */
 	@DELETE
-	public String deleteSimulationParam(@PathParam("smp_id") String smp_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().deleteSimParam(smp_id));
+	public Response deleteSimulationParam(@PathParam("smp_id") String smp_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoSimParam().deleteSimParam(smp_id)));
 	}
 
 }

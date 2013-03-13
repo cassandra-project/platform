@@ -27,6 +27,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -203,6 +205,15 @@ public class Utils
     }
 
     return stringBuilder.toString();
+  }
+  
+  public static Response returnResponse(String json) {
+	  DBObject jsonResponse = (DBObject) JSON.parse(json);
+	  if(Boolean.parseBoolean(jsonResponse.get("success").toString())) {
+		  return Response.ok(json, MediaType.APPLICATION_JSON).build();
+	  } else {
+		  return Response.status(Response.Status.BAD_REQUEST).entity(json).build();
+	  }
   }
 
   /**

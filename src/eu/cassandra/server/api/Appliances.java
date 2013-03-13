@@ -25,9 +25,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoAppliances;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("app")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,7 +43,7 @@ public class Appliances {
 	 * @return
 	 */
 	@GET
-	public String getAppliances(
+	public Response getAppliances(
 			@QueryParam("inst_id") String inst_id,
 			@QueryParam("scn_id") String scn_id,
 			@QueryParam("actmod_id") String actmod_id, 
@@ -49,20 +51,20 @@ public class Appliances {
 			@QueryParam("pertype") boolean pertype,
 			@Context HttpHeaders httpHeaders) {
 		if(actmod_id != null) {
-			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getApplianceFromActivityModel(httpHeaders,actmod_id));
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoAppliances().getApplianceFromActivityModel(httpHeaders,actmod_id)));
 		}
 		else if(scn_id != null && (pertype || count))
-			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliances(httpHeaders,inst_id, scn_id, count,pertype));
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliances(httpHeaders,inst_id, scn_id, count,pertype)));
 		else
-			return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliances(httpHeaders,inst_id, null, count,pertype));
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliances(httpHeaders,inst_id, null, count,pertype)));
 	}
 
 	/**
 	 * Create an appliance
 	 */
 	@POST
-	public String createAppliance(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoAppliances().createAppliance(message));
+	public Response createAppliance(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoAppliances().createAppliance(message)));
 	}
 
 

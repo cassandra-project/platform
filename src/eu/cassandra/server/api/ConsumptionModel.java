@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoConsumptionModels;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("consmod/{consmod_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,9 +43,9 @@ public class ConsumptionModel {
 	 * @return
 	 */
 	@GET
-	public String getConsumptionModel(@PathParam("consmod_id") String consmod_id,
+	public Response getConsumptionModel(@PathParam("consmod_id") String consmod_id,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().getConsumptionModel(httpHeaders,consmod_id));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().getConsumptionModel(httpHeaders,consmod_id)));
 	}
 
 	/**
@@ -53,8 +55,8 @@ public class ConsumptionModel {
 	 * @return
 	 */
 	@PUT
-	public String updateConsumptionModel(@PathParam("consmod_id") String consmod_id, String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().updateConsumptionModel(consmod_id,message));
+	public Response updateConsumptionModel(@PathParam("consmod_id") String consmod_id, String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().updateConsumptionModel(consmod_id,message)));
 	}
 
 	/**

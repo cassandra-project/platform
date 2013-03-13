@@ -24,9 +24,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("scn")
 @Produces(MediaType.APPLICATION_JSON)
@@ -39,9 +41,9 @@ public class Scenarios {
 	 * @return
 	 */
 	@GET
-	public String getScenarios(@QueryParam("prj_id") String prj_id, @QueryParam("count") boolean count,
+	public Response getScenarios(@QueryParam("prj_id") String prj_id, @QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().getScenarios(httpHeaders,prj_id,count));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoScenarios().getScenarios(httpHeaders,prj_id,count)));
 	}
 
 	/**
@@ -49,8 +51,8 @@ public class Scenarios {
 	 * Create a scenario
 	 */
 	@POST
-	public String createScenario(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().createScenario(message));
+	public Response createScenario(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoScenarios().createScenario(message)));
 	}
 
 }
