@@ -23,6 +23,7 @@ import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.sim.utilities.Utils;
 
 public class MongoPersons {
 	public final static String COL_PERSONS = "persons";
@@ -69,9 +70,16 @@ public class MongoPersons {
 	 * @return
 	 */
 	public String createPerson(String dataToInsert) {
-		return new MongoDBQueries().insertData(COL_PERSONS ,dataToInsert,
+		MongoDBQueries q = new MongoDBQueries();
+		String returnMsg = q.insertData(COL_PERSONS ,dataToInsert,
 				"Person created successfully", MongoInstallations.COL_INSTALLATIONS ,
 				"inst_id",JSONValidator.PERSON_SCHEMA ).toString();
+		if(Utils.failed(returnMsg)) {
+			returnMsg = q.insertData(COL_PERSONS ,dataToInsert,
+					"Person created successfully", "users" ,
+					"inst_id",JSONValidator.PERSON_SCHEMA ).toString();
+		}
+		return returnMsg;
 	}
 
 	/**
@@ -88,8 +96,15 @@ public class MongoPersons {
 	 * @return
 	 */
 	public String updatePerson(String id,String jsonToUpdate) {
-		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
+		MongoDBQueries q = new MongoDBQueries();
+		String returnMsg = q.updateDocument("_id", id,jsonToUpdate,
 				COL_PERSONS, "Person updated successfully",
 				MongoInstallations.COL_INSTALLATIONS ,"inst_id",JSONValidator.PERSON_SCHEMA).toString();
+		if(Utils.failed(returnMsg)) {
+			returnMsg = q.updateDocument("_id", id,jsonToUpdate,
+					COL_PERSONS, "Person updated successfully",
+					"users" ,"inst_id",JSONValidator.PERSON_SCHEMA).toString();
+		}
+		return returnMsg;
 	}
 }
