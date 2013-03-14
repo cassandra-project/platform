@@ -85,16 +85,21 @@ Ext.define('C.view.LoginForm', {
 			C.auth = 'Basic ' + Ext.util.base64.encode(values.username + ':' + values.password);
 			Ext.util.Cookies.set('auth', C.auth);
 
+
 			Ext.Ajax.request({
 				scope : this,
 				method : 'GET', 
-				url : '/cassandra/api/prj',
+				url : '/cassandra/api/usr',
 				success : function(response, options) {
 					var response_obj = JSON.parse(response.responseText);
 
+					C.usr_id = response_obj.data[0].usr_id;
+					Ext.util.Cookies.set('usr_id', C.usr_id);
+
 					var treePanel = new C.view.MyTreePanel({id: 'uiNavigationTreePanel'});
 					var tabPanel =  new C.view.MyTabPanel({id: 'MainTabPanel'});
-					var libTreePanel = new C.view.UserLibTreePanel({id: 'userLibTreePanel'});
+					var usr_libTreePanel = new C.view.UserLibTreePanel({id: 'userLibTreePanel'});
+					var cass_libTreePanel = new C.view.CassLibTreePanel({id: 'cassLibTreePanel'});
 
 					treePanel.doLayout();
 					Ext.getCmp('west_panel').add(treePanel);
@@ -105,13 +110,11 @@ Ext.define('C.view.LoginForm', {
 					Ext.getCmp('center_panel').add(tabPanel);
 
 
-					libTreePanel.doLayout();
-					Ext.getCmp('east_panel').add(libTreePanel);
+					usr_libTreePanel.doLayout();
+					Ext.getCmp('east_panel').add(usr_libTreePanel);
+					cass_libTreePanel.doLayout();
+					Ext.getCmp('east_panel').add(cass_libTreePanel);
 
-
-					//this is a temporal solution until GET /usr is implemented
-					C.usr_id = response_obj.data[0].usr_id;
-					Ext.util.Cookies.set('usr_id', C.usr_id);
 				}
 			});
 

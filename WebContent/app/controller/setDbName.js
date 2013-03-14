@@ -61,11 +61,13 @@ Ext.define('C.controller.setDbName', {
 
 		Ext.util.Observable.observe(Ext.data.Connection);
 		Ext.data.Connection.on('beforerequest', function(conn, options, eOpts) {
+			if (!options.headers)
 			options.headers = (C.dbname) ? { "dbname": C.dbname, 'Authorization': Ext.util.Cookies.get('auth')} : {'Authorization': C.auth};
 		});
 
 		Ext.data.Connection.on('requestexception', function(conn, response, options, eOpts) {
-			Ext.MessageBox.show({title:'Error', msg:response.responseText, icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
+			var response_obj = JSON.parse(response.responseText);
+			Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
 		});
 
 
