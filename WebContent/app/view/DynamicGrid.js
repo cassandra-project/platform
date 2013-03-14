@@ -180,19 +180,13 @@ Ext.define('C.view.DynamicGrid', {
 					url: '/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+parent_id,
 					method: 'POST',
 					scope: this,
-					callback: function(options, success, response) {	
-						//TODO: Change this (also in tree) when response status codes are fixed
+					success: function(response, options) {	
 						response = JSON.parse(response.responseText);
-						if (response.success) {
-							var params = {};
-							params[parent_idKey] = parent_id;
-							this.store.navigationNode.removeAll();
-							this.store.load( {params : params });
-							Ext.sliding_box.msg('Success', JSON.stringify(response.message));
-						}
-						else {
-							Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
-						}
+						var params = {};
+						params[parent_idKey] = parent_id;
+						this.store.navigationNode.removeAll();
+						this.store.load( {params : params });
+						Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 					}
 				});
 				return 0;
