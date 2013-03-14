@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoDemographics;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("demog/{demog_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -36,19 +38,19 @@ import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 public class Demographic {
 
 	@GET
-	public String getDemographic(@PathParam("demog_id") String demog_id,
+	public Response getDemographic(@PathParam("demog_id") String demog_id,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDemographics().getDemographic(httpHeaders,demog_id));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDemographics().getDemographic(httpHeaders,demog_id)));
 	}
 
 	@PUT
-	public String updateDemographic(@PathParam("demog_id") String demog_id, String message) {
-		return  PrettyJSONPrinter.prettyPrint(new MongoDemographics().updateDemographics(demog_id,message));
+	public Response updateDemographic(@PathParam("demog_id") String demog_id, String message) {
+		return  Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDemographics().updateDemographics(demog_id,message)));
 	}
 
 	@DELETE
-	public String deleteDemographic(@PathParam("demog_id") String demog_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDemographics().deleteDemographics(demog_id));
+	public Response deleteDemographic(@PathParam("demog_id") String demog_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDemographics().deleteDemographics(demog_id)));
 	}
 
 }

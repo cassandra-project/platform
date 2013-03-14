@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoAppliances;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("app/{app_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -43,9 +45,9 @@ public class Appliance {
 	 * @return
 	 */
 	@GET
-	public String getAppliance(@PathParam("app_id") String app_id,
+	public Response getAppliance(@PathParam("app_id") String app_id,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliance(httpHeaders,app_id));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoAppliances().getAppliance(httpHeaders,app_id)));
 	}
 	
 	/**
@@ -54,8 +56,8 @@ public class Appliance {
 	 * @return
 	 */
 	@PUT
-	public String updateAppliance(@PathParam("app_id") String app_id, String message) {
-		return  PrettyJSONPrinter.prettyPrint(new MongoAppliances().updateAppliance(app_id,message));
+	public Response updateAppliance(@PathParam("app_id") String app_id, String message) {
+		return  Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoAppliances().updateAppliance(app_id,message)));
 	}
 	
 	/**

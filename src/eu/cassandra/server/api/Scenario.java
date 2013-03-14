@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("scn/{scn_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -42,9 +44,9 @@ public class Scenario {
 	 * @return
 	 */
 	@GET
-	public String getScenario(@PathParam("scn_id") String scn_id,
+	public Response getScenario(@PathParam("scn_id") String scn_id,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().getScenario(httpHeaders,scn_id));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoScenarios().getScenario(httpHeaders,scn_id)));
 	}
 
 	/**
@@ -54,16 +56,16 @@ public class Scenario {
 	 * @return
 	 */
 	@PUT
-	public String updateScenario(@PathParam("scn_id") String scn_id, String message) {
-		return  PrettyJSONPrinter.prettyPrint(new MongoScenarios().updateScenario(scn_id,message));
+	public Response updateScenario(@PathParam("scn_id") String scn_id, String message) {
+		return  Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoScenarios().updateScenario(scn_id,message)));
 	}
 
 	/**
 	 * Delete a scenario
 	 */
 	@DELETE
-	public String deleteScenario(@PathParam("scn_id") String scn_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoScenarios().deleteScenario(scn_id));
+	public Response deleteScenario(@PathParam("scn_id") String scn_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoScenarios().deleteScenario(scn_id)));
 	}
 
 }

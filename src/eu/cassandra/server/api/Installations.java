@@ -25,9 +25,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("inst")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,7 +43,7 @@ public class Installations {
 	 * @return
 	 */
 	@GET
-	public String getInstallations(
+	public Response getInstallations(
 			@QueryParam("scn_id") String scn_id,
 			@QueryParam("filter") String filters,
 			@QueryParam("sort") String sort,
@@ -50,8 +52,8 @@ public class Installations {
 			@QueryParam("count") boolean count,
 			@QueryParam("pertype") boolean pertype,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().
-				getInstallations(httpHeaders,scn_id,filters,sort, limit,skip,count,pertype));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoInstallations().
+				getInstallations(httpHeaders,scn_id,filters,sort, limit,skip,count,pertype)));
 	}
 
 	/**
@@ -59,8 +61,8 @@ public class Installations {
 	 * Create a installation
 	 */
 	@POST
-	public String createInstallation(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().createInstallation(message));
+	public Response createInstallation(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoInstallations().createInstallation(message)));
 	}
 
 }

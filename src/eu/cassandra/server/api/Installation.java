@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("inst/{inst_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -42,9 +44,9 @@ public class Installation {
 	 * @return
 	 */
 	@GET
-	public String getInstallation(@PathParam("inst_id") String inst_id,
+	public Response getInstallation(@PathParam("inst_id") String inst_id,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().getInstallation(httpHeaders,inst_id));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoInstallations().getInstallation(httpHeaders,inst_id)));
 	}
 
 	/**
@@ -54,16 +56,16 @@ public class Installation {
 	 * @return
 	 */
 	@PUT
-	public String updateInstallation(@PathParam("inst_id") String inst_id, String message) {
-		return  PrettyJSONPrinter.prettyPrint(new MongoInstallations().updateInstallation(inst_id,message));
+	public Response updateInstallation(@PathParam("inst_id") String inst_id, String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoInstallations().updateInstallation(inst_id,message)));
 	}
 
 	/**
 	 * Delete a scenario
 	 */
 	@DELETE
-	public String deleteInstallation(@PathParam("inst_id") String inst_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().deleteInstallation(inst_id));
+	public Response deleteInstallation(@PathParam("inst_id") String inst_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoInstallations().deleteInstallation(inst_id)));
 	}
 
 }

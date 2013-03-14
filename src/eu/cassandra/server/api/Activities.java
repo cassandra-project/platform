@@ -25,9 +25,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoActivities;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("act")
 @Produces(MediaType.APPLICATION_JSON)
@@ -42,13 +44,13 @@ public class Activities {
 	 * @return
 	 */
 	@GET
-	public String getActivities(
+	public Response getActivities(
 			@QueryParam("pers_id") String pers_id, 
 			@QueryParam("count") boolean count,
 			@QueryParam("pertype") boolean pertype,
 			@Context HttpHeaders httpHeaders) 
 	{
-		return PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivities(httpHeaders,pers_id,count));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivities(httpHeaders,pers_id,count)));
 	}
 
 	/**
@@ -57,8 +59,8 @@ public class Activities {
 	 * @return
 	 */
 	@POST
-	public String createActivity(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivities().createActivity(message));
+	public Response createActivity(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoActivities().createActivity(message)));
 	}
 
 

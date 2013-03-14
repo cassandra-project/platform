@@ -23,12 +23,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.MongoCopyEntities;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("copy")
 @Produces(MediaType.APPLICATION_JSON)
@@ -57,7 +59,7 @@ public class CopyEntities {
 	 * @return
 	 */
 	@POST
-	public String createConsumptionModel(
+	public Response createConsumptionModel(
 			@QueryParam("actID") String actID,
 			@QueryParam("actmodID") String actmodID,
 			@QueryParam("appID") String appID,
@@ -100,8 +102,8 @@ public class CopyEntities {
 		if(toScnID != null) counter2++;
 
 		if(counter1 != 1 || counter2 != 1) {
-			return PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid ObjectId Parameters",
-					new RestQueryParamMissingException("You should provide two and only two valid ObjectId")));
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid ObjectId Parameters",
+					new RestQueryParamMissingException("You should provide two and only two valid ObjectId"))));
 		}
 
 		String answer = "";
@@ -126,13 +128,13 @@ public class CopyEntities {
 		else if(distrID != null && toActmodID != null) //Distribution to Activity Model 
 			answer = copy.copyDistributionToActivityModel(distrID, toActmodID,null);
 		else {
-			return PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
-					new RestQueryParamMissingException("Please check documentation for valid copy commands")));
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
 		}
 		}catch (Exception e){
-			return PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
-					new MongoInvalidObjectId("The ObjecID provided is probably invalid or not existing")));
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					new MongoInvalidObjectId("The ObjecID provided is probably invalid or not existing"))));
 		}
-		return PrettyJSONPrinter.prettyPrint(answer);
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(answer));
 	}
 }

@@ -104,7 +104,7 @@ public class ConsumptionModel extends Entity {
 				try {
 					t.d = ((Integer)((DBObject)values.get(j)).get("d")).intValue();
 				} catch(ClassCastException e) {
-					t.d = ((Double)((DBObject)values.get(j)).get(type)).intValue();
+					t.d = ((Double)((DBObject)values.get(j)).get("d")).intValue();
 				}
 				patternDuration[i] += t.d; 
 				totalDuration += (n[i] * t.d);

@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoActivities;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("act/{act_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,9 +43,9 @@ public class Activity {
 	 * @return
 	 */
 	@GET
-	public String getActivity(@PathParam("act_id") String act_id, 
+	public Response getActivity(@PathParam("act_id") String act_id, 
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivity(httpHeaders,act_id));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoActivities().getActivity(httpHeaders,act_id)));
 	}
 
 	/**
@@ -52,16 +54,16 @@ public class Activity {
 	 * @return
 	 */
 	@PUT
-	public String updateActivity(@PathParam("act_id") String act_id, String message) {
-		return  PrettyJSONPrinter.prettyPrint(new MongoActivities().updateActivity(act_id,message));
+	public Response updateActivity(@PathParam("act_id") String act_id, String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoActivities().updateActivity(act_id,message)));
 	}
 
 	/**
 	 * Delete an activity
 	 */
 	@DELETE
-	public String deleteActivity(@PathParam("act_id") String act_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivities().deleteActivity(act_id));
+	public Response deleteActivity(@PathParam("act_id") String act_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoActivities().deleteActivity(act_id)));
 	}
 
 }

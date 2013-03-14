@@ -35,6 +35,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.bson.types.ObjectId;
 
@@ -61,6 +62,7 @@ import eu.cassandra.server.mongo.MongoSimParam;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.Simulation;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("runs")
 @Produces(MediaType.APPLICATION_JSON)
@@ -77,9 +79,9 @@ public class Runs {
 	 * @return
 	 */
 	@GET
-	public String getRuns(@QueryParam("prj_id") String prj_id, @QueryParam("count") boolean count,
+	public Response getRuns(@QueryParam("prj_id") String prj_id, @QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoRuns().getRuns(httpHeaders,prj_id,count));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoRuns().getRuns(httpHeaders,prj_id,count)));
 	}
 	
 	/**
@@ -100,7 +102,7 @@ public class Runs {
 	 * </ol>
 	 */
 	@POST
-	public String createRun(String message) {
+	public Response createRun(String message) {
 		
 		DBObject query = new BasicDBObject(); // A query
 		
@@ -120,7 +122,7 @@ public class Runs {
 			query.put("_id", new ObjectId(smp_id));			
 			DBObject simParams = DBConn.getConn().getCollection(MongoSimParam.COL_SIMPARAM).findOne(query);
 			if(simParams == null) {
-				return "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"error\": \"No simulation params found\" }}"; 
+				return Utils.returnResponse("{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"error\": \"No simulation params found\" }}"); 
 			}
 			db.getCollection(MongoSimParam.COL_SIMPARAM).insert(simParams);
 			scenario.put("sim_params", simParams);
@@ -157,7 +159,7 @@ public class Runs {
 			query.put("scenario_id", scn_id);
 			DBCursor cursor = DBConn.getConn().getCollection(MongoInstallations.COL_INSTALLATIONS).find(query);
 			if(cursor.size() == 0) {
-				return "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"error\": \"No istallations found\" }}"; 
+				return Utils.returnResponse("{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"error\": \"No istallations found\" }}"); 
 			}
 			int countInst = 0;
 			while(cursor.hasNext()) {
@@ -285,15 +287,15 @@ public class Runs {
 			returnObj.put("data", run);
 			String returnMsg = PrettyJSONPrinter.prettyPrint(returnObj);
 			System.out.println(returnMsg);
-			return returnMsg;
+			return Utils.returnResponse(returnMsg);
 		} catch (UnknownHostException | MongoException e1) {
 			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"hostMongoException\": \""+ e1.getMessage() + "\" } }"; 
 			System.out.println(returnMsg);
-			return returnMsg; 
+			return Utils.returnResponse(returnMsg); 
 		} catch(Exception e) {
 			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"generalException\": \"" + e.getMessage() + "\" } }"; 
 			System.out.println(returnMsg);
-			return returnMsg;
+			return Utils.returnResponse(returnMsg);
 		}
 	}
 

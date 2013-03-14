@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoPersons;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("pers/{pers_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,9 +42,9 @@ public class Person {
 	 * @return
 	 */
 	@GET
-	public String getPerson(@PathParam("pers_id") String pers_id,
+	public Response getPerson(@PathParam("pers_id") String pers_id,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoPersons().getPerson(httpHeaders,pers_id));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoPersons().getPerson(httpHeaders,pers_id)));
 	}
 
 	/**
@@ -51,15 +53,15 @@ public class Person {
 	 * @return
 	 */
 	@PUT
-	public String updatePerson(@PathParam("pers_id") String pers_id, String message) {
-		return  PrettyJSONPrinter.prettyPrint(new MongoPersons().updatePerson(pers_id,message));
+	public Response updatePerson(@PathParam("pers_id") String pers_id, String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoPersons().updatePerson(pers_id,message)));
 	}
 
 	/**
 	 * Delete a Person
 	 */
 	@DELETE
-	public String deletePerson(@PathParam("pers_id") String pers_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoPersons().deletePerson(pers_id));
+	public Response deletePerson(@PathParam("pers_id") String pers_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoPersons().deletePerson(pers_id)));
 	}
 }
