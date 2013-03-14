@@ -35,6 +35,7 @@ Ext.define('C.view.Viewport', {
 		'C.view.MyTabPanel',
 		'C.view.MyTreePanel',
 		'C.view.UserLibTreePanel',
+		'C.view.CassLibTreePanel',
 		'C.view.LoginForm',
 		'C.view.MyViewport',
 		'C.view.TypesPieChart',

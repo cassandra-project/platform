@@ -45,10 +45,6 @@ Ext.define('C.view.UserLibTreePanel', {
 					})
 				],
 				listeners: {
-					beforeitemmouseenter: {
-						fn: me.onTreeviewBeforeItemMouseEnter,
-						scope: me
-					},
 					itemdblclick: {
 						fn: me.onTreeviewItemDblClick,
 						scope: me
@@ -97,19 +93,16 @@ Ext.define('C.view.UserLibTreePanel', {
 
 			parent_idKey = '';
 			switch(record.get('nodeType')){
-				case 'Scenario': parent_idKey = 'project_id'; break;
-				case 'SimulationParam': parent_idKey = 'scn_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
 				case 'Demographic': parent_idKey = 'scn_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
 				case 'Activity': parent_idKey = 'pers_id'; break;
-				case 'ActivityModel': parent_idKey = 'act_id'; break;
 				default: return false;
 			}
 
 
-			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'SimulationParam' ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
+			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic'  ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
 
 				var recordRawData = JSON.parse(JSON.stringify(node.data));
 				delete recordRawData._id;
@@ -123,7 +116,6 @@ Ext.define('C.view.UserLibTreePanel', {
 				var targetID = '';
 				var meID = '';
 				switch(record.get('nodeType')){
-					case 'Scenario': targetID = 'toPrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
 					case 'Activity': targetID = 'toPersID'; meID = 'actID'; break;
@@ -136,18 +128,13 @@ Ext.define('C.view.UserLibTreePanel', {
 					url: '/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+overModel.get('parentId'),
 					method: 'POST',
 					scope: this,
-					callback: function(options, success, response) {	
+					success: function(response, options) {	
 						response = JSON.parse(response.responseText);
-						if (response.success) {
-							var params = {};
-							params[parent_idKey] = overModel.get('parentId');
-							overModel.removeAll();
-							overModel.c.store.load( {params : params });
-							Ext.sliding_box.msg('Success', JSON.stringify(response.message));
-						}
-						else {
-							Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
-						}
+						var params = {};
+						params[parent_idKey] = overModel.get('parentId');
+						overModel.removeAll();
+						overModel.c.store.load( {params : params });
+						Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 					}
 				});
 			}
@@ -159,10 +146,6 @@ Ext.define('C.view.UserLibTreePanel', {
 
 
 
-	},
-
-	onTreeviewBeforeItemMouseEnter: function(dataview, record, item, index, e, options) {
-		//console.info('Navigation tree panel before item mouse enter.', dataview, record, item, index, e, options); 
 	},
 
 	onTreeviewItemDblClick: function(dataview, record, item, index, e, options) {
@@ -193,8 +176,8 @@ Ext.define('C.view.UserLibTreePanel', {
 	onTreepanelBeforeRender: function(abstractcomponent, options) {
 		console.info('Before render treepanel.', this, abstractcomponent, options);
 
-		C.usr_id = Ext.util.Cookies.get('usr_id');
 		abstractcomponent.getRootNode().data.id = C.usr_id;
+		console.info('Tree rendered with root id = ' + C.usr_id);
 		abstractcomponent.getRootNode().data.icon = "resources/icons/user.png";
 		abstractcomponent.getRootNode().data.iconCls = "treeIcon";
 

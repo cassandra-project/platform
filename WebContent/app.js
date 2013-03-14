@@ -62,7 +62,8 @@ Ext.application({
 		'ConsumptionModelValues',
 		'DistributionValues',
 		'Kpis',
-		'UserLibTreeStore'
+		'UserLibTreeStore',
+		'CassLibTreeStore'
 	],
 	views: [
 		'MyViewport',
@@ -86,7 +87,8 @@ Ext.application({
 		'MyTreePanel',
 		'LoginForm',
 		'DistributionHistogramChart',
-		'UserLibTreePanel'
+		'UserLibTreePanel',
+		'CassLibTreePanel'
 	],
 	autoCreateViewport: true,
 	name: 'C',

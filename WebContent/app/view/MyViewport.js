@@ -71,9 +71,6 @@ Ext.define('C.view.MyViewport', {
 					id: 'east_panel',
 					minWidth: 200,
 					width: 150,
-					layout: {
-						type: 'fit'
-					},
 					collapsible: true,
 					title: 'Libraries'
 				},
