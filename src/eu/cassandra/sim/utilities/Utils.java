@@ -215,6 +215,15 @@ public class Utils
 		  return Response.status(Response.Status.BAD_REQUEST).entity(json).build();
 	  }
   }
+  
+  public static boolean failed(String json) {
+	  DBObject jsonResponse = (DBObject) JSON.parse(json);
+	  if(Boolean.parseBoolean(jsonResponse.get("success").toString())) {
+		  return false;
+	  } else {
+		  return true;
+	  }
+  }
 
   /**
    * @param args
