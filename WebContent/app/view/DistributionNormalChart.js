@@ -16,10 +16,10 @@
 Ext.define('C.view.DistributionNormalChart', {
 	extend: 'Ext.chart.Chart',
 
-	height: 165,
+	height: 230,
 	margin: '5 0 10 -10',
 	style: 'background:#fff',
-	width: 150,
+	width: 230,
 	shadow: true,
 	animate: true,
 	insetPadding: 5,

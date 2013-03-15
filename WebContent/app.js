@@ -76,7 +76,6 @@ Ext.application({
 		'ActivityForm',
 		'SimulationParamsForm',
 		'ActmodPropertiesForm',
-		'TypesPieChart',
 		'ProjectForm',
 		'DemographicForm',
 		'EntitiesGrid',
@@ -88,7 +87,8 @@ Ext.application({
 		'LoginForm',
 		'DistributionHistogramChart',
 		'UserLibTreePanel',
-		'CassLibTreePanel'
+		'CassLibTreePanel',
+		'MyPanel3'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -557,10 +557,10 @@ Ext.application({
 
 		switch (values.distrType) {
 			case "Histogram":
-			myResultsChart = new C.view.DistributionHistogramChart({store: myConsModChartStore});
+			myResultsChart = new C.view.DistributionHistogramChart({store: distrGraphStore});
 			break;
 			default:
-			myResultsChart = new C.view.DistributionNormalChart({store: myConsModChartStore});
+			myResultsChart = new C.view.DistributionNormalChart({store: distrGraphStore});
 			break;
 		}
 

@@ -20,7 +20,7 @@ Ext.define('C.view.DistributionForm', {
 	frame: false,
 	margin: '10px',
 	style: 'border: none',
-	width: 170,
+	width: 260,
 	layout: {
 		type: 'auto'
 	},
@@ -45,29 +45,36 @@ Ext.define('C.view.DistributionForm', {
 					xtype: 'container',
 					height: 326,
 					padding: '10px',
-					width: 151,
 					items: [
 						{
 							xtype: 'textfield',
-							width: 126,
-							name: 'name'
+							width: 220,
+							name: 'name',
+							fieldLabel: 'Name',
+							labelWidth: 70
 						},
 						{
 							xtype: 'textfield',
-							width: 126,
-							name: 'type'
+							width: 220,
+							name: 'type',
+							fieldLabel: 'Type',
+							labelWidth: 70
 						},
 						{
 							xtype: 'textareafield',
 							height: 41,
-							width: 128,
-							name: 'description'
+							width: 220,
+							name: 'description',
+							fieldLabel: 'Description',
+							labelWidth: 70
 						},
 						{
 							xtype: 'combobox',
-							width: 128,
+							width: 220,
 							name: 'distrType',
 							readOnly: false,
+							fieldLabel: 'Types',
+							labelWidth: 70,
 							allowBlank: false,
 							displayField: 'distrType',
 							forceSelection: true,
@@ -78,19 +85,35 @@ Ext.define('C.view.DistributionForm', {
 						{
 							xtype: 'textareafield',
 							height: 45,
-							width: 129,
-							name: 'val'
+							width: 220,
+							name: 'val',
+							fieldLabel: 'Values',
+							labelWidth: 70,
+							listeners: {
+								beforerender: {
+									fn: me.onTextareafieldBeforeRender1,
+									scope: me
+								}
+							}
 						},
 						{
 							xtype: 'textareafield',
 							height: 67,
-							width: 129,
-							name: 'params'
+							width: 220,
+							name: 'params',
+							fieldLabel: 'Parameters',
+							labelWidth: 70,
+							listeners: {
+								beforerender: {
+									fn: me.onTextareafieldBeforeRender,
+									scope: me
+								}
+							}
 						},
 						{
 							xtype: 'button',
 							itemId: 'btn',
-							margin: '10px 0 0 50px',
+							margin: '10px 0 0 90px',
 							text: 'Update',
 							listeners: {
 								click: {
@@ -105,6 +128,14 @@ Ext.define('C.view.DistributionForm', {
 		});
 
 		me.callParent(arguments);
+	},
+
+	onTextareafieldBeforeRender1: function(abstractcomponent, options) {
+		abstractcomponent.helpText = 'A valid input example would be: [3,4]';
+	},
+
+	onTextareafieldBeforeRender: function(abstractcomponent, options) {
+		abstractcomponent.helpText = 'A valid input example would be: </br>[{"w":103,"mean":203.3,"std":103.4}]' ;
 	},
 
 	onButtonClick2: function(button, e, options) {
