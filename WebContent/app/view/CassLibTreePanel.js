@@ -43,7 +43,14 @@ Ext.define('C.view.CassLibTreePanel', {
 						fn: me.onTreeviewItemDblClick,
 						scope: me
 					}
-				}
+				},
+				plugins: [
+					Ext.create('Ext.tree.plugin.TreeViewDragDrop', {
+						ptype: 'treeviewdragdrop',
+						ddGroup: 'ddGlobal',
+						enableDrop: false
+					})
+				]
 			},
 			listeners: {
 				itemappend: {
@@ -92,6 +99,9 @@ Ext.define('C.view.CassLibTreePanel', {
 	onTreepanelBeforeRender: function(abstractcomponent, options) {
 		console.info('Before render treepanel.', this, abstractcomponent, options);
 
+		abstractcomponent.getRootNode().data.icon = "resources/icons/cass_lib.png";
+		abstractcomponent.getRootNode().data.iconCls = "treeIcon";
+
 		C.lib_auth = 'Basic ' + Ext.util.base64.encode('cassandralibrary:password');
 		Ext.Ajax.request({
 			scope : this,
@@ -103,8 +113,6 @@ Ext.define('C.view.CassLibTreePanel', {
 				C.lib_id = response_obj.data[0].usr_id;
 				abstractcomponent.getRootNode().data.id = C.lib_id;
 				console.info('Tree rendered with root id = ' + C.lib_id);
-				abstractcomponent.getRootNode().data.icon = "resources/icons/user.png";
-				abstractcomponent.getRootNode().data.iconCls = "treeIcon";
 
 				abstractcomponent.on('nodedragover', function(dragEvent) {
 					dragEvent.cancel = true;
@@ -119,7 +127,7 @@ Ext.define('C.view.CassLibTreePanel', {
 							store: {} // single store, not array (?)
 						};
 						switch(record.data.nodeType){
-							case 'UserLibrary':
+							case 'CassLibrary':
 							//record.removeAll();
 							console.info('Node has already been renedered');
 							break;

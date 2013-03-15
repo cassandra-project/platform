@@ -98,8 +98,8 @@ Ext.define('C.view.LoginForm', {
 
 					var treePanel = new C.view.MyTreePanel({id: 'uiNavigationTreePanel'});
 					var tabPanel =  new C.view.MyTabPanel({id: 'MainTabPanel'});
-					var usr_libTreePanel = new C.view.UserLibTreePanel({id: 'userLibTreePanel'});
-					var cass_libTreePanel = new C.view.CassLibTreePanel({id: 'cassLibTreePanel'});
+					var usr_libTreePanel = new C.view.UserLibTreePanel({id: 'userLibTreePanel', flex:1});
+					var cass_libTreePanel = new C.view.CassLibTreePanel({id: 'cassLibTreePanel', flex:1});
 
 					treePanel.doLayout();
 					Ext.getCmp('west_panel').add(treePanel);
