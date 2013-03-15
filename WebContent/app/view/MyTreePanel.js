@@ -640,6 +640,11 @@ Ext.define('C.view.MyTreePanel', {
 			});
 		}
 
+		if (store.navigationNode.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
+			grid.getDockedItems()[0].hide();
+
+		}
+
 		grid.reconfigure(store, cols); 
 		return grid;
 

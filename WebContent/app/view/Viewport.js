@@ -38,9 +38,9 @@ Ext.define('C.view.Viewport', {
 		'C.view.CassLibTreePanel',
 		'C.view.LoginForm',
 		'C.view.MyViewport',
-		'C.view.TypesPieChart',
 		'C.view.ResultsLineChart',
 		'C.view.ConsModChart',
+		'C.view.MyPanel3',
 		'C.view.DistributionNormalChart',
 		'C.view.DistributionHistogramChart'
 	]

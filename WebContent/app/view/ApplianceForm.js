@@ -142,7 +142,13 @@ Ext.define('C.view.ApplianceForm', {
 									width: 242,
 									name: 'p_expression',
 									readOnly: false,
-									fieldLabel: 'P-Expression'
+									fieldLabel: 'P-Expression',
+									listeners: {
+										beforerender: {
+											fn: me.onTextareafieldBeforeRender,
+											scope: me
+										}
+									}
 								},
 								{
 									xtype: 'textareafield',
@@ -150,7 +156,13 @@ Ext.define('C.view.ApplianceForm', {
 									width: 242,
 									name: 'q_expression',
 									readOnly: false,
-									fieldLabel: 'Q-Expression'
+									fieldLabel: 'Q-Expression',
+									listeners: {
+										beforerender: {
+											fn: me.onTextareafieldBeforeRender1,
+											scope: me
+										}
+									}
 								}
 							]
 						}
@@ -195,6 +207,14 @@ Ext.define('C.view.ApplianceForm', {
 	onTextfieldChange111111: function(field, newValue, oldValue, options) {
 		this.setTitle(newValue);
 		this.form.getRecord().node.set({'name':newValue});
+	},
+
+	onTextareafieldBeforeRender: function(abstractcomponent, options) {
+		abstractcomponent.helpText = 'A valid input example would be: </br>{"n":0,"params":[{"n":1,"values":[{"p":60,"d":200,"s":0}]}]}';
+	},
+
+	onTextareafieldBeforeRender1: function(abstractcomponent, options) {
+		abstractcomponent.helpText = 'A valid input example would be: </br>{"n":0,"params":[{"n":1,"values":[{"q":60,"d":200,"s":0}]}]}';
 	},
 
 	onButtonClick2: function(button, e, options) {
