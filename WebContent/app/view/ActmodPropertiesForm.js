@@ -84,6 +84,7 @@ Ext.define('C.view.ActmodPropertiesForm', {
 								},
 								{
 									xtype: 'checkboxfield',
+									formBind: false,
 									name: 'shiftable',
 									fieldLabel: 'Shiftable',
 									boxLabel: '',
