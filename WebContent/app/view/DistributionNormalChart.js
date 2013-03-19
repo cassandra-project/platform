@@ -36,7 +36,8 @@ Ext.define('C.view.DistributionNormalChart', {
 					fields: [
 						'x'
 					],
-					position: 'bottom'
+					position: 'bottom',
+					minimum: 0
 				},
 				{
 					type: 'Numeric',
@@ -69,7 +70,7 @@ Ext.define('C.view.DistributionNormalChart', {
 						height: 60,
 						renderer: function(storeItem, item) {
 							this.setTitle( 'Probability(%) : ' + storeItem.get('y')+'%'+ '<br />' +  'time : ' 
-										  + storeItem.get('x'));
+										  + storeItem.get('x') + ' min');
 						}
 					},
 					xField: 'x',

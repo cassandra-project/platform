@@ -17,6 +17,7 @@ Ext.define('C.view.Viewport', {
 	extend: 'C.view.MyViewport',
 	renderTo: Ext.getBody(),
 	requires: [
+		'C.view.ConsumptionModelForm',
 		'C.view.ActmodPropertiesForm',
 		'C.view.DemographicForm',
 		'C.view.ActivityModelForm',
@@ -27,10 +28,10 @@ Ext.define('C.view.Viewport', {
 		'C.view.ResultsGraphForm',
 		'C.view.SimulationParamsForm',
 		'C.view.InstallationForm',
+		'C.view.DistributionForm',
 		'C.view.ApplianceForm',
 		'C.view.RelationsGrid',
 		'C.view.EntitiesGrid',
-		'C.view.DistributionForm',
 		'C.view.DynamicGrid',
 		'C.view.MyTabPanel',
 		'C.view.MyTreePanel',
@@ -40,7 +41,6 @@ Ext.define('C.view.Viewport', {
 		'C.view.MyViewport',
 		'C.view.ResultsLineChart',
 		'C.view.ConsModChart',
-		'C.view.MyPanel3',
 		'C.view.DistributionNormalChart',
 		'C.view.DistributionHistogramChart'
 	]

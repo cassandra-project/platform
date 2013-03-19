@@ -20,7 +20,7 @@ Ext.define('C.store.PersonTypesStore', {
 		var me = this;
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
-			storeId: 'MyJsonStore11',
+			storeId: 'PersonTypesStore',
 			proxy: {
 				type: 'ajax',
 				url: '/cassandra/api/pers?pertype=true',

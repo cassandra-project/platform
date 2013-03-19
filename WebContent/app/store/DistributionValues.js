@@ -46,7 +46,20 @@ Ext.define('C.store.DistributionValues', {
 					name: 'y',
 					type: 'float'
 				}
-			]
+			],
+			listeners: {
+				load: {
+					fn: me.onJsonstoreLoad,
+					scope: me
+				}
+			}
 		}, cfg)]);
+	},
+
+	onJsonstoreLoad: function(store, records, successful, options) {
+		console.info(store, records);
+		if (store.distr_type == 'repeatsNrOfTime')
+		records.slice(0,5);
 	}
+
 });
