@@ -20,7 +20,7 @@ Ext.define('C.view.DistributionHistogramChart', {
 	margin: '5 0 10 -10',
 	style: 'background:#fff',
 	width: 230,
-	shadow: true,
+	shadow: false,
 	animate: true,
 	insetPadding: 5,
 	store: 'DistributionValues',
@@ -86,6 +86,11 @@ Ext.define('C.view.DistributionHistogramChart', {
 				render: {
 					fn: me.onChartRender,
 					scope: me
+				},
+				afterrender: {
+					fn: me.onChartAfterRender,
+					single: false,
+					scope: me
 				}
 			}
 		});
@@ -113,6 +118,18 @@ Ext.define('C.view.DistributionHistogramChart', {
 				chartWindow.show();
 			});
 		}
+	},
+
+	onChartAfterRender: function(abstractcomponent, options) {
+		abstractcomponent.store.on('load',function(store, records){
+			var y_axis = abstractcomponent.axes.getRange()[1];
+			y_axis.maximum = store.max('y') + store.max('y')/10;
+
+			try {
+				abstractcomponent.redraw();
+			}
+			catch(e) {}
+		});
 	}
 
 });
