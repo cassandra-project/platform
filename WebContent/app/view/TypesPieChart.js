@@ -16,14 +16,12 @@
 Ext.define('C.view.TypesPieChart', {
 	extend: 'Ext.chart.Chart',
 
-	border: '1px',
+	border: 1,
 	height: 229,
-	margin: '0 0 0 80px',
+	margin: '0 0 0 80',
 	width: 338,
 	shadow: true,
-	autoSize: false,
 	animate: true,
-	insetPadding: 25,
 	store: 'PersonTypesStore',
 
 	initComponent: function() {
@@ -45,7 +43,7 @@ Ext.define('C.view.TypesPieChart', {
 						font: '12px Arial',
 						renderer: function(v) {
 						  return Ext.String.ellipsis(v, 12, false);
-					  }
+						}
 					},
 					showInLegend: true,
 					tips: {
