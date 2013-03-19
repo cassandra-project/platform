@@ -36,7 +36,8 @@ Ext.define('C.view.DistributionHistogramChart', {
 					fields: [
 						'x'
 					],
-					position: 'bottom'
+					position: 'bottom',
+					minimum: 0
 				},
 				{
 					type: 'Numeric',
@@ -63,7 +64,15 @@ Ext.define('C.view.DistributionHistogramChart', {
 						size: 7,
 						radius: 7
 					},
-					tips: 'trackMouse: true,\r\nwidth: 160,\r\nheight: 60,\r\nrenderer: function(storeItem, item) {\r\n	this.setTitle( \'Probability(%) : \' + storeItem.get(\'y\')+\'%\'+ \'<br />\' +  \'time : \' \r\n				  + storeItem.get(\'x\'));\r\n}',
+					tips: {
+						trackMouse: true,
+						width: 160,
+						height: 60,
+						renderer: function(storeItem, item) {
+							this.setTitle( 'Probability(%) : ' + storeItem.get('y')+'%'+ '<br />' +  'time : ' 
+										  + storeItem.get('x') + ' min') ;
+						}
+					},
 					xField: 'x',
 					yField: [
 						'y'
