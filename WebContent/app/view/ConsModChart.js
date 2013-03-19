@@ -78,7 +78,6 @@ Ext.define('C.view.ConsModChart', {
 						}
 					},
 					title: 'Active Power (W)',
-					xField: 'x',
 					yField: [
 						'p'
 					],
@@ -99,7 +98,6 @@ Ext.define('C.view.ConsModChart', {
 						}
 					},
 					title: 'Reactive Power (VA)',
-					xField: 'x',
 					yField: [
 						'q'
 					],

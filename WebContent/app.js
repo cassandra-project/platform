@@ -59,11 +59,11 @@ Ext.application({
 		'DemographicEntities',
 		'Results',
 		'MetricStore',
-		'ConsumptionModelValues',
 		'DistributionValues',
 		'Kpis',
 		'UserLibTreeStore',
-		'CassLibTreeStore'
+		'CassLibTreeStore',
+		'ConsumptionModelValues'
 	],
 	views: [
 		'MyViewport',
@@ -87,8 +87,7 @@ Ext.application({
 		'LoginForm',
 		'DistributionHistogramChart',
 		'UserLibTreePanel',
-		'CassLibTreePanel',
-		'MyPanel3'
+		'CassLibTreePanel'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -553,25 +552,21 @@ Ext.application({
 		var values = myForm.getValues();
 
 		distrCmp.setTitle(title);
-		var distrGraphStore = new C.store.DistributionValues();
-
-		switch (values.distrType) {
-			case "Histogram":
-			myResultsChart = new C.view.DistributionHistogramChart({store: distrGraphStore});
-			break;
-			default:
-			myResultsChart = new C.view.DistributionNormalChart({store: distrGraphStore});
-			break;
-		}
+		var distrGraphStore = new C.store.DistributionValues({distr_type : distr_type});
 
 		switch (distr_type) {
 			case 'duration': 
-			distrGraphStore.xAxisTitle = 'Duration (Minutes)'; 
+			distrGraphStore.xAxisTitle = 'Duration (Minutes)';
+			myResultsChart = new C.view.DistributionNormalChart({store: distrGraphStore});
+			break;
 			case 'startTime':
 			distrGraphStore.xAxisTitle = 'Start Time (Minute of day)'; 
+			myResultsChart = new C.view.DistributionNormalChart({store: distrGraphStore});
 			break;
 			case 'repeatsNrOfTime': 
-			distrGraphStore.xAxisTitle = 'Daily Repetitions'; 
+			distrGraphStore.xAxisTitle = 'Daily Repetitions';
+
+			myResultsChart = new C.view.DistributionHistogramChart({store: distrGraphStore});
 			break;
 		}
 
