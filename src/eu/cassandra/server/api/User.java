@@ -2,6 +2,7 @@ package eu.cassandra.server.api;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -15,6 +16,7 @@ import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.utilities.Utils;
 
 @Path("usr")
+@Produces(MediaType.APPLICATION_JSON)
 public class User {
 
 	/**
@@ -32,7 +34,9 @@ public class User {
 			return Response.ok(json, MediaType.APPLICATION_JSON).build();
 		} else {
 			JSONtoReturn jsonMsg = new JSONtoReturn();
-			return Response.status(Response.Status.UNAUTHORIZED).entity(jsonMsg.createJSONError("User and or password do not match", "")).build();
+			String json = PrettyJSONPrinter.prettyPrint(jsonMsg.createJSONError("User and or password do not match", new Exception("User and or password do not match")));
+			Response r = Response.status(Response.Status.UNAUTHORIZED).entity(json).build();
+			return r; 
 		}
 	}
 	
