@@ -31,7 +31,8 @@ public class User {
 			String json = PrettyJSONPrinter.prettyPrint(jsonMsg.createJSON(user, "User retrieved successfully"));
 			return Response.ok(json, MediaType.APPLICATION_JSON).build();
 		} else {
-			return Response.status(Response.Status.UNAUTHORIZED).entity("User and or password do not match").build();
+			JSONtoReturn jsonMsg = new JSONtoReturn();
+			return Response.status(Response.Status.UNAUTHORIZED).entity(jsonMsg.createJSONError("User and or password do not match", "")).build();
 		}
 	}
 	

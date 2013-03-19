@@ -52,6 +52,7 @@ public class JSONValidator {
 	public static final int PROJECT_SCHEMA = 8;
 	public static final int SCENARIO_SCHEMA = 9;
 	public static final int SIMPARAM_SCHEMA = 10;
+	public static final int PRICING_SCHEMA = 11;
 
 	/**
 	 * 
@@ -82,6 +83,8 @@ public class JSONValidator {
 		case SCENARIO_SCHEMA:  fileName += "Scenario.schema";
 		break;
 		case SIMPARAM_SCHEMA:  fileName += "SimParam.schema";
+		break;
+		case PRICING_SCHEMA:  fileName += "Pricing.schema";
 		break;
 		}
 		return fileName;

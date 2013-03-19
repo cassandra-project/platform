@@ -1,0 +1,11 @@
+{
+    "name" : "Pricing name",
+    "description" : "Pricing description",
+    "type" : "AllInclusivePricing",
+    "scn_id" : "500d1133e4b087bdfeda0900",
+    "fixedCharge" : 0.00,
+    "billingCycle" : 30,
+    "fixedCost" : 20.00,
+    "contractedEnergy" : 200.00,
+    "additionalCost" : 0.25  
+}
