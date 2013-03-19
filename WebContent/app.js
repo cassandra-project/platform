@@ -174,6 +174,9 @@ Ext.application({
 
 			cmpToAdd = myForm;
 			cmpToAdd.dirtyForm = true;
+			if (record.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
+				cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
+			}
 		}
 
 		var namesBreadcrumb = record.getPath('name');

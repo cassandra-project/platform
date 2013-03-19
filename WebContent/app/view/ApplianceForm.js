@@ -45,6 +45,9 @@ Ext.define('C.view.ApplianceForm', {
 							height: 365,
 							padding: '10px',
 							width: 280,
+							layout: {
+								type: 'auto'
+							},
 							title: 'Properties',
 							items: [
 								{
@@ -92,8 +95,10 @@ Ext.define('C.view.ApplianceForm', {
 								{
 									xtype: 'checkboxfield',
 									name: 'base',
+									readOnly: false,
 									fieldLabel: 'Base',
 									boxLabel: '',
+									checked: false,
 									inputValue: 'true',
 									uncheckedValue: 'false'
 								},
@@ -120,6 +125,9 @@ Ext.define('C.view.ApplianceForm', {
 							margins: '0 0 0 10px',
 							height: 365,
 							width: 271,
+							layout: {
+								type: 'auto'
+							},
 							title: 'ConsumptionModel',
 							items: [
 								{

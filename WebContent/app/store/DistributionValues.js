@@ -59,7 +59,7 @@ Ext.define('C.store.DistributionValues', {
 	onJsonstoreLoad: function(store, records, successful, options) {
 		console.info(store, records);
 		if (store.distr_type == 'repeatsNrOfTime')
-		records.slice(0,5);
+		store.loadData(records.slice(0, 5));
 	}
 
 });
