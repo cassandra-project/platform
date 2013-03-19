@@ -87,7 +87,8 @@ Ext.application({
 		'LoginForm',
 		'DistributionHistogramChart',
 		'UserLibTreePanel',
-		'CassLibTreePanel'
+		'CassLibTreePanel',
+		'TypesPieChart'
 	],
 	autoCreateViewport: true,
 	name: 'C',
