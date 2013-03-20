@@ -8892,7 +8892,7 @@ table.x-datepicker-inner {
     padding-left: 2px; }
   /* line 748, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
   .x-grid-row-editor .x-panel-body {
-    background-color: #2696f6;
+   /* background-color: #2696f6;*/
     border-top: 1px solid #167cce !important;
     border-bottom: 1px solid #167cce !important; }
 
@@ -8954,7 +8954,7 @@ table.x-datepicker-inner {
 
 /* line 837, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
 .x-grid-row-editor-buttons {
-  background-color: #2696f6;
+  /*background-color: #2696f6;*/
   position: absolute;
   bottom: -31px;
   padding: 4px;
@@ -9418,13 +9418,13 @@ textarea.x-form-invalid-field {
   cursor: pointer;
   margin-left: 2px; }
   /* line 14, ../themes/stylesheets/neptune/default/widgets/form/_triggerfield.scss */
-  .x-form-trigger:after {
+  .x-form-trigger:after { 
     position: absolute;
 	margin: 5px 0 0 4px;
     width: 11px;
     height: 11px;
     content: "";
-    background: url('../../resources/themes/images/neptune/triggerfield.png') no-repeat; }
+    /*background: url('../../resources/themes/images/neptune/triggerfield.png') no-repeat;*/ }
 
 /* line 26, ../themes/stylesheets/neptune/default/widgets/form/_triggerfield.scss */
 .x-trigger-cell {
