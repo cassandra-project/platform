@@ -100,6 +100,7 @@ Ext.define('C.view.MyTreePanel', {
 				case 'Scenario': parent_idKey = 'project_id'; break;
 				case 'SimulationParam': parent_idKey = 'scn_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
+				case 'Pricing': parent_idKey = 'scn_id'; break;
 				case 'Demographic': parent_idKey = 'scn_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
@@ -109,7 +110,7 @@ Ext.define('C.view.MyTreePanel', {
 			}
 
 
-			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'SimulationParam' ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
+			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'Pricing'|| record.get('nodeType') == 'SimulationParam' ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
 
 				var recordRawData = JSON.parse(JSON.stringify(node.data));
 				delete recordRawData._id;
@@ -319,6 +320,17 @@ Ext.define('C.view.MyTreePanel', {
 						icon: 'resources/icons/sim_params.png',
 						iconCls: 'treeIcon'
 					});
+					record.appendChild({
+						name: 'Pricing Schemes',
+						nodeType: 'PricingSchemesCollection',
+						expanded: false,
+						leaf: false,
+						expandable: true,
+						fakeChildren: true,
+						draggable: false,
+						icon: 'resources/icons/pricing.png',
+						iconCls: 'treeIcon'
+					});
 					var index = Ext.getStore(record.get('nodeStoreId')).findExact('_id', record.get('id'));
 					var dataRecord = Ext.getStore(record.get('nodeStoreId')).getAt(index);
 					if (dataRecord.get('setup') == 'dynamic') {
@@ -352,6 +364,19 @@ Ext.define('C.view.MyTreePanel', {
 					//record.removeAll();
 					console.info('Creating store for installations.');
 					record.c.store = new C.store.Installations({
+						storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
+						navigationNode: record
+					});
+					record.c.store.load({
+						params: {
+							scn_id: record.parentNode.get('nodeId')
+						}
+					});
+					break;
+					case 'PricingSchemesCollection':
+					//record.removeAll();
+					console.info('Creating store for pricing schemes.');
+					record.c.store = new C.store.Pricing({
 						storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
 						navigationNode: record
 					});

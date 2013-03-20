@@ -104,6 +104,23 @@ Ext.define('C.view.SimulationParamsForm', {
 									fieldLabel: 'Notes'
 								},
 								{
+									xtype: 'textfield',
+									cls: 'dropTarget',
+									width: 246,
+									name: 'prc_id',
+									fieldLabel: 'Pricing Scheme',
+									listeners: {
+										render: {
+											fn: me.onTextfieldRender1,
+											scope: me
+										},
+										beforerender: {
+											fn: me.onTextfieldBeforeRender,
+											scope: me
+										}
+									}
+								},
+								{
 									xtype: 'container',
 									margin: '20px 0',
 									layout: {
@@ -151,6 +168,22 @@ Ext.define('C.view.SimulationParamsForm', {
 	onTextfieldChange1111: function(field, newValue, oldValue, options) {
 		this.setTitle(newValue);
 		this.form.getRecord().node.set({'name':newValue});
+	},
+
+	onTextfieldRender1: function(abstractcomponent, options) {
+		var myForm = this.getForm();
+		new Ext.dd.DropTarget(this.body.dom.getElementsByClassName('dropTarget')[0],{
+			ddGroup:'ddGlobal',
+			notifyDrop: function(dds,e,data) {	
+				if (dds.dragData.records[0].get('nodeType') != 'Pricing' )
+				return false;
+				myForm.setValues({ prc_id: dds.dragData.records[0].get('id')});
+			return true; }
+		});
+	},
+
+	onTextfieldBeforeRender: function(abstractcomponent, options) {
+		abstractcomponent.helpText = 'You can add a Pricing Scheme by selecting it from the Projects Tree and dropping it here';
 	},
 
 	onButtonClick2: function(button, e, options) {

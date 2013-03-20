@@ -66,8 +66,16 @@ Ext.define('C.controller.setDbName', {
 		});
 
 		Ext.data.Connection.on('requestexception', function(conn, response, options, eOpts) {
-			var response_obj = JSON.parse(response.responseText);
-			Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
+			var msg = '';
+			try {
+				var response_obj = JSON.parse(response.responseText);
+				msg = JSON.stringify(response_obj.errors)
+			}
+			catch(e) {
+				msg = response.status + ' - ' + response.statusText;
+			}
+			Ext.MessageBox.show({title:'Error', msg: msg, icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
+
 		});
 
 
