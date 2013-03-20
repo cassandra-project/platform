@@ -144,8 +144,9 @@ Ext.define('C.view.DynamicGrid', {
 			switch(record.get('nodeType')){
 				case 'Scenario': parent_idKey = 'project_id'; break;
 				case 'SimulationParam': parent_idKey = 'scn_id'; break;
-				case 'Installation': parent_idKey = 'scn_id'; break;
-				case 'Demographic': parent_idKey = 'scenario_id'; break;
+				case 'Installation': parent_idKey = 'scenario_id'; break;
+				case 'Pricing': parent_idKey = 'scn_id'; break;
+				case 'Demographic': parent_idKey = 'scn_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
 				case 'Activity': parent_idKey = 'pers_id'; break;
@@ -153,7 +154,7 @@ Ext.define('C.view.DynamicGrid', {
 				default: return false;
 			}
 
-			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'SimulationParam' ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
+			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'SimulationParam' || record.get('nodeType') == 'Pricing') && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
 
 				//Ext.sliding_box.msg('Drag and Drop info', 'By holding <b>Shift</b> key pressed while copying a node </br> all its childred will be copied as well');
 
@@ -204,6 +205,7 @@ Ext.define('C.view.DynamicGrid', {
 			case 'ProjectsCollection': inputArray = {};break;
 			case 'ScenariosCollection': inputArray = {'project_id' : parent_id};break;
 			case 'InstallationsCollection': inputArray = {'scenario_id' : parent_id}; break;
+			case 'PricingSchemesCollection': inputArray = {'scn_id' : parent_id}; break;
 			case 'DemographicsCollection': inputArray = {'scn_id' : parent_id}; break;
 			case 'SimulationParamsCollection': 
 			var calendar = C.app.getCalendar( new Date());
@@ -212,7 +214,7 @@ Ext.define('C.view.DynamicGrid', {
 			case 'PersonsCollection': inputArray = {'inst_id' : parent_id}; break;
 			case 'AppliancesCollection': inputArray = {'inst_id': parent_id}; break;
 			case 'ActivitiesCollection': inputArray = {'pers_id': parent_id}; break;
-			case 'ActivityModelsCollection': inputArray = {'act_id' : parent_id, containsAppliances:[]}; break;
+			case 'ActivityModelsCollection': inputArray = {'act_id' : parent_id}; break;
 			default: return false;
 		}
 		var currentModel = this.store.getProxy().getModel();

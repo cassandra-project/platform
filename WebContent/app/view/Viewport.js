@@ -19,6 +19,7 @@ Ext.define('C.view.Viewport', {
 	requires: [
 		'C.view.ActmodPropertiesForm',
 		'C.view.DemographicForm',
+		'C.view.PricingForm',
 		'C.view.ActivityModelForm',
 		'C.view.ScenarioForm',
 		'C.view.ProjectForm',

@@ -32,7 +32,8 @@ Ext.application({
 		'Distribution',
 		'Demographic',
 		'DemographicEntity',
-		'Kpi'
+		'Kpi',
+		'Pricing'
 	],
 	stores: [
 		'Projects',
@@ -63,7 +64,11 @@ Ext.application({
 		'Kpis',
 		'UserLibTreeStore',
 		'CassLibTreeStore',
-		'ConsumptionModelValues'
+		'ConsumptionModelValues',
+		'Pricing',
+		'PricingTypeStore',
+		'LevelsStore',
+		'OffpickStore'
 	],
 	views: [
 		'MyViewport',
@@ -88,7 +93,8 @@ Ext.application({
 		'DistributionHistogramChart',
 		'UserLibTreePanel',
 		'CassLibTreePanel',
-		'TypesPieChart'
+		'TypesPieChart',
+		'PricingForm'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -156,6 +162,10 @@ Ext.application({
 				case 'SimulationParam':
 				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getSimulationParamsForm(cur_record);
+				break;
+				case 'Pricing':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getPricingForm(cur_record);
 				break;
 				case 'Demographic':
 				cur_record = record.parentNode.c.store.getById(record.get('id'));
@@ -776,6 +786,25 @@ Ext.application({
 		}
 		var calendar = {'year':year, 'month': month, 'weekday': weekday, 'dayOfMonth':day};
 		return calendar;
+	},
+
+	getPricingForm: function(record) {
+		var myFormCmp = new C.view.PricingForm({});
+		var myForm = myFormCmp.getForm();
+		var values = myForm.getValues();
+
+		myFormCmp.getComponent(record.get('type')).show();
+
+		if (record.get('type') == 'ScalarEnergyPricing' ) {
+			myFormCmp.query('grid')[0].store.loadData(record.get('levels'));
+		}
+		else if (record.get('type') == 'ScalarEnergyPricingTimeZones') {
+			myFormCmp.query('grid')[1].store.loadData(record.get('levels'));
+			myFormCmp.query('grid')[2].store.loadData(record.get('offpeak'));
+		}
+
+		myForm.loadRecord(record);
+		return myFormCmp;
 	}
 
 });

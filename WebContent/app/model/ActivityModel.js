@@ -48,7 +48,10 @@ Ext.define('C.model.ActivityModel', {
 			name: 'act_id'
 		},
 		{
-			name: 'containsAppliances'
+			name: 'containsAppliances',
+			defaultValue: [
+				
+			]
 		},
 		{
 			name: 'duration'
