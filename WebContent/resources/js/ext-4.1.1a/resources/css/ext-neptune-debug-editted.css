@@ -8904,7 +8904,7 @@ table.x-datepicker-inner {
   height: 24px; }
 /* line 765, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
 .x-grid-editor .x-form-trigger-wrap .x-form-spinner-up, .x-grid-editor .x-form-trigger-wrap .x-form-spinner-down, .x-grid-row-editor .x-form-trigger-wrap .x-form-spinner-up, .x-grid-row-editor .x-form-trigger-wrap .x-form-spinner-down {
-  background-image: url('../../resources/themes/images/neptune/form/spinner-small.gif');
+  /*background-image: url('../../resources/themes/images/neptune/form/spinner-small.gif');*/
   height: 10px !important; }
 
 /* line 773, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
@@ -9418,13 +9418,13 @@ textarea.x-form-invalid-field {
   cursor: pointer;
   margin-left: 2px; }
   /* line 14, ../themes/stylesheets/neptune/default/widgets/form/_triggerfield.scss */
-  .x-form-trigger:after { 
+  .x-form-trigger:after {
     position: absolute;
-	margin: 5px 0 0 4px;
+	margin: 1px 0 0 3px/*5px 0 0 4px*/;
     width: 11px;
     height: 11px;
     content: "";
-    /*background: url('../../resources/themes/images/neptune/triggerfield.png') no-repeat;*/ }
+    background: url('../../resources/themes/images/neptune/triggerfield.png') no-repeat; }
 
 /* line 26, ../themes/stylesheets/neptune/default/widgets/form/_triggerfield.scss */
 .x-trigger-cell {

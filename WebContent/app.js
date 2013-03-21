@@ -184,6 +184,7 @@ Ext.application({
 
 			cmpToAdd = myForm;
 			cmpToAdd.dirtyForm = true;
+			if (record.store)
 			if (record.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
 				cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
 			}
@@ -265,6 +266,12 @@ Ext.application({
 					case 'SimulationParamsCollection':
 					childNode.c.store = new C.store.SimulationParams({
 						storeId: childNode.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
+						navigationNode: childNode
+					});
+					break;
+					case 'PricingSchemesCollection':
+					childNode.c.store = new C.store.Pricing({
+						storeId: record.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
 						navigationNode: childNode
 					});
 					break;
