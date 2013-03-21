@@ -106,6 +106,10 @@ Ext.define('C.view.DynamicGrid', {
 				beforerender: {
 					fn: me.onGridpanelBeforeRender,
 					scope: me
+				},
+				afterrender: {
+					fn: me.onGridpanelAfterRender,
+					scope: me
 				}
 			},
 			tools: [
@@ -331,6 +335,10 @@ Ext.define('C.view.DynamicGrid', {
 			abstractcomponent.margin = '0 0 10px 0';
 		}
 
+	},
+
+	onGridpanelAfterRender: function(abstractcomponent, options) {
+		/*abstractcomponent.addDocked(new Ext.toolbar.Paging( {store : abstractcomponent.store, dock: 'bottom'} ));*/
 	}
 
 });

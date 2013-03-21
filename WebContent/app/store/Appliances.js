@@ -70,8 +70,8 @@ Ext.define('C.store.Appliances', {
 					nodeType: 'Appliance',
 					nodeId: record.data._id,
 					nodeStoreId: store.storeId,
-					leaf:  (root_id == 'root') ? false : true,
-					expandable:  (root_id == 'root') ? true : false,
+					leaf:  true,
+					expandable:  false,
 					draggable: true
 				});
 				record.node = node;
