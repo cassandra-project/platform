@@ -63,18 +63,19 @@ Ext.define('C.store.Installations', {
 	onJsonstoreLoad: function(store, records, successful, options) {
 		if(store.navigationNode){
 			Ext.each(records, function(record, index){
-				var root_id = store.navigationNode.store.treeStore.tree.root.get('id');
+				var parentNode = store.navigationNode.parentNode;
+				console.info('++ Node does not exist. Creating it.');
 				var node = store.navigationNode.appendChild({
-					id: record.data._id,
-					name: record.data.name,
+					id: record.get('_id'),
+					name: record.get('name'),
 					nodeType: 'Installation',
-					nodeId: record.data._id,
+					nodeId: record.get('_id'),
 					nodeStoreId: store.storeId,
 					expanded: false,
-					leaf:  (root_id == 'root') ? false : true,
-					expandable:  (root_id == 'root') ? true : false,
-					fakeChildren: true,
-					draggable: true
+					leaf: (parentNode.get('root')) ? true : false,
+					expandable:  (parentNode.get('root')) ? false : true,
+					fakeChildren: (parentNode.get('root')) ? false : true,
+					draggable: false
 				});
 				record.node = node;
 			});
@@ -87,6 +88,7 @@ Ext.define('C.store.Installations', {
 		console.info('Installation data updated.', abstractstore, record, operation, options);
 		if (!record.node) {
 			if (operation == 'commit') {
+				var parentNode = abstractstore.navigationNode.parentNode;
 				console.info('++ Node does not exist. Creating it.');
 				var node = abstractstore.navigationNode.appendChild({
 					id: record.get('_id'),
@@ -95,9 +97,9 @@ Ext.define('C.store.Installations', {
 					nodeId: record.get('_id'),
 					nodeStoreId: abstractstore.storeId,
 					expanded: false,
-					leaf: false,
-					expandable: true,
-					fakeChildren: true,
+					leaf: (parentNode.get('root')) ? true : false,
+					expandable:  (parentNode.get('root')) ? false : true,
+					fakeChildren: (parentNode.get('root')) ? false : true,
 					draggable: false
 				});
 				record.node = node;

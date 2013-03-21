@@ -81,7 +81,7 @@ Ext.define('C.view.UserLibTreePanel', {
 		var record = (data.records[0].node) ? data.records[0].node : data.records[0];
 		var nodeType = record.get('nodeType');
 		// Node from tree || Node from grid.
-		if (nodeType + 'sCollection' == overModel.get('nodeType')){
+		if (record.parentNode.get('nodeType') == overModel.get('nodeType')){
 			// record can be a lot of things, navigation record, grid row.
 			// Get the actuall data from its store to skip unwanted behaviour.
 			dropFunction.cancelDrop();

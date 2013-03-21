@@ -85,7 +85,7 @@ Ext.define('C.view.MyTreePanel', {
 		var record = (data.records[0].node) ? data.records[0].node : data.records[0];
 		var nodeType = record.get('nodeType');
 		// Node from tree || Node from grid.
-		if (nodeType + 'sCollection' == overModel.get('nodeType')){
+		if (record.parentNode.get('nodeType') == overModel.get('nodeType')){
 			// record can be a lot of things, navigation record, grid row.
 			// Get the actuall data from its store to skip unwanted behaviour.
 			dropFunction.cancelDrop();
@@ -273,7 +273,9 @@ Ext.define('C.view.MyTreePanel', {
 					record.c.store = new C.store.Runs({
 						storeId: record.data.nodeType+'Store-prj_id-'+record.parentNode.get('nodeId'),
 						navigationNode: record
+
 					});
+					//record.c.store.proxy.extraParams = {'prj_id': record.parentNode.get('nodeId')};
 					record.c.store.load({
 						params: {
 							prj_id: record.parentNode.get('nodeId')
@@ -367,6 +369,7 @@ Ext.define('C.view.MyTreePanel', {
 						storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
 						navigationNode: record
 					});
+					//record.c.store.proxy.extraParams = {'scn_id': record.parentNode.get('nodeId')};
 					record.c.store.load({
 						params: {
 							scn_id: record.parentNode.get('nodeId')
@@ -665,9 +668,9 @@ Ext.define('C.view.MyTreePanel', {
 			});
 		}
 
+		if (store.navigationNode.store)
 		if (store.navigationNode.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
 			grid.getDockedItems()[0].hide();
-
 		}
 
 		grid.reconfigure(store, cols); 

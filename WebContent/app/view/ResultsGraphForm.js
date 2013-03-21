@@ -179,17 +179,20 @@ Ext.define('C.view.ResultsGraphForm', {
 		}
 
 		var defaultAggrUnit = (formValues.aggr_unit)? formValues.aggr_unit : myResultsStore.proxy.reader.jsonData.aggregationUnit;  
-		if (!formValues.aggr_unit) delete formValues.aggr_unit;
+		if (!formValues.aggr_unit) 
+		delete formValues.aggr_unit;
 		defaultAggrUnit = parseInt(defaultAggrUnit);
 
 		var defaultFrom = (formValues.from) ? formValues.from : 0;
 		defaultFrom = parseInt(defaultFrom);
-		if (!formValues.from) delete formValues.from;
+		if (!formValues.from) 
+		delete formValues.from;
 
 		var numberOfDays = myResultsStore.proxy.reader.jsonData.numberOfDays;
 		var dataSize = parseInt(-defaultFrom/defaultAggrUnit) + parseInt( (numberOfDays*1440) / defaultAggrUnit);
 
-		if (!formValues.to) delete formValues.to;console.info(dataSize);
+		if (!formValues.to) 
+		delete formValues.to;console.info(dataSize);
 
 		if ( dataSize > 1000 ) {
 			Ext.MessageBox.alert('Error', 'Too many plot data! Chart will not be loaded!'); 
