@@ -72,6 +72,10 @@ Ext.define('C.view.DynamicGrid', {
 								click: {
 									fn: me.onButtonClick,
 									scope: me
+								},
+								beforerender: {
+									fn: me.onButtonBeforeRender,
+									scope: me
 								}
 							}
 						},
@@ -91,6 +95,25 @@ Ext.define('C.view.DynamicGrid', {
 							listeners: {
 								click: {
 									fn: me.onButtonClick11,
+									scope: me
+								},
+								beforerender: {
+									fn: me.onButtonBeforeRender1,
+									scope: me
+								}
+							}
+						},
+						{
+							xtype: 'button',
+							hidden: true,
+							text: 'Compare',
+							listeners: {
+								click: {
+									fn: me.onButtonClick111,
+									scope: me
+								},
+								beforerender: {
+									fn: me.onButtonBeforeRender2,
 									scope: me
 								}
 							}
@@ -241,6 +264,11 @@ Ext.define('C.view.DynamicGrid', {
 
 	},
 
+	onButtonBeforeRender: function(abstractcomponent, options) {
+		if (this.store.model.getName() == "C.model.Run")
+		abstractcomponent.hide();
+	},
+
 	onButtonClick1: function(button, e, options) {
 		console.info('Delete clicked.', this, button, e, options);
 
@@ -274,6 +302,61 @@ Ext.define('C.view.DynamicGrid', {
 				C.app.createForm(index.node);
 			});
 		}
+	},
+
+	onButtonBeforeRender1: function(abstractcomponent, options) {
+		if (this.store.model.getName() == "C.model.Run")
+		abstractcomponent.hide();
+	},
+
+	onButtonClick111: function(button, e, options) {
+		console.info('cOMPARE clicked.', this, button, e, options);
+
+		var selections = this.getView().getSelectionModel().getSelection();
+		if (selections.length < 2) {
+			Ext.MessageBox.show({title:'Error', msg: 'You need to choose 2 or more runs to compare', icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
+			return false;
+		}
+
+		var chartWindow = new Ext.Window({
+			title  : 'Compare runs and KPIs',
+			width : 850,
+			height : 650,
+			autoScroll : true
+		}); 
+
+
+		Ext.each(selections, function(selection, index) {
+			var sel_id = selection.get('_id');
+			var compPanel = new C.view.ComparePanel({title : 'Total Consumption Active Power for run: ' + selection.get('_id')});
+
+			myResultsStore = new C.store.Results();
+			myResultsStore.proxy.headers = {'dbname': sel_id};
+			myResultsChart = new C.view.ResultsLineChart({width: 400, height: 300, store: myResultsStore});
+			var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: myResultsStore});
+			myResultsStore.load();
+			compPanel.add(myResultsChart);
+
+			var kpiStore = new C.store.Kpis();
+			kpiStore.proxy.headers = {'dbname': sel_id};
+			kpiStore.load();
+			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(kpiStore);
+			grid.width = 400;
+			grid.closable = false;
+			grid.setTitle("KPIs");
+			grid.query("tool")[0].hide();
+			compPanel.add(grid);
+
+			chartWindow.add(compPanel);
+		});
+
+
+		chartWindow.show();
+	},
+
+	onButtonBeforeRender2: function(abstractcomponent, options) {
+		if (this.store.model.getName() == "C.model.Run")
+		abstractcomponent.show();
 	},
 
 	onGridpanelItemDblClick: function(tablepanel, record, item, index, e, options) {
@@ -334,7 +417,8 @@ Ext.define('C.view.DynamicGrid', {
 			abstractcomponent.setHeight(250);
 			abstractcomponent.margin = '0 0 10px 0';
 		}
-
+		if (abstractcomponent.store.model.getName() == "C.model.Kpi")
+		abstractcomponent.down('toolbar').hide();
 	},
 
 	onGridpanelAfterRender: function(abstractcomponent, options) {
