@@ -26,19 +26,23 @@ Ext.define('C.controller.setDbName', {
 
 		Ext.util.Observable.observe(Ext.data.proxy.Rest);
 		Ext.data.proxy.Rest.on('exception', function(server, response,operation) {
-			var response_obj = JSON.parse(response.responseText);
-			var action = response.request.options.operation.action;
-			if (action == 'create' || action == 'update') {
-				var record = response.request.options.operation.records[0];
-				var store = record.store;
-				if (action == 'create') {
-					store.remove(record);
+			try {
+				var response_obj = JSON.parse(response.responseText);
+				var action = response.request.options.operation.action;
+				if (action == 'create' || action == 'update') {
+					var record = response.request.options.operation.records[0];
+					var store = record.store;
+					if (action == 'create') {
+						store.remove(record);
+					}
+					else if (action == 'update')
+					store.rejectChanges();
 				}
-				else if (action == 'update')
-				store.rejectChanges();
+				Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
 			}
-			Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
-
+			catch (e) {
+				Ext.MessageBox.show({title:'Error', msg: response.status + '-' + response.statusText, icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
+			}
 		});
 
 

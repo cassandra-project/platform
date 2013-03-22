@@ -94,7 +94,8 @@ Ext.application({
 		'UserLibTreePanel',
 		'CassLibTreePanel',
 		'TypesPieChart',
-		'PricingForm'
+		'PricingForm',
+		'ComparePanel'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -184,10 +185,12 @@ Ext.application({
 
 			cmpToAdd = myForm;
 			cmpToAdd.dirtyForm = true;
-			if (record.store)
-			if (record.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
-				cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
+			try {
+				if (record.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
+					cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
+				}
 			}
+			catch (e){console.info('excpetion',store);}
 		}
 
 		var namesBreadcrumb = record.getPath('name');
@@ -722,16 +725,10 @@ Ext.application({
 		var myFormCmp = new C.view.ResultsGraphForm({});
 
 		myResultsStore = new C.store.Results({});
-		/*myResultsStore.load({
-		params: {
-		scn_id: record.node.get('nodeId')
-		}
-		});*/
-
-		myResultsStore.load();
 		myResultsChart = new C.view.ResultsLineChart({store: myResultsStore});
-		myFormCmp.insert(2, myResultsChart);
 		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: myResultsStore});
+		myFormCmp.insert(2, myResultsChart);
+		myResultsStore.load();
 
 		var kpiStore = new C.store.Kpis();
 		kpiStore.load();

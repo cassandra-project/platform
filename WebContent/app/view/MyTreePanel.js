@@ -642,15 +642,16 @@ Ext.define('C.view.MyTreePanel', {
 					}
 				});
 			}
-			else if (f.name == 'compare'){
-				cols.push({
-					header: f.name,
-					dataIndex: f.name,
-					renderer: function (v, m, r) {
-						return "<input type='checkbox'" + (f.value ? "checked='checked'" : "") + ">";
-					}
-				});
+			/*else if (f.name == 'compare'){
+			cols.push({
+			header: f.name,
+			dataIndex: f.name,
+			renderer: function (v, m, r) {
+			return "<input type='checkbox'" + (f.value ? "checked='checked'" : "") + ">";
 			}
+			});
+
+			}*/
 			else {
 				cols.push({
 					header: f.name,
@@ -660,18 +661,13 @@ Ext.define('C.view.MyTreePanel', {
 			}
 		});
 
-		if (store.model.getName() == 'C.model.Run') {
-			var btns = grid.getDockedItems()[0].getChildItemsToDisable();
-			Ext.Array.forEach(btns, function (btn) {
-				if (btn.text != "Delete")
-				btn.hide();
-			});
-		}
 
-		if (store.navigationNode.store)
-		if (store.navigationNode.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
-			grid.getDockedItems()[0].hide();
+		try {
+			if (store.navigationNode.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
+				grid.getDockedItems()[0].hide();
+			}
 		}
+		catch (e){}
 
 		grid.reconfigure(store, cols); 
 		return grid;
