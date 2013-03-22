@@ -17,6 +17,7 @@ Ext.define('C.view.ResultsLineChart', {
 	extend: 'Ext.chart.Chart',
 
 	height: 397,
+	margin: '5 0 0 0',
 	style: 'background:#fff',
 	width: 719,
 	shadow: true,
