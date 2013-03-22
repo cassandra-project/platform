@@ -157,7 +157,7 @@ public class JSONtoReturn {
 			String title, String xAxisLabel, String yAxisLabel, 
 			int defaultAggrUnit,Integer numberOfDays) {
 		DBObject successMessage = new BasicDBObject();
-		successMessage.put("successv", true);
+		successMessage.put("success", true);
 		successMessage.put("message", descr);
 		successMessage.put("title", title);
 		successMessage.put("xAxisLabel", xAxisLabel);
