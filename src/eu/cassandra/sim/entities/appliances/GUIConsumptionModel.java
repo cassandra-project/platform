@@ -98,6 +98,7 @@ public class GUIConsumptionModel {
     	temp.add(new Double(count));
     	temp.add(new Double(count+0.01));
     	count++;
+    	System.out.println(count);
     }
     Double[] result = new Double[temp.size()];
     temp.toArray(result);

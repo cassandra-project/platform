@@ -547,26 +547,30 @@ public class MongoDBQueries {
 			double ppoints[] = null;
 			double qpoints[] = null;
 			BasicDBList list = new BasicDBList();
-			if(dBObject.containsField("pmodel") &&  ((DBObject)dBObject.get("pmodel")).containsField("params")) {
-				GUIConsumptionModel p = new GUIConsumptionModel((DBObject) dBObject.get("pmodel"), "p");
-				Double[] pvaluesConsModel = p.getValues(GUIConsumptionModel.P);
-				Double[] pointsConsModel = p.getPoints(pvaluesConsModel.length);
-				pvalues = new double[pvaluesConsModel.length];
-				ppoints = new double[pointsConsModel.length];
-				for(int i=0; i< pvaluesConsModel.length; i++) {
-					pvalues[i] = pvaluesConsModel[i];
-					ppoints[i] = pointsConsModel[i];
+			if(dBObject.containsField("pmodel")) {
+				if(((DBObject)dBObject.get("pmodel")).containsField("params")) {
+					GUIConsumptionModel p = new GUIConsumptionModel((DBObject) dBObject.get("pmodel"), "p");
+					Double[] pvaluesConsModel = p.getValues(GUIConsumptionModel.P);
+					Double[] pointsConsModel = p.getPoints(pvaluesConsModel.length);
+					pvalues = new double[pvaluesConsModel.length];
+					ppoints = new double[pointsConsModel.length];
+					for(int i=0; i< pvaluesConsModel.length; i++) {
+						pvalues[i] = pvaluesConsModel[i];
+						ppoints[i] = pointsConsModel[i];
+					}
 				}
 			}
-			if(dBObject.containsField("qmodel") &&  ((DBObject)dBObject.get("qmodel")).containsField("params")) {
-				GUIConsumptionModel q = new GUIConsumptionModel((DBObject) dBObject.get("qmodel"), "q");
-				Double[] qvaluesConsModel = q.getValues(GUIConsumptionModel.Q);
-				Double[] pointsConsModel = q.getPoints(qvaluesConsModel.length);
-				qvalues = new double[qvaluesConsModel.length];
-				qpoints = new double[pointsConsModel.length];
-				for(int i=0; i< qvaluesConsModel.length; i++) {
-					qvalues[i] = qvaluesConsModel[i];
-					qpoints[i] = pointsConsModel[i];
+			if(dBObject.containsField("qmodel")) {
+				if(((DBObject)dBObject.get("qmodel")).containsField("params")) {
+					GUIConsumptionModel q = new GUIConsumptionModel((DBObject) dBObject.get("qmodel"), "q");
+					Double[] qvaluesConsModel = q.getValues(GUIConsumptionModel.Q);
+					Double[] pointsConsModel = q.getPoints(qvaluesConsModel.length);
+					qvalues = new double[qvaluesConsModel.length];
+					qpoints = new double[pointsConsModel.length];
+					for(int i=0; i< qvaluesConsModel.length; i++) {
+						qvalues[i] = qvaluesConsModel[i];
+						qpoints[i] = pointsConsModel[i];
+					}
 				}
 			}
 			if(pvalues != null && qvalues != null) {

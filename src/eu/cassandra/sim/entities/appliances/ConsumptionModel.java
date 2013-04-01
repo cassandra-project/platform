@@ -93,10 +93,12 @@ public class ConsumptionModel extends Entity {
 			}
 			BasicDBList values = ((BasicDBList)((DBObject)patternsObj.get(i)).get("values"));
 			int tripplets = values.size();
+			System.out.println(tripplets);
 			patterns[i] = new ArrayList<Tripplet>(tripplets);
 			for(int j = 0; j < tripplets; j++) {
 				Tripplet t = new Tripplet();
 				try {
+					System.out.println(((DBObject)values.get(j)));
 					t.v = ((Double)((DBObject)values.get(j)).get(type)).doubleValue();
 				} catch(ClassCastException e) {
 					t.v = (double)((Integer)((DBObject)values.get(j)).get(type)).intValue();
