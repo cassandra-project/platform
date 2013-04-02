@@ -85,7 +85,6 @@ Ext.application({
 		'DemographicForm',
 		'EntitiesGrid',
 		'ResultsGraphForm',
-		'ConsModChart',
 		'DistributionNormalChart',
 		'MyTabPanel',
 		'MyTreePanel',
@@ -95,7 +94,8 @@ Ext.application({
 		'CassLibTreePanel',
 		'TypesPieChart',
 		'PricingForm',
-		'ComparePanel'
+		'ComparePanel',
+		'ConsModChart'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -190,7 +190,7 @@ Ext.application({
 					cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
 				}
 			}
-			catch (e){console.info('excpetion',store);}
+			catch (e){}
 		}
 
 		var namesBreadcrumb = record.getPath('name');
@@ -455,8 +455,8 @@ Ext.application({
 		}
 		});
 		*/
-		consmodGraphStore = new C.store.ConsumptionModelValues({});
-		myResultsChart = new C.view.ConsModChart({store: consmodGraphStore, legend: {position: 'bottom'}});
+		var consmodGraphStore = new C.store.ConsumptionModelValues();
+		var myResultsChart = new C.view.ConsModChart({store: consmodGraphStore, legend: {position: 'bottom'}});
 		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: consmodGraphStore});
 		myFormCmp.insert(3, myResultsChart);
 

@@ -40,8 +40,8 @@ Ext.define('C.view.Viewport', {
 		'C.view.LoginForm',
 		'C.view.MyViewport',
 		'C.view.ResultsLineChart',
-		'C.view.ConsModChart',
 		'C.view.DistributionNormalChart',
+		'C.view.ConsModChart',
 		'C.view.DistributionHistogramChart',
 		'C.view.TypesPieChart',
 		'C.view.ComparePanel'

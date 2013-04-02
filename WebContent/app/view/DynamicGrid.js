@@ -181,16 +181,8 @@ Ext.define('C.view.DynamicGrid', {
 				default: return false;
 			}
 
-			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'SimulationParam' || record.get('nodeType') == 'Pricing') && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
-
-				//Ext.sliding_box.msg('Drag and Drop info', 'By holding <b>Shift</b> key pressed while copying a node </br> all its childred will be copied as well');
-
-				var dataToAdd = JSON.parse(JSON.stringify(node.data));
-				delete dataToAdd._id;
-				dataToAdd[parent_idKey] = parent_id;
-				this.store.add(dataToAdd);
-			} 
-			else {
+			if ( !Ext.EventObject.shiftKey && ( record.get('nodeType') == 'Scenario' || record.get('nodeType') == 'Installation' || 
+			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' ) ){
 				data.copy = true;
 				var targetID = '';
 				var meID = '';
@@ -198,8 +190,6 @@ Ext.define('C.view.DynamicGrid', {
 					case 'Scenario': targetID = 'toPrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
-					case 'Activity': targetID = 'toPersID'; meID = 'actID'; break;
-					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
 					default: return false;
 				}
@@ -217,8 +207,19 @@ Ext.define('C.view.DynamicGrid', {
 						Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 					}
 				});
-				return 0;
+
+			} 
+			else {
+
+				//Ext.sliding_box.msg('Drag and Drop info', 'By holding <b>Shift</b> key pressed while copying a node </br> all its childred will be copied as well');
+
+				var dataToAdd = JSON.parse(JSON.stringify(node.data));
+				delete dataToAdd._id;
+				dataToAdd[parent_idKey] = parent_id;
+				this.store.add(dataToAdd);
+
 			}
+			return 0;
 		}
 		return false;
 	},
@@ -327,6 +328,7 @@ Ext.define('C.view.DynamicGrid', {
 
 
 		Ext.each(selections, function(selection, index) {
+
 			var sel_id = selection.get('_id');
 			var compPanel = new C.view.ComparePanel({title : 'Total Consumption Active Power for run: ' + selection.get('_id')});
 
