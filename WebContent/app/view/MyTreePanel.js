@@ -110,16 +110,8 @@ Ext.define('C.view.MyTreePanel', {
 			}
 
 
-			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'Pricing'|| record.get('nodeType') == 'SimulationParam' ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
-
-				var recordRawData = JSON.parse(JSON.stringify(node.data));
-				delete recordRawData._id;
-				//delete recordRawData._id;
-				// TODO Make damn sure that parentId actually exists all around.
-				recordRawData[parent_idKey] = overModel.get('parentId'); 
-				overModel.c.store.add(recordRawData);
-			}
-			else {
+			if ( !Ext.EventObject.shiftKey && ( record.get('nodeType') == 'Scenario' || record.get('nodeType') == 'Installation' || 
+			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' ) ){
 				data.copy = true;
 				var targetID = '';
 				var meID = '';
@@ -127,9 +119,8 @@ Ext.define('C.view.MyTreePanel', {
 					case 'Scenario': targetID = 'toPrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
-					case 'Activity': targetID = 'toPersID'; meID = 'actID'; break;
-					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
+					default: return false;
 				}
 
 				Ext.Ajax.request({
@@ -141,15 +132,38 @@ Ext.define('C.view.MyTreePanel', {
 						var params = {};
 						params[parent_idKey] = overModel.get('parentId');
 						overModel.removeAll();
-						overModel.c.store.load( {params : params });
+						try {
+							overModel.c.store.load( {params : params });
+						}
+						catch (e) {
+							overModel.expand();
+							overModel.c.store.load( {params : params });
+						}
 						Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 					}
 				});
+
+			} 
+			else {
+
+				//Ext.sliding_box.msg('Drag and Drop info', 'By holding <b>Shift</b> key pressed while copying a node </br> all its childred will be copied as well');
+
+				var recordRawData = JSON.parse(JSON.stringify(node.data));
+				delete recordRawData._id;
+				recordRawData[parent_idKey] = overModel.get('parentId'); 
+				try {
+					overModel.c.store.add(recordRawData);
+				}
+				catch(e) {
+					overModel.expand();
+					overModel.c.store.add(recordRawData);
+				}
 			}
+			return 0;
 		}
-		else {
-			return false;
-		}
+
+		return false;
+
 
 
 

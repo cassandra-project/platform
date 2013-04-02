@@ -76,10 +76,10 @@ Ext.define('C.view.UserLibTreePanel', {
 
 	onTreedragdroppluginBeforeDrop: function(node, data, overModel, dropPosition, dropFunction, options) {
 		console.info('Before node drop.', this, node, data, overModel, dropPosition, dropFunction, options);
-		// TODO Rename ALL the collections to itemCollection instead of itemsCollection
-		//if(overModel.raw.nodeType == data.records[0].raw.nodeType + 'sCollection'){
+
 		var record = (data.records[0].node) ? data.records[0].node : data.records[0];
 		var nodeType = record.get('nodeType');
+
 		// Node from tree || Node from grid.
 		if (record.parentNode.get('nodeType') == overModel.get('nodeType')){
 			// record can be a lot of things, navigation record, grid row.
@@ -87,9 +87,6 @@ Ext.define('C.view.UserLibTreePanel', {
 			dropFunction.cancelDrop();
 			var index = Ext.getStore(record.get('nodeStoreId')).findExact('_id', record.get('id'));
 			var node = Ext.getStore(record.get('nodeStoreId')).getAt(index);
-			// TODO Epic SWITCH-CASE statement goes here to get the *_id key for the parent.
-			// ex. scenario_id in the Installation case.
-			// TODO Move this epic thigie to each model as config?
 
 			parent_idKey = '';
 			switch(record.get('nodeType')){
@@ -102,24 +99,15 @@ Ext.define('C.view.UserLibTreePanel', {
 			}
 
 
-			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic'  ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
-
-				var recordRawData = JSON.parse(JSON.stringify(node.data));
-				delete recordRawData._id;
-				//delete recordRawData._id;
-				// TODO Make damn sure that parentId actually exists all around.
-				recordRawData[parent_idKey] = overModel.get('parentId'); 
-				overModel.c.store.add(recordRawData);
-			}
-			else {
+			if ( !Ext.EventObject.shiftKey && ( record.get('nodeType') == 'Scenario' || record.get('nodeType') == 'Installation' || 
+			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' ) ){
 				data.copy = true;
 				var targetID = '';
 				var meID = '';
 				switch(record.get('nodeType')){
+					case 'Scenario': targetID = 'toPrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
-					case 'Activity': targetID = 'toPersID'; meID = 'actID'; break;
-					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
 					default: return false;
 				}
@@ -133,15 +121,36 @@ Ext.define('C.view.UserLibTreePanel', {
 						var params = {};
 						params[parent_idKey] = overModel.get('parentId');
 						overModel.removeAll();
-						overModel.c.store.load( {params : params });
+						try {
+							overModel.c.store.load( {params : params });
+						}
+						catch (e) {
+							overModel.expand();
+							overModel.c.store.load( {params : params });
+						}
 						Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 					}
 				});
+
+			} 
+			else {
+				var recordRawData = JSON.parse(JSON.stringify(node.data));
+				delete recordRawData._id;
+				recordRawData[parent_idKey] = overModel.get('parentId'); 
+				try {
+					overModel.c.store.add(recordRawData);
+				}
+				catch(e) {
+					overModel.expand();
+					overModel.c.store.add(recordRawData);
+				}
+
 			}
+			return 0;
 		}
-		else {
-			return false;
-		}
+
+		return false;
+
 
 
 

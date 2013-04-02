@@ -16,10 +16,6 @@
 Ext.define('C.store.ConsumptionModelValues', {
 	extend: 'Ext.data.Store',
 
-	requires: [
-		'C.model.ConsumptionModel'
-	],
-
 	constructor: function(cfg) {
 		var me = this;
 		cfg = cfg || {};
@@ -28,7 +24,6 @@ Ext.define('C.store.ConsumptionModelValues', {
 			autoSync: true,
 			remoteFilter: true,
 			storeId: 'MyJsonStore11',
-			model: 'C.model.ConsumptionModel',
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
