@@ -60,6 +60,7 @@ import eu.cassandra.server.mongo.MongoRuns;
 import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.MongoSimParam;
 import eu.cassandra.server.mongo.util.DBConn;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.Simulation;
 import eu.cassandra.sim.utilities.Utils;
@@ -68,6 +69,8 @@ import eu.cassandra.sim.utilities.Utils;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class Runs {
+	
+	private JSONtoReturn jSON2Rrn = new JSONtoReturn();
 	
 	@javax.ws.rs.core.Context 
 	ServletContext context;
@@ -109,7 +112,7 @@ public class Runs {
 		try {
 			// Create the new database
 			Mongo m = new Mongo("localhost");
-			ObjectId objid = new ObjectId();
+			ObjectId objid = ObjectId.get();
 			String dbname = objid.toString();
 			DB db = m.getDB(dbname);
 			System.out.println("1");
@@ -272,7 +275,7 @@ public class Runs {
 			System.out.println(dbname);
 			runs.put(dbname, f);
 			System.out.println("10");
-			BasicDBObject run = new BasicDBObject();
+			DBObject run = new BasicDBObject();
 			Calendar calendar = Calendar.getInstance();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmm");
 			String runName = "Run for " + name + " on " + sdf.format(calendar.getTime());
@@ -283,11 +286,7 @@ public class Runs {
 			run.put("prj_id", prj_id);
 			run.put("percentage", 0);
 			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
-			DBObject returnObj = new BasicDBObject();
-			returnObj.put("success", true);
-			returnObj.put("message", "Sim creation successful");
-			returnObj.put("data", run);
-			String returnMsg = PrettyJSONPrinter.prettyPrint(returnObj);
+			String returnMsg = PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSON(run, "Sim creation successful"));
 			System.out.println(returnMsg);
 			return Utils.returnResponse(returnMsg);
 		} catch (UnknownHostException | MongoException e1) {

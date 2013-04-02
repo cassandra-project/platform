@@ -37,7 +37,7 @@ public class MongoCopyEntities {
 		
 	}
 	
-	private void addInfoFroCascadedCopy(DBObject res,DBObject answer,String newID) {
+	private void addInfoForCascadedCopy(DBObject res,DBObject answer,String newID) {
 		if(answer == null)
 			answer = res;
 		else {
@@ -78,7 +78,7 @@ public class MongoCopyEntities {
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
 		
 
-		addInfoFroCascadedCopy(res,answer,newID);
+		addInfoForCascadedCopy(res,answer,newID);
 
 		//Copy Persons of the Installation
 		DBObject q = new BasicDBObject(MongoPersons.REF_INSTALLATION, oldInstallationID);
@@ -119,7 +119,7 @@ public class MongoCopyEntities {
 				"inst_id",JSONValidator.PERSON_SCHEMA );
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
 
-		addInfoFroCascadedCopy(res,answer,newID);
+		addInfoForCascadedCopy(res,answer,newID);
 		
 		//Copy Activities of the Person
 		DBObject q = new BasicDBObject(MongoActivities.REF_PERSON, oldID);
@@ -151,7 +151,7 @@ public class MongoCopyEntities {
 				"inst_id",JSONValidator.APPLIANCE_SCHEMA );
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
 
-		addInfoFroCascadedCopy(res,answer,newID);
+		addInfoForCascadedCopy(res,answer,newID);
 		
 		//Copy Consumption Model of the Appliance
 		DBObject q = new BasicDBObject(MongoConsumptionModels.REF_APPLIANCE, oldID);
@@ -182,7 +182,7 @@ public class MongoCopyEntities {
 				MongoActivities.REF_PERSON,JSONValidator.ACTIVITY_SCHEMA );
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
 
-		addInfoFroCascadedCopy(res,answer,newID);
+		addInfoForCascadedCopy(res,answer,newID);
 		
 		//Copy Activity Models of the Activity
 		DBObject q = new BasicDBObject(MongoActivityModels.REF_ACTIVITY, oldID);
@@ -210,18 +210,26 @@ public class MongoCopyEntities {
 
 		DBObject res =  new MongoDBQueries().insertData(MongoActivityModels.COL_ACTMODELS ,fromObj.toString() ,
 				"Activity Model copied successfully", MongoActivities.COL_ACTIVITIES ,
-				MongoActivityModels.REF_ACTIVITY,JSONValidator.ACTIVITYMODEL_SCHEMA );
+				MongoActivityModels.REF_ACTIVITY, JSONValidator.ACTIVITYMODEL_SCHEMA );
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
 
-		addInfoFroCascadedCopy(res,answer,newID);
+		addInfoForCascadedCopy(res, answer, newID);
 		
 		//Copy Distributions of the Activity Model
 		DBObject q = new BasicDBObject(MongoDistributions.REF_ACTIVITYMODEL, oldID);
 		DBCursor cursorDoc = DBConn.getConn().getCollection(MongoDistributions.COL_DISTRIBUTIONS).find(q);
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();
-			String childID = obj.get("_id").toString();
-			copyDistributionToActivityModel(childID, newID,res);
+			String childID = ((ObjectId)obj.get("_id")).toString();
+			String distrClass = null;
+			if(childID.equalsIgnoreCase(fromObj.get(MongoActivityModels.REF_DISTR_DURATION).toString())) {
+				distrClass = MongoActivityModels.REF_DISTR_DURATION;
+			} else if(childID.equalsIgnoreCase(fromObj.get(MongoActivityModels.REF_DISTR_REPEATS).toString())) {
+				distrClass = MongoActivityModels.REF_DISTR_REPEATS;
+			} else {
+				distrClass = MongoActivityModels.REF_DISTR_STARTTIME;
+			}
+			copyDistributionToActivityModel(childID, newID, res, distrClass);
 		}
 
 		return PrettyJSONPrinter.prettyPrint(res);
@@ -243,7 +251,7 @@ public class MongoCopyEntities {
 				MongoConsumptionModels.REF_APPLIANCE,JSONValidator.CONSUMPTIONMODEL_SCHEMA );
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
 
-		addInfoFroCascadedCopy(res,answer,newID);
+		addInfoForCascadedCopy(res,answer,newID);
 
 		return PrettyJSONPrinter.prettyPrint(res.toString());
 	}
@@ -254,7 +262,7 @@ public class MongoCopyEntities {
 	 * @param toActmodID
 	 * @return
 	 */
-	public String copyDistributionToActivityModel(String distrID, String toActmodID, DBObject answer) {
+	public String copyDistributionToActivityModel(String distrID, String toActmodID, DBObject answer, String distrClass) {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoDistributions.COL_DISTRIBUTIONS).findOne(new BasicDBObject("_id", new ObjectId(distrID)));
 		fromObj.put(MongoDistributions.REF_ACTIVITYMODEL, toActmodID);
@@ -263,8 +271,19 @@ public class MongoCopyEntities {
 				"Distribution copied successfully", MongoActivityModels.COL_ACTMODELS ,
 				MongoDistributions.REF_ACTIVITYMODEL,JSONValidator.DISTRIBUTION_SCHEMA );
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
+		
+		// Update relevant activity model
+		DBObject actMod = DBConn.getConn().getCollection(
+				MongoActivityModels.COL_ACTMODELS).findOne(new BasicDBObject("_id", new ObjectId(toActmodID)));
+		actMod.put(distrClass, newID);
+		String actModID = actMod.get("_id").toString();
+		new MongoDBQueries().updateDocument("_id", actModID, actMod.toString(),
+						MongoActivityModels.COL_ACTMODELS,  
+						"Activity Model updated successfully",
+						MongoActivities.COL_ACTIVITIES ,"act_id",
+						JSONValidator.ACTIVITYMODEL_SCHEMA);
 
-		addInfoFroCascadedCopy(res,answer,newID);
+		addInfoForCascadedCopy(res, answer, newID);
 		
 		return PrettyJSONPrinter.prettyPrint(res.toString());
 	}
@@ -316,7 +335,7 @@ public class MongoCopyEntities {
 				MongoSimParam.REF_SCENARIO,JSONValidator.SIMPARAM_SCHEMA );
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
 
-		addInfoFroCascadedCopy(res,answer,newID);
+		addInfoForCascadedCopy(res,answer,newID);
 
 		return PrettyJSONPrinter.prettyPrint(res);
 	}
