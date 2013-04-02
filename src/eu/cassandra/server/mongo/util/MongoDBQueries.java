@@ -840,7 +840,7 @@ public class MongoDBQueries {
 		}catch(Exception e) {
 			return jSON2Rrn.createJSONError(dataToInsert,e);
 		}
-		return jSON2Rrn.createJSONInsertPostMessage(successMessage,data) ;
+		return jSON2Rrn.createJSONInsertPostMessage(successMessage, data) ;
 	}
 
 	/**

@@ -18,6 +18,8 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.DBObject;
+
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
@@ -74,23 +76,25 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String createInstallation(String dataToInsert) {
+		return createInstallationObj(dataToInsert).toString();
+	}
+	
+	public static DBObject createInstallationObj(String dataToInsert) {
 		MongoDBQueries q = new MongoDBQueries();
-		String returnMsg = q.insertData(COL_INSTALLATIONS ,dataToInsert,
+		DBObject returnObj = q.insertData(COL_INSTALLATIONS ,dataToInsert,
 				"Installation created successfully", 
 				new String[] {MongoScenarios.COL_SCENARIOS,COL_INSTALLATIONS} ,
 				new String[] {"scenario_id","belongsToInstallation"},
-				new boolean[] {false,true},JSONValidator.INSTALLATION_SCHEMA).toString();
-		System.out.println(returnMsg);
-		if(Utils.failed(returnMsg)) {
-			System.out.println(returnMsg);
+				new boolean[] {false,true},JSONValidator.INSTALLATION_SCHEMA);
+		if(Utils.failed(returnObj.toString())) {
 			// Perhaps should be added to the user library
-			returnMsg = q.insertData(COL_INSTALLATIONS ,dataToInsert,
+			returnObj = q.insertData(COL_INSTALLATIONS ,dataToInsert,
 					"Installation created successfully", 
 					new String[] {"users"} ,
 					new String[] {"scenario_id"},
-					new boolean[] {false},JSONValidator.INSTALLATION_SCHEMA).toString();
+					new boolean[] {false},JSONValidator.INSTALLATION_SCHEMA);
 		}
-		return returnMsg;
+		return returnObj;
 	}
 
 	/**
