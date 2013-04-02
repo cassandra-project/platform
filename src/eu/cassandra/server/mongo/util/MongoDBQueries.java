@@ -876,7 +876,7 @@ public class MongoDBQueries {
 	private void ensureThatRefKeysMatch(DBObject data, String coll, String refKeyName, 
 			String intDocKey, String cid) throws MongoRefNotFoundException{
 		String parentKey = data.get(refKeyName).toString();
-		DBObject q = new BasicDBObject(intDocKey + ".cid",new ObjectId(cid));
+		DBObject q = new BasicDBObject(intDocKey + ".cid", new ObjectId(cid));
 		DBCursor cursor =  DBConn.getConn().getCollection(coll).find(q);
 		while(cursor.hasNext()) {
 			DBObject parent = cursor.next();

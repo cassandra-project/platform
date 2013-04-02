@@ -123,11 +123,20 @@ public class CopyEntities {
 		else if(actID != null && toPersID != null) //Activities to Person
 			answer = copy.copyActivityToPerson(actID, toPersID,null);
 		else if(consmodID != null && toAppID != null) //Consumption Model to Appliance
-			answer = copy.copyConsModelToAppliance(consmodID, toAppID,null);
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
+			// obsolete
+			//answer = copy.copyConsModelToAppliance(consmodID, toAppID,null);
 		else if(actmodID != null && toActID != null) //Activity Model to Activity
-			answer = copy.copyActivityModelToActivity(actmodID, toActID,null);
-		else if(distrID != null && toActmodID != null) //Distribution to Activity Model 
-			answer = copy.copyDistributionToActivityModel(distrID, toActmodID,null);
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
+			// obsolete
+			// answer = copy.copyActivityModelToActivity(actmodID, toActID,null); 
+		else if(distrID != null && toActmodID != null) //Distribution to Activity Model
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
+			// obsolete
+			// answer = copy.copyDistributionToActivityModel(distrID, toActmodID, null); obsolete
 		else {
 			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
 					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
