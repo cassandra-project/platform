@@ -76,11 +76,13 @@ public class MongoCopyEntities {
 				new String[] {"scenario_id","belongsToInstallation"},
 				new boolean[] {false,true},JSONValidator.INSTALLATION_SCHEMA);
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
+		
 
 		addInfoFroCascadedCopy(res,answer,newID);
 
 		//Copy Persons of the Installation
 		DBObject q = new BasicDBObject(MongoPersons.REF_INSTALLATION, oldInstallationID);
+		System.out.println(q);
 		DBCursor cursorDoc = DBConn.getConn().getCollection(MongoPersons.COL_PERSONS).find(q);
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();

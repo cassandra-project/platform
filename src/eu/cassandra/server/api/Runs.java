@@ -112,7 +112,7 @@ public class Runs {
 			ObjectId objid = new ObjectId();
 			String dbname = objid.toString();
 			DB db = m.getDB(dbname);
-			
+			System.out.println("1");
 			// Create the scenario document
 			DBObject scenario = new BasicDBObject();
 			
@@ -126,34 +126,34 @@ public class Runs {
 			}
 			db.getCollection(MongoSimParam.COL_SIMPARAM).insert(simParams);
 			scenario.put("sim_params", simParams);
-			
+			System.out.println("2");
 			// Scenario
 			String scn_id = (String) simParams.get("scn_id");
 			query.put("_id", new ObjectId(scn_id));
 			DBObject scn = DBConn.getConn().getCollection(MongoScenarios.COL_SCENARIOS).findOne(query);
 			db.getCollection(MongoScenarios.COL_SCENARIOS).insert(scn);
 			scenario.put("scenario", scn);
-			
+			System.out.println("3");
 			// Project
 			String prj_id = (String)scn.get("project_id");
 			query.put("_id", new ObjectId(prj_id));
 			DBObject project = DBConn.getConn().getCollection(MongoProjects.COL_PROJECTS).findOne(query);
 			db.getCollection(MongoProjects.COL_PROJECTS).insert(project);
 			scenario.put("project", project);
-			
+			System.out.println("4");
 			// Demographics
 			query = new BasicDBObject();
 			query.put("scn_id", scn_id);
 			String setup = (String)scn.get("setup");
 			String name = (String)scn.get("name");
-			
+			System.out.println("5");
 			boolean isDynamic = setup.equalsIgnoreCase("dynamic");
 			if(isDynamic) {
 				DBObject demog = DBConn.getConn().getCollection(MongoDemographics.COL_DEMOGRAPHICS).findOne(query);
 				db.getCollection(MongoDemographics.COL_DEMOGRAPHICS).insert(demog);
 				scenario.put("demog", demog);
 			}	
-			
+			System.out.println("6");
 			// Installations
 			query = new BasicDBObject();
 			query.put("scenario_id", scn_id);
@@ -236,7 +236,7 @@ public class Runs {
 					obj.put("person"+personCount, person);
 				}
 				obj.put("personcount", new Integer(personCount));
-				
+				System.out.println("7");
 				// Appliances
 				query = new BasicDBObject();
 				query.put("inst_id", inst_id);
@@ -262,14 +262,16 @@ public class Runs {
 			}
 			scenario.put("instcount", new Integer(countInst));
 			// Scenario building finished
-			
+			System.out.println("8");
 			HashMap<String,Future<?>> runs = (HashMap<String,Future<?>>)context.getAttribute("MY_RUNS");
 			Simulation sim = new Simulation(scenario.toString(), dbname);
 			sim.setup();
+			System.out.println("9");
 			ExecutorService executor = (ExecutorService)context.getAttribute("MY_EXECUTOR");
 			Future<?> f = executor.submit(sim);
 			System.out.println(dbname);
 			runs.put(dbname, f);
+			System.out.println("10");
 			BasicDBObject run = new BasicDBObject();
 			Calendar calendar = Calendar.getInstance();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmm");
@@ -293,7 +295,8 @@ public class Runs {
 			System.out.println(returnMsg);
 			return Utils.returnResponse(returnMsg); 
 		} catch(Exception e) {
-			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"generalException\": \"" + e.getMessage() + "\" } }"; 
+			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"generalException\": \"" + e.getMessage() + "\" } }";
+			e.printStackTrace();
 			System.out.println(returnMsg);
 			return Utils.returnResponse(returnMsg);
 		}

@@ -213,19 +213,19 @@ public class Simulation implements Runnable {
   	public void setup() throws Exception {
   		logger.info("Simulation setup started.");
   		installations = new Vector<Installation>();
-    
+		System.out.println("A");
   		/* TODO  Change the Simulation Calendar initialization */
   		simulationWorld = new SimulationParams();
     
   		DBObject jsonScenario = (DBObject) JSON.parse(scenario);
   		DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
-    
+  		System.out.println("B");
   		int numOfDays = ((Integer)simParamsDoc.get("numberOfDays")).intValue();
   		
   		endTick = Constants.MIN_IN_DAY * numOfDays;
   		mcruns = ((Integer)simParamsDoc.get("mcruns")).intValue();
-
+  		System.out.println("C");
   		// Check type of setup
   		String setup = (String)scenarioDoc.get("setup"); 
   		if(setup.equalsIgnoreCase("static")) {
@@ -235,12 +235,14 @@ public class Simulation implements Runnable {
   		} else {
   			throw new Exception("Problem with setup property");
   		}
+  		System.out.println("D");
   		logger.info("Simulation setup finished.");
   	}
 
   	public void staticSetup (DBObject jsonScenario) {
 	    int numOfInstallations = ((Integer)jsonScenario.get("instcount")).intValue();
 	    queue = new PriorityBlockingQueue<Event>(2 * numOfInstallations);
+		System.out.println("sdf");
 	    for (int i = 1; i <= numOfInstallations; i++) {
 	    	DBObject instDoc = (DBObject)jsonScenario.get("inst"+i);
 	    	String id = ((ObjectId)instDoc.get("_id")).toString();
@@ -251,6 +253,7 @@ public class Simulation implements Runnable {
 	    			id, name, description, type).build();
 	    	int appcount = ((Integer)instDoc.get("appcount")).intValue();
 	    	// Create the appliances
+			System.out.println("F");
 	    	HashMap<String,Appliance> existing = new HashMap<String,Appliance>();
 	    	for (int j = 1; j <= appcount; j++) {
 	    		DBObject applianceDoc = (DBObject)instDoc.get("app"+j);
@@ -261,8 +264,8 @@ public class Simulation implements Runnable {
 		    	double standy = Double.parseDouble(applianceDoc.get("standy_consumption").toString());
 		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
-		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("model").toString(), "p");
-		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("model").toString(), "q");
+		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
+		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
 	    		Appliance app = new Appliance.Builder(
 	    				appid,
 	    				appname,
@@ -276,6 +279,7 @@ public class Simulation implements Runnable {
 	    		existing.put(appid, app);
 	    		inst.addAppliance(app);
 	    	}
+			System.out.println("11");
 	    	DBObject personDoc = (DBObject)instDoc.get("person1");
 	    	String personid = ((ObjectId)personDoc.get("_id")).toString();
     		String personName = (String)personDoc.get("name");
@@ -289,6 +293,7 @@ public class Simulation implements Runnable {
 	    	inst.addPerson(person);
 	    	int actcount = ((Integer)personDoc.get("activitycount")).intValue();
 	    	//System.out.println("Act-Count: " + actcount);
+			System.out.println("12");
 	    	for (int j = 1; j <= actcount; j++) {
 	    		DBObject activityDoc = (DBObject)personDoc.get("activity"+j);
 	    		String activityName = (String)activityDoc.get("name");
@@ -376,8 +381,8 @@ public class Simulation implements Runnable {
 		    	} catch(ClassCastException cce) { }
 		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
-		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("model").toString(), "p");
-		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("model").toString(), "q");
+		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
+		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
 	    		Appliance app = new Appliance.Builder(
 	    				appid,
 	    				appname,

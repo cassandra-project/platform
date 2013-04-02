@@ -49,6 +49,7 @@ public class CopyEntities {
 	 * @param persID
 	 * @param scnID
 	 * @param smpID
+	 * 
 	 * @param toPrjID
 	 * @param toActID
 	 * @param toActmodID
@@ -111,9 +112,9 @@ public class CopyEntities {
 		try {
 		if(scnID != null && toPrjID != null) //Scenario to Project
 			answer = copy.copyScenarioToProject(scnID, toPrjID);
-		else if(instID != null && toScnID != null) //Installation to Scenario
+		else if(instID != null && toScnID != null) { //Installation to Scenario
 			answer = copy.copyInstallationToScenario(instID, toScnID,null);
-		else if(smpID != null && toScnID != null) //Simulation Parameter to Scenario
+		} else if(smpID != null && toScnID != null) //Simulation Parameter to Scenario
 			answer = copy.copySimParamsToScenario(smpID, toScnID,null);
 		else if(appID != null && toInstID != null) //Appliance to Installation
 			answer = copy.copyApplianceToInstallation(appID, toInstID,null);
