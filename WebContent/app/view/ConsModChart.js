@@ -16,12 +16,12 @@
 Ext.define('C.view.ConsModChart', {
 	extend: 'Ext.chart.Chart',
 
-	height: 397,
+	height: 400,
 	style: 'background:#fff',
-	width: 900,
+	width: 700,
 	shadow: false,
 	animate: true,
-	insetPadding: 20,
+	insetPadding: 5,
 	store: 'ConsumptionModelValues',
 
 	initComponent: function() {
@@ -36,7 +36,6 @@ Ext.define('C.view.ConsModChart', {
 					],
 					position: 'bottom',
 					title: 'Time',
-					decimals: 0,
 					minimum: 0
 				},
 				{
@@ -53,35 +52,34 @@ Ext.define('C.view.ConsModChart', {
 							'stroke-width': 0.5
 						}
 					},
-					minorTickSteps: 1,
 					position: 'left',
-					adjustMaximumByMajorUnit: true,
 					minimum: 0
 				}
 			],
-			legend: {
-
-			},
 			series: [
 				{
 					type: 'line',
 					highlight: {
-						size: 2,
-						radius: 2
+						size: 7,
+						radius: 7
 					},
 					tips: {
 						trackMouse: true,
 						width: 100,
-						height: 40,
+						height: 60,
 						renderer: function(storeItem, item) {
-							this.setTitle( 'VA : ' + storeItem.get('p') + '<br />' + 'Time : ' + storeItem.get('x'));
+							this.setTitle( 'W : ' + storeItem.get('p') + '<br />' + 'VA : ' + storeItem.get('q') + '<br />' + 'Time : ' + storeItem.get('x'));
 						}
 					},
 					title: 'Active Power (W)',
+					xField: 'x',
 					yField: [
 						'p'
 					],
-					showMarkers: false
+					fill: true,
+					selectionTolerance: 6,
+					showMarkers: false,
+					smooth: 3
 				},
 				{
 					type: 'line',
@@ -92,16 +90,20 @@ Ext.define('C.view.ConsModChart', {
 					tips: {
 						trackMouse: true,
 						width: 100,
-						height: 40,
+						height: 60,
 						renderer: function(storeItem, item) {
-							this.setTitle( 'VA : ' + storeItem.get('q') + '<br />' + 'Time : ' + storeItem.get('x'));
+							this.setTitle( 'W : ' + storeItem.get('p') + '<br />' + 'VA : ' + storeItem.get('q') + '<br />' + 'Time : ' + storeItem.get('x'));
 						}
 					},
 					title: 'Reactive Power (VA)',
+					xField: 'x',
 					yField: [
 						'q'
 					],
-					showMarkers: false
+					fill: true,
+					selectionTolerance: 6,
+					showMarkers: false,
+					smooth: 3
 				}
 			],
 			listeners: {
@@ -118,9 +120,13 @@ Ext.define('C.view.ConsModChart', {
 	onChartAfterRender: function(abstractcomponent, options) {
 		abstractcomponent.store.on('load',function(store, records){
 			var y_axis = abstractcomponent.axes.getRange()[1];
-			var prevMax = y_axis.prevMax;
-			y_axis.maximum = prevMax + prevMax/10;
-			abstractcomponent.redraw();
+			var y_axis_max = (store.max('p') > store.max('q')) ?  store.max('p') :  store.max('q');
+			y_axis.maximum = y_axis_max + y_axis_max/10;
+
+			try {
+				abstractcomponent.redraw();
+			}
+			catch(e) {}
 		});
 	}
 
