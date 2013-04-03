@@ -19,6 +19,8 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.DBObject;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
@@ -70,16 +72,20 @@ public class MongoPersons {
 	 * @return
 	 */
 	public String createPerson(String dataToInsert) {
+		return createPersonObj(dataToInsert).toString();
+	}
+	
+	public static DBObject createPersonObj(String dataToInsert) {
 		MongoDBQueries q = new MongoDBQueries();
-		String returnMsg = q.insertData(COL_PERSONS ,dataToInsert,
+		DBObject returnObj = q.insertData(COL_PERSONS ,dataToInsert,
 				"Person created successfully", MongoInstallations.COL_INSTALLATIONS ,
-				"inst_id",JSONValidator.PERSON_SCHEMA ).toString();
-		if(Utils.failed(returnMsg)) {
-			returnMsg = q.insertData(COL_PERSONS ,dataToInsert,
+				"inst_id",JSONValidator.PERSON_SCHEMA );
+		if(Utils.failed(returnObj.toString())) {
+			returnObj = q.insertData(COL_PERSONS ,dataToInsert,
 					"Person created successfully", "users" ,
-					"inst_id",JSONValidator.PERSON_SCHEMA ).toString();
+					"inst_id",JSONValidator.PERSON_SCHEMA);
 		}
-		return returnMsg;
+		return returnObj;
 	}
 
 	/**

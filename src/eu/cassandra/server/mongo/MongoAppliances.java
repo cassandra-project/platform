@@ -106,16 +106,20 @@ public class MongoAppliances {
 	 * @return
 	 */
 	public String createAppliance(String dataToInsert) {
+		return createApplianceObj(dataToInsert).toString();
+	}
+	
+	public static DBObject createApplianceObj(String dataToInsert) {
 		MongoDBQueries q = new MongoDBQueries();
-		String returnMsg = q.insertData(COL_APPLIANCES ,dataToInsert,
+		DBObject returnObj = q.insertData(COL_APPLIANCES ,dataToInsert,
 				"Appliance created successfully", MongoInstallations.COL_INSTALLATIONS ,
-				"inst_id",JSONValidator.APPLIANCE_SCHEMA).toString();
-		if(Utils.failed(returnMsg)) {
-			returnMsg = q.insertData(COL_APPLIANCES ,dataToInsert,
+				"inst_id",JSONValidator.APPLIANCE_SCHEMA);
+		if(Utils.failed(returnObj.toString())) {
+			returnObj = q.insertData(COL_APPLIANCES ,dataToInsert,
 					"Appliance created successfully", "users" ,
-					"inst_id",JSONValidator.APPLIANCE_SCHEMA).toString();
+					"inst_id",JSONValidator.APPLIANCE_SCHEMA);
 		}
-		return returnMsg;
+		return returnObj;
 	}
 
 	/**
