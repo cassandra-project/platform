@@ -323,37 +323,179 @@ Ext.define('C.view.DynamicGrid', {
 			title  : 'Compare runs and KPIs',
 			width : 850,
 			height : 650,
+			bodyPadding: 20,
 			autoScroll : true
 		}); 
 
+		var fields = 
+		[{
+			name: 'x',
+			type: 'float'
+		}];
+		var yFieldArray = [];
+		var dataArray = [];
+		var recordArray = [];
+		var series = [];
 
 		Ext.each(selections, function(selection, index) {
-
 			var sel_id = selection.get('_id');
-			var compPanel = new C.view.ComparePanel({title : 'Total Consumption Active Power for run: ' + selection.get('_id')});
+			fields.push(
+			{
+				name: 'y'+index,
+				mapping: 'y',
+				type: 'float'
+			}
+			);
+			yFieldArray.push('y'+index);
 
-			myResultsStore = new C.store.Results();
-			myResultsStore.proxy.headers = {'dbname': sel_id};
-			myResultsChart = new C.view.ResultsLineChart({width: 400, height: 300, store: myResultsStore});
-			var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: myResultsStore});
-			myResultsStore.load();
-			compPanel.add(myResultsChart);
+			var tempStore = new C.store.Results({});
+			tempStore.proxy.headers = {'dbname': sel_id};
 
 			var kpiStore = new C.store.Kpis();
 			kpiStore.proxy.headers = {'dbname': sel_id};
-			kpiStore.load();
-			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(kpiStore);
-			grid.width = 400;
-			grid.closable = false;
-			grid.setTitle("KPIs");
-			grid.query("tool")[0].hide();
-			compPanel.add(grid);
 
-			chartWindow.add(compPanel);
+			series.push({
+				title: selection.get('name'),
+				type: 'line',
+				highlight: {
+					size: 4,
+					radius: 4
+				},
+				tips: {
+					trackMouse: true,
+					width: 180,
+					height: 70,
+					renderer: function(storeItem, item) {
+						this.setTitle( selection.get('name') + '</br>' + 'Watt : ' + storeItem.get('y'+index) + '<br />' +  'Time : ' + storeItem.get('x'));
+					}
+				},
+				xField: 'x',
+				yField: [
+				'y'+index
+				],
+				selectionTolerance: 6,
+				showMarkers: false,
+				smooth: 3
+
+			});
+
+
+			tempStore.on('load',function(store, records){
+				if (dataArray.length === 0)
+				Ext.each(store.data.items, function(item,inner_index) {
+					dataArray.push({'x':item.get('x'), 'y0':item.get('y')});
+				});
+				else 
+				Ext.each(store.data.items, function(item,inner_index) {
+					dataArray[inner_index]['y'+index] = item.get('y');
+				});
+
+				//check if dataArray is filled with all data
+				if (dataArray[0]['y' + (selections.length - 1)]) {
+
+					var mystore = Ext.create('Ext.data.Store', {
+						fields: fields
+						//data: dataArray
+					});
+					mystore.loadData(dataArray);
+
+					var myResultsChart = Ext.create('Ext.chart.Chart', {
+						renderTo: Ext.getBody(),
+						width: 800, 
+						height: 600, 
+						legend: {position: 'bottom'},
+						store: mystore,
+						axes: [
+						{
+							type: 'Numeric',
+							fields: [
+							'x'
+							],
+							majorTickSteps: 20,
+							minorTickSteps: 5,
+							position: 'bottom',
+							title: 'Time'
+						},
+						{
+							type: 'Numeric',
+							fields: yFieldArray,
+							grid: {
+								odd: {
+									opacity: 1,
+									fill: '#ddd',
+									stroke: '#bbb',
+									'stroke-width': 0.5
+								}
+							},
+							position: 'left',
+							title: 'Watt'
+						}
+						],
+						series: series
+
+					});
+
+					chartWindow.insert(0, myResultsChart);
+					chartWindow.show();
+				}
+			});
+			tempStore.load();
+
+			kpiStore.on('load',function(store, records){
+
+				records[0].data.name = selection.get('name');
+				recordArray.push(records[0]);
+
+				if (recordArray.length == selections.length) {
+					var myKpiStore = Ext.create('Ext.data.Store', {
+						model: 'C.model.Kpi'
+						//data: dataArray
+					});
+					myKpiStore.loadRecords(recordArray);
+					var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(myKpiStore);
+					grid.width = 800;
+					grid.closable = false;
+					grid.setTitle("KPIs");
+					grid.query("tool")[0].hide();
+					chartWindow.insert(1, grid);
+				}
+			});
+			kpiStore.load();
 		});
 
 
-		chartWindow.show();
+
+
+
+
+		/*Ext.each(selections, function(selection, index) {
+
+		var sel_id = selection.get('_id');
+		var compPanel = new C.view.ComparePanel({title : 'Total Consumption Active Power for run: ' + selection.get('_id')});
+
+		myResultsStore = new C.store.Results();
+		myResultsStore.proxy.headers = {'dbname': sel_id};
+		myResultsChart = new C.view.ResultsLineChart({width: 400, height: 300, store: myResultsStore});
+		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: myResultsStore});
+		myResultsStore.load();
+		compPanel.add(myResultsChart);
+
+		var kpiStore = new C.store.Kpis();
+		kpiStore.proxy.headers = {'dbname': sel_id};
+		kpiStore.load();
+		var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(kpiStore);
+		grid.width = 400;
+		grid.closable = false;
+		grid.setTitle("KPIs");
+		grid.query("tool")[0].hide();
+		compPanel.add(grid);
+
+		chartWindow.add(compPanel);
+		});
+
+
+		chartWindow.show();*/
+
 	},
 
 	onButtonBeforeRender2: function(abstractcomponent, options) {

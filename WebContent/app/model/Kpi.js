@@ -27,6 +27,11 @@ Ext.define('C.model.Kpi', {
 			name: 'inst_id'
 		},
 		{
+			name: 'name',
+			persist: false,
+			type: 'string'
+		},
+		{
 			name: 'maxPower',
 			type: 'float'
 		},

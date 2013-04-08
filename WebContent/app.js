@@ -94,7 +94,6 @@ Ext.application({
 		'CassLibTreePanel',
 		'TypesPieChart',
 		'PricingForm',
-		'ComparePanel',
 		'ConsModChart'
 	],
 	autoCreateViewport: true,
@@ -376,6 +375,33 @@ Ext.application({
 		myFormCmp.getComponent('distributionsFieldSet').add(myStartCmp);
 		myFormCmp.getComponent('distributionsFieldSet').add(myRepeatsCmp);
 		return myFormCmp;
+	},
+
+	flotDataFromExtStore: function(store, xField, yField,appendId) {
+
+		function convert(data) {
+			if (data === "")
+			return null;
+			if(data === null)
+			return null;
+
+			if (typeof data == "object" && data.constructor == Date)
+			// correct with local timezone offset to work-around data being
+			// in local time
+			return data.getTime() - data.getTimezoneOffset() * 60 * 1000;
+			return +data;
+		}
+
+		var res = [];
+		store.each(function (record) {
+			res.push([convert(record.data[xField]),
+			convert(record.data[yField])]);
+			if (appendId)
+			res[res.length - 1].push(record.id);
+		});
+		return res;
+
+
 	},
 
 	launch: function() {

@@ -43,7 +43,6 @@ Ext.define('C.view.Viewport', {
 		'C.view.DistributionNormalChart',
 		'C.view.ConsModChart',
 		'C.view.DistributionHistogramChart',
-		'C.view.TypesPieChart',
-		'C.view.ComparePanel'
+		'C.view.TypesPieChart'
 	]
 });
