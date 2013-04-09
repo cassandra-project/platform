@@ -63,7 +63,6 @@ Ext.define('C.store.Installations', {
 	onJsonstoreLoad: function(store, records, successful, options) {
 		if(store.navigationNode){
 			Ext.each(records, function(record, index){
-				var parentNode = store.navigationNode.parentNode;
 				console.info('++ Node does not exist. Creating it.');
 				var node = store.navigationNode.appendChild({
 					id: record.get('_id'),
@@ -72,9 +71,9 @@ Ext.define('C.store.Installations', {
 					nodeId: record.get('_id'),
 					nodeStoreId: store.storeId,
 					expanded: false,
-					leaf: (parentNode.get('root')) ? true : false,
-					expandable:  (parentNode.get('root')) ? false : true,
-					fakeChildren: (parentNode.get('root')) ? false : true,
+					leaf: false,
+					expandable:   true,
+					fakeChildren: true,
 					draggable: false
 				});
 				record.node = node;
@@ -88,7 +87,6 @@ Ext.define('C.store.Installations', {
 		console.info('Installation data updated.', abstractstore, record, operation, options);
 		if (!record.node) {
 			if (operation == 'commit') {
-				var parentNode = abstractstore.navigationNode.parentNode;
 				console.info('++ Node does not exist. Creating it.');
 				var node = abstractstore.navigationNode.appendChild({
 					id: record.get('_id'),
@@ -97,9 +95,9 @@ Ext.define('C.store.Installations', {
 					nodeId: record.get('_id'),
 					nodeStoreId: abstractstore.storeId,
 					expanded: false,
-					leaf: (parentNode.get('root')) ? true : false,
-					expandable:  (parentNode.get('root')) ? false : true,
-					fakeChildren: (parentNode.get('root')) ? false : true,
+					leaf: false,
+					expandable:  true,
+					fakeChildren: true,
 					draggable: false
 				});
 				record.node = node;

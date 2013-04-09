@@ -19,7 +19,7 @@ Ext.define('C.view.CassLibTreePanel', {
 	disabled: false,
 	floating: false,
 	frame: false,
-	autoScroll: true,
+	autoScroll: false,
 	collapseDirection: 'left',
 	collapsible: false,
 	titleCollapse: false,
@@ -99,8 +99,10 @@ Ext.define('C.view.CassLibTreePanel', {
 	onTreepanelBeforeRender: function(abstractcomponent, options) {
 		console.info('Before render treepanel.', this, abstractcomponent, options);
 
-		abstractcomponent.getRootNode().data.icon = "resources/icons/cass_lib.png";
-		abstractcomponent.getRootNode().data.iconCls = "treeIcon";
+		abstractcomponent.getRootNode().set({
+			'icon': 'resources/icons/cass_lib.png',
+			'iconCls': 'treeIcon'
+		});
 
 		C.lib_auth = 'Basic ' + Ext.util.base64.encode('cassandralibrary:password');
 		Ext.Ajax.request({
@@ -111,7 +113,10 @@ Ext.define('C.view.CassLibTreePanel', {
 			success : function(response, options) {
 				var response_obj = JSON.parse(response.responseText);
 				C.lib_id = response_obj.data[0].usr_id;
-				abstractcomponent.getRootNode().data.id = C.lib_id;
+				abstractcomponent.getRootNode().set({
+					'id': C.lib_id,
+					'nodeId' : C.lib_id
+				});
 				console.info('Tree rendered with root id = ' + C.lib_id);
 
 				abstractcomponent.on('nodedragover', function(dragEvent) {
@@ -136,12 +141,12 @@ Ext.define('C.view.CassLibTreePanel', {
 							//record.removeAll();
 							console.info('Creating store for installations.');
 							record.c.store = new C.store.Installations({
-								storeId: record.data.nodeType+'Store-scn_id-'+C.lib_id,
+								storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
 								navigationNode: record
 							});
 							record.c.store.load({
 								params: {
-									scn_id: C.lib_id
+									scn_id: record.parentNode.get('nodeId')
 								}
 							});
 							break;
@@ -151,12 +156,12 @@ Ext.define('C.view.CassLibTreePanel', {
 							//record.removeAll();
 							console.info('Creating store for persons.');
 							record.c.store = new C.store.Persons({
-								storeId: record.data.nodeType+'Store-inst_id-'+C.lib_id,
+								storeId: record.data.nodeType+'Store-inst_id-'+record.parentNode.get('nodeId'),
 								navigationNode: record
 							});
 							record.c.store.load({
 								params: {
-									inst_id: C.lib_id
+									inst_id: record.parentNode.get('nodeId')
 								}
 							});
 							break;
@@ -165,12 +170,12 @@ Ext.define('C.view.CassLibTreePanel', {
 							//record.removeAll();
 							console.info('Creating store for installations.');
 							record.c.store = new C.store.Appliances({
-								storeId: record.data.nodeType+'Store-inst_id-'+C.lib_id,
+								storeId: record.data.nodeType+'Store-inst_id-'+record.parentNode.get('nodeId'),
 								navigationNode: record
 							});
 							record.c.store.load({
 								params: {
-									inst_id: C.lib_id
+									inst_id: record.parentNode.get('nodeId')
 								}
 							});
 							break;
@@ -230,6 +235,32 @@ Ext.define('C.view.CassLibTreePanel', {
 								params: {
 									act_id: record.parentNode.get('nodeId')
 								}
+							});
+							break;
+							case 'Installation':
+							//record.removeAll();
+							console.info('Creating dummy nodes for installation.');
+							record.appendChild({
+								name: 'Persons',
+								nodeType: 'PersonsCollection',
+								expanded: false,
+								leaf: false,
+								expandable: true,
+								fakeChildren: true,
+								draggable: false,
+								icon: 'resources/icons/persons.png',
+								iconCls: 'treeIcon'
+							});
+							record.appendChild({
+								name: 'Appliances',
+								nodeType: 'AppliancesCollection',
+								expanded: false,
+								leaf: false,
+								expandable: true,
+								fakeChildren: true,
+								draggable: false,
+								icon: 'resources/icons/appliances.png',
+								iconCls: 'treeIcon'
 							});
 							break;
 

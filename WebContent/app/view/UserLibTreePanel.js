@@ -19,7 +19,7 @@ Ext.define('C.view.UserLibTreePanel', {
 	disabled: false,
 	floating: false,
 	frame: false,
-	autoScroll: true,
+	autoScroll: false,
 	collapseDirection: 'left',
 	collapsible: false,
 	titleCollapse: false,
@@ -185,10 +185,12 @@ Ext.define('C.view.UserLibTreePanel', {
 	onTreepanelBeforeRender: function(abstractcomponent, options) {
 		console.info('Before render treepanel.', this, abstractcomponent, options);
 
-		abstractcomponent.getRootNode().data.id = C.usr_id;
-		console.info('Tree rendered with root id = ' + C.usr_id);
-		abstractcomponent.getRootNode().data.icon = "resources/icons/user.png";
-		abstractcomponent.getRootNode().data.iconCls = "treeIcon";
+		abstractcomponent.getRootNode().set({
+			'id': C.usr_id,
+			'nodeId' : C.usr_id,
+			'icon': 'resources/icons/user.png',
+			'iconCls': 'treeIcon'
+		});
 
 		abstractcomponent.on('nodedragover', function(dragEvent) {
 			dragEvent.cancel = true;
@@ -212,27 +214,26 @@ Ext.define('C.view.UserLibTreePanel', {
 					//record.removeAll();
 					console.info('Creating store for installations.');
 					record.c.store = new C.store.Installations({
-						storeId: record.data.nodeType+'Store-scn_id-'+C.usr_id,
+						storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
 						navigationNode: record
 					});
 					record.c.store.load({
 						params: {
-							scn_id: C.usr_id
+							scn_id: record.parentNode.get('nodeId')
 						}
 					});
 					break;
-
 
 					case 'PersonsCollection':
 					//record.removeAll();
 					console.info('Creating store for persons.');
 					record.c.store = new C.store.Persons({
-						storeId: record.data.nodeType+'Store-inst_id-'+C.usr_id,
+						storeId: record.data.nodeType+'Store-inst_id-'+record.parentNode.get('nodeId'),
 						navigationNode: record
 					});
 					record.c.store.load({
 						params: {
-							inst_id: C.usr_id
+							inst_id: record.parentNode.get('nodeId')
 						}
 					});
 					break;
@@ -241,12 +242,12 @@ Ext.define('C.view.UserLibTreePanel', {
 					//record.removeAll();
 					console.info('Creating store for installations.');
 					record.c.store = new C.store.Appliances({
-						storeId: record.data.nodeType+'Store-inst_id-'+C.usr_id,
+						storeId: record.data.nodeType+'Store-inst_id-'+record.parentNode.get('nodeId'),
 						navigationNode: record
 					});
 					record.c.store.load({
 						params: {
-							inst_id: C.usr_id
+							inst_id: record.parentNode.get('nodeId')
 						}
 					});
 					break;
@@ -308,7 +309,32 @@ Ext.define('C.view.UserLibTreePanel', {
 						}
 					});
 					break;
-
+					case 'Installation':
+					//record.removeAll();
+					console.info('Creating dummy nodes for installation.');
+					record.appendChild({
+						name: 'Persons',
+						nodeType: 'PersonsCollection',
+						expanded: false,
+						leaf: false,
+						expandable: true,
+						fakeChildren: true,
+						draggable: false,
+						icon: 'resources/icons/persons.png',
+						iconCls: 'treeIcon'
+					});
+					record.appendChild({
+						name: 'Appliances',
+						nodeType: 'AppliancesCollection',
+						expanded: false,
+						leaf: false,
+						expandable: true,
+						fakeChildren: true,
+						draggable: false,
+						icon: 'resources/icons/appliances.png',
+						iconCls: 'treeIcon'
+					});
+					break;
 					default:
 					console.error('Not sure what to do with type: '+record.nodeType);
 				}
