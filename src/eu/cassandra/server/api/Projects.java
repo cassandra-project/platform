@@ -27,17 +27,22 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.Logger;
+
 import com.mongodb.DB;
 
 import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.Simulation;
 import eu.cassandra.sim.utilities.Constants;
 import eu.cassandra.sim.utilities.Utils;
 
 @Path("prj")
 public class Projects {
+	
+	static Logger logger = Logger.getLogger(Projects.class);
 	
 	/**
 	 * 
@@ -48,6 +53,7 @@ public class Projects {
 			@Context HttpHeaders httpHeaders) {
 		String usr_id = Utils.userChecked(httpHeaders);
 		if(usr_id != null) {
+			logger.info(usr_id + " has logged in!");
 			String json = PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, usr_id, count));
 			return Response.ok(json, MediaType.APPLICATION_JSON).build();
 		} else {

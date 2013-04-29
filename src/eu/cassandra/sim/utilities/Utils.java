@@ -158,7 +158,14 @@ public class Utils
 		  return null;
 	  }
 	}
-					
+	
+//  public static double parseDouble(String s) {
+//	  try {
+//		  return Double.parseDouble(s);
+//	  } catch(Exception e) {
+//		  e.printStackTrace();
+//	  }
+//  }
 
   /*
     public static void createHistogram (String title, String x, String y,

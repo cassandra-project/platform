@@ -77,6 +77,8 @@ public class Simulation implements Runnable {
 
 	private SimulationParams simulationWorld;
 	
+	private PricingPolicy pricing;
+	
 	private String scenario;
 	
 	private String dbname;
@@ -111,6 +113,7 @@ public class Simulation implements Runnable {
 
   	public void run () {
   		try {
+  			logger.info("run");
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
@@ -124,6 +127,8 @@ public class Simulation implements Runnable {
   	  			double avgPower = 0;
   	  			double energy = 0;
   	  			double cost = 0;
+  	  			double billingCycleEnergy = 0;
+  	  			double billingCycleDays = 0;
   	  			while (tick < endTick) {
 //  				System.out.println(tick);
   	  				// If it is the beginning of the day create the events
@@ -133,6 +138,7 @@ public class Simulation implements Runnable {
 //  						System.out.println(installation.getName());
   	  						installation.updateDailySchedule(tick, queue);
   	  					}
+  	  					billingCycleDays++;
 //  					System.out.println("Daily queue size: " + queue.size() + "(" + 
 //  					simulationWorld.getSimCalendar().isWeekend(tick) + ")");
   	  				}
@@ -172,10 +178,17 @@ public class Simulation implements Runnable {
 		//  				+ "Power: " + power);
 		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  		  				+ "Power: " + power);
+		  				if(billingCycleDays == pricing.getBillingCycle()) {
+		  					installation.updateCost(pricing);
+		  				}
 		  			}
 		  			if(sumPower > maxPower) maxPower = sumPower;
 		  			avgPower += sumPower/endTick;
 		  			energy += (sumPower/1000.0) * Constants.MINUTE_HOUR_RATIO;
+		  			if(billingCycleDays == pricing.getBillingCycle()) {
+		  				cost += pricing.calculateCost(energy, billingCycleEnergy);
+		  				billingCycleEnergy = energy;
+		  			}
 		  			m.addAggregatedTickResult(tick, sumPower, 0);
 		  			tick++;
 		  			mccount++;
@@ -185,12 +198,14 @@ public class Simulation implements Runnable {
 		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   	  			}
   	  			for(Installation installation: installations) {
+  	  				installation.updateCost(pricing); // update the rest of the energy
   	  				m.addKPIs(installation.getId(), 
   	  						installation.getMaxPower() * mcrunsRatio, 
   	  						installation.getAvgPower() * mcrunsRatio, 
   	  						installation.getEnergy() * mcrunsRatio, 
   	  						installation.getCost() * mcrunsRatio);
   	  			}
+  	  			cost += pricing.calculateCost(energy, billingCycleEnergy);
   	  			m.addKPIs(MongoResults.AGGR, 
   	  					maxPower * mcrunsRatio, 
   	  					avgPower * mcrunsRatio, 
@@ -220,6 +235,8 @@ public class Simulation implements Runnable {
   		DBObject jsonScenario = (DBObject) JSON.parse(scenario);
   		DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
+  		DBObject pricingDoc = (DBObject) jsonScenario.get("pricing");
+  		pricing = new PricingPolicy(pricingDoc);
   		System.out.println("B");
   		int numOfDays = ((Integer)simParamsDoc.get("numberOfDays")).intValue();
   		
