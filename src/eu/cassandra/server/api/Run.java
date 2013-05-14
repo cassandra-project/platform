@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,9 +31,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import com.mongodb.DB;
 
 import eu.cassandra.server.mongo.MongoRuns;
+import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("runs/{run_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -50,8 +55,8 @@ public class Run {
 	 * @return
 	 */
 	@GET
-	public String getRun(@PathParam("run_id") String run_id, @Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoRuns().getRun(httpHeaders,run_id));
+	public Response getRun(@PathParam("run_id") String run_id, @Context HttpHeaders httpHeaders) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoRuns().getRun(httpHeaders,run_id)));
 	}
 	
 	/**
@@ -61,18 +66,18 @@ public class Run {
 	 * @return
 	 */
 	@PUT
-	public String updateRun(@PathParam("run_id") String run_id) {
+	public Response updateRun(@PathParam("run_id") String run_id) {
 		HashMap<String,Future<?>> runs = (HashMap<String,Future<?>>)context.getAttribute("My_RUNS");
 		if(runs.containsKey(run_id)) {
 			Future<?> future = runs.get(run_id);
 			if(future.isDone()) {
-				return "{\"success\":false, \"message\":\"Run " + run_id + " finished\"}";
+				return Utils.returnResponse("{\"success\":false, \"message\":\"Run " + run_id + " finished\"}");
 			} else {
 				future.cancel(true);
-				return "{\"success\":true, \"message\":\"Run " + run_id + " cancelled\"}";
+				return Utils.returnResponse("{\"success\":true, \"message\":\"Run " + run_id + " cancelled\"}");
 			}
 		} else {
-			return "{\"success\":false, \"message\":\"Run " + run_id + " not found in running threads\"}";
+			return Utils.returnResponse("{\"success\":false, \"message\":\"Run " + run_id + " not found in running threads\"}");
 		}
 		// check if paused or resumed
 		//String message = null;
@@ -84,9 +89,10 @@ public class Run {
 	 * Delete a run
 	 */
 	@DELETE
-	public String deleteRun(@PathParam("run_id") String run_id) {
-		// TODO delete references
-		return PrettyJSONPrinter.prettyPrint(new MongoRuns().deleteRun(run_id));
+	public Response deleteRun(@PathParam("run_id") String run_id) {
+		DB rundb = DBConn.getConn(run_id);
+		if(rundb != null) rundb.dropDatabase();
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoRuns().deleteRun(run_id)));
 	}
 
 }

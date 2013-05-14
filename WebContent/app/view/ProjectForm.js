@@ -17,7 +17,7 @@ Ext.define('C.view.ProjectForm', {
 	extend: 'Ext.form.Panel',
 
 	cls: 'gridbg',
-	height: 442,
+	padding: 5,
 	autoScroll: true,
 	layout: {
 		type: 'auto'
@@ -59,9 +59,9 @@ Ext.define('C.view.ProjectForm', {
 								},
 								{
 									xtype: 'textareafield',
-									width: 246,
+									width: 300,
 									name: 'description',
-									fieldLabel: 'Description'
+									fieldLabel: 'Notes'
 								},
 								{
 									xtype: 'button',

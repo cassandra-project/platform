@@ -17,58 +17,57 @@ Ext.define('C.view.DistributionForm', {
 	extend: 'Ext.form.Panel',
 
 	border: '0 0 0 0',
-	frame: false,
-	margin: '10px',
+	margin: 10,
 	style: 'border: none',
-	width: 170,
+	width: 260,
+	autoScroll: true,
 	layout: {
 		type: 'auto'
 	},
-	bodyBorder: false,
-	bodyCls: 'x-panel-mc',
 	bodyPadding: 10,
 	closable: false,
-	collapsible: false,
-	titleCollapse: false,
-	standardSubmit: false,
+	title: 'My Form',
 
 	initComponent: function() {
 		var me = this;
-
-		me.initialConfig = Ext.apply({
-			standardSubmit: false
-		}, me.initialConfig);
 
 		Ext.applyIf(me, {
 			items: [
 				{
 					xtype: 'container',
 					height: 326,
-					padding: '10px',
-					width: 151,
+					autoScroll: true,
 					items: [
 						{
 							xtype: 'textfield',
-							width: 126,
-							name: 'name'
+							width: 220,
+							name: 'name',
+							fieldLabel: 'Name',
+							labelWidth: 70
 						},
 						{
 							xtype: 'textfield',
-							width: 126,
-							name: 'type'
+							width: 220,
+							name: 'type',
+							fieldLabel: 'Type',
+							labelWidth: 70
 						},
 						{
-							xtype: 'textareafield',
-							height: 41,
-							width: 128,
-							name: 'description'
+							xtype: 'textfield',
+							width: 220,
+							name: 'description',
+							fieldLabel: 'Description',
+							labelWidth: 70
 						},
 						{
 							xtype: 'combobox',
-							width: 128,
+							width: 220,
 							name: 'distrType',
-							readOnly: false,
+							fieldLabel: 'Types',
+							labelWidth: 70,
+							allowBlank: false,
 							displayField: 'distrType',
+							forceSelection: true,
 							queryMode: 'local',
 							store: 'DistrTypeStore',
 							valueField: 'distrType'
@@ -76,19 +75,36 @@ Ext.define('C.view.DistributionForm', {
 						{
 							xtype: 'textareafield',
 							height: 45,
-							width: 129,
-							name: 'val'
+							width: 220,
+							name: 'val',
+							fieldLabel: 'Values',
+							labelWidth: 70,
+							listeners: {
+								beforerender: {
+									fn: me.onTextareafieldBeforeRender,
+									scope: me
+								}
+							}
 						},
 						{
 							xtype: 'textareafield',
 							height: 67,
-							width: 129,
-							name: 'params'
+							width: 220,
+							name: 'params',
+							fieldLabel: 'Parameters',
+							labelWidth: 70,
+							listeners: {
+								beforerender: {
+									fn: me.onTextareafieldBeforeRender1,
+									scope: me
+								}
+							}
 						},
 						{
 							xtype: 'button',
 							itemId: 'btn',
-							margin: '10px 0 0 50px',
+							margin: '10 0 0 90',
+							width: 70,
 							text: 'Update',
 							listeners: {
 								click: {
@@ -105,15 +121,24 @@ Ext.define('C.view.DistributionForm', {
 		me.callParent(arguments);
 	},
 
-	onButtonClick2: function(button, e, options) {
+	onTextareafieldBeforeRender: function(abstractcomponent, options) {
+		abstractcomponent.helpText = 'A valid input example would be: [3,4]';
+	},
 
+	onTextareafieldBeforeRender1: function(abstractcomponent, options) {
+		abstractcomponent.helpText = 'A valid input example would be: </br>[{"w":103,"mean":203.3,"std":103.4}]' ;
+	},
+
+	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
 		var record = myForm.getRecord();
 		var values = myForm.getValues();
 
-		var parameters = myForm.getFieldValues().params;
-		var valuesDistr = myForm.getFieldValues().val;
-		var myConsModChartStore = this.query('chart')[0].store;
+		var parameters = myForm.getFieldValues().params.trim();
+		var valuesDistr = myForm.getFieldValues().val.trim();
+		var myDistrChart = this.query('chart')[0];
+		var myDistrChartStore = this.query('chart')[0].store;
+		var distr_type = this.distr_type;
 
 		if(parameters) {
 			try {
@@ -148,6 +173,8 @@ Ext.define('C.view.DistributionForm', {
 		valuesDistr = [];
 
 		if (record) {
+			var distr_store = record.store;
+
 			record.set({
 				'name':values.name,
 				'type': values.type,
@@ -159,9 +186,6 @@ Ext.define('C.view.DistributionForm', {
 
 			if (record.isNew)
 			record.isNew = false;
-
-			myConsModChartStore.removeAll();
-			myConsModChartStore.load();
 
 		}
 
@@ -178,24 +202,38 @@ Ext.define('C.view.DistributionForm', {
 				values: valuesDistr, 
 				parameters: parameters,
 				actmod_id:actmod_record.get('_id')
-			});
+			});				  
 
-			distr_type = this.distr_type;
-
-			distr_store.on(
-			'update', 
-			function(store, record, operation, eOpts ) {
-				actmod_record.set(distr_type,record.get('_id') );
-				myForm.loadRecord(record);
-				myConsModChartStore.proxy.url += '/' + record.get('_id');
-				myConsModChartStore.load();
-			}, 
-			null, 
-			{ single : true }
-			);							  
 		}
 
+		this.remove(myDistrChart);
+		myDistrChartStore.removeAll();
+
+		if (distr_type == "repeatsNrOfTime") 
+		myDistrChart = new C.view.DistributionHistogramChart({store: myDistrChartStore});
+		else
+		myDistrChart = new C.view.DistributionNormalChart({store: myDistrChartStore});
+
+
+		this.insert(2, myDistrChart);
+
+		distr_store.on(
+		'update', 
+		function(store, record, operation, eOpts ) {
+			if (record.isNew) {
+				actmod_record.set(distr_type,record.get('_id') );
+				myForm.loadRecord(record);
+				myDistrChartStore.proxy.url += '/' + record.get('_id');
+			}
+
+			myDistrChartStore.load();
+		}, 
+		null, 
+		{ single : true }
+		);	
+
 		this.dirtyForm = false;
+
 	}
 
 });

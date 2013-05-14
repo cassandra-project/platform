@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,15 @@
 package eu.cassandra.server.mongo.util;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
+
+import javax.servlet.ServletContext;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -29,6 +33,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
+import eu.cassandra.server.IServletContextListener;
 import eu.cassandra.server.api.exceptions.JSONSchemaNotValidException;
 import eu.vahlas.json.schema.JSONSchema;
 import eu.vahlas.json.schema.JSONSchemaProvider;
@@ -47,6 +52,7 @@ public class JSONValidator {
 	public static final int PROJECT_SCHEMA = 8;
 	public static final int SCENARIO_SCHEMA = 9;
 	public static final int SIMPARAM_SCHEMA = 10;
+	public static final int PRICING_SCHEMA = 11;
 
 	/**
 	 * 
@@ -54,7 +60,7 @@ public class JSONValidator {
 	 * @return
 	 */
 	private String getSchemaFileName(int schemaType) {
-		String fileName = "http://localhost:8080/cassandra/resources/jsonSchema/";
+		String fileName = new String();
 		switch (schemaType) {
 		case ACTIVITY_SCHEMA:  fileName += "Activity.schema";
 		break;
@@ -77,6 +83,8 @@ public class JSONValidator {
 		case SCENARIO_SCHEMA:  fileName += "Scenario.schema";
 		break;
 		case SIMPARAM_SCHEMA:  fileName += "SimParam.schema";
+		break;
+		case PRICING_SCHEMA:  fileName += "Pricing.schema";
 		break;
 		}
 		return fileName;
@@ -158,7 +166,8 @@ public class JSONValidator {
 	 * @throws IOException
 	 */
 	private String readFile(String file) throws IOException {
-		InputStream inStream = new URL(file).openStream();
+		String schema = IServletContextListener.schemas.getAbsolutePath() + "/" + file;
+		InputStream inStream = new FileInputStream(schema);
 		InputStreamReader inputStream = new InputStreamReader(inStream);
 		BufferedReader reader = new BufferedReader(inputStream);
 		String line = null;

@@ -1,6 +1,5 @@
-package eu.cassandra.sim.entities.appliances.tests;
 /*   
-Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+package eu.cassandra.sim.entities.appliances.tests;
+
 /**
  * 
  * @author Konstantina Valogianni
@@ -36,7 +37,7 @@ public class ConsumptionModelTest {
 	public void testgetTotalDuration() {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :9, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
-		ConsumptionModel tester=new ConsumptionModel(s);
+		ConsumptionModel tester=new ConsumptionModel(s, "p");
 		assertEquals(220,tester.getTotalDuration());
 		
 		
@@ -46,7 +47,7 @@ public class ConsumptionModelTest {
 	public void testgetOuterN() {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :9, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
-		ConsumptionModel tester=new ConsumptionModel(s);
+		ConsumptionModel tester=new ConsumptionModel(s, "p");
 		assertEquals(0,tester.getOuterN());
 		
 		
@@ -56,7 +57,7 @@ public class ConsumptionModelTest {
 	public void testgetPatternN() {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :9, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
-		ConsumptionModel tester=new ConsumptionModel(s);
+		ConsumptionModel tester=new ConsumptionModel(s, "p");
 		assertEquals(2,tester.getPatternN());
 		
 		
@@ -66,7 +67,7 @@ public class ConsumptionModelTest {
 	public void testgetN() {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :9, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
-		ConsumptionModel tester=new ConsumptionModel(s);
+		ConsumptionModel tester=new ConsumptionModel(s, "p");
 		assertEquals(1,tester.getN(1));
 		assertEquals(1,tester.getN(0));
 		
@@ -77,7 +78,7 @@ public class ConsumptionModelTest {
 	public void testgetPatternDuration() {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :9, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
-		ConsumptionModel tester=new ConsumptionModel(s);
+		ConsumptionModel tester=new ConsumptionModel(s, "p");
 		assertEquals(111,tester.getPatternDuration(1));
 		assertEquals(109,tester.getPatternDuration(0));
 		

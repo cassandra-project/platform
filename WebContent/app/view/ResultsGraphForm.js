@@ -17,7 +17,7 @@ Ext.define('C.view.ResultsGraphForm', {
 	extend: 'Ext.form.Panel',
 
 	draggable: false,
-	height: 511,
+	padding: 5,
 	width: 710,
 	autoScroll: true,
 	layout: {
@@ -124,7 +124,7 @@ Ext.define('C.view.ResultsGraphForm', {
 									itemId: 'btn',
 									margin: '10px 0 0 120px',
 									width: 119,
-									text: 'Refresh Graph Data',
+									text: 'Refresh Graph',
 									listeners: {
 										click: {
 											fn: me.onButtonClick2,
@@ -173,21 +173,26 @@ Ext.define('C.view.ResultsGraphForm', {
 			delete formValues.inst_id;
 			this.items.items[1].setText('Total ' + chartTitle);
 		}
-		else 
-		this.items.items[1].setText('Installation ' + chartTitle);
+		else {
+			this.items.items[1].setText('Installation ' + chartTitle);
+			this.down('grid').store.load({params:{'inst_id':  formValues.inst_id}});
+		}
 
 		var defaultAggrUnit = (formValues.aggr_unit)? formValues.aggr_unit : myResultsStore.proxy.reader.jsonData.aggregationUnit;  
-		if (!formValues.aggr_unit) delete formValues.aggr_unit;
+		if (!formValues.aggr_unit) 
+		delete formValues.aggr_unit;
 		defaultAggrUnit = parseInt(defaultAggrUnit);
 
 		var defaultFrom = (formValues.from) ? formValues.from : 0;
 		defaultFrom = parseInt(defaultFrom);
-		if (!formValues.from) delete formValues.from;
+		if (!formValues.from) 
+		delete formValues.from;
 
 		var numberOfDays = myResultsStore.proxy.reader.jsonData.numberOfDays;
 		var dataSize = parseInt(-defaultFrom/defaultAggrUnit) + parseInt( (numberOfDays*1440) / defaultAggrUnit);
 
-		if (!formValues.to) delete formValues.to;console.info(dataSize);
+		if (!formValues.to) 
+		delete formValues.to;console.info(dataSize);
 
 		if ( dataSize > 1000 ) {
 			Ext.MessageBox.alert('Error', 'Too many plot data! Chart will not be loaded!'); 

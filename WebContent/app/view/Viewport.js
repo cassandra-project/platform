@@ -19,6 +19,7 @@ Ext.define('C.view.Viewport', {
 	requires: [
 		'C.view.ActmodPropertiesForm',
 		'C.view.DemographicForm',
+		'C.view.PricingForm',
 		'C.view.ActivityModelForm',
 		'C.view.ScenarioForm',
 		'C.view.ProjectForm',
@@ -27,15 +28,22 @@ Ext.define('C.view.Viewport', {
 		'C.view.ResultsGraphForm',
 		'C.view.SimulationParamsForm',
 		'C.view.InstallationForm',
+		'C.view.DistributionForm',
 		'C.view.ApplianceForm',
 		'C.view.RelationsGrid',
 		'C.view.EntitiesGrid',
-		'C.view.DistributionForm',
 		'C.view.DynamicGrid',
+		'C.view.MyTabPanel',
+		'C.view.MyTreePanel',
+		'C.view.UserLibTreePanel',
+		'C.view.CassLibTreePanel',
+		'C.view.LoginForm',
 		'C.view.MyViewport',
-		'C.view.TypesPieChart',
 		'C.view.ResultsLineChart',
+		'C.view.DistributionNormalChart',
 		'C.view.ConsModChart',
-		'C.view.DistributionChart'
+		'C.view.DistributionHistogramChart',
+		'C.view.TypesPieChart',
+		'C.view.ComparePanel'
 	]
 });

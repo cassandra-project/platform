@@ -55,10 +55,6 @@ Ext.define('C.store.Runs', {
 				remove: {
 					fn: me.onJsonstoreRemove,
 					scope: me
-				},
-				beforeload: {
-					fn: me.onJsonstoreBeforeLoad,
-					scope: me
 				}
 			}
 		}, cfg)]);
@@ -69,7 +65,7 @@ Ext.define('C.store.Runs', {
 			Ext.each(records, function(record, index){
 				var node = store.navigationNode.appendChild({
 					id: record.data._id,
-					name: record.data._id,
+					name: record.data.name,
 					nodeType: 'Run',
 					nodeId: record.data._id,
 					nodeStoreId: store.storeId,
@@ -93,7 +89,7 @@ Ext.define('C.store.Runs', {
 				console.info('++ Node does not exist. Creating it.');
 				var node = abstractstore.navigationNode.appendChild({
 					id: record.get('_id'),
-					name: record.get('_id'),
+					name: record.get('name'),
 					nodeType: 'Run',
 					nodeId: record.get('_id'),
 					nodeStoreId: abstractstore.storeId,
@@ -118,10 +114,6 @@ Ext.define('C.store.Runs', {
 
 	onJsonstoreRemove: function(store, record, index, options) {
 		store.navigationNode.removeChild(record.node);
-	},
-
-	onJsonstoreBeforeLoad: function(store, operation, options) {
-		if (C.dbname) this.proxy.headers = {"dbname": C.dbname};
 	}
 
 });

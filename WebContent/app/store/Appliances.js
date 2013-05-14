@@ -55,10 +55,6 @@ Ext.define('C.store.Appliances', {
 				remove: {
 					fn: me.onJsonstoreRemove,
 					scope: me
-				},
-				beforeload: {
-					fn: me.onJsonstoreBeforeLoad,
-					scope: me
 				}
 			}
 		}, cfg)]);
@@ -67,14 +63,15 @@ Ext.define('C.store.Appliances', {
 	onJsonstoreLoad: function(store, records, successful, options) {
 		if(store.navigationNode){
 			Ext.each(records, function(record, index){
+				var root_id = store.navigationNode.store.treeStore.tree.root.get('id');
 				var node = store.navigationNode.appendChild({
 					id: record.data._id,
 					name: record.data.name,
 					nodeType: 'Appliance',
 					nodeId: record.data._id,
 					nodeStoreId: store.storeId,
-					leaf: true,
-					expandable: false,
+					leaf:  true,
+					expandable:  false,
 					draggable: true
 				});
 				record.node = node;
@@ -108,10 +105,6 @@ Ext.define('C.store.Appliances', {
 
 	onJsonstoreRemove: function(store, record, index, options) {
 		store.navigationNode.removeChild(record.node);
-	},
-
-	onJsonstoreBeforeLoad: function(store, operation, options) {
-		if (C.dbname) this.proxy.headers = {"dbname": C.dbname};
 	}
 
 });

@@ -1,4 +1,4 @@
-#MainTabPanel-body,  .gridbg{
+#MainTabPanel-body,  .gridbg, #center_panel-body{
 /*background-color: #E4EAED !important;
 background-image: -webkit-gradient(linear, 50% 0%, 50% 1, color-stop(100%, #F3F6F7), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 0% 50%, 1 50%, color-stop(100%, #F3F6F7), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 50% 0%, 50% 1, color-stop(100%, rgba(255, 255, 255, 0.3)), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 0% 50%, 1 50%, color-stop(100%, rgba(255, 255, 255, 0.3)), color-stop(100%, rgba(243, 246, 247, 0)));
 background-image: -webkit-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
@@ -95,7 +95,13 @@ background-color: #F39926 !important;
 
 #logo-text {
 color: #104b9b !important;
-font-size: 23px; 
+font-size: 20px; 
 letter-spacing: 1px; 
-font-family: "century gothic", Arial, Verdana, sans-serif;}
+font-family: "century gothic", Arial, Verdana, sans-serif;
 }
+
+.treeIcon {
+width: 17px;
+}
+
+.number_field {margin-top: 10px}

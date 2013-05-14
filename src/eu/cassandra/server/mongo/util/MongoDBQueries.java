@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -512,8 +512,9 @@ public class MongoDBQueries {
 	 */
 	private DBObject getValues(DBObject dBObject, HttpHeaders httpHeaders,
 			String id, String coll) throws JSONSchemaNotValidException {
-		double values[] = null;
 		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
+			double values[] = null;
+			double points[] = null;
 			if(dBObject.containsField("parameters")){
 				String type = MongoActivityModels.REF_DISTR_STARTTIME ;
 				if(DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
@@ -530,33 +531,70 @@ public class MongoDBQueries {
 				BasicDBList t = (BasicDBList)dBObject.get("values");
 				values = Utils.dblist2doubleArr(t); 
 			}
+			if(values != null) {
+				BasicDBList list = new BasicDBList();
+				for(int i=0;i<values.length;i++) {
+					BasicDBObject dbObj = new BasicDBObject("x",i);
+					dbObj.put("y", values[i]);
+					list.add(dbObj);
+				}
+				dBObject.put("values", list);
+			}
 		}
 		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS)  ) {
-			if(dBObject.containsField("model") &&  ((DBObject)dBObject.get("model")).containsField("params")) {
-				Double[] valuesConsModel = new GUIConsumptionModel((DBObject) dBObject.get("model")).getValues();
-				values = new double[valuesConsModel.length];
-				for(int i=0;i<valuesConsModel.length;i++) {
-					values[i] = valuesConsModel[i];
+			double pvalues[] = null;
+			double qvalues[] = null;
+			double ppoints[] = null;
+			double qpoints[] = null;
+			BasicDBList list = new BasicDBList();
+			if(dBObject.containsField("pmodel")) {
+				if(((DBObject)dBObject.get("pmodel")).containsField("params")) {
+					GUIConsumptionModel p = new GUIConsumptionModel((DBObject) dBObject.get("pmodel"), "p");
+					Double[] pvaluesConsModel = p.getValues(GUIConsumptionModel.P);
+					Double[] pointsConsModel = p.getPoints(pvaluesConsModel.length);
+					pvalues = new double[pvaluesConsModel.length];
+					ppoints = new double[pointsConsModel.length];
+					for(int i=0; i< pvaluesConsModel.length; i++) {
+						pvalues[i] = pvaluesConsModel[i];
+						ppoints[i] = pointsConsModel[i];
+					}
 				}
 			}
-			if( (values == null || values.length==0)  && dBObject.containsField("values")) {; 
-			BasicDBList t = (BasicDBList)dBObject.get("values");
-			values = Utils.dblist2doubleArr(t); 
+			if(dBObject.containsField("qmodel")) {
+				if(((DBObject)dBObject.get("qmodel")).containsField("params")) {
+					GUIConsumptionModel q = new GUIConsumptionModel((DBObject) dBObject.get("qmodel"), "q");
+					Double[] qvaluesConsModel = q.getValues(GUIConsumptionModel.Q);
+					Double[] pointsConsModel = q.getPoints(qvaluesConsModel.length);
+					qvalues = new double[qvaluesConsModel.length];
+					qpoints = new double[pointsConsModel.length];
+					for(int i=0; i< qvaluesConsModel.length; i++) {
+						qvalues[i] = qvaluesConsModel[i];
+						qpoints[i] = pointsConsModel[i];
+					}
+				}
 			}
-		}
-		if(values != null) {
-			BasicDBList list = new BasicDBList();
-			for(int i=0;i<values.length;i++) {
-				BasicDBObject dbObj = new BasicDBObject("x",i);
-				dbObj.put("y", values[i]);
-				list.add(dbObj);
+			if(pvalues != null && qvalues != null) {
+				for(int i = 0; i < Math.min(pvalues.length, qvalues.length); i++) {
+					BasicDBObject dbObj = new BasicDBObject("x", ppoints[i]);
+					dbObj.put("p", pvalues[i]);
+					dbObj.put("q", qvalues[i]);
+					list.add(dbObj);
+				}
 			}
 			dBObject.put("values", list);
+			// Obsolete?
+//			if((pvalues == null || pvalues.length==0) && dBObject.containsField("pvalues")) {; 
+//				BasicDBList t = (BasicDBList)dBObject.get("pvalues");
+//				pvalues = Utils.dblist2doubleArr(t); 
+//			}
+//			if((qvalues == null || qvalues.length==0) && dBObject.containsField("qvalues")) {; 
+//				BasicDBList t = (BasicDBList)dBObject.get("qvalues");
+//				qvalues = Utils.dblist2doubleArr(t); 
+//			}
 		}
 
 		return dBObject;
 	}
-
 
 	/**
 	 * 
@@ -798,11 +836,11 @@ public class MongoDBQueries {
 			}
 			DBConn.getConn().getCollection(coll).insert(data);
 		}catch(com.mongodb.util.JSONParseException e) {
-			return jSON2Rrn.createJSONError("Error parsing JSON input",e.getMessage());
+			return jSON2Rrn.createJSONError("Error parsing JSON input", e.getMessage());
 		}catch(Exception e) {
 			return jSON2Rrn.createJSONError(dataToInsert,e);
 		}
-		return jSON2Rrn.createJSONInsertPostMessage(successMessage,data) ;
+		return jSON2Rrn.createJSONInsertPostMessage(successMessage, data) ;
 	}
 
 	/**
@@ -838,7 +876,7 @@ public class MongoDBQueries {
 	private void ensureThatRefKeysMatch(DBObject data, String coll, String refKeyName, 
 			String intDocKey, String cid) throws MongoRefNotFoundException{
 		String parentKey = data.get(refKeyName).toString();
-		DBObject q = new BasicDBObject(intDocKey + ".cid",new ObjectId(cid));
+		DBObject q = new BasicDBObject(intDocKey + ".cid", new ObjectId(cid));
 		DBCursor cursor =  DBConn.getConn().getCollection(coll).find(q);
 		while(cursor.hasNext()) {
 			DBObject parent = cursor.next();
@@ -1104,6 +1142,34 @@ public class MongoDBQueries {
 					"Consumption " + (yMetric.equalsIgnoreCase(REACTIVE_POWER_Q)?"Reactive Power":"Active Power"), 
 					"Time" + aggrUnit, "Watt",defaultAggregationUnit,numberOfDays); 
 
+		}catch(Exception e) {
+			e.printStackTrace();
+			return jSON2Rrn.createJSONError("Error in retrieving results", e.getMessage());
+		}
+	}
+	
+	/**
+	 * curl -i  --header "dbname:run_id" 'http://localhost:8080/cassandra/api/kpis?inst_id=instID'
+	 * curl -i  --header "dbname:run_id" 'http://localhost:8080/cassandra/api/kpis'
+	 * 
+	 * @param installationId
+	 * @return
+	 */
+	public DBObject mongoKPIsQuery(HttpHeaders httpHeaders, String installationId) {
+		try {
+			String runId = getDbNameFromHTTPHeader(httpHeaders);
+			if(runId == null && installationId == null)
+				throw new RestQueryParamMissingException(
+						"QueryParamMissing: Both run_id and installation_id are null");
+			String coll = MongoResults.COL_AGGRKPIS;
+			if(installationId != null) coll = MongoResults.COL_INSTKPIS;
+			DBObject condition = new BasicDBObject();
+			if( installationId != null) {
+				condition.put("inst_id",installationId);
+			}
+			DBObject result = DBConn.getConn(runId).getCollection(coll).findOne(condition);
+			if(result == null) throw new Exception("KPIs not found");
+			return jSON2Rrn.createJSON(result, "KPIs retrieved succesfully.");
 		}catch(Exception e) {
 			e.printStackTrace();
 			return jSON2Rrn.createJSONError("Error in retrieving results", e.getMessage());

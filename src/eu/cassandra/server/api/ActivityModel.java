@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoActivityModels;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("actmod/{actmod_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,9 +43,9 @@ public class ActivityModel {
 	 * @return
 	 */
 	@GET
-	public String getActivityModel(@PathParam("actmod_id") String actmod_id,
+	public Response getActivityModel(@PathParam("actmod_id") String actmod_id,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivityModels().getActivityModel(httpHeaders,actmod_id));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoActivityModels().getActivityModel(httpHeaders,actmod_id)));
 	}
 
 	/**
@@ -52,16 +54,16 @@ public class ActivityModel {
 	 * @return
 	 */
 	@PUT
-	public String updateActivityModel(@PathParam("actmod_id") String actmod_id, String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivityModels().updateActivityModel(actmod_id,message));
+	public Response updateActivityModel(@PathParam("actmod_id") String actmod_id, String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoActivityModels().updateActivityModel(actmod_id,message)));
 	}
 
 	/**
 	 * Delete a scenario
 	 */
 	@DELETE
-	public String deleteActivityModel(@PathParam("actmod_id") String actmod_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivityModels().deleteActivityModel(actmod_id));
+	public Response deleteActivityModel(@PathParam("actmod_id") String actmod_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoActivityModels().deleteActivityModel(actmod_id)));
 	}
 
 }

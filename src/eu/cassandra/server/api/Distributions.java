@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,14 +25,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoDistributions;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("distr")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-
 public class Distributions {
 	
 	/**
@@ -41,10 +42,10 @@ public class Distributions {
 	 * @return
 	 */
 	@GET
-	public String getDistributions(@QueryParam("actmod_id") String actmod_id, 
+	public Response getDistributions(@QueryParam("actmod_id") String actmod_id, 
 			@QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDistributions().getDistributions(httpHeaders,actmod_id, count));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDistributions().getDistributions(httpHeaders,actmod_id, count)));
 	}
 	
 	/**
@@ -53,7 +54,7 @@ public class Distributions {
 	 * @return
 	 */
 	@POST
-	public String createDistribution(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDistributions().createDistribution(message));
+	public Response createDistribution(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDistributions().createDistribution(message)));
 	}
 }

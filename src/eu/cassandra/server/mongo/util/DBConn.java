@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 package eu.cassandra.server.mongo.util;
 
 import java.net.UnknownHostException;
+
 import java.util.HashMap;
 
 import javax.naming.InitialContext;

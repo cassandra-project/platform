@@ -16,10 +16,6 @@
 Ext.define('C.store.Results', {
 	extend: 'Ext.data.Store',
 
-	requires: [
-		'C.model.Results'
-	],
-
 	constructor: function(cfg) {
 		var me = this;
 		cfg = cfg || {};
@@ -28,7 +24,6 @@ Ext.define('C.store.Results', {
 			autoSync: true,
 			remoteFilter: true,
 			storeId: 'MyJsonStore14',
-			model: 'C.model.Results',
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
@@ -40,20 +35,22 @@ Ext.define('C.store.Results', {
 				}
 			},
 			listeners: {
-				beforeload: {
-					fn: me.onJsonstoreBeforeLoad,
-					scope: me
-				},
 				load: {
 					fn: me.onJsonstoreLoad,
 					scope: me
 				}
-			}
+			},
+			fields: [
+				{
+					name: 'x',
+					type: 'float'
+				},
+				{
+					name: 'y',
+					type: 'float'
+				}
+			]
 		}, cfg)]);
-	},
-
-	onJsonstoreBeforeLoad: function(store, operation, options) {
-		if (C.dbname) this.proxy.headers = {"dbname": C.dbname};
 	},
 
 	onJsonstoreLoad: function(store, records, successful, options) {

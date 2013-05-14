@@ -1,0 +1,11 @@
+{
+    "name" : "Pricing name",
+    "description" : "Pricing description",
+    "type" : "EnergyPowerPricing",
+    "scn_id" : "500d1133e4b087bdfeda0900",
+    "fixedCharge" : 2.0,
+    "billingCycle" : 30,
+    "contractedCapacity" : 10,
+    "energyPrice" : 0.08,
+    "powerPrice" : 2.5
+}

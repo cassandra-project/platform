@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -33,7 +33,8 @@ import eu.cassandra.sim.utilities.RNG;
  * @version prelim
  */
 public class Appliance extends Entity {
-	private final ConsumptionModel cm;
+	private final ConsumptionModel pcm;
+	private final ConsumptionModel qcm;
 	private final double standByConsumption;
 	private final boolean base;
 	private final Installation installation;
@@ -49,7 +50,8 @@ public class Appliance extends Entity {
 		private final String type;
 	    private final String name;
 		private final Installation installation;
-		private final ConsumptionModel cm;
+		private final ConsumptionModel pcm;
+		private final ConsumptionModel qcm;
 		private final double standByConsumption;
 		private final boolean base;
 		// Optional or state related variables
@@ -61,7 +63,8 @@ public class Appliance extends Entity {
 				String adesc, 
 				String atype,
 				Installation ainstallation, 
-				ConsumptionModel acm, 
+				ConsumptionModel apcm,
+				ConsumptionModel aqcm,
 				double astandy, 
 				boolean abase) {
 			id = aid;
@@ -69,7 +72,8 @@ public class Appliance extends Entity {
 			description = adesc;
 			type = atype;		
 			installation = ainstallation;
-			cm = acm;
+			pcm = apcm;
+			qcm = aqcm;
 			standByConsumption = astandy;
 			base = abase;
 		}
@@ -85,7 +89,8 @@ public class Appliance extends Entity {
 		type = builder.type;
 		installation = builder.installation;
 		standByConsumption = builder.standByConsumption;
-		cm = builder.cm;
+		pcm = builder.pcm;
+		qcm = builder.qcm;
 		base = builder.base;
 		inUse = (base) ? true : false;
 		onTick = (base) ? -RNG.nextInt(Constants.MIN_IN_DAY) : builder.onTick;
@@ -100,11 +105,21 @@ public class Appliance extends Entity {
 		return inUse;
 	}
 	
-	public ConsumptionModel getConsumptionModel() {
-		return cm;
+	public ConsumptionModel getQConsumptionModel() {
+		return qcm;
+	}
+	
+	public ConsumptionModel getPConsumptionModel() {
+		return pcm;
 	}
 
-	public double getPower(long tick) {
+	public double getPower(long tick, String type) {
+		ConsumptionModel cm = null; 
+		if(type == "p") {
+			cm = pcm;
+		} else {
+			cm = qcm;
+		}
 		double power = 0;
 		// TODO
 		if(isInUse()) {
@@ -137,9 +152,8 @@ public class Appliance extends Entity {
 					}
 				}
 				relativeTick++;		
-				power = ((Tripplet)cm.getPattern(index1).get(index2)).p; 
+				power = ((Tripplet)cm.getPattern(index1).get(index2)).v; 
 			}
-			//System.out.println(name + " " + tick + " " + power);
 		} else {
 			power = standByConsumption;
 		}
@@ -170,19 +184,21 @@ public class Appliance extends Entity {
 	public static void main(String[] args) {
 		// TODO [TEST] check the getPower method
 		RNG.init();
-		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
+		String p = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
+		String q = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"q\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"q\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"q\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"q\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"q\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"q\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		Appliance freezer = new Appliance.Builder("id2",
 				"freezer", 
 				"A new freezer", 
 				"FreezerA", 
 				null,
-				new ConsumptionModel(s),
+				new ConsumptionModel(p, "p"),
+				new ConsumptionModel(q, "q"),
 				2f,
 				true).build();
 		System.out.println(freezer.getId());
 		System.out.println(freezer.getName());
 		for(int i = 0; i < 200; i++) {
-			System.out.println(freezer.getPower(i));
+			System.out.println(freezer.getPower(i, "p"));
 		}
 	}
 

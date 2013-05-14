@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,9 +27,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoSimParam;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("smp")
 @Produces(MediaType.APPLICATION_JSON)
@@ -42,8 +44,8 @@ public class SimulationParams {
 	 * Create simulation parameters
 	 */
 	@POST
-	public String createSimulationParam(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().createSimParam(message));
+	public Response createSimulationParam(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoSimParam().createSimParam(message)));
 	}
 
 	/**
@@ -53,9 +55,9 @@ public class SimulationParams {
 	 * @return
 	 */
 	@GET
-	public String getSimulationParam(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count,
+	public Response getSimulationParam(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoSimParam().getSimParams(httpHeaders,scn_id,count));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoSimParam().getSimParams(httpHeaders,scn_id,count)));
 	}
 
 	/**
@@ -65,8 +67,8 @@ public class SimulationParams {
 	 * @return
 	 */
 	@PUT
-	public String updateSimulationParam(@PathParam("smp_id") String smp_id, String message) {
-		return  PrettyJSONPrinter.prettyPrint(new MongoSimParam().updateSimParam(smp_id,message));
+	public Response updateSimulationParam(@PathParam("smp_id") String smp_id, String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoSimParam().updateSimParam(smp_id,message)));
 	}
 
 }

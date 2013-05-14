@@ -16,8 +16,8 @@
 Ext.define('C.view.ActivityModelForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 730,
 	hidden: false,
+	padding: 5,
 	width: 735,
 	autoScroll: true,
 	bodyPadding: 10,
@@ -45,64 +45,11 @@ Ext.define('C.view.ActivityModelForm', {
 					itemId: 'distributionsFieldSet',
 					maxWidth: 1000,
 					padding: '10px',
-					width: 687,
 					autoScroll: false,
 					layout: {
 						type: 'hbox'
 					},
-					title: 'Distributions',
-					items: [
-						{
-							xtype: 'container',
-							margin: '47px 0 0 0',
-							padding: '10px',
-							width: 93,
-							items: [
-								{
-									xtype: 'displayfield',
-									width: 245,
-									name: 'name',
-									fieldLabel: 'Name'
-								},
-								{
-									xtype: 'displayfield',
-									margin: '10px 0',
-									width: 246,
-									name: 'type',
-									fieldLabel: 'Type'
-								},
-								{
-									xtype: 'displayfield',
-									height: 41,
-									margin: '',
-									width: 246,
-									name: 'description',
-									fieldLabel: 'Description'
-								},
-								{
-									xtype: 'displayfield',
-									margin: '5px 0',
-									width: 246,
-									name: 'distrType',
-									fieldLabel: 'Types'
-								},
-								{
-									xtype: 'displayfield',
-									margin: '10px 0 30px 0',
-									width: 239,
-									name: 'val',
-									fieldLabel: 'Values'
-								},
-								{
-									xtype: 'displayfield',
-									height: 67,
-									width: 84,
-									name: 'params',
-									fieldLabel: 'Parameters'
-								}
-							]
-						}
-					]
+					title: 'Distributions'
 				}
 			],
 			tools: [

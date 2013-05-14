@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -23,9 +23,11 @@ import com.mongodb.BasicDBObject;
 
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.sim.Event;
+import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.people.Person;
+import eu.cassandra.sim.utilities.Constants;
 
 public class Installation extends Entity {
 	private Vector<Person> persons;
@@ -33,6 +35,11 @@ public class Installation extends Entity {
 	private Vector<Installation> subInstallations;
 	private LocationInfo locationInfo;
 	private double currentPower;
+	private double maxPower = 0;
+	private double avgPower = 0;
+	private double energy = 0;
+	private double previousEnergy = 0;
+	private double cost = 0;
 	
 	public static class Builder {
     	// Required variables
@@ -88,6 +95,39 @@ public class Installation extends Entity {
     		person.updateDailySchedule(tick, queue);
 		}
     }
+    
+    public void updateMaxPower(double power) {
+    	if(power > maxPower) maxPower = power;
+    }
+    
+    public double getMaxPower() {
+    	return maxPower;
+    }
+    
+    public void updateAvgPower(double powerFraction) {
+    	avgPower += powerFraction;
+    }
+    
+    public double getAvgPower() {
+    	return avgPower;
+    }
+    
+    public void updateEnergy(double power) {
+    	energy += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
+    }
+    
+    public void updateCost(PricingPolicy pp) {
+    	cost += pp.calculateCost(energy, previousEnergy);
+    	previousEnergy = energy;
+    }
+    
+    public double getEnergy() {
+    	return energy;
+    }
+    
+    public double getCost() {
+    	return cost;
+    }
 
 	public void nextStep(int tick) {
 		updateRegistry(tick);
@@ -96,7 +136,7 @@ public class Installation extends Entity {
 	public void updateRegistry(int tick) {
 		float power = 0f;
 		for(Appliance appliance : getAppliances()) {
-			power += appliance.getPower(tick);
+			power += appliance.getPower(tick, "p");
 		}
 		currentPower = power;
 	}

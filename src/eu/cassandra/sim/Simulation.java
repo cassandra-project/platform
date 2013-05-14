@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -77,6 +77,8 @@ public class Simulation implements Runnable {
 
 	private SimulationParams simulationWorld;
 	
+	private PricingPolicy pricing;
+	
 	private String scenario;
 	
 	private String dbname;
@@ -99,7 +101,7 @@ public class Simulation implements Runnable {
   
 	public Simulation(String ascenario, String adbname) {
 		scenario = ascenario;
-		System.out.println(PrettyJSONPrinter.prettyPrint(ascenario));
+		//System.out.println(PrettyJSONPrinter.prettyPrint(ascenario));
 		dbname = adbname;
 		m = new MongoResults(dbname);
   		RNG.init();
@@ -111,14 +113,22 @@ public class Simulation implements Runnable {
 
   	public void run () {
   		try {
+  			logger.info("run");
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
+  			double mcrunsRatio = 1.0/mcruns;
   			DBObject query = new BasicDBObject();
   			query.put("_id", new ObjectId(dbname));
   			DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   			for(int i = 0; i < mcruns; i++) {
   				tick = 0;
+  	  			double maxPower = 0;
+  	  			double avgPower = 0;
+  	  			double energy = 0;
+  	  			double cost = 0;
+  	  			double billingCycleEnergy = 0;
+  	  			double billingCycleDays = 0;
   	  			while (tick < endTick) {
 //  				System.out.println(tick);
   	  				// If it is the beginning of the day create the events
@@ -128,6 +138,7 @@ public class Simulation implements Runnable {
 //  						System.out.println(installation.getName());
   	  						installation.updateDailySchedule(tick, queue);
   	  					}
+  	  					billingCycleDays++;
 //  					System.out.println("Daily queue size: " + queue.size() + "(" + 
 //  					simulationWorld.getSimCalendar().isWeekend(tick) + ")");
   	  				}
@@ -157,6 +168,9 @@ public class Simulation implements Runnable {
 		  			for(Installation installation: installations) {
 		  				installation.nextStep(tick);
 		  				double power = installation.getCurrentPower();
+		  				installation.updateMaxPower(power);
+		  				installation.updateAvgPower(power/endTick);
+		  				installation.updateEnergy(power);
 		  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
 		  				sumPower += power;
 		//  				String name = installation.getName();
@@ -164,6 +178,16 @@ public class Simulation implements Runnable {
 		//  				+ "Power: " + power);
 		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  		  				+ "Power: " + power);
+		  				if(billingCycleDays == pricing.getBillingCycle()) {
+		  					installation.updateCost(pricing);
+		  				}
+		  			}
+		  			if(sumPower > maxPower) maxPower = sumPower;
+		  			avgPower += sumPower/endTick;
+		  			energy += (sumPower/1000.0) * Constants.MINUTE_HOUR_RATIO;
+		  			if(billingCycleDays == pricing.getBillingCycle()) {
+		  				cost += pricing.calculateCost(energy, billingCycleEnergy);
+		  				billingCycleEnergy = energy;
 		  			}
 		  			m.addAggregatedTickResult(tick, sumPower, 0);
 		  			tick++;
@@ -173,6 +197,20 @@ public class Simulation implements Runnable {
 		  			objRun.put("percentage", percentage);
 		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   	  			}
+  	  			for(Installation installation: installations) {
+  	  				installation.updateCost(pricing); // update the rest of the energy
+  	  				m.addKPIs(installation.getId(), 
+  	  						installation.getMaxPower() * mcrunsRatio, 
+  	  						installation.getAvgPower() * mcrunsRatio, 
+  	  						installation.getEnergy() * mcrunsRatio, 
+  	  						installation.getCost() * mcrunsRatio);
+  	  			}
+  	  			cost += pricing.calculateCost(energy, billingCycleEnergy);
+  	  			m.addKPIs(MongoResults.AGGR, 
+  	  					maxPower * mcrunsRatio, 
+  	  					avgPower * mcrunsRatio, 
+  	  					energy * mcrunsRatio, 
+  	  					cost * mcrunsRatio);
   			}
   			for(int i = 0; i < endTick; i++) {
   				for(Installation installation: installations) {
@@ -190,19 +228,21 @@ public class Simulation implements Runnable {
   	public void setup() throws Exception {
   		logger.info("Simulation setup started.");
   		installations = new Vector<Installation>();
-    
+		System.out.println("A");
   		/* TODO  Change the Simulation Calendar initialization */
   		simulationWorld = new SimulationParams();
     
   		DBObject jsonScenario = (DBObject) JSON.parse(scenario);
   		DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
-    
+  		DBObject pricingDoc = (DBObject) jsonScenario.get("pricing");
+  		pricing = new PricingPolicy(pricingDoc);
+  		System.out.println("B");
   		int numOfDays = ((Integer)simParamsDoc.get("numberOfDays")).intValue();
   		
   		endTick = Constants.MIN_IN_DAY * numOfDays;
   		mcruns = ((Integer)simParamsDoc.get("mcruns")).intValue();
-
+  		System.out.println("C");
   		// Check type of setup
   		String setup = (String)scenarioDoc.get("setup"); 
   		if(setup.equalsIgnoreCase("static")) {
@@ -212,12 +252,14 @@ public class Simulation implements Runnable {
   		} else {
   			throw new Exception("Problem with setup property");
   		}
+  		System.out.println("D");
   		logger.info("Simulation setup finished.");
   	}
 
   	public void staticSetup (DBObject jsonScenario) {
 	    int numOfInstallations = ((Integer)jsonScenario.get("instcount")).intValue();
 	    queue = new PriorityBlockingQueue<Event>(2 * numOfInstallations);
+		System.out.println("sdf");
 	    for (int i = 1; i <= numOfInstallations; i++) {
 	    	DBObject instDoc = (DBObject)jsonScenario.get("inst"+i);
 	    	String id = ((ObjectId)instDoc.get("_id")).toString();
@@ -228,6 +270,7 @@ public class Simulation implements Runnable {
 	    			id, name, description, type).build();
 	    	int appcount = ((Integer)instDoc.get("appcount")).intValue();
 	    	// Create the appliances
+			System.out.println("F");
 	    	HashMap<String,Appliance> existing = new HashMap<String,Appliance>();
 	    	for (int j = 1; j <= appcount; j++) {
 	    		DBObject applianceDoc = (DBObject)instDoc.get("app"+j);
@@ -238,19 +281,22 @@ public class Simulation implements Runnable {
 		    	double standy = Double.parseDouble(applianceDoc.get("standy_consumption").toString());
 		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
-		    	ConsumptionModel consmod = new ConsumptionModel(consModDoc.get("model").toString());
+		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
+		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
 	    		Appliance app = new Appliance.Builder(
 	    				appid,
 	    				appname,
 	    				appdescription,
 	    				apptype, 
 	    				inst,
-	    				consmod,
+	    				pconsmod,
+	    				qconsmod,
 	    				standy,
 	            		base).build();
 	    		existing.put(appid, app);
 	    		inst.addAppliance(app);
 	    	}
+			System.out.println("11");
 	    	DBObject personDoc = (DBObject)instDoc.get("person1");
 	    	String personid = ((ObjectId)personDoc.get("_id")).toString();
     		String personName = (String)personDoc.get("name");
@@ -264,6 +310,7 @@ public class Simulation implements Runnable {
 	    	inst.addPerson(person);
 	    	int actcount = ((Integer)personDoc.get("activitycount")).intValue();
 	    	//System.out.println("Act-Count: " + actcount);
+			System.out.println("12");
 	    	for (int j = 1; j <= actcount; j++) {
 	    		DBObject activityDoc = (DBObject)personDoc.get("activity"+j);
 	    		String activityName = (String)activityDoc.get("name");
@@ -351,15 +398,16 @@ public class Simulation implements Runnable {
 		    	} catch(ClassCastException cce) { }
 		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
-		    	ConsumptionModel consmod = new ConsumptionModel(consModDoc.get("model").toString());
-		    	
+		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
+		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
 	    		Appliance app = new Appliance.Builder(
 	    				appid,
 	    				appname,
 	    				appdescription,
 	    				apptype, 
 	    				inst,
-	    				consmod,
+	    				pconsmod,
+	    				qconsmod,
 	    				standy,
 	            		base).build();
 	    		existing.put(appid, app);
@@ -384,7 +432,7 @@ public class Simulation implements Runnable {
     			    	String app_id = addEntity(selectedApp);
     			    	selectedApp.setId(app_id);
     			    	inst.addAppliance(selectedApp);
-    			    	ConsumptionModel cm = selectedApp.getConsumptionModel();
+    			    	ConsumptionModel cm = selectedApp.getPConsumptionModel();
     			    	cm.setParentId(app_id);
     			    	String cm_id = addEntity(cm);
     			    	cm.setId(cm_id);

@@ -16,7 +16,7 @@
 Ext.define('C.view.InstallationForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 442,
+	padding: 5,
 	autoScroll: true,
 	bodyPadding: 10,
 	closable: false,
@@ -78,6 +78,7 @@ Ext.define('C.view.InstallationForm', {
 									width: 246,
 									name: 'x',
 									fieldLabel: 'Lat',
+									labelStyle: 'margin-top: 10px',
 									hideTrigger: false,
 									step: 0.01
 								},
@@ -86,6 +87,7 @@ Ext.define('C.view.InstallationForm', {
 									width: 246,
 									name: 'y',
 									fieldLabel: 'Long',
+									labelStyle: 'margin-top: 10px',
 									step: 0.01
 								},
 								{

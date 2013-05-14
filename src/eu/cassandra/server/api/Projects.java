@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,31 +25,66 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.log4j.Logger;
+
+import com.mongodb.DB;
 
 import eu.cassandra.server.mongo.MongoProjects;
+import eu.cassandra.server.mongo.util.DBConn;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.Simulation;
+import eu.cassandra.sim.utilities.Constants;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("prj")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class Projects {
+	
+	static Logger logger = Logger.getLogger(Projects.class);
 	
 	/**
 	 * 
 	 * @return
 	 */
 	@GET
-	public String getProjects(@QueryParam("count") boolean count,
+	public Response getProjects(@QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders,null,count));
+		String usr_id = Utils.userChecked(httpHeaders);
+		if(usr_id != null) {
+			logger.info(usr_id + " has logged in!");
+			String json = PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, usr_id, count));
+			return Response.ok(json, MediaType.APPLICATION_JSON).build();
+		} else {
+			return Response.status(Response.Status.UNAUTHORIZED).entity("User and or password do not match").build();
+		}
 	}
 	
 	/**
 	 * Create a project
 	 */
 	@POST
-	public String createProject(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoProjects().createProject(message));
+	public Response createProject(String message, @Context HttpHeaders httpHeaders) {
+		String usr_id = Utils.userChecked(httpHeaders);
+		if(usr_id != null) {
+			String patchedMessage = message;
+			try {
+				patchedMessage = Utils.inject(message, "usr_id", usr_id);
+			}catch(com.mongodb.util.JSONParseException e) {
+				//JSONtoReturn jSON2Rrn = new JSONtoReturn();
+				//PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError("Error parsing JSON input", e.getMessage()));
+				Response.status(Response.Status.BAD_REQUEST).entity("Error parsing JSON input - " + e.getMessage()).build();
+			}catch(Exception e) {
+				//JSONtoReturn jSON2Rrn = new JSONtoReturn();
+				//PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError(patchedMessage, e));
+				Response.status(Response.Status.BAD_REQUEST).entity(patchedMessage + " - " + e.getMessage()).build();
+			}
+			String json = PrettyJSONPrinter.prettyPrint(new MongoProjects().createProject(patchedMessage));
+			return Response.ok(json, MediaType.APPLICATION_JSON).build();
+		} else {
+			return Response.status(Response.Status.UNAUTHORIZED).entity("User and or password do not match").build();
+		}
 	}
 
 }

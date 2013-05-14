@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,9 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoProjects {
@@ -27,15 +29,22 @@ public class MongoProjects {
 	public final static String COL_PROJECTS = "projects";
 
 	/**
-	 * curl -i http://localhost:8080/cassandra/api/prj/4fec374fdf4ffdb8d1d1ce38
-	 * curl -i http://localhost:8080/cassandra/api/prj
+	 * curl -i https://localhost:8443/cassandra/api/prj/4fec374fdf4ffdb8d1d1ce38
+	 * curl -i https://localhost:8443/cassandra/api/prj
 	 * 
 	 * @param projectID
 	 * @return
 	 */
-	public String getProjects(HttpHeaders httpHeaders,String id, boolean count) {
-		return new MongoDBQueries().getEntity(httpHeaders,COL_PROJECTS, "_id", id, 
-				"Project(s) retrieved successfully",count).toString();
+	public String getProjects(HttpHeaders httpHeaders, String usr_id, boolean count) {
+		if(usr_id == null) {
+			return new JSONtoReturn().createJSONError(
+					"Only the Projects of a particular User can be retrieved", 
+					new RestQueryParamMissingException("usr_id QueryParam is missing")).toString();
+		}
+		else {
+			return new MongoDBQueries().getEntity(httpHeaders,COL_PROJECTS, "usr_id", usr_id, 
+					"Project(s) retrieved successfully",count).toString();
+		}
 	}
 
 	/**

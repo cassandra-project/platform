@@ -8,6 +8,11 @@
             "description": "The ObjectId of the Scenario these Simulation Parameters belong ",
             "optional": false
         },
+        "prc_id": {
+            "type": "string",
+            "description": "The ObjectId of the Pricing scheme to run the scenario",
+            "optional": true
+        },
         "name": {
             "type": "string",
             "description": "Name of the Simulation Parameters",

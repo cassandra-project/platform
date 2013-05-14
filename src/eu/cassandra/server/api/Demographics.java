@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoDemographics;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("demog")
 @Produces(MediaType.APPLICATION_JSON)
@@ -35,14 +37,14 @@ import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 public class Demographics {
 
 	@GET
-	public String getDemographics(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count,
+	public Response getDemographics(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDemographics().getDemographics(httpHeaders,scn_id, count));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDemographics().getDemographics(httpHeaders,scn_id, count)));
 	}
 
 	@POST
-	public String createDemographic(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDemographics().createDemographic(message));
+	public Response createDemographic(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDemographics().createDemographic(message)));
 	}
 
 }

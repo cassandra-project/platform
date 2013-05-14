@@ -636,7 +636,7 @@ input, textarea, select {
   background-image: url('../../resources/themes/images/neptune/box/r-blue.gif'); }
 
 /* line 193, ../themes/stylesheets/neptune/default/util/_tool.scss */
-.x-tool-base, .x-tool-maximize, .x-tool-minimize, .x-tool-restore, .x-tool-save, .x-tool-refresh, .x-tool-help, .x-tool-info, .x-tool-search, .x-tool-gear, .x-tool-close, .x-tool-minus, .x-tool-plus, .x-tool-print, .x-tool-up, .x-tool-toggle, .x-tool-collapse, .x-tool-collapse-top, .x-tool-left, .x-tool-prev, .x-tool-down, .x-tool-expand-right, .x-tool-collapse-right, .x-tool-collapse-left, .x-tool-expand-bottom, .x-tool-expand, .x-tool-right, .x-tool-next, .x-tool-collapse-all, .x-tool-expand-all, .x-tool-pin, .x-tool-unpin, .x-collapsed .x-tool-toggle {
+.x-tool-base, .x-tool-maximize, .x-tool-minimize, .x-tool-restore, .x-tool-save, .x-tool-refresh, .x-tool-help, .x-tool-info, .x-tool-search, .x-tool-gear, .x-tool-close, .x-tool-minus, .x-tool-plus, .x-tool-print, .x-tool-up, .x-tool-toggle, .x-tool-collapse, .x-tool-collapse-top, .x-tool-left, .x-tool-prev, .x-tool-down, .x-tool-expand-right, .x-tool-collapse-right, .x-tool-expand-left, .x-tool-collapse-left, .x-tool-expand-bottom, .x-tool-expand, .x-tool-right, .x-tool-next, .x-tool-collapse-all, .x-tool-expand-all, .x-tool-pin, .x-tool-unpin, .x-collapsed .x-tool-toggle {
   width: 16px;
   height: 16px;
   background-image: url('../../resources/themes/images/neptune/tools.png'); }
@@ -8892,7 +8892,7 @@ table.x-datepicker-inner {
     padding-left: 2px; }
   /* line 748, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
   .x-grid-row-editor .x-panel-body {
-    background-color: #2696f6;
+   /* background-color: #2696f6;*/
     border-top: 1px solid #167cce !important;
     border-bottom: 1px solid #167cce !important; }
 
@@ -8904,7 +8904,7 @@ table.x-datepicker-inner {
   height: 24px; }
 /* line 765, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
 .x-grid-editor .x-form-trigger-wrap .x-form-spinner-up, .x-grid-editor .x-form-trigger-wrap .x-form-spinner-down, .x-grid-row-editor .x-form-trigger-wrap .x-form-spinner-up, .x-grid-row-editor .x-form-trigger-wrap .x-form-spinner-down {
-  background-image: url('../../resources/themes/images/neptune/form/spinner-small.gif');
+  /*background-image: url('../../resources/themes/images/neptune/form/spinner-small.gif');*/
   height: 10px !important; }
 
 /* line 773, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
@@ -8954,7 +8954,7 @@ table.x-datepicker-inner {
 
 /* line 837, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
 .x-grid-row-editor-buttons {
-  background-color: #2696f6;
+  /*background-color: #2696f6;*/
   position: absolute;
   bottom: -31px;
   padding: 4px;
@@ -9420,7 +9420,7 @@ textarea.x-form-invalid-field {
   /* line 14, ../themes/stylesheets/neptune/default/widgets/form/_triggerfield.scss */
   .x-form-trigger:after {
     position: absolute;
-	margin: 5px 0 0 4px;
+	margin: 1px 0 0 3px/*5px 0 0 4px*/;
     width: 11px;
     height: 11px;
     content: "";
@@ -12120,10 +12120,10 @@ textarea.x-form-invalid-field {
 .x-tool-collapse-bottom {
   background-position: -240px; }
 
-.x-tool-collapse-left {
+.x-tool-collapse-left, .x-tool-expand-left {
   background-position: -224px; }
 
-.x-tool-expand-right {
+.x-tool-expand-right, .x-tool-collapse-right {
   background-position: -256px; }
 
 /* line 238, ../themes/stylesheets/neptune/default/util/_tool.scss */

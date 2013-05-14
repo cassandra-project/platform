@@ -16,7 +16,7 @@
 Ext.define('C.view.SimulationParamsForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 323,
+	padding: 5,
 	width: 431,
 	layout: {
 		type: 'auto'
@@ -56,12 +56,6 @@ Ext.define('C.view.SimulationParamsForm', {
 									}
 								},
 								{
-									xtype: 'textareafield',
-									width: 246,
-									name: 'description',
-									fieldLabel: 'Description'
-								},
-								{
 									xtype: 'textfield',
 									width: 246,
 									name: 'locationInfo',
@@ -77,11 +71,24 @@ Ext.define('C.view.SimulationParamsForm', {
 									allowDecimals: false
 								},
 								{
+									xtype: 'numberfield',
+									hidden: false,
+									width: 246,
+									name: 'mcruns',
+									readOnly: false,
+									value: 1,
+									fieldLabel: 'Monte Carlo Runs',
+									allowDecimals: false,
+									maxValue: 100,
+									minValue: 1
+								},
+								{
 									xtype: 'datefield',
 									width: 246,
 									name: 'dateStarted',
 									readOnly: false,
-									fieldLabel: 'Date Started'
+									fieldLabel: 'Date Started',
+									allowBlank: false
 								},
 								{
 									xtype: 'datefield',
@@ -89,6 +96,29 @@ Ext.define('C.view.SimulationParamsForm', {
 									name: 'dateEnds',
 									readOnly: false,
 									fieldLabel: 'Date Ends'
+								},
+								{
+									xtype: 'textareafield',
+									width: 246,
+									name: 'description',
+									fieldLabel: 'Notes'
+								},
+								{
+									xtype: 'textfield',
+									cls: 'dropTarget',
+									width: 246,
+									name: 'prc_id',
+									fieldLabel: 'Pricing Scheme',
+									listeners: {
+										render: {
+											fn: me.onTextfieldRender1,
+											scope: me
+										},
+										beforerender: {
+											fn: me.onTextfieldBeforeRender,
+											scope: me
+										}
+									}
 								},
 								{
 									xtype: 'container',
@@ -140,6 +170,22 @@ Ext.define('C.view.SimulationParamsForm', {
 		this.form.getRecord().node.set({'name':newValue});
 	},
 
+	onTextfieldRender1: function(abstractcomponent, options) {
+		var myForm = this.getForm();
+		new Ext.dd.DropTarget(this.body.dom.getElementsByClassName('dropTarget')[0],{
+			ddGroup:'ddGlobal',
+			notifyDrop: function(dds,e,data) {	
+				if (dds.dragData.records[0].get('nodeType') != 'Pricing' )
+				return false;
+				myForm.setValues({ prc_id: dds.dragData.records[0].get('id')});
+			return true; }
+		});
+	},
+
+	onTextfieldBeforeRender: function(abstractcomponent, options) {
+		abstractcomponent.helpText = 'You can add a Pricing Scheme by selecting it from the Projects Tree and dropping it here';
+	},
+
 	onButtonClick2: function(button, e, options) {
 		var myForm = this.getForm();
 		var record = myForm.getRecord();
@@ -150,21 +196,7 @@ Ext.define('C.view.SimulationParamsForm', {
 
 		var dateStarted = myForm.getFieldValues().dateStarted;
 		if (dateStarted) {
-			var day = dateStarted.getDate();
-			var month = dateStarted.getMonth()+1;
-			var year = dateStarted.getFullYear();
-			var weekdayNumb = dateStarted.getDay( );
-			var weekday = '';
-			switch (weekdayNumb) {
-				case 0: weekday = 'Sunday';break;
-				case 1: weekday = 'Monday';break;
-				case 2: weekday = 'Tuesday';break;
-				case 3: weekday = 'Wednesday';break;
-				case 4: weekday = 'Thursday';break;
-				case 5: weekday = 'Friday';break;
-				case 6: weekday = 'Saturday';break;
-			}
-			calendar = {'year':year, 'month': month, 'weekday': weekday, 'dayOfMonth':day};
+			calendar = C.app.getCalendar(dateStarted);
 			var dateEnds = myForm.getFieldValues().dateEnds;
 			if (dateEnds) {
 				var one_day = 1000*60*60*24;
@@ -180,18 +212,21 @@ Ext.define('C.view.SimulationParamsForm', {
 			}
 		}
 
-		record.set({
-			'name': values.name,
-			'description': values.description,
-			'locationInfo': values.locationInfo,
-			'calendar': calendar, 
-			'numberOfDays': duration
-		});
+		if (myForm.isValid()) {
+			record.set({
+				'name': values.name,
+				'description': values.description,
+				'locationInfo': values.locationInfo,
+				'mcruns':values.mcruns,
+				'calendar': calendar, 
+				'numberOfDays': duration
+			});
 
-		this.dirtyForm = false;
+			this.dirtyForm = false;
 
-		//clear dirty record
-		record.node.commit();
+			//clear dirty record
+			record.node.commit();
+		}
 	},
 
 	onButtonClick21: function(button, e, options) {

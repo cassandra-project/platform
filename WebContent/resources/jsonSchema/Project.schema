@@ -12,6 +12,11 @@
             "type": "string",
             "description": "Description of the project",
             "optional": true
+        },
+        "usr_id": {
+            "type": "string",
+            "description": "The ObjectId of the User this Project belongs",
+            "optional": false
         }
     },
     "additionalProperties" : false

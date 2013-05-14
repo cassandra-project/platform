@@ -16,12 +16,12 @@
 Ext.define('C.view.ConsModChart', {
 	extend: 'Ext.chart.Chart',
 
-	height: 397,
+	height: 400,
 	style: 'background:#fff',
-	width: 900,
-	shadow: true,
+	width: 700,
+	shadow: false,
 	animate: true,
-	insetPadding: 20,
+	insetPadding: 5,
 	store: 'ConsumptionModelValues',
 
 	initComponent: function() {
@@ -34,14 +34,15 @@ Ext.define('C.view.ConsModChart', {
 					fields: [
 						'x'
 					],
-					minorTickSteps: 10,
 					position: 'bottom',
-					title: 'Time'
+					title: 'Time',
+					minimum: 0
 				},
 				{
 					type: 'Numeric',
 					fields: [
-						'y'
+						'p',
+						'q'
 					],
 					grid: {
 						odd: {
@@ -52,40 +53,59 @@ Ext.define('C.view.ConsModChart', {
 						}
 					},
 					position: 'left',
-					title: 'Watt',
-					adjustMaximumByMajorUnit: true,
 					minimum: 0
 				}
 			],
 			series: [
 				{
-					type: 'column',
-					highlight: true,
-					label: {
-						contrast: true,
-						display: 'insideEnd',
-						field: 'y',
-						color: '#000',
-						orientation: 'vertical',
-						'text-anchor': 'middle'
+					type: 'line',
+					highlight: {
+						size: 7,
+						radius: 7
 					},
 					tips: {
 						trackMouse: true,
 						width: 100,
-						height: 40,
+						height: 60,
 						renderer: function(storeItem, item) {
-							this.setTitle( 'Watt : ' + storeItem.get('y') + '<br />' + 'Time : ' + storeItem.get('x'));
+							this.setTitle( 'W : ' + storeItem.get('p') + '<br />' + 'VA : ' + storeItem.get('q') + '<br />' + 'Time : ' + storeItem.get('x'));
 						}
 					},
+					title: 'Active Power (W)',
 					xField: 'x',
 					yField: [
-						'y'
-					]
+						'p'
+					],
+					fill: true,
+					selectionTolerance: 6,
+					showMarkers: false,
+					smooth: 3
+				},
+				{
+					type: 'line',
+					highlight: {
+						size: 4,
+						radius: 4
+					},
+					tips: {
+						trackMouse: true,
+						width: 100,
+						height: 60,
+						renderer: function(storeItem, item) {
+							this.setTitle( 'W : ' + storeItem.get('p') + '<br />' + 'VA : ' + storeItem.get('q') + '<br />' + 'Time : ' + storeItem.get('x'));
+						}
+					},
+					title: 'Reactive Power (VA)',
+					xField: 'x',
+					yField: [
+						'q'
+					],
+					fill: true,
+					selectionTolerance: 6,
+					showMarkers: false,
+					smooth: 3
 				}
 			],
-			legend: {
-
-			},
 			listeners: {
 				afterrender: {
 					fn: me.onChartAfterRender,
@@ -98,13 +118,15 @@ Ext.define('C.view.ConsModChart', {
 	},
 
 	onChartAfterRender: function(abstractcomponent, options) {
-		console.info('on after render', abstractcomponent, options);
+		abstractcomponent.store.on('load',function(store, records){
+			var y_axis = abstractcomponent.axes.getRange()[1];
+			var y_axis_max = (store.max('p') > store.max('q')) ?  store.max('p') :  store.max('q');
+			y_axis.maximum = y_axis_max + y_axis_max/10;
 
-		abstractcomponent.store.on(
-		'load',	
-		function(store){
-			if (store.data.length > 150)
-			abstractcomponent.series.items[0].label = {};
+			try {
+				abstractcomponent.redraw();
+			}
+			catch(e) {}
 		});
 	}
 

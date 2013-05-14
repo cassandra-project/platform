@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,14 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.DBObject;
+
+import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.sim.utilities.Utils;
 
 public class MongoInstallations {
 
@@ -72,11 +76,25 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String createInstallation(String dataToInsert) {
-		return new MongoDBQueries().insertData(COL_INSTALLATIONS ,dataToInsert,
+		return createInstallationObj(dataToInsert).toString();
+	}
+	
+	public static DBObject createInstallationObj(String dataToInsert) {
+		MongoDBQueries q = new MongoDBQueries();
+		DBObject returnObj = q.insertData(COL_INSTALLATIONS ,dataToInsert,
 				"Installation created successfully", 
 				new String[] {MongoScenarios.COL_SCENARIOS,COL_INSTALLATIONS} ,
 				new String[] {"scenario_id","belongsToInstallation"},
-				new boolean[] {false,true},JSONValidator.INSTALLATION_SCHEMA).toString();
+				new boolean[] {false,true},JSONValidator.INSTALLATION_SCHEMA);
+		if(Utils.failed(returnObj.toString())) {
+			// Perhaps should be added to the user library
+			returnObj = q.insertData(COL_INSTALLATIONS ,dataToInsert,
+					"Installation created successfully", 
+					new String[] {"users"} ,
+					new String[] {"scenario_id"},
+					new boolean[] {false},JSONValidator.INSTALLATION_SCHEMA);
+		}
+		return returnObj;
 	}
 
 	/**
@@ -97,9 +115,17 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String updateInstallation(String id,String jsonToUpdate) {
-		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
+		MongoDBQueries q = new MongoDBQueries();
+		String returnMsg = q.updateDocument("_id", id,jsonToUpdate,
 				COL_INSTALLATIONS, "Installations updated successfully",
 				MongoScenarios.COL_SCENARIOS ,"scenario_id",JSONValidator.INSTALLATION_SCHEMA).toString();
+		if(Utils.failed(returnMsg)) {
+			// Perhaps should be added to the user library
+			returnMsg = q.updateDocument("_id", id,jsonToUpdate,
+					COL_INSTALLATIONS, "Installations updated successfully",
+					"users" ,"scenario_id",JSONValidator.INSTALLATION_SCHEMA).toString();
+		}
+		return returnMsg;
 	}
 
 

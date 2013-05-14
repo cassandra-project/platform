@@ -32,8 +32,8 @@ Ext.application({
 		'Distribution',
 		'Demographic',
 		'DemographicEntity',
-		'Results',
-		'DistributionResults'
+		'Kpi',
+		'Pricing'
 	],
 	stores: [
 		'Projects',
@@ -60,8 +60,15 @@ Ext.application({
 		'DemographicEntities',
 		'Results',
 		'MetricStore',
+		'DistributionValues',
+		'Kpis',
+		'UserLibTreeStore',
+		'CassLibTreeStore',
 		'ConsumptionModelValues',
-		'DistributionValues'
+		'Pricing',
+		'PricingTypeStore',
+		'LevelsStore',
+		'OffpickStore'
 	],
 	views: [
 		'MyViewport',
@@ -74,13 +81,21 @@ Ext.application({
 		'ActivityForm',
 		'SimulationParamsForm',
 		'ActmodPropertiesForm',
-		'TypesPieChart',
 		'ProjectForm',
 		'DemographicForm',
 		'EntitiesGrid',
 		'ResultsGraphForm',
-		'ConsModChart',
-		'DistributionChart'
+		'DistributionNormalChart',
+		'MyTabPanel',
+		'MyTreePanel',
+		'LoginForm',
+		'DistributionHistogramChart',
+		'UserLibTreePanel',
+		'CassLibTreePanel',
+		'TypesPieChart',
+		'PricingForm',
+		'ComparePanel',
+		'ConsModChart'
 	],
 	autoCreateViewport: true,
 	name: 'C',
@@ -110,16 +125,9 @@ Ext.application({
 
 		if (record.get('nodeType').search('Collection') > 0 ) {
 			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(record.c.store);
-			if (record.get('nodeType') == 'RunsCollection') {
-				grid.getDockedItems()[0].hidden = true;
-			}
 			cmpToAdd = grid;
 		}
 		else {
-			Ext.QuickTips.init();
-
-			// invalid markers to sides
-			Ext.form.Field.prototype.msgTarget = 'side';
 
 			var myForm;
 			var cur_record;
@@ -156,6 +164,10 @@ Ext.application({
 				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getSimulationParamsForm(cur_record);
 				break;
+				case 'Pricing':
+				cur_record = record.parentNode.c.store.getById(record.get('id'));
+				myForm = C.app.getPricingForm(cur_record);
+				break;
 				case 'Demographic':
 				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getDemographicForm(cur_record);
@@ -173,6 +185,12 @@ Ext.application({
 
 			cmpToAdd = myForm;
 			cmpToAdd.dirtyForm = true;
+			try {
+				if (record.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
+					cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
+				}
+			}
+			catch (e){}
 		}
 
 		var namesBreadcrumb = record.getPath('name');
@@ -254,6 +272,12 @@ Ext.application({
 						navigationNode: childNode
 					});
 					break;
+					case 'PricingSchemesCollection':
+					childNode.c.store = new C.store.Pricing({
+						storeId: record.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
+						navigationNode: childNode
+					});
+					break;
 					case 'DemographicsCollection':
 					childNode.c.store = new C.store.Demographics({
 						storeId: childNode.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
@@ -301,10 +325,6 @@ Ext.application({
 				gridStore.loadData(o.data, true);
 				var successMsg = Ext.JSON.decode(response.responseText).message;
 				Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
-			},
-			failure: function(response, options) {
-				var errors = Ext.JSON.decode(response.responseText).errors;
-				Ext.MessageBox.show({title:'Error', msg: JSON.stringify(errors), icon: Ext.MessageBox.ERROR});
 			}
 		});
 
@@ -362,7 +382,6 @@ Ext.application({
 		this.dbname = window.location.hash.replace('#','');
 		C.app = this;
 
-		//C.dbname = window.location.hash.replace('#','');
 
 	},
 
@@ -436,8 +455,9 @@ Ext.application({
 		}
 		});
 		*/
-		consmodGraphStore = new C.store.ConsumptionModelValues({});
-		myResultsChart = new C.view.ConsModChart({store: consmodGraphStore});
+		var consmodGraphStore = new C.store.ConsumptionModelValues();
+		var myResultsChart = new C.view.ConsModChart({store: consmodGraphStore, legend: {position: 'bottom'}});
+		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: consmodGraphStore});
 		myFormCmp.insert(3, myResultsChart);
 
 		consmod_store = new C.store.ConsumptionModels({
@@ -447,10 +467,14 @@ Ext.application({
 				function(store,records,options){
 					var consmod_record = records[0];
 					if (consmod_record) {
-						var model = JSON.stringify(consmod_record.get('model'));
-						myForm.setValues({ expression: model});
-						myForm.setValues({ consmod_name: consmod_record.get('name')});
-						myForm.setValues({ consmod_description: consmod_record.get('description')});
+						var pmodel = JSON.stringify(consmod_record.get('pmodel'));
+						var qmodel = JSON.stringify(consmod_record.get('qmodel'));
+						myForm.setValues({ 
+							p_expression: pmodel, 
+							q_expression: qmodel, 
+							consmod_name: consmod_record.get('name'), 
+							consmod_description: consmod_record.get('description')
+						});
 
 						consmodGraphStore.proxy.url += '/' + consmod_record.get('_id');
 						consmodGraphStore.load();
@@ -549,16 +573,27 @@ Ext.application({
 	getDistributionForm: function(distr_type, title) {
 		var distrCmp = new C.view.DistributionForm({distr_type: distr_type});
 		var myForm = distrCmp.getForm();
+		var values = myForm.getValues();
 
 		distrCmp.setTitle(title);
-		var distrGraphStore = new C.store.DistributionValues({});
+		var distrGraphStore = new C.store.DistributionValues({distr_type : distr_type});
 
 		switch (distr_type) {
-			case 'duration': distrGraphStore.xAxisTitle = 'Duration (Minutes)'; break;
-			case 'startTime': distrGraphStore.xAxisTitle = 'Start Time (Minute of day)'; break;
-			case 'repeatsNrOfTime': distrGraphStore.xAxisTitle = 'Daily Repetitions'; break;
+			case 'duration': 
+			distrGraphStore.xAxisTitle = 'Duration (Minutes)';
+			myResultsChart = new C.view.DistributionNormalChart({store: distrGraphStore});
+			break;
+			case 'startTime':
+			distrGraphStore.xAxisTitle = 'Start Time (Minute of day)'; 
+			myResultsChart = new C.view.DistributionNormalChart({store: distrGraphStore});
+			break;
+			case 'repeatsNrOfTime': 
+			distrGraphStore.xAxisTitle = 'Daily Repetitions';
+
+			myResultsChart = new C.view.DistributionHistogramChart({store: distrGraphStore});
+			break;
 		}
-		var myResultsChart = new C.view.DistributionChart({store: distrGraphStore});
+
 		var myChartLabel = new Ext.form.Label({
 			style: 'font-size:10px;',
 			text:''
@@ -590,6 +625,7 @@ Ext.application({
 		var month = record.get('calendar').month - 1;
 		var year = record.get('calendar').year;
 		var started = (new Date(year,month,day) == 'Invalid Date') ? '' : new Date(year,month,day);
+		started = started ? started : new Date();
 		if (started) {
 			ended = (record.get('numberOfDays') === 0) ? '' : new Date((started.getTime() + record.get('numberOfDays')*24*60*60*1000));
 		}
@@ -689,15 +725,19 @@ Ext.application({
 		var myFormCmp = new C.view.ResultsGraphForm({});
 
 		myResultsStore = new C.store.Results({});
-		/*myResultsStore.load({
-		params: {
-		scn_id: record.node.get('nodeId')
-		}
-		});*/
-
-		myResultsStore.load();
 		myResultsChart = new C.view.ResultsLineChart({store: myResultsStore});
+		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: myResultsStore});
 		myFormCmp.insert(2, myResultsChart);
+		myResultsStore.load();
+
+		var kpiStore = new C.store.Kpis();
+		kpiStore.load();
+		var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(kpiStore);
+		grid.width = 700;
+		grid.closable = false;
+		grid.setTitle("KPIs");
+		grid.query("tool")[0].hide();
+		myFormCmp.insert(3, grid);
 
 		return myFormCmp;
 	},
@@ -707,6 +747,7 @@ Ext.application({
 		var formWindow = new Ext.Window({
 			title : windowContent.header.title,
 			items : windowContent,
+			layout: 'fit',
 			tools: [
 			{
 				xtype: 'tool',
@@ -730,6 +771,44 @@ Ext.application({
 		formWindow.show();
 		if (windowContent.hidden) windowContent.show();
 		windowContent.header.hide();
+	},
+
+	getCalendar: function(dateStarted) {
+		var day = dateStarted.getDate();
+		var month = dateStarted.getMonth()+1;
+		var year = dateStarted.getFullYear();
+		var weekdayNumb = dateStarted.getDay( );
+		var weekday = '';
+		switch (weekdayNumb) {
+			case 0: weekday = 'Sunday';break;
+			case 1: weekday = 'Monday';break;
+			case 2: weekday = 'Tuesday';break;
+			case 3: weekday = 'Wednesday';break;
+			case 4: weekday = 'Thursday';break;
+			case 5: weekday = 'Friday';break;
+			case 6: weekday = 'Saturday';break;
+		}
+		var calendar = {'year':year, 'month': month, 'weekday': weekday, 'dayOfMonth':day};
+		return calendar;
+	},
+
+	getPricingForm: function(record) {
+		var myFormCmp = new C.view.PricingForm({});
+		var myForm = myFormCmp.getForm();
+		var values = myForm.getValues();
+
+		myFormCmp.getComponent(record.get('type')).show();
+
+		if (record.get('type') == 'ScalarEnergyPricing' ) {
+			myFormCmp.query('grid')[0].store.loadData(record.get('levels'));
+		}
+		else if (record.get('type') == 'ScalarEnergyPricingTimeZones') {
+			myFormCmp.query('grid')[1].store.loadData(record.get('levels'));
+			myFormCmp.query('grid')[2].store.loadData(record.get('offpeak'));
+		}
+
+		myForm.loadRecord(record);
+		return myFormCmp;
 	}
 
 });

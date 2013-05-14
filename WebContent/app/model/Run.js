@@ -21,6 +21,10 @@ Ext.define('C.model.Run', {
 	fields: [
 		{
 			name: '_id',
+			persist: false
+		},
+		{
+			name: 'name',
 			persist: false,
 			type: 'string'
 		},

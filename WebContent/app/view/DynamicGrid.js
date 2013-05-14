@@ -16,12 +16,9 @@
 Ext.define('C.view.DynamicGrid', {
 	extend: 'Ext.grid.Panel',
 
-	height: 250,
-	margin: '0 0 10px 0',
-	minWidth: 700,
-	width: 700,
+	minHeight: 250,
+	padding: 5,
 	autoScroll: true,
-	bodyCls: 'gridbg',
 	closable: false,
 	title: 'My Grid Panel',
 	columnLines: false,
@@ -75,6 +72,10 @@ Ext.define('C.view.DynamicGrid', {
 								click: {
 									fn: me.onButtonClick,
 									scope: me
+								},
+								beforerender: {
+									fn: me.onButtonBeforeRender,
+									scope: me
 								}
 							}
 						},
@@ -95,6 +96,25 @@ Ext.define('C.view.DynamicGrid', {
 								click: {
 									fn: me.onButtonClick11,
 									scope: me
+								},
+								beforerender: {
+									fn: me.onButtonBeforeRender1,
+									scope: me
+								}
+							}
+						},
+						{
+							xtype: 'button',
+							hidden: true,
+							text: 'Compare',
+							listeners: {
+								click: {
+									fn: me.onButtonClick111,
+									scope: me
+								},
+								beforerender: {
+									fn: me.onButtonBeforeRender2,
+									scope: me
 								}
 							}
 						}
@@ -104,6 +124,14 @@ Ext.define('C.view.DynamicGrid', {
 			listeners: {
 				itemdblclick: {
 					fn: me.onGridpanelItemDblClick,
+					scope: me
+				},
+				beforerender: {
+					fn: me.onGridpanelBeforeRender,
+					scope: me
+				},
+				afterrender: {
+					fn: me.onGridpanelAfterRender,
 					scope: me
 				}
 			},
@@ -138,13 +166,14 @@ Ext.define('C.view.DynamicGrid', {
 			dropFunction.cancelDrop();
 			var index = Ext.getStore(record.get('nodeStoreId')).findExact('_id',record.get('id'));
 			var node = Ext.getStore(record.get('nodeStoreId')).getAt(index);
-			parent_id = this.store.navigationNode.parentNode.get('id');
+			var parent_id = (this.store.navigationNode.get('nodeType') == 'ProjectsCollection')?'':this.store.navigationNode.parentNode.get('id');
 			parent_idKey = '';
 			switch(record.get('nodeType')){
 				case 'Scenario': parent_idKey = 'project_id'; break;
 				case 'SimulationParam': parent_idKey = 'scn_id'; break;
-				case 'Installation': parent_idKey = 'scn_id'; break;
-				case 'Demographic': parent_idKey = 'scenario_id'; break;
+				case 'Installation': parent_idKey = 'scenario_id'; break;
+				case 'Pricing': parent_idKey = 'scn_id'; break;
+				case 'Demographic': parent_idKey = 'scn_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
 				case 'Activity': parent_idKey = 'pers_id'; break;
@@ -152,16 +181,8 @@ Ext.define('C.view.DynamicGrid', {
 				default: return false;
 			}
 
-			if ( (!Ext.EventObject.shiftKey || record.get('nodeType') == 'Demographic' || record.get('nodeType') == 'SimulationParam' ) && (record.get('nodeType') != 'Appliance' && record.get('nodeType') != 'ActivityModel') ){
-
-				//Ext.sliding_box.msg('Drag and Drop info', 'By holding <b>Shift</b> key pressed while copying a node </br> all its childred will be copied as well');
-
-				var dataToAdd = JSON.parse(JSON.stringify(node.data));
-				delete dataToAdd._id;
-				dataToAdd[parent_idKey] = parent_id;
-				this.store.add(dataToAdd);
-			} 
-			else {
+			if ( !Ext.EventObject.shiftKey && ( record.get('nodeType') == 'Scenario' || record.get('nodeType') == 'Installation' || 
+			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' ) ){
 				data.copy = true;
 				var targetID = '';
 				var meID = '';
@@ -169,44 +190,36 @@ Ext.define('C.view.DynamicGrid', {
 					case 'Scenario': targetID = 'toPrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
-					case 'Activity': targetID = 'toPersID'; meID = 'actID'; break;
-					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
 					default: return false;
 				}
-				//TODO See why on failure success function is executed
+
 				Ext.Ajax.request({
-					url: 'http://localhost:8080/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+parent_id,
+					url: '/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+parent_id,
 					method: 'POST',
 					scope: this,
-					callback: function(options, success, response) {	
+					success: function(response, options) {	
 						response = JSON.parse(response.responseText);
-						if (response.success) {
-							var params = {};
-							params[parent_idKey] = parent_id;
-							this.store.navigationNode.removeAll();
-							this.store.load( {params : params });
-							Ext.sliding_box.msg('Success', JSON.stringify(response.message));
-						}
-						else {
-							Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
-						}
+						var params = {};
+						params[parent_idKey] = parent_id;
+						this.store.navigationNode.removeAll();
+						this.store.load( {params : params });
+						Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 					}
-					/*success: function(response, options) {
-					var message = Ext.JSON.decode(response.responseText).message;
-					var params = {};
-					params[parent_idKey] = parent_id;
-					this.store.navigationNode.removeAll();
-					this.store.load( {params : params });
-					Ext.sliding_box.msg('Success', JSON.stringify(message));
-					},
-					failure: function(response, options) {
-					var errors = Ext.JSON.decode(response.responseText).errors;
-					Ext.MessageBox.show({title:'Error', msg: JSON.stringify(errors), icon: Ext.MessageBox.ERROR});
-					}*/
 				});
-				return 0;
+
+			} 
+			else {
+
+				//Ext.sliding_box.msg('Drag and Drop info', 'By holding <b>Shift</b> key pressed while copying a node </br> all its childred will be copied as well');
+
+				var dataToAdd = JSON.parse(JSON.stringify(node.data));
+				delete dataToAdd._id;
+				dataToAdd[parent_idKey] = parent_id;
+				this.store.add(dataToAdd);
+
 			}
+			return 0;
 		}
 		return false;
 	},
@@ -220,12 +233,16 @@ Ext.define('C.view.DynamicGrid', {
 			case 'ProjectsCollection': inputArray = {};break;
 			case 'ScenariosCollection': inputArray = {'project_id' : parent_id};break;
 			case 'InstallationsCollection': inputArray = {'scenario_id' : parent_id}; break;
+			case 'PricingSchemesCollection': inputArray = {'scn_id' : parent_id}; break;
 			case 'DemographicsCollection': inputArray = {'scn_id' : parent_id}; break;
-			case 'SimulationParamsCollection': inputArray = {'scn_id' : parent_id, calendar: {}}; break;
+			case 'SimulationParamsCollection': 
+			var calendar = C.app.getCalendar( new Date());
+			inputArray = {'scn_id' : parent_id, calendar: calendar}; 
+			break;
 			case 'PersonsCollection': inputArray = {'inst_id' : parent_id}; break;
 			case 'AppliancesCollection': inputArray = {'inst_id': parent_id}; break;
 			case 'ActivitiesCollection': inputArray = {'pers_id': parent_id}; break;
-			case 'ActivityModelsCollection': inputArray = {'act_id' : parent_id, containsAppliances:[]}; break;
+			case 'ActivityModelsCollection': inputArray = {'act_id' : parent_id}; break;
 			default: return false;
 		}
 		var currentModel = this.store.getProxy().getModel();
@@ -245,6 +262,12 @@ Ext.define('C.view.DynamicGrid', {
 
 
 
+
+	},
+
+	onButtonBeforeRender: function(abstractcomponent, options) {
+		if (this.store.model.getName() == "C.model.Run")
+		abstractcomponent.hide();
 	},
 
 	onButtonClick1: function(button, e, options) {
@@ -282,7 +305,64 @@ Ext.define('C.view.DynamicGrid', {
 		}
 	},
 
+	onButtonBeforeRender1: function(abstractcomponent, options) {
+		if (this.store.model.getName() == "C.model.Run")
+		abstractcomponent.hide();
+	},
+
+	onButtonClick111: function(button, e, options) {
+		console.info('cOMPARE clicked.', this, button, e, options);
+
+		var selections = this.getView().getSelectionModel().getSelection();
+		if (selections.length < 2) {
+			Ext.MessageBox.show({title:'Error', msg: 'You need to choose 2 or more runs to compare', icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
+			return false;
+		}
+
+		var chartWindow = new Ext.Window({
+			title  : 'Compare runs and KPIs',
+			width : 850,
+			height : 650,
+			autoScroll : true
+		}); 
+
+
+		Ext.each(selections, function(selection, index) {
+
+			var sel_id = selection.get('_id');
+			var compPanel = new C.view.ComparePanel({title : 'Total Consumption Active Power for run: ' + selection.get('_id')});
+
+			myResultsStore = new C.store.Results();
+			myResultsStore.proxy.headers = {'dbname': sel_id};
+			myResultsChart = new C.view.ResultsLineChart({width: 400, height: 300, store: myResultsStore});
+			var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: myResultsStore});
+			myResultsStore.load();
+			compPanel.add(myResultsChart);
+
+			var kpiStore = new C.store.Kpis();
+			kpiStore.proxy.headers = {'dbname': sel_id};
+			kpiStore.load();
+			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(kpiStore);
+			grid.width = 400;
+			grid.closable = false;
+			grid.setTitle("KPIs");
+			grid.query("tool")[0].hide();
+			compPanel.add(grid);
+
+			chartWindow.add(compPanel);
+		});
+
+
+		chartWindow.show();
+	},
+
+	onButtonBeforeRender2: function(abstractcomponent, options) {
+		if (this.store.model.getName() == "C.model.Run")
+		abstractcomponent.show();
+	},
+
 	onGridpanelItemDblClick: function(tablepanel, record, item, index, e, options) {
+		if (record.node)
 		C.app.createForm(record.node);
 	},
 
@@ -291,6 +371,7 @@ Ext.define('C.view.DynamicGrid', {
 		var gridWindow = new Ext.Window({
 			title : this.header.title,
 			items : this,
+			layout: 'fit',
 			tools: [
 			{
 				xtype: 'tool',
@@ -330,6 +411,20 @@ Ext.define('C.view.DynamicGrid', {
 		tool.hide();
 		this.query("tool")[1].show();
 		*/
+	},
+
+	onGridpanelBeforeRender: function(abstractcomponent, options) {
+		console.info(abstractcomponent);
+		if (!abstractcomponent.tab) {
+			abstractcomponent.setHeight(250);
+			abstractcomponent.margin = '0 0 10px 0';
+		}
+		if (abstractcomponent.store.model.getName() == "C.model.Kpi")
+		abstractcomponent.down('toolbar').hide();
+	},
+
+	onGridpanelAfterRender: function(abstractcomponent, options) {
+		/*abstractcomponent.addDocked(new Ext.toolbar.Paging( {store : abstractcomponent.store, dock: 'bottom'} ));*/
 	}
 
 });
