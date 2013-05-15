@@ -112,15 +112,16 @@ public class Simulation implements Runnable {
   	}
 
   	public void run () {
+  		DBObject query = new BasicDBObject();
+		query.put("_id", new ObjectId(dbname));
+		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   		try {
   			logger.info("run");
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
   			double mcrunsRatio = 1.0/mcruns;
-  			DBObject query = new BasicDBObject();
-  			query.put("_id", new ObjectId(dbname));
-  			DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
+  			System.out.println(dbname);
   			for(int i = 0; i < mcruns; i++) {
   				tick = 0;
   	  			double maxPower = 0;
@@ -222,7 +223,16 @@ public class Simulation implements Runnable {
 	  		objRun.put("ended", endTime);
 	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
 	  		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
-  		} catch(Exception e) {e.printStackTrace();}
+  		} catch(Exception e) {
+  			e.printStackTrace();
+  			logger.error(e.getMessage());
+  			// Change the run object in the db to reflect the exception
+  			if(objRun != null) {
+  				objRun.put("percentage", -1);
+  				objRun.put("state", e.getMessage());
+  				DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
+  			}
+  		}
   	}
 
   	public void setup() throws Exception {

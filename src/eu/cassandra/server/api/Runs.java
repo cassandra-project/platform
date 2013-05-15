@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -265,27 +266,16 @@ public class Runs {
 				scenario.put("inst"+countInst,obj);
 			}
 			scenario.put("instcount", new Integer(countInst));
-			// Scenario building finished
-			HashMap<String,Future<?>> runs = (HashMap<String,Future<?>>)context.getAttribute("MY_RUNS");
 			Simulation sim = new Simulation(scenario.toString(), dbname);
 			sim.setup();
-			ExecutorService executor = (ExecutorService)context.getAttribute("MY_EXECUTOR");
-			Future<?> f = executor.submit(sim);
-			System.out.println(dbname);
-			runs.put(dbname, f);
-			DBObject run = new BasicDBObject();
-			Calendar calendar = Calendar.getInstance();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmm");
-			String runName = "Run for " + name + " on " + sdf.format(calendar.getTime());
-			run.put("_id", objid);
-			run.put("name", runName);
-			run.put("started", System.currentTimeMillis());
-			run.put("ended", -1);
-			run.put("prj_id", prj_id);
-			run.put("percentage", 0);
+			// Scenario building finished
+			DBObject run = buildRunObj(objid, name, prj_id);
 			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
 			String returnMsg = PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSON(run, "Sim creation successful"));
 			System.out.println(returnMsg);
+			ThreadPoolExecutor executorPool = (ThreadPoolExecutor)context.getAttribute("MY_EXECUTOR");
+			Utils.printExecutorSummary(executorPool);
+			executorPool.execute(sim);
 			return Utils.returnResponse(returnMsg);
 		} catch (UnknownHostException | MongoException e1) {
 			String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"hostMongoException\": \""+ e1.getMessage() + "\" } }"; 
@@ -297,6 +287,20 @@ public class Runs {
 			System.out.println(returnMsg);
 			return Utils.returnResponse(returnMsg);
 		}
+	}
+	
+	private static DBObject buildRunObj(ObjectId objid, String name, String prj_id) {
+		DBObject run = new BasicDBObject();
+		Calendar calendar = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmm");
+		String runName = "Run for " + name + " on " + sdf.format(calendar.getTime());
+		run.put("_id", objid);
+		run.put("name", runName);
+		run.put("started", System.currentTimeMillis());
+		run.put("ended", -1);
+		run.put("prj_id", prj_id);
+		run.put("percentage", 0);
+		return run;
 	}
 
 }
