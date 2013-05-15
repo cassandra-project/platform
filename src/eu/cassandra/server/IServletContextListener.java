@@ -26,13 +26,18 @@ public class IServletContextListener implements ServletContextListener {
 		schemas = new File(path);
 		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
 		DailyRollingFileAppender drfa = new DailyRollingFileAppender();
-		drfa.setName("R");
-		drfa.setFile("/home/kyrcha/cassandra/logs/cassandra.log");
-		drfa.setLayout(new PatternLayout("%d{MM/dd HH:mm:ss} %-5p %30.30c %x - %m\n"));
-		drfa.setDatePattern("'.'yyyy-MM-dd");
-		drfa.setThreshold(Level.TRACE);
-		drfa.setAppend(true);
-		drfa.activateOptions();
+		try {
+			drfa.setName("R");
+			drfa.setFile("/var/log/tomcat7/cassandra.log");
+			drfa.setLayout(new PatternLayout("%d{MM/dd HH:mm:ss} %-5p %30.30c %x - %m\n"));
+			drfa.setDatePattern("'.'yyyy-MM-dd");
+			drfa.setThreshold(Level.TRACE);
+			drfa.setAppend(true);
+			drfa.activateOptions();
+		} catch(Exception e) {
+			drfa.setFile("/home/kyrcha/cassandra/logs/cassandra.log");
+			drfa.activateOptions();
+		}
 		Logger.getRootLogger().addAppender(drfa);
 	}
 
