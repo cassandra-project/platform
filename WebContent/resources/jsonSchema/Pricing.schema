@@ -39,6 +39,11 @@
             "description": "Billing cycle",
             "optional": true
         },
+        "offpeakPrice": {
+            "type": "number",
+            "description": "Offpeak price",
+            "optional": true
+        },
         "contractedCapacity": {
             "type": "number",
             "description": "Contracted capacity",

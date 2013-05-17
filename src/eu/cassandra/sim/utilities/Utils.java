@@ -25,6 +25,7 @@ import java.math.BigInteger;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -43,8 +44,19 @@ import eu.cassandra.server.mongo.util.DBConn;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
-public class Utils
-{
+public class Utils {
+	
+	public static void printExecutorSummary(ThreadPoolExecutor executor) {
+		System.out.println(
+				String.format("[monitor] [%d/%d] Active: %d, Completed: %d, Task: %d, isShutdown: %s, isTerminated: %s",
+						executor.getPoolSize(),
+                        executor.getCorePoolSize(),
+                        executor.getActiveCount(),
+                        executor.getCompletedTaskCount(),
+                        executor.getTaskCount(),
+                        executor.isShutdown(),
+                        executor.isTerminated()));
+	}
 	
 	public static String inject(String message, String field, String value) {
 		DBObject data = (DBObject)JSON.parse(message);
@@ -158,7 +170,14 @@ public class Utils
 		  return null;
 	  }
 	}
-					
+	
+//  public static double parseDouble(String s) {
+//	  try {
+//		  return Double.parseDouble(s);
+//	  } catch(Exception e) {
+//		  e.printStackTrace();
+//	  }
+//  }
 
   /*
     public static void createHistogram (String title, String x, String y,

@@ -14,7 +14,7 @@ public class MD5HashGenerator {
 	
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 		if(args.length != 2) {
-			System.out.println("Needs two arguments.");
+			System.out.println("Needs two arguments. Password and salt (userid)!");
 			System.exit(1);
 		}
 		System.out.println(generateMd5Hash(args[0], args[1]));

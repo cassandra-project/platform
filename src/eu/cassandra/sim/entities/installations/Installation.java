@@ -23,6 +23,7 @@ import com.mongodb.BasicDBObject;
 
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.sim.Event;
+import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.people.Person;
@@ -37,6 +38,7 @@ public class Installation extends Entity {
 	private double maxPower = 0;
 	private double avgPower = 0;
 	private double energy = 0;
+	private double previousEnergy = 0;
 	private double cost = 0;
 	
 	public static class Builder {
@@ -112,6 +114,11 @@ public class Installation extends Entity {
     
     public void updateEnergy(double power) {
     	energy += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
+    }
+    
+    public void updateCost(PricingPolicy pp) {
+    	cost += pp.calculateCost(energy, previousEnergy);
+    	previousEnergy = energy;
     }
     
     public double getEnergy() {
