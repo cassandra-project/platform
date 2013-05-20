@@ -144,6 +144,12 @@ Ext.define('Ext.Neptune.button.Button', {
     }
 });
 
+Ext.define('Ext.Neptune.form.field.Checkbox', {
+	override: 'Ext.form.field.Checkbox',
+	
+     checkedCls: Ext.baseCSSPrefix + 'form-cb-checked'
+});
+
 Ext.define('Ext.Neptune.tab.Bar', {
     override: 'Ext.tab.Bar',
     
@@ -153,6 +159,7 @@ Ext.define('Ext.Neptune.tab.Bar', {
         this.callParent(arguments);
     }
 });
+
 
 Ext.define('Ext.Neptune.container.ButtonGroup', {
 	override: 'Ext.container.ButtonGroup',

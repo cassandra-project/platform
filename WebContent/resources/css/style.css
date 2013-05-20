@@ -59,6 +59,13 @@ background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
 	top: auto !important;
 }
 
+
+.x-tab-bar-default .x-tabbar-scroll-left, .x-tab-bar-default .x-tabbar-scroll-right {
+	width: 31px;
+	height: 40px
+}
+
+
 /*changed in neptune css
 .x-tab-icon-text-left .x-tab-inner {
 	padding-left: 27px;
@@ -105,3 +112,8 @@ width: 17px;
 }
 
 .number_field {margin-top: 10px}
+
+.remove_tabs {
+	background-image: url(../icons/close_tabs.png);
+}
+
