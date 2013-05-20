@@ -8208,7 +8208,7 @@ table.x-datepicker-inner {
 /* line 84, ../themes/stylesheets/neptune/default/widgets/_menu.scss */
 .x-menu-item-link {
   display: block;
-  padding: 3px 30px 3px 8px;
+  padding: 5px 30px 3px 25px;
   text-decoration: none !important;
   line-height: 16px;
   cursor: default; }
@@ -8406,8 +8406,19 @@ table.x-datepicker-inner {
   right: 0;
   top: 0;
   z-index: 2;
-  cursor: pointer; }
+  cursor: pointer;width: 18px;
+}
 
+.x-column-header-open, .x-column-header-over {
+  background-color: #eef6fb;
+}
+
+
+.x-column-header-trigger {
+ background-image: url('../../resources/themes/images/neptune/grid/hd-pop.png');
+ background-position: center center;
+ border-left: 1px solid silver;
+}
 /* line 165, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
 .x-column-header-over .x-column-header-trigger, .x-column-header-open .x-column-header-trigger {
   display: block; }
@@ -8431,15 +8442,15 @@ table.x-datepicker-inner {
 /* line 186, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
 .x-column-header-sort-ASC .x-column-header-text {
   padding-right: 16px;
-  background: no-repeat top right;
-  background-position:center 1px;
+  background-position: top right;
+  background-repeat: no-repeat;
   background-image: url('../../resources/themes/images/neptune/grid/sort.png'); }
 
 /* line 192, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
 .x-column-header-sort-DESC .x-column-header-text {
   padding-right: 16px;
-  background: no-repeat top right;
-  background-position:center -47px;
+  background-position: top right;
+  background-repeat: no-repeat;
   background-image: url('../../resources/themes/images/neptune/grid/sort.png'); }
 
 /* line 200, ../themes/stylesheets/neptune/default/widgets/_grid.scss */
@@ -11907,14 +11918,17 @@ textarea.x-form-invalid-field {
   /* line 212, ../themes/stylesheets/neptune/default/layout/_layout.scss */
   .x-box-scroller-right .x-toolbar-scroll-right,
   .x-box-scroller-right .x-tabbar-scroll-right {
-    background: url('../../resources/themes/images/neptune/tab-bar/scroll-right.gif') no-repeat 0 0; }
+    background: rgb(144, 145, 146) url('../../resources/themes/images/neptune/tab-bar/default-scroll-right.png') no-repeat 0 0; background-position: 5px 5px;}
+
+  .x-box-scroller-left .x-tabbar-scroll-left {
+    background: rgb(144, 145, 146) url('../../resources/themes/images/neptune/tab-bar/default-scroll-left.png') no-repeat 0 0; background-position: 5px 5px; }
   /* line 215, ../themes/stylesheets/neptune/default/layout/_layout.scss */
   .x-box-scroller-right .x-toolbar-scroll-right-hover {
     background-position: -18px 0; }
   /* line 219, ../themes/stylesheets/neptune/default/layout/_layout.scss */
-  .x-box-scroller-right .x-toolbar-scroll-right-disabled,
-  .x-box-scroller-right .x-tabbar-scroll-right-disabled {
-    background-position: 0 0; }
+  .x-box-scroller-right .x-toolbar-scroll-right-disabled {
+    background-position: 0 0; }	
+  	
   /* line 223, ../themes/stylesheets/neptune/default/layout/_layout.scss */
   .x-box-scroller-right .x-toolbar-scroll-right {
     background-image: url('../../resources/themes/images/neptune/toolbar/scroll-right.gif'); }
