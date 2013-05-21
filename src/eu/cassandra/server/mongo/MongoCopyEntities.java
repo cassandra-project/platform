@@ -69,6 +69,9 @@ public class MongoCopyEntities {
 		DBObject fromObj = DBConn.getConn().getCollection(MongoInstallations.COL_INSTALLATIONS).findOne(new BasicDBObject("_id", new ObjectId(instID)));
 		String oldInstallationID = ((ObjectId)fromObj.get("_id")).toString();
 		fromObj.put(MongoInstallations.REF_SCENARIO, toScnID);
+		if(answer == null) {
+			copyOf(fromObj);
+		}
 		DBObject res = MongoInstallations.createInstallationObj(fromObj.toString());
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
 		addInfoForCascadedCopy(res,answer,newID);
@@ -102,6 +105,9 @@ public class MongoCopyEntities {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoPersons.COL_PERSONS).findOne(new BasicDBObject("_id", new ObjectId(persID)));
 		fromObj.put(MongoPersons.REF_INSTALLATION, toInstID);
+		if(answer == null) {
+			copyOf(fromObj);
+		}
 		String oldID = ((ObjectId)fromObj.get("_id")).toString();
 		DBObject res =  MongoPersons.createPersonObj(fromObj.toString());
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
@@ -127,6 +133,9 @@ public class MongoCopyEntities {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoAppliances.COL_APPLIANCES).findOne(new BasicDBObject("_id", new ObjectId(appID)));
 		fromObj.put(MongoAppliances.REF_INSTALLATION, toInstID);
+		if(answer == null) {
+			copyOf(fromObj);
+		}
 		String oldID = ((ObjectId)fromObj.get("_id")).toString();
 		DBObject res =  MongoAppliances.createApplianceObj(fromObj.toString());
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
@@ -153,7 +162,9 @@ public class MongoCopyEntities {
 				MongoActivities.COL_ACTIVITIES).findOne(new BasicDBObject("_id", new ObjectId(actID)));
 		fromObj.put(MongoActivities.REF_PERSON, toPersID);
 		String oldID = ((ObjectId)fromObj.get("_id")).toString();
-
+		if(answer == null) {
+			copyOf(fromObj);
+		}
 		DBObject res =  new MongoDBQueries().insertData(MongoActivities.COL_ACTIVITIES ,fromObj.toString() ,
 				"Activity copied successfully", MongoPersons.COL_PERSONS ,
 				MongoActivities.REF_PERSON,JSONValidator.ACTIVITY_SCHEMA );
@@ -184,7 +195,9 @@ public class MongoCopyEntities {
 				MongoActivityModels.COL_ACTMODELS).findOne(new BasicDBObject("_id", new ObjectId(actmodID)));
 		fromObj.put(MongoActivityModels.REF_ACTIVITY, toActID);
 		String oldID = ((ObjectId)fromObj.get("_id")).toString();
-
+		if(answer == null) {
+			copyOf(fromObj);
+		}
 		DBObject res =  new MongoDBQueries().insertData(MongoActivityModels.COL_ACTMODELS ,fromObj.toString() ,
 				"Activity Model copied successfully", MongoActivities.COL_ACTIVITIES ,
 				MongoActivityModels.REF_ACTIVITY, JSONValidator.ACTIVITYMODEL_SCHEMA );
@@ -222,7 +235,9 @@ public class MongoCopyEntities {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoConsumptionModels.COL_CONSMODELS).findOne(new BasicDBObject("_id", new ObjectId(consmodID)));
 		fromObj.put(MongoConsumptionModels.REF_APPLIANCE, toAppID);
-		
+		if(answer == null) {
+			copyOf(fromObj);
+		}
 		DBObject res =  new MongoDBQueries().insertData(MongoConsumptionModels.COL_CONSMODELS ,fromObj.toString() ,
 				"Consumption Model copied successfully", MongoAppliances.COL_APPLIANCES ,
 				MongoConsumptionModels.REF_APPLIANCE,JSONValidator.CONSUMPTIONMODEL_SCHEMA );
@@ -243,7 +258,9 @@ public class MongoCopyEntities {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoDistributions.COL_DISTRIBUTIONS).findOne(new BasicDBObject("_id", new ObjectId(distrID)));
 		fromObj.put(MongoDistributions.REF_ACTIVITYMODEL, toActmodID);
-
+		if(answer == null) {
+			copyOf(fromObj);
+		}
 		DBObject res =  new MongoDBQueries().insertData(MongoDistributions.COL_DISTRIBUTIONS ,fromObj.toString() ,
 				"Distribution copied successfully", MongoActivityModels.COL_ACTMODELS ,
 				MongoDistributions.REF_ACTIVITYMODEL,JSONValidator.DISTRIBUTION_SCHEMA );
@@ -306,7 +323,9 @@ public class MongoCopyEntities {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoSimParam.COL_SIMPARAM).findOne(new BasicDBObject("_id", new ObjectId(smpID)));
 		fromObj.put(MongoSimParam.REF_SCENARIO, toScnID);
-
+		if(answer == null) {
+			copyOf(fromObj);
+		}
 		DBObject res =  new MongoDBQueries().insertData(MongoSimParam.COL_SIMPARAM ,fromObj.toString() ,
 				"Simulation Parameters copied successfully", MongoScenarios.COL_SCENARIOS, 
 				MongoSimParam.REF_SCENARIO,JSONValidator.SIMPARAM_SCHEMA );
@@ -329,6 +348,7 @@ public class MongoCopyEntities {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoScenarios.COL_SCENARIOS).findOne(new BasicDBObject("_id", new ObjectId(scnID)));
 		fromObj.put(MongoScenarios.REF_PROJECT, toPrjID);
+		copyOf(fromObj); // Change name starting with "Copy of "
 		String oldScenarioID = ((ObjectId)fromObj.get("_id")).toString();
 
 		DBObject res =  new MongoDBQueries().insertData(MongoScenarios.COL_SCENARIOS ,fromObj.toString() ,
@@ -341,7 +361,7 @@ public class MongoCopyEntities {
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();
 			String childID = obj.get("_id").toString();
-			copyInstallationToScenario(childID, newID,res);
+			copyInstallationToScenario(childID, newID, res);
 		}
 
 		//		//Copy Demographics of the Scenario
@@ -360,9 +380,16 @@ public class MongoCopyEntities {
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();
 			String childID = obj.get("_id").toString();
-			copySimParamsToScenario(childID, newID,res);
+			copySimParamsToScenario(childID, newID, res);
 		}
 
 		return PrettyJSONPrinter.prettyPrint(res);
+	}
+	
+	private static void copyOf(DBObject obj) {
+		String name = (String)obj.get("name");
+		if(name != null) {
+			obj.put("name", "Copy of " + name);
+		}
 	}
 }
