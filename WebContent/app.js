@@ -743,9 +743,9 @@ Ext.application({
 
 	newRunWindow: function(record) {
 		var url = document.URL+'#'+record.get('_id');
-		var wname = 'cassandra';
+		var wname = '_blank';
 		var wfeatures = 'menubar=yes,resizable=yes,scrollbars=yes,status=yes,location=yes';
-		window.open(url,wname,wfeatures);
+		window.open(url,wname,wfeatures,false);
 
 
 	},
