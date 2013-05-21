@@ -105,7 +105,7 @@ Ext.define('C.view.MyTreePanel', {
 
 
 			if ( !Ext.EventObject.shiftKey && ( record.get('nodeType') == 'Scenario' || record.get('nodeType') == 'Installation' || 
-			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' ) ){
+			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' || record.get('nodeType') == 'ActivityModel') ){
 				data.copy = true;
 				var targetID = '';
 				var meID = '';
@@ -114,6 +114,7 @@ Ext.define('C.view.MyTreePanel', {
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
+					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
 					default: return false;
 				}
 
@@ -628,9 +629,12 @@ Ext.define('C.view.MyTreePanel', {
 										scope: this,
 										success: function(response, opts) {
 											var o = Ext.decode(response.responseText);
-											Ext.getCmp('progressbar'+r.get('_id')).updateProgress((o.data[0].percentage) / 100);
-											Ext.getCmp('progressbar'+r.get('_id')).updateText(o.data[0].percentage+'% Completed');
-											if (o.data[0].percentage == 100) r.set('ended', o.data[0].ended);
+
+											r.set('percentage', o.data[0].percentage);
+											if (o.data[0].percentage == 100) {
+												r.set('ended', o.data[0].ended);
+												this.setDisabled(true);
+											}
 										}
 									});
 

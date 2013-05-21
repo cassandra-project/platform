@@ -180,7 +180,7 @@ Ext.define('C.view.DynamicGrid', {
 			}
 
 			if ( !Ext.EventObject.shiftKey && ( record.get('nodeType') == 'Scenario' || record.get('nodeType') == 'Installation' || 
-			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' ) ){
+			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' || record.get('nodeType') == 'ActivityModel') ){
 				data.copy = true;
 				var targetID = '';
 				var meID = '';
@@ -189,6 +189,7 @@ Ext.define('C.view.DynamicGrid', {
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
+					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
 					default: return false;
 				}
 
