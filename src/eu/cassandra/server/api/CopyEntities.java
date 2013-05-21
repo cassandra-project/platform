@@ -128,10 +128,10 @@ public class CopyEntities {
 			// obsolete
 			//answer = copy.copyConsModelToAppliance(consmodID, toAppID,null);
 		else if(actmodID != null && toActID != null) //Activity Model to Activity
-			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
-					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
+			// return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					//new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
 			// obsolete
-			// answer = copy.copyActivityModelToActivity(actmodID, toActID,null); 
+			answer = copy.copyActivityModelToActivity(actmodID, toActID,null); 
 		else if(distrID != null && toActmodID != null) //Distribution to Activity Model
 			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
 					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));

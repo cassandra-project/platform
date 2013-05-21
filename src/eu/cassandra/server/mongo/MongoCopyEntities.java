@@ -198,6 +198,7 @@ public class MongoCopyEntities {
 		if(answer == null) {
 			copyOf(fromObj);
 		}
+		stripAppliances(fromObj);
 		DBObject res =  new MongoDBQueries().insertData(MongoActivityModels.COL_ACTMODELS ,fromObj.toString() ,
 				"Activity Model copied successfully", MongoActivities.COL_ACTIVITIES ,
 				MongoActivityModels.REF_ACTIVITY, JSONValidator.ACTIVITYMODEL_SCHEMA );
@@ -205,12 +206,14 @@ public class MongoCopyEntities {
 
 		addInfoForCascadedCopy(res, answer, newID);
 		
-		//Copy Distributions of the Activity Model
+		// Copy Distributions of the Activity Model
 		DBObject q = new BasicDBObject(MongoDistributions.REF_ACTIVITYMODEL, oldID);
+		System.out.println("ChildID " + oldID);
 		DBCursor cursorDoc = DBConn.getConn().getCollection(MongoDistributions.COL_DISTRIBUTIONS).find(q);
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();
 			String childID = ((ObjectId)obj.get("_id")).toString();
+			System.out.println("ChildID " + childID);
 			String distrClass = null;
 			if(childID.equalsIgnoreCase(fromObj.get(MongoActivityModels.REF_DISTR_DURATION).toString())) {
 				distrClass = MongoActivityModels.REF_DISTR_DURATION;
@@ -258,9 +261,9 @@ public class MongoCopyEntities {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoDistributions.COL_DISTRIBUTIONS).findOne(new BasicDBObject("_id", new ObjectId(distrID)));
 		fromObj.put(MongoDistributions.REF_ACTIVITYMODEL, toActmodID);
-		if(answer == null) {
-			copyOf(fromObj);
-		}
+//		if(answer == null) {
+//			copyOf(fromObj);
+//		}
 		DBObject res =  new MongoDBQueries().insertData(MongoDistributions.COL_DISTRIBUTIONS ,fromObj.toString() ,
 				"Distribution copied successfully", MongoActivityModels.COL_ACTMODELS ,
 				MongoDistributions.REF_ACTIVITYMODEL,JSONValidator.DISTRIBUTION_SCHEMA );
@@ -391,5 +394,10 @@ public class MongoCopyEntities {
 		if(name != null) {
 			obj.put("name", "Copy of " + name);
 		}
+	}
+	
+	private static void stripAppliances(DBObject obj) {
+		if(obj.containsField("containsAppliances"))
+			obj.removeField("containsAppliances");
 	}
 }
