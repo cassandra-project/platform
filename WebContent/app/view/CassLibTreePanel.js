@@ -301,6 +301,17 @@ Ext.define('C.view.CassLibTreePanel', {
 			iconCls: 'treeIcon'
 		});
 		record.appendChild({
+			name: 'Activity Models',
+			nodeType: 'ActivityModelsCollection',
+			expanded: false,
+			leaf: false,
+			expandable: true,
+			fakeChildren: true,
+			draggable: false,
+			icon: 'resources/icons/activity_models.png',
+			iconCls: 'treeIcon'
+		});
+		record.appendChild({
 			name: 'Appliances',
 			nodeType: 'AppliancesCollection',
 			expanded: false,
