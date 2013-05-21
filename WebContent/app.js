@@ -641,15 +641,17 @@ Ext.application({
 		switch (distr_type) {
 			case 'duration': 
 			distrGraphStore.xAxisTitle = 'Duration (Minutes)';
+			distrCmp.down('#val').hide();
 			myResultsChart = new C.view.DistributionNormalChart({store: distrGraphStore});
 			break;
 			case 'startTime':
 			distrGraphStore.xAxisTitle = 'Start Time (Minute of day)'; 
+			distrCmp.down('#val').hide();
 			myResultsChart = new C.view.DistributionNormalChart({store: distrGraphStore});
 			break;
 			case 'repeatsNrOfTime': 
 			distrGraphStore.xAxisTitle = 'Daily Repetitions';
-
+			distrCmp.down('#params').hide();
 			myResultsChart = new C.view.DistributionHistogramChart({store: distrGraphStore});
 			break;
 		}
@@ -669,7 +671,6 @@ Ext.application({
 		distrCmp.add(myClickLabel);
 
 		return distrCmp;
-
 
 	},
 
