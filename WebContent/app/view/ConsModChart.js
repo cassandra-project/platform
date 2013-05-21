@@ -52,9 +52,7 @@ Ext.define('C.view.ConsModChart', {
 							'stroke-width': 0.5
 						}
 					},
-					position: 'left',
-					constrain: false,
-					minimum: 0
+					position: 'left'
 				}
 			],
 			series: [

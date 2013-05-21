@@ -24,6 +24,10 @@ Ext.define('C.store.LevelsStore', {
 			storeId: 'MyStore9',
 			fields: [
 				{
+					name: 'order',
+					type: 'int'
+				},
+				{
 					name: 'price',
 					type: 'float'
 				},
