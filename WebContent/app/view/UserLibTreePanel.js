@@ -83,17 +83,21 @@ Ext.define('C.view.UserLibTreePanel', {
 
 			parent_idKey = '';
 			switch(record.get('nodeType')){
+				case 'Scenario': parent_idKey = 'project_id'; break;
+				case 'SimulationParam': parent_idKey = 'scn_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
+				case 'Pricing': parent_idKey = 'scn_id'; break;
 				case 'Demographic': parent_idKey = 'scn_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
 				case 'Activity': parent_idKey = 'pers_id'; break;
+				case 'ActivityModel': parent_idKey = 'act_id'; break;
 				default: return false;
 			}
 
 
 			if ( !Ext.EventObject.shiftKey && ( record.get('nodeType') == 'Scenario' || record.get('nodeType') == 'Installation' || 
-			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' ) ){
+			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' || record.get('nodeType') == 'ActivityModel') ){
 				data.copy = true;
 				var targetID = '';
 				var meID = '';
@@ -102,6 +106,7 @@ Ext.define('C.view.UserLibTreePanel', {
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
+					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
 					default: return false;
 				}
 
