@@ -584,8 +584,8 @@ public class Simulation implements Runnable {
         case ("Uniform Distribution"):
    			BasicDBList unifList = (BasicDBList)distribution.get("parameters");
    			DBObject unifDoc = (DBObject)unifList.get(0);
-   			double from = ((Double)unifDoc.get("from")).doubleValue();
-   			double to = ((Double)unifDoc.get("to")).doubleValue();
+   			double from = ((Double)unifDoc.get("start")).doubleValue();
+   			double to = ((Double)unifDoc.get("end")).doubleValue();
    			Uniform uniform = new Uniform(from, to);
    			uniform.precompute(from, to, (int) to + 1);
    			//System.out.println("B");

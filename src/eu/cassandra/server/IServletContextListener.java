@@ -17,7 +17,6 @@ public class IServletContextListener implements ServletContextListener {
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -28,14 +27,21 @@ public class IServletContextListener implements ServletContextListener {
 		DailyRollingFileAppender drfa = new DailyRollingFileAppender();
 		try {
 			drfa.setName("R");
-			drfa.setFile("/var/log/tomcat7/cassandra.log");
+			//drfa.setFile("/var/log/tomcat7/cassandra.log");
+			drfa.setFile("/home/kyrcha/cassandra/logs/cassandra.log");
 			drfa.setLayout(new PatternLayout("%d{MM/dd HH:mm:ss} %-5p %30.30c %x - %m\n"));
 			drfa.setDatePattern("'.'yyyy-MM-dd");
 			drfa.setThreshold(Level.TRACE);
 			drfa.setAppend(true);
 			drfa.activateOptions();
 		} catch(Exception e) {
+			drfa = new DailyRollingFileAppender();
+			drfa.setName("R");
 			drfa.setFile("/home/kyrcha/cassandra/logs/cassandra.log");
+			drfa.setLayout(new PatternLayout("%d{MM/dd HH:mm:ss} %-5p %30.30c %x - %m\n"));
+			drfa.setDatePattern("'.'yyyy-MM-dd");
+			drfa.setThreshold(Level.TRACE);
+			drfa.setAppend(true);
 			drfa.activateOptions();
 		}
 		Logger.getRootLogger().addAppender(drfa);
