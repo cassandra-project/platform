@@ -113,15 +113,15 @@ public class CopyEntities {
 		if(scnID != null && toPrjID != null) //Scenario to Project
 			answer = copy.copyScenarioToProject(scnID, toPrjID);
 		else if(instID != null && toScnID != null) { //Installation to Scenario
-			answer = copy.copyInstallationToScenario(instID, toScnID,null);
+			answer = copy.copyInstallationToScenario(instID, toScnID, null);
 		} else if(smpID != null && toScnID != null) //Simulation Parameter to Scenario
-			answer = copy.copySimParamsToScenario(smpID, toScnID,null);
+			answer = copy.copySimParamsToScenario(smpID, toScnID, null);
 		else if(appID != null && toInstID != null) //Appliance to Installation
-			answer = copy.copyApplianceToInstallation(appID, toInstID,null);
+			answer = copy.copyApplianceToInstallation(appID, toInstID, null);
 		else if(persID != null && toInstID != null) //Person to Installation
-			answer = copy.copyPersonToInstallation(persID, toInstID,null);
+			answer = copy.copyPersonToInstallation(persID, toInstID, null);
 		else if(actID != null && toPersID != null) //Activities to Person
-			answer = copy.copyActivityToPerson(actID, toPersID,null);
+			answer = copy.copyActivityToPerson(actID, toPersID, null);
 		else if(consmodID != null && toAppID != null) //Consumption Model to Appliance
 			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
 					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
