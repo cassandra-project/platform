@@ -179,8 +179,7 @@ Ext.define('C.view.DynamicGrid', {
 				default: return false;
 			}
 
-			if ( !Ext.EventObject.shiftKey && ( record.get('nodeType') == 'Scenario' || record.get('nodeType') == 'Installation' || 
-			record.get('nodeType') == 'Person' || record.get('nodeType') == 'Appliance' || record.get('nodeType') == 'ActivityModel') ){
+			if ( !Ext.EventObject.shiftKey && record.get('nodeType') !== 'Pricing' && record.get('nodeType') !== 'Demographic' && record.get('nodeType') !== 'SimulationParam'){
 				data.copy = true;
 				var targetID = '';
 				var meID = '';
@@ -190,6 +189,7 @@ Ext.define('C.view.DynamicGrid', {
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
 					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
+
 					default: return false;
 				}
 
