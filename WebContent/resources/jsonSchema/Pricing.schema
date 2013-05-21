@@ -81,14 +81,18 @@
             "items" : {
                 "type" : "object",
                 "description" : "Levels",
-                "properties" : {           
+                "properties" : {
+                    "order" : {
+                        "type": "integer",
+                        "description": "Ordering of the levels"
+                    },           
                     "price" : {
                         "type": "number",
-                        "description": "The probability of appearance for this appliance"
+                        "description": "Level price"
                     },
                     "level" : {
                         "type": "number",
-                        "description": "The probability of appearance for this appliance",
+                        "description": "Power level",
                         "optional" : true
                     }
                 }
