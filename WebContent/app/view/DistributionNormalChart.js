@@ -69,7 +69,7 @@ Ext.define('C.view.DistributionNormalChart', {
 						width: 160,
 						height: 60,
 						renderer: function(storeItem, item) {
-							this.setTitle( 'Probability(%) : ' + storeItem.get('y')+'%'+ '<br />' +  'time : ' 
+							this.setTitle( 'Probability Density(%) : ' + storeItem.get('y')+'%'+ '<br />' +  'time : ' 
 										  + storeItem.get('x') + ' min');
 						}
 					},
@@ -118,7 +118,7 @@ Ext.define('C.view.DistributionNormalChart', {
 					margin: 15
 				});
 				bigMe.axes.items[0].title = this.store.xAxisTitle;
-				bigMe.axes.items[1].title = 'Probability(%)';
+				bigMe.axes.items[1].title = 'Probability Density(%)';
 				bigMe.width = 680;
 				bigMe.height = 400;
 				var chartWindow = new Ext.Window({
@@ -131,17 +131,17 @@ Ext.define('C.view.DistributionNormalChart', {
 	},
 
 	onChartAfterRender: function(component, eOpts) {
-		component.store.on('load',function(store, records){
-			var y_axis = component.axes.getRange()[1];
-			y_axis.maximum = store.max('y') + store.max('y')/10;
+		/*component.store.on('load',function(store, records){
+		var y_axis = component.axes.getRange()[1];
+		y_axis.maximum = store.max('y') + store.max('y')/10;
 
-			try {
-				component.redraw();
-			}
-			catch(e) {}
+		try {
+		component.redraw();
+		}
+		catch(e) {}
 		});
 
-
+		*/
 	}
 
 });

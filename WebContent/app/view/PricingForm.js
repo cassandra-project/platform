@@ -108,7 +108,17 @@ Ext.define('C.view.PricingForm', {
 							columns: [
 								{
 									xtype: 'numbercolumn',
-									dataIndex: 'price',
+									dataIndex: 'order',
+									text: 'Order',
+									editor: {
+										xtype: 'numberfield',
+										allowDecimals: false,
+										minValue: 0
+									}
+								},
+								{
+									xtype: 'numbercolumn',
+									dataIndex: 'order',
 									text: 'Price',
 									editor: {
 										xtype: 'numberfield'
@@ -174,6 +184,16 @@ Ext.define('C.view.PricingForm', {
 								minHeight: 70
 							},
 							columns: [
+								{
+									xtype: 'numbercolumn',
+									dataIndex: 'order',
+									text: 'Order',
+									editor: {
+										xtype: 'numberfield',
+										allowDecimals: false,
+										minValue: 0
+									}
+								},
 								{
 									xtype: 'numbercolumn',
 									dataIndex: 'price',
@@ -414,7 +434,7 @@ Ext.define('C.view.PricingForm', {
 
 	onButtonClick21: function(button, e, eOpts) {
 
-		this.query('grid')[1].store.insert(0, {price:0, level : 0});
+		this.query('grid')[1].store.insert(0, {order:1, price:0, level : 0});
 		this.query('grid')[1].plugins[0].startEdit(0, 0);
 
 
