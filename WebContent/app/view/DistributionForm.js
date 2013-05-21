@@ -34,7 +34,7 @@ Ext.define('C.view.DistributionForm', {
 			items: [
 				{
 					xtype: 'container',
-					height: 326,
+					height: 240,
 					autoScroll: true,
 					items: [
 						{
@@ -73,11 +73,13 @@ Ext.define('C.view.DistributionForm', {
 						},
 						{
 							xtype: 'textareafield',
-							height: 45,
+							itemId: 'val',
 							width: 220,
 							fieldLabel: 'Values',
 							labelWidth: 70,
 							name: 'val',
+							growAppend: '-',
+							cols: 30,
 							listeners: {
 								beforerender: {
 									fn: me.onTextareafieldBeforeRender,
@@ -87,7 +89,7 @@ Ext.define('C.view.DistributionForm', {
 						},
 						{
 							xtype: 'textareafield',
-							height: 67,
+							itemId: 'params',
 							width: 220,
 							fieldLabel: 'Parameters',
 							labelWidth: 70,
