@@ -190,9 +190,7 @@ public class SimCalendar {
 	public boolean isWeekend (int tick) {
 		Calendar temp = Calendar.getInstance();
 		int gran = getGranularityRaw();
-		System.out.println("Before " + temp.getTime().toString());
 		temp.add(gran, tick * granularityValue);
-		System.out.println("After " + temp.getTime().toString());
 		int day = temp.get(Calendar.DAY_OF_WEEK);
 		if (day == Calendar.SATURDAY || day == Calendar.SUNDAY)
 			return true;

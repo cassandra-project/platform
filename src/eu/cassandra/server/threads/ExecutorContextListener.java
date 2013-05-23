@@ -32,8 +32,8 @@ public class ExecutorContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent arg0) {
         ServletContext context = arg0.getServletContext();
         int nr_executors = 2;
-        executorPool = new ThreadPoolExecutor(nr_executors, 100, 24, 
-        		TimeUnit.HOURS, new ArrayBlockingQueue<Runnable>(100));
+        executorPool = new ThreadPoolExecutor(nr_executors, 10, 24, 
+        		TimeUnit.HOURS, new ArrayBlockingQueue<Runnable>(10));
         context.setAttribute("MY_EXECUTOR", executorPool);
     }
     

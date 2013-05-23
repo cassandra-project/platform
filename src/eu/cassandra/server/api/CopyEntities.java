@@ -34,7 +34,6 @@ import eu.cassandra.sim.utilities.Utils;
 
 @Path("copy")
 @Produces(MediaType.APPLICATION_JSON)
-
 public class CopyEntities {
 
 	/**
@@ -101,7 +100,7 @@ public class CopyEntities {
 		if(toInstID != null) counter2++;
 		if(toPersID != null) counter2++;
 		if(toScnID != null) counter2++;
-
+		
 		if(counter1 != 1 || counter2 != 1) {
 			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid ObjectId Parameters",
 					new RestQueryParamMissingException("You should provide two and only two valid ObjectId"))));

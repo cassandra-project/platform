@@ -47,6 +47,12 @@ public class PricingPolicy {
 	
 	private ArrayList<Offpeak> offpeaks;
 	
+	public PricingPolicy() {
+		billingCycle = 1;
+		fixedCharge = 0;
+		type = "NoPricing";
+	}
+	
 	public PricingPolicy(DBObject dbo) throws ParseException {
 		type = dbo.get("type").toString();
 		switch(type) {
@@ -102,6 +108,8 @@ public class PricingPolicy {
 						cost += level * price;
 					}
 				}
+				break;
+			case "NoPricing" :
 				break;
 			default:
 				break;

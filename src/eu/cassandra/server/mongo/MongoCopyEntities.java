@@ -77,7 +77,6 @@ public class MongoCopyEntities {
 		addInfoForCascadedCopy(res,answer,newID);
 		//Copy Persons of the Installation
 		DBObject q = new BasicDBObject(MongoPersons.REF_INSTALLATION, oldInstallationID);
-		System.out.println(q);
 		DBCursor cursorDoc = DBConn.getConn().getCollection(MongoPersons.COL_PERSONS).find(q);
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();
@@ -208,12 +207,10 @@ public class MongoCopyEntities {
 		
 		// Copy Distributions of the Activity Model
 		DBObject q = new BasicDBObject(MongoDistributions.REF_ACTIVITYMODEL, oldID);
-		System.out.println("ChildID " + oldID);
 		DBCursor cursorDoc = DBConn.getConn().getCollection(MongoDistributions.COL_DISTRIBUTIONS).find(q);
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();
 			String childID = ((ObjectId)obj.get("_id")).toString();
-			System.out.println("ChildID " + childID);
 			String distrClass = null;
 			if(childID.equalsIgnoreCase(fromObj.get(MongoActivityModels.REF_DISTR_DURATION).toString())) {
 				distrClass = MongoActivityModels.REF_DISTR_DURATION;

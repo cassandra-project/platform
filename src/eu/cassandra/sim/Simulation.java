@@ -15,14 +15,12 @@
 */
 package eu.cassandra.sim;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
-
-import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -30,16 +28,13 @@ import org.bson.types.ObjectId;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 
 import eu.cassandra.server.mongo.MongoActivityModels;
 import eu.cassandra.server.mongo.MongoDistributions;
-import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.server.mongo.MongoRuns;
 import eu.cassandra.server.mongo.util.DBConn;
-import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel;
@@ -61,6 +56,7 @@ import eu.cassandra.sim.utilities.Utils;
  * 
  */
 public class Simulation implements Runnable {
+	
 	static Logger logger = Logger.getLogger(Simulation.class);
 
 	private Vector<Installation> installations;
@@ -101,7 +97,6 @@ public class Simulation implements Runnable {
   
 	public Simulation(String ascenario, String adbname) {
 		scenario = ascenario;
-		//System.out.println(PrettyJSONPrinter.prettyPrint(ascenario));
 		dbname = adbname;
 		m = new MongoResults(dbname);
   		RNG.init();
@@ -116,12 +111,11 @@ public class Simulation implements Runnable {
 		query.put("_id", new ObjectId(dbname));
 		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   		try {
-  			logger.info("run");
+  			logger.info("Run " + dbname + " started @ " + Calendar.getInstance().getTimeInMillis());
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
   			double mcrunsRatio = 1.0/mcruns;
-  			System.out.println(dbname);
   			for(int i = 0; i < mcruns; i++) {
   				tick = 0;
   	  			double maxPower = 0;
@@ -131,7 +125,6 @@ public class Simulation implements Runnable {
   	  			double billingCycleEnergy = 0;
   	  			double billingCycleDays = 0;
   	  			while (tick < endTick) {
-//  				System.out.println(tick);
   	  				// If it is the beginning of the day create the events
   	  				if (tick % Constants.MIN_IN_DAY == 0) {
 //  	  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
@@ -152,7 +145,7 @@ public class Simulation implements Runnable {
   	  							try {
   	  								//m.addOpenTick(e.getAppliance().getId(), tick);
   	  							} catch (Exception exc) {
-  	  								exc.printStackTrace();
+  	  								throw exc;
   	  							}
   	  						} else if(e.getAction() == Event.SWITCH_OFF){
   	  							//m.addCloseTick(e.getAppliance().getId(), tick);
@@ -193,7 +186,6 @@ public class Simulation implements Runnable {
 		  			m.addAggregatedTickResult(tick, sumPower, 0);
 		  			tick++;
 		  			mccount++;
-		  			// System.out.println(tick + " " + endTick);
 		  			percentage = (int)(mccount * 100.0 / (mcruns * endTick));
 		  			objRun.put("percentage", percentage);
 		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
@@ -222,10 +214,10 @@ public class Simulation implements Runnable {
 	  		long endTime = System.currentTimeMillis();
 	  		objRun.put("ended", endTime);
 	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
-	  		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
+	  		logger.info("Time elapsed for Run " + dbname + ": " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
+	  		logger.info("Run " + dbname + " ended @ " + Calendar.getInstance().toString());
   		} catch(Exception e) {
-  			e.printStackTrace();
-  			logger.error(e.getMessage());
+  			logger.error(Utils.stackTraceToString(e.getStackTrace()));
   			// Change the run object in the db to reflect the exception
   			if(objRun != null) {
   				objRun.put("percentage", -1);
@@ -236,23 +228,23 @@ public class Simulation implements Runnable {
   	}
 
   	public void setup() throws Exception {
-  		logger.info("Simulation setup started.");
   		installations = new Vector<Installation>();
-		System.out.println("A");
   		/* TODO  Change the Simulation Calendar initialization */
   		simulationWorld = new SimulationParams();
-    
+  		logger.info("Simulation setup started: " + dbname);
   		DBObject jsonScenario = (DBObject) JSON.parse(scenario);
   		DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
   		DBObject pricingDoc = (DBObject) jsonScenario.get("pricing");
-  		pricing = new PricingPolicy(pricingDoc);
-  		System.out.println("B");
+  		if(pricingDoc != null) {
+  			pricing = new PricingPolicy(pricingDoc);
+  		} else {
+  			pricing = new PricingPolicy();
+  		}
   		int numOfDays = ((Integer)simParamsDoc.get("numberOfDays")).intValue();
   		
   		endTick = Constants.MIN_IN_DAY * numOfDays;
   		mcruns = ((Integer)simParamsDoc.get("mcruns")).intValue();
-  		System.out.println("C");
   		// Check type of setup
   		String setup = (String)scenarioDoc.get("setup"); 
   		if(setup.equalsIgnoreCase("static")) {
@@ -260,16 +252,14 @@ public class Simulation implements Runnable {
   		} else if(setup.equalsIgnoreCase("dynamic")) {
   			dynamicSetup(jsonScenario);
   		} else {
-  			throw new Exception("Problem with setup property");
+  			throw new Exception("Problem with setup property!!!");
   		}
-  		System.out.println("D");
-  		logger.info("Simulation setup finished.");
+  		logger.info("Simulation setup finished: " + dbname);
   	}
 
-  	public void staticSetup (DBObject jsonScenario) {
+  	public void staticSetup (DBObject jsonScenario) throws Exception {
 	    int numOfInstallations = ((Integer)jsonScenario.get("instcount")).intValue();
 	    queue = new PriorityBlockingQueue<Event>(2 * numOfInstallations);
-		System.out.println("sdf");
 	    for (int i = 1; i <= numOfInstallations; i++) {
 	    	DBObject instDoc = (DBObject)jsonScenario.get("inst"+i);
 	    	String id = ((ObjectId)instDoc.get("_id")).toString();
@@ -280,7 +270,6 @@ public class Simulation implements Runnable {
 	    			id, name, description, type).build();
 	    	int appcount = ((Integer)instDoc.get("appcount")).intValue();
 	    	// Create the appliances
-			System.out.println("F");
 	    	HashMap<String,Appliance> existing = new HashMap<String,Appliance>();
 	    	for (int j = 1; j <= appcount; j++) {
 	    		DBObject applianceDoc = (DBObject)instDoc.get("app"+j);
@@ -306,7 +295,6 @@ public class Simulation implements Runnable {
 	    		existing.put(appid, app);
 	    		inst.addAppliance(app);
 	    	}
-			System.out.println("11");
 	    	DBObject personDoc = (DBObject)instDoc.get("person1");
 	    	String personid = ((ObjectId)personDoc.get("_id")).toString();
     		String personName = (String)personDoc.get("name");
@@ -319,14 +307,11 @@ public class Simulation implements Runnable {
 	    	                  personType, inst).build();
 	    	inst.addPerson(person);
 	    	int actcount = ((Integer)personDoc.get("activitycount")).intValue();
-	    	//System.out.println("Act-Count: " + actcount);
-			System.out.println("12");
 	    	for (int j = 1; j <= actcount; j++) {
 	    		DBObject activityDoc = (DBObject)personDoc.get("activity"+j);
 	    		String activityName = (String)activityDoc.get("name");
 	    		String activityType = (String)activityDoc.get("type");
 	    		int actmodcount = ((Integer)activityDoc.get("actmodcount")).intValue();
-	    		//System.out.println("Act-Mod-Count: " + actmodcount);
 	    		Activity act = new Activity.Builder(activityName, "", 
 	    				activityType, simulationWorld).build();
 	    		ProbabilityDistribution startDist;
@@ -339,13 +324,10 @@ public class Simulation implements Runnable {
 	    			String actmodDayType = (String)actmodDoc.get("day_type");
 	    			DBObject duration = (DBObject)actmodDoc.get("duration");
 	    			durDist = json2dist(duration);
-	    			//System.out.println(durDist.getPrecomputedBin());
 	    			DBObject start = (DBObject)actmodDoc.get("start");
 	    			startDist = json2dist(start);
-	    			//System.out.println(startDist.getPrecomputedBin());
 	    			DBObject rep = (DBObject)actmodDoc.get("repetitions");
 	    			timesDist = json2dist(rep);
-	    			//System.out.println(timesDist.getPrecomputedBin());
 	    			act.addDuration(actmodDayType, durDist);
 	    			act.addStartTime(actmodDayType, startDist);
 	    			act.addTimes(actmodDayType, timesDist);
@@ -370,7 +352,7 @@ public class Simulation implements Runnable {
   		return objId.toString();
   	}
 
-  	public void dynamicSetup(DBObject jsonScenario) {
+  	public void dynamicSetup(DBObject jsonScenario) throws Exception {
   		DBObject scenario = (DBObject)jsonScenario.get("scenario");
   		String scenario_id =  ((ObjectId)scenario.get("_id")).toString();
   		DBObject demog = (DBObject)jsonScenario.get("demog");
@@ -502,7 +484,6 @@ public class Simulation implements Runnable {
 			    		for(int m = 0; m < containsAppliances.size(); m++) {
 			    			String containAppId = (String)containsAppliances.get(m);
 			    			Appliance app  = existing.get(containAppId);
-			    			System.out.println("Add - " + app.getName() + " " + actmodDayType);
 			    			//act.addAppliance(actmodDayType,app,1.0/containsAppliances.size());
 			    			act.addAppliance(actmodDayType,app,1.0);
 			    		}
@@ -562,33 +543,24 @@ public class Simulation implements Runnable {
   		
   	}
   
-	public static ProbabilityDistribution json2dist(DBObject distribution) {
+	public static ProbabilityDistribution json2dist(DBObject distribution) throws Exception {
   		String distType = (String)distribution.get("distrType");
   		switch (distType) {
   		case ("Normal Distribution"):
   			BasicDBList normalList = (BasicDBList)distribution.get("parameters");
   			DBObject normalDoc = (DBObject)normalList.get(0);
   			double mean = Double.parseDouble(normalDoc.get("mean").toString());
-  			double std = 0.0;
-  			try {
-  				std = ((Double)normalDoc.get("std")).doubleValue();
-  			} catch(ClassCastException cce) {}
-  			try {
-  				std = (double)((Integer)normalDoc.get("std")).intValue();
-  			} catch(ClassCastException cce) {}
-  			System.out.println(std);
+  			double std = Double.parseDouble(normalDoc.get("std").toString());
   			Gaussian normal = new Gaussian(mean, std);
   			normal.precompute(0, 1439, 1440);
-  			//System.out.println("A");
   			return normal;
         case ("Uniform Distribution"):
    			BasicDBList unifList = (BasicDBList)distribution.get("parameters");
    			DBObject unifDoc = (DBObject)unifList.get(0);
-   			double from = ((Double)unifDoc.get("start")).doubleValue();
-   			double to = ((Double)unifDoc.get("end")).doubleValue();
+   			double from = Double.parseDouble(unifDoc.get("start").toString()); 
+   			double to = Double.parseDouble(unifDoc.get("end").toString()); 
    			Uniform uniform = new Uniform(from, to);
    			uniform.precompute(from, to, (int) to + 1);
-   			//System.out.println("B");
    			return uniform;
    		case ("Gaussian Mixture Models"):
         	 BasicDBList mixList = (BasicDBList)distribution.get("parameters");
@@ -598,19 +570,16 @@ public class Simulation implements Runnable {
          	double[] stds = new double[length];
          	for(int i = 0; i < mixList.size(); i++) {
          		DBObject tuple = (DBObject)mixList.get(i);
-         		w[i] = ((Double)tuple.get("w")).doubleValue();
-         		means[i] = ((Double)tuple.get("mean")).doubleValue();
-         		stds[i] = ((Double)tuple.get("std")).doubleValue();
+         		w[i] = Double.parseDouble(tuple.get("w").toString()); 
+         		means[i] = Double.parseDouble(tuple.get("mean").toString()); 
+         		stds[i] = Double.parseDouble(tuple.get("std").toString()); 
     		} 
          	GaussianMixtureModels gmm = new GaussianMixtureModels(length, w, means, stds);
-         	//System.out.println("C");
          	gmm.precompute(0, 1439, 1440);
          	return gmm;
         default:
-        	System.out.println("Non existing start time distribution type");
+        	throw new Exception("Non existing start time distribution type. Problem in setting up the simulation.");
         }
-  		System.out.println("NULLLLLLLL");
-  		return null;
   	}
 
 }

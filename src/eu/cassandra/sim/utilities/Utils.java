@@ -46,6 +46,14 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 public class Utils {
 	
+	public static String stackTraceToString(StackTraceElement[] s) {
+		String returnMessage = new String();
+		for(int i = 0; i < s.length; i++) {
+			returnMessage += s[i].toString() + "\n";
+		}
+		return returnMessage;
+	}
+	
 	public static void printExecutorSummary(ThreadPoolExecutor executor) {
 		System.out.println(
 				String.format("[monitor] [%d/%d] Active: %d, Completed: %d, Task: %d, isShutdown: %s, isTerminated: %s",

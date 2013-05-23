@@ -166,7 +166,7 @@ public class JSONtoReturn {
 		successMessage.put("numberOfDays", numberOfDays);
 		successMessage.put("size", dbObjects.size());
 		successMessage.put("data", dbObjects);
-		System.out.println(PrettyJSONPrinter.prettyPrint(successMessage));
+		//System.out.println(PrettyJSONPrinter.prettyPrint(successMessage));
 		return successMessage;
 	}
 

@@ -124,7 +124,6 @@ public class Activity extends Entity {
 	public void addAppliance (String day, Appliance a, Double prob) {
 		Vector<Appliance> vector = appliances.get(day);
 		vector.add(a);
-		System.out.println("Vec " + vector.size());
 		Vector<Double> probVector = probApplianceUsed.get(day);
 		probVector.add(prob);
 	}
@@ -218,26 +217,19 @@ public class Activity extends Entity {
 			vector = appliances.get("working");
 //		}
 
-		
-		//System.out.println("POINT A");
-		//System.out.println(numOfTimesProb.getNumberOfParameters());
 		int numOfTimes = 0;
 		try {
 			numOfTimes = numOfTimesProb.getPrecomputedBin();
-			System.out.println(numOfTimes);
 		} catch (Exception e) {
-			System.out.println(name);
+			logger.error(Utils.stackTraceToString(e.getStackTrace()));
 			e.printStackTrace();
 		}
-		//System.out.println("POINT B");
-		//System.out.println(numOfTimes);
 		/*
 		 * Decide the duration and start time for each activity activation
 		 */
 		while (numOfTimes > 0) {
 			int duration = Math.max(durationProb.getPrecomputedBin(), 1);
 			int startTime = startProb.getPrecomputedBin();
-			System.out.println(startTime + " " + duration + " " + vector.size());
 			// Select appliances to be switched on
 			for (int j = 0; j < vector.size(); j++) {
 				//if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
@@ -247,7 +239,6 @@ public class Activity extends Entity {
 					int appStartTime = startTime;
 					String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
 					Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
-					System.out.println("Event " + tick + " " + name);
 					queue.offer(eOn);
 					Event eOff =
 							new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
