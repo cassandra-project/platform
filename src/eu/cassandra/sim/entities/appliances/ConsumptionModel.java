@@ -66,7 +66,6 @@ public class ConsumptionModel extends Entity {
 	
 	public void init (DBObject modelObj, String type) {
 
-		System.out.println(modelObj.get("n"));
 		try {
 			outerN = ((Integer)modelObj.get("n")).intValue();
 		} catch(ClassCastException e ) {
@@ -93,12 +92,10 @@ public class ConsumptionModel extends Entity {
 			}
 			BasicDBList values = ((BasicDBList)((DBObject)patternsObj.get(i)).get("values"));
 			int tripplets = values.size();
-			System.out.println(tripplets);
 			patterns[i] = new ArrayList<Tripplet>(tripplets);
 			for(int j = 0; j < tripplets; j++) {
 				Tripplet t = new Tripplet();
 				try {
-					System.out.println(((DBObject)values.get(j)));
 					t.v = ((Double)((DBObject)values.get(j)).get(type)).doubleValue();
 				} catch(ClassCastException e) {
 					t.v = (double)((Integer)((DBObject)values.get(j)).get(type)).intValue();
@@ -149,7 +146,7 @@ public class ConsumptionModel extends Entity {
 		
 	}
 
-	public void status(){
+	public void status() {
 		
 		System.out.println("Outer N:" + outerN);
 		System.out.println("Total Duration:" + totalDuration);
