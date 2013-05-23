@@ -40,7 +40,6 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String getInstallation(HttpHeaders httpHeaders,String id) {
-		System.out.println("GET:" +id);
 		return new MongoDBQueries().getEntity(httpHeaders,COL_INSTALLATIONS,"_id", 
 				id, "Installation retrieved successfully").toString();
 	}

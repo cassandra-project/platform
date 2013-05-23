@@ -10,7 +10,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import eu.cassandra.sim.entities.installations.GeoLocation;
+
 public class IServletContextListener implements ServletContextListener {
+	
+	static Logger logger = Logger.getLogger(IServletContextListener.class);
 	
 	public static File schemas;
 
@@ -45,6 +49,7 @@ public class IServletContextListener implements ServletContextListener {
 			drfa.activateOptions();
 		}
 		Logger.getRootLogger().addAppender(drfa);
+		logger.info("Cassandra platform started!!!");
 	}
 
 }
