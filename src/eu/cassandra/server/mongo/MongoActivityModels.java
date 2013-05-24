@@ -19,10 +19,13 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.DBObject;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.sim.utilities.Utils;
 
 public class MongoActivityModels {
 
@@ -70,18 +73,29 @@ public class MongoActivityModels {
 	 * @param dataToInsert
 	 * @return
 	 */
+	
 	public String createActivityModel(String dataToInsert) {
-		return new MongoDBQueries().insertData(COL_ACTMODELS ,dataToInsert,
+		return createActivityModelObj(dataToInsert).toString();
+	}
+	
+	public static DBObject createActivityModelObj(String dataToInsert) {
+		MongoDBQueries q = new MongoDBQueries();
+		DBObject returnObj = q.insertData(COL_ACTMODELS ,dataToInsert,
 				"Activity Model created successfully", 
 				new String[] {MongoActivities.COL_ACTIVITIES, MongoDistributions.COL_DISTRIBUTIONS, 
 				MongoDistributions.COL_DISTRIBUTIONS, MongoDistributions.COL_DISTRIBUTIONS  },
 				new String[] {"act_id","duration","startTime","repeatsNrOfTime"},
 				new boolean[] {false,true,true,true},JSONValidator.ACTIVITYMODEL_SCHEMA
-				).toString();
-
-		//         : "4ff31bc9e4b0721a5785a1bc",
-		//         : "4ff31bc9e4b0721a5785a1bc",
-		//         : "4ff45dc1e4b00acd8d6457e3"
+				);
+		if(Utils.failed(returnObj.toString())) {
+			// Perhaps should be added to the user library
+			returnObj = q.insertData(COL_ACTMODELS ,dataToInsert,
+					"Activity Model created successfully", 
+					new String[] {"users"} ,
+					new String[] {"act_id"},
+					new boolean[] {false},JSONValidator.ACTIVITYMODEL_SCHEMA);
+		}
+		return returnObj;
 	}
 
 	/**
@@ -102,9 +116,17 @@ public class MongoActivityModels {
 	 * @return
 	 */
 	public String updateActivityModel(String id,String jsonToUpdate) {
-		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
+		MongoDBQueries q = new MongoDBQueries();
+		String returnMsg = q.updateDocument("_id", id,jsonToUpdate,
 				COL_ACTMODELS, "Activity Model updated successfully",
 				MongoActivities.COL_ACTIVITIES ,"act_id",
 				JSONValidator.ACTIVITYMODEL_SCHEMA).toString();
+		if(Utils.failed(returnMsg)) {
+			// Perhaps should be added to the user library
+			returnMsg = q.updateDocument("_id", id,jsonToUpdate,
+					COL_ACTMODELS, "Activity Model updated successfully",
+					"users" ,"act_id",JSONValidator.ACTIVITYMODEL_SCHEMA).toString();
+		}
+		return returnMsg;
 	}
 }

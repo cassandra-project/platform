@@ -23,6 +23,7 @@ import javax.ws.rs.core.HttpHeaders;
 
 import org.bson.types.ObjectId;
 
+import eu.cassandra.server.api.exceptions.BadParameterException;
 import eu.cassandra.server.api.exceptions.JSONSchemaNotValidException;
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
@@ -509,9 +510,10 @@ public class MongoDBQueries {
 	 * @param id
 	 * @return
 	 * @throws JSONSchemaNotValidException 
+	 * @throws BadParameterException 
 	 */
 	private DBObject getValues(DBObject dBObject, HttpHeaders httpHeaders,
-			String id, String coll) throws JSONSchemaNotValidException {
+			String id, String coll) throws JSONSchemaNotValidException, BadParameterException {
 		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
 			double values[] = null;
 			double points[] = null;
@@ -698,8 +700,7 @@ public class MongoDBQueries {
 									new BasicDBObject(keyName, dbObject.get(key)) ));
 				}
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
+		} catch(Exception e) {
 			return jSON2Rrn.createJSONError("Update Failed for " + jsonToUpdate,e);
 		}
 		return getEntity(null,collection,qKey, qValue,successMsg,

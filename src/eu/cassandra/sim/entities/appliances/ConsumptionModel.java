@@ -24,6 +24,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
+import eu.cassandra.server.api.exceptions.BadParameterException;
 import eu.cassandra.server.mongo.MongoConsumptionModels;
 import eu.cassandra.sim.entities.Entity;
 
@@ -58,62 +59,82 @@ public class ConsumptionModel extends Entity {
 	
 	public ConsumptionModel() {}
 	
-	public ConsumptionModel(String amodel, String type) {
+	public ConsumptionModel(String amodel, String type) throws BadParameterException {
 		model = amodel;
 		DBObject modelObj = (DBObject) JSON.parse(model);
 		init(modelObj, type);
 	}
 	
-	public void init (DBObject modelObj, String type) {
-
+	public void init (DBObject modelObj, String type) throws BadParameterException {
+		
 		try {
-			outerN = ((Integer)modelObj.get("n")).intValue();
-		} catch(ClassCastException e ) {
+
 			try {
-				outerN = ((Long)modelObj.get("n")).intValue();
-			} catch(ClassCastException e1 ) {
-				outerN = ((Double)modelObj.get("n")).intValue();
-			}
-		}
-		BasicDBList patternsObj = (BasicDBList)modelObj.get("params");
-		patternN = patternsObj.size();
-		patterns = new ArrayList[patternN];
-		n = new int[patternN];
-		patternDuration = new int[patternN];
-		for(int i = 0; i < patternN; i++) {
-			try {
-				n[i] = ((Integer)((DBObject)patternsObj.get(i)).get("n")).intValue();
+				outerN = ((Integer)modelObj.get("n")).intValue();
 			} catch(ClassCastException e ) {
 				try {
-					n[i] = ((Long)((DBObject)patternsObj.get(i)).get("n")).intValue();
+					outerN = ((Long)modelObj.get("n")).intValue();
 				} catch(ClassCastException e1 ) {
-					n[i] = ((Double)((DBObject)patternsObj.get(i)).get("n")).intValue();
+					outerN = ((Double)modelObj.get("n")).intValue();
+				}
+			} catch(NullPointerException npe) {
+				throw 
+				new BadParameterException("Bad parameter: outer iterations parameter name should be n");
+			}
+			BasicDBList patternsObj = (BasicDBList)modelObj.get("params");
+			patternN = patternsObj.size();
+			patterns = new ArrayList[patternN];
+			n = new int[patternN];
+			patternDuration = new int[patternN];
+			for(int i = 0; i < patternN; i++) {
+				try {
+					n[i] = ((Integer)((DBObject)patternsObj.get(i)).get("n")).intValue();
+				} catch(ClassCastException e ) {
+					try {
+						n[i] = ((Long)((DBObject)patternsObj.get(i)).get("n")).intValue();
+					} catch(ClassCastException e1 ) {
+						n[i] = ((Double)((DBObject)patternsObj.get(i)).get("n")).intValue();
+					}
+				} catch(NullPointerException npe) {
+					throw 
+					new BadParameterException("Bad parameter: inner iterations parameter name should be n");
+				}
+				BasicDBList values = ((BasicDBList)((DBObject)patternsObj.get(i)).get("values"));
+				int tripplets = values.size();
+				patterns[i] = new ArrayList<Tripplet>(tripplets);
+				for(int j = 0; j < tripplets; j++) {
+					Tripplet t = new Tripplet();
+					try {
+						t.v = ((Double)((DBObject)values.get(j)).get(type)).doubleValue();
+					} catch(ClassCastException e) {
+						t.v = (double)((Integer)((DBObject)values.get(j)).get(type)).intValue();
+					} catch(NullPointerException npe) {
+						throw 
+						new BadParameterException("Bad parameter: power parameter name should be " + type);
+					}
+					try {
+						t.d = ((Integer)((DBObject)values.get(j)).get("d")).intValue();
+					} catch(ClassCastException e) {
+						t.d = ((Double)((DBObject)values.get(j)).get("d")).intValue();
+					} catch(NullPointerException npe) {
+						throw 
+						new BadParameterException("Bad parameter: duration parameter name should be d");
+					}
+					patternDuration[i] += t.d; 
+					totalDuration += (n[i] * t.d);
+					try {
+						t.s = ((Double)((DBObject)values.get(j)).get("s")).doubleValue();
+					} catch(ClassCastException e) {
+						t.s = (double)((Integer)((DBObject)values.get(j)).get("s")).intValue();
+					} catch(NullPointerException npe) {
+						throw 
+						new BadParameterException("Bad parameter: slope parameter name should be s");
+					}
+					patterns[i].add(t);
 				}
 			}
-			BasicDBList values = ((BasicDBList)((DBObject)patternsObj.get(i)).get("values"));
-			int tripplets = values.size();
-			patterns[i] = new ArrayList<Tripplet>(tripplets);
-			for(int j = 0; j < tripplets; j++) {
-				Tripplet t = new Tripplet();
-				try {
-					t.v = ((Double)((DBObject)values.get(j)).get(type)).doubleValue();
-				} catch(ClassCastException e) {
-					t.v = (double)((Integer)((DBObject)values.get(j)).get(type)).intValue();
-				}
-				try {
-					t.d = ((Integer)((DBObject)values.get(j)).get("d")).intValue();
-				} catch(ClassCastException e) {
-					t.d = ((Double)((DBObject)values.get(j)).get("d")).intValue();
-				}
-				patternDuration[i] += t.d; 
-				totalDuration += (n[i] * t.d);
-				try {
-					t.s = ((Double)((DBObject)values.get(j)).get("s")).doubleValue();
-				} catch(ClassCastException e) {
-					t.s = (double)((Integer)((DBObject)values.get(j)).get("s")).intValue();
-				}
-				patterns[i].add(t);
-			}
+		} catch(BadParameterException bpe) {
+			throw bpe;
 		}
 
 	}
@@ -139,7 +160,7 @@ public class ConsumptionModel extends Entity {
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws BadParameterException {
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		ConsumptionModel cm = new ConsumptionModel(s, "p");
 		// TODO [TEST] check is parsing is done correctly

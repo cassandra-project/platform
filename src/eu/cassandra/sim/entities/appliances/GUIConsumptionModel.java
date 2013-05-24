@@ -23,6 +23,7 @@ import java.util.Arrays;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
+import eu.cassandra.server.api.exceptions.BadParameterException;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel.Tripplet;
 import eu.cassandra.sim.utilities.Utils;
 
@@ -36,8 +37,9 @@ public class GUIConsumptionModel {
   /**
    * 	
    * @param obj
+ * @throws BadParameterException 
    */
-  public GUIConsumptionModel (DBObject obj, String type)
+  public GUIConsumptionModel (DBObject obj, String type) throws BadParameterException
   {
     cons.init(obj, type);
     cons.status();
@@ -104,7 +106,7 @@ public class GUIConsumptionModel {
     return result;
   }
 
-  public static void main (String[] args) throws IOException
+  public static void main (String[] args) throws IOException, BadParameterException
   {
 
     String s = Utils.readFile("laptopcm.json");

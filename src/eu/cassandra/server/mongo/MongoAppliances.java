@@ -83,13 +83,15 @@ public class MongoAppliances {
 		if(dataVec != null && dataVec.size() > 0) {
 			DBObject data = dataVec.get(0);
 			com.mongodb.BasicDBList apps = (com.mongodb.BasicDBList)data.get("containsAppliances");
-			for(int i=0;i<apps.size();i++) {
-				String appID = apps.get(i).toString();
-				DBObject appObj = new MongoDBQueries().getEntity(httpHeaders,COL_APPLIANCES,"_id", appID, 
-						"Appliance retrieved successfully");
-				Vector<DBObject> appIn = (Vector<DBObject>)appObj.get("data");
-				if(appIn != null && appIn.size() > 0) {
-					appliances.add(appIn.get(0));
+			if(apps != null) {
+				for(int i=0;i<apps.size();i++) {
+					String appID = apps.get(i).toString();
+					DBObject appObj = new MongoDBQueries().getEntity(httpHeaders,COL_APPLIANCES,"_id", appID, 
+							"Appliance retrieved successfully");
+					Vector<DBObject> appIn = (Vector<DBObject>)appObj.get("data");
+					if(appIn != null && appIn.size() > 0) {
+						appliances.add(appIn.get(0));
+					}
 				}
 			}
 			return new JSONtoReturn().createJSON(appliances, "Appliance Retrieved from activity Model").toString();

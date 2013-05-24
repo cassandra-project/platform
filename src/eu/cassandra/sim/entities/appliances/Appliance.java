@@ -17,6 +17,7 @@ package eu.cassandra.sim.entities.appliances;
 
 import com.mongodb.BasicDBObject;
 
+import eu.cassandra.server.api.exceptions.BadParameterException;
 import eu.cassandra.server.mongo.MongoAppliances;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel.Tripplet;
@@ -181,7 +182,7 @@ public class Appliance extends Entity {
 		return who;
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws BadParameterException {
 		// TODO [TEST] check the getPower method
 		RNG.init();
 		String p = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
