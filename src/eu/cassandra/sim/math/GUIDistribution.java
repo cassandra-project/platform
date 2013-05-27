@@ -74,13 +74,19 @@ public class GUIDistribution {
 			}
 			prob.precompute(endValue);
 			break;
-
 		case "Gaussian Mixture Models":
-			double[] pi = Utils.dblist2doubleArr((BasicDBList)parameters.get("pi")); 
-			double[] means = Utils.dblist2doubleArr((BasicDBList)parameters.get("means"));
-			double[] sigmas = Utils.dblist2doubleArr((BasicDBList)parameters.get("sigmas"));
-			prob = new GaussianMixtureModels(pi.length ,pi, means, sigmas);
-			prob.precompute(endValue);
+   			int length = tempList.size();
+   			double[] w = new double[length];
+         	double[] means = new double[length];
+         	double[] stds = new double[length];
+         	for(int i = 0; i < tempList.size(); i++) {
+         		DBObject tuple = (DBObject)tempList.get(i);
+         		w[i] = Double.parseDouble(tuple.get("w").toString()); 
+         		means[i] = Double.parseDouble(tuple.get("mean").toString()); 
+         		stds[i] = Double.parseDouble(tuple.get("std").toString()); 
+    		} 
+         	prob = new GaussianMixtureModels(length, w, means, stds);
+         	prob.precompute(0, 1439, 1440);
 			break;
 		case "Histogram":
 			double[] values = Utils.dblist2doubleArr((BasicDBList)parameters.get("values"));

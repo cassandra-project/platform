@@ -30,6 +30,7 @@ import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 public class MongoCopyEntities {
 
@@ -168,7 +169,6 @@ public class MongoCopyEntities {
 				"Activity copied successfully", MongoPersons.COL_PERSONS ,
 				MongoActivities.REF_PERSON,JSONValidator.ACTIVITY_SCHEMA );
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
-
 		addInfoForCascadedCopy(res,answer,newID);
 		
 		//Copy Activity Models of the Activity
@@ -198,11 +198,8 @@ public class MongoCopyEntities {
 			copyOf(fromObj);
 		}
 		stripAppliances(fromObj);
-		DBObject res =  new MongoDBQueries().insertData(MongoActivityModels.COL_ACTMODELS ,fromObj.toString() ,
-				"Activity Model copied successfully", MongoActivities.COL_ACTIVITIES ,
-				MongoActivityModels.REF_ACTIVITY, JSONValidator.ACTIVITYMODEL_SCHEMA );
+		DBObject res =  MongoActivityModels.createActivityModelObj(fromObj.toString());
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
-
 		addInfoForCascadedCopy(res, answer, newID);
 		
 		// Copy Distributions of the Activity Model
@@ -271,12 +268,19 @@ public class MongoCopyEntities {
 				MongoActivityModels.COL_ACTMODELS).findOne(new BasicDBObject("_id", new ObjectId(toActmodID)));
 		actMod.put(distrClass, newID);
 		String actModID = actMod.get("_id").toString();
-		new MongoDBQueries().updateDocument("_id", actModID, actMod.toString(),
+		MongoDBQueries q = new MongoDBQueries();
+		DBObject returnObj = q.updateDocument("_id", actModID, actMod.toString(),
 						MongoActivityModels.COL_ACTMODELS,  
 						"Activity Model updated successfully",
 						MongoActivities.COL_ACTIVITIES ,"act_id",
 						JSONValidator.ACTIVITYMODEL_SCHEMA);
-
+		if(Utils.failed(returnObj.toString())) {
+			returnObj = q.updateDocument("_id", actModID, actMod.toString(),
+					MongoActivityModels.COL_ACTMODELS,  
+					"Activity Model created successfully", 
+					"users" ,"act_id",
+					JSONValidator.ACTIVITYMODEL_SCHEMA);
+		}
 		addInfoForCascadedCopy(res, answer, newID);
 		
 		return PrettyJSONPrinter.prettyPrint(res.toString());

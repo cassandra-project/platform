@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import eu.cassandra.server.api.exceptions.BadParameterException;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel;
 import eu.cassandra.sim.utilities.RNG;
@@ -34,7 +35,7 @@ public class ConsumptionModelTest {
 
 	
 	@Test
-	public void testgetTotalDuration() {
+	public void testgetTotalDuration() throws BadParameterException {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :9, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		ConsumptionModel tester=new ConsumptionModel(s, "p");
@@ -44,7 +45,7 @@ public class ConsumptionModelTest {
 	}
 	
 	@Test
-	public void testgetOuterN() {
+	public void testgetOuterN() throws BadParameterException {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :9, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		ConsumptionModel tester=new ConsumptionModel(s, "p");
@@ -54,7 +55,7 @@ public class ConsumptionModelTest {
 	}
 	
 	@Test
-	public void testgetPatternN() {
+	public void testgetPatternN() throws BadParameterException {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :9, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		ConsumptionModel tester=new ConsumptionModel(s, "p");
@@ -64,7 +65,7 @@ public class ConsumptionModelTest {
 	}
 	
 	@Test
-	public void testgetN() {
+	public void testgetN() throws BadParameterException {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :9, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		ConsumptionModel tester=new ConsumptionModel(s, "p");
@@ -75,7 +76,7 @@ public class ConsumptionModelTest {
 	}
 	
 	@Test
-	public void testgetPatternDuration() {
+	public void testgetPatternDuration() throws BadParameterException {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :9, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		ConsumptionModel tester=new ConsumptionModel(s, "p");

@@ -563,7 +563,7 @@ public class Simulation implements Runnable {
    			uniform.precompute(from, to, (int) to + 1);
    			return uniform;
    		case ("Gaussian Mixture Models"):
-        	 BasicDBList mixList = (BasicDBList)distribution.get("parameters");
+        	BasicDBList mixList = (BasicDBList)distribution.get("parameters");
    			int length = mixList.size();
    			double[] w = new double[length];
          	double[] means = new double[length];
