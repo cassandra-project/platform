@@ -234,7 +234,26 @@ Ext.define('C.view.SimulationParamsForm', {
 	onButtonClick21: function(button, e, eOpts) {
 		var project_node = this.getForm().getRecord().node.parentNode.parentNode.parentNode.parentNode;
 		if (! (project_node.lastChild.c) ) project_node.lastChild.expand();
-		var run_store = project_node.lastChild.c.store;
+		/*Ext.getCmp('uiNavigationTreePanel').getView().fireEvent('itemdblclick',project_node.lastChild, project_node.lastChild);*/
+		var node = project_node.lastChild;
+		var run_store = node.c.store;
+		/*run_store.on('add', function(store, record, operation, eOpts ) {
+		var breadcrumb = node.getPath();
+		var pathToMe =  node.get('nodeType')+':'+breadcrumb;
+		var tabs = Ext.getCmp('MainTabPanel');
+		var isOpen = false;
+		Ext.each (tabs.items.items, function(item, index) {
+		if (item.pathToMe == pathToMe) {
+		tabs.setActiveTab(item);
+		isOpen = true;
+		return false;
+		}
+		});
+		if (!isOpen) 
+		C.app.createForm(node);
+		});	
+		*/
+
 		run_store.insert(0, new C.model.Run({smp_id : this.getForm().getRecord().node.get('id')}));
 	}
 

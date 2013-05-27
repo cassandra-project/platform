@@ -41,6 +41,7 @@ Ext.define('C.store.DistributionValues', {
 				},
 				{
 					convert: function(v, rec) {
+						//if (store.proxy.reader.rawData.data[0].distrType !== 'Histogram')
 						return v*100;
 					},
 					name: 'y',
@@ -58,8 +59,17 @@ Ext.define('C.store.DistributionValues', {
 
 	onJsonstoreLoad: function(store, records, successful, eOpts) {
 		console.info(store, records);
-		if (store.distr_type == 'repeatsNrOfTime')
-		store.loadData(records.slice(0, 5));
+		if (successful) {
+			if (store.distr_type == 'repeatsNrOfTime')
+			store.loadData(records.slice(0, 5));
+			else if ( store.proxy.reader.rawData ) {
+				var raw_data = store.proxy.reader.rawData.data[0];
+				if (raw_data.distrType !== 'Histogram') {
+					var params = raw_data.parameters[0];
+					store.loadData(records.slice(Math.max(0, params.mean - 8 * params.std), Math.min(1440, params.mean + 8 * params.std)+1));
+				}
+			}
+		}
 	}
 
 });
