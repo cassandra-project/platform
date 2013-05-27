@@ -118,7 +118,7 @@ Ext.define('C.view.PricingForm', {
 								},
 								{
 									xtype: 'numbercolumn',
-									dataIndex: 'order',
+									dataIndex: 'price',
 									text: 'Price',
 									editor: {
 										xtype: 'numberfield'

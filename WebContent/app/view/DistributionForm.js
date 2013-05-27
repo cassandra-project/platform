@@ -60,6 +60,7 @@ Ext.define('C.view.DistributionForm', {
 						},
 						{
 							xtype: 'combobox',
+							itemId: 'distrType',
 							width: 220,
 							fieldLabel: 'Types',
 							labelWidth: 70,
@@ -69,7 +70,13 @@ Ext.define('C.view.DistributionForm', {
 							forceSelection: true,
 							queryMode: 'local',
 							store: 'DistrTypeStore',
-							valueField: 'distrType'
+							valueField: 'distrType',
+							listeners: {
+								change: {
+									fn: me.onDistrTypeChange,
+									scope: me
+								}
+							}
 						},
 						{
 							xtype: 'textareafield',
@@ -120,6 +127,30 @@ Ext.define('C.view.DistributionForm', {
 		});
 
 		me.callParent(arguments);
+	},
+
+	onDistrTypeChange: function(field, newValue, oldValue, eOpts) {
+		if (newValue == 'Histogram') {
+			this.down('#val').show();
+			this.down('#params').setValue('[]');
+			this.down('#params').hide();
+			if (this.query('chart')[1]) {
+				this.query('chart')[0].store.removeAll();
+				this.query('chart')[1].show();
+				this.query('chart')[0].hide();
+			}
+		}
+		else {
+			this.down('#params').show();
+			this.down('#val').setValue('[]');
+			this.down('#val').hide();
+			if (this.query('chart')[1] ) {
+				this.query('chart')[0].store.removeAll();
+				this.query('chart')[1].hide();
+				this.query('chart')[0].show();
+			}
+		}
+
 	},
 
 	onTextareafieldBeforeRender: function(component, eOpts) {
@@ -207,16 +238,27 @@ Ext.define('C.view.DistributionForm', {
 
 		}
 
-		this.remove(myDistrChart);
+		/*this.remove(myDistrChart);
 		myDistrChartStore.removeAll();
 
-		if (distr_type == "repeatsNrOfTime") 
+		if (distr_type == "repeatsNrOfTime" ) 
 		myDistrChart = new C.view.DistributionHistogramChart({store: myDistrChartStore});
-		else
+		else {
 		myDistrChart = new C.view.DistributionNormalChart({store: myDistrChartStore});
+		myDistrChart2 = new C.view.DistributionHistogramChart({store: myDistrChartStore});
+		this.insert(2, myDistrChart2);*/
+		if (this.query('chart')[1]) {
+			if ( values.distrType == "Histogram" && valuesDistr.length <= 100) {
+				this.query('chart')[0].hide();
+				this.query('chart')[1].show();
+			}
+			else {
+				this.query('chart')[0].show();
+				this.query('chart')[1].hide();
+			}
+		}
 
-
-		this.insert(2, myDistrChart);
+		/*this.insert(2, myDistrChart);*/
 
 		distr_store.on(
 		'update', 
