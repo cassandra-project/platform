@@ -32,18 +32,30 @@ Ext.define('C.model.Kpi', {
 			type: 'string'
 		},
 		{
+			convert: function(v, rec) {
+				return Ext.util.Format.number(v, '000,000.00');
+			},
 			name: 'maxPower',
 			type: 'float'
 		},
 		{
+			convert: function(v, rec) {
+				return Ext.util.Format.number(v, '000,000.00');
+			},
 			name: 'avgPower',
 			type: 'float'
 		},
 		{
+			convert: function(v, rec) {
+				return Ext.util.Format.number(v, '000,000.00');
+			},
 			name: 'energy',
 			type: 'float'
 		},
 		{
+			convert: function(v, rec) {
+				return Ext.util.Format.number(v, '000,000.00');
+			},
 			name: 'cost',
 			type: 'float'
 		}

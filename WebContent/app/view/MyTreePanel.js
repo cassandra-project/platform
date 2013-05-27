@@ -591,7 +591,7 @@ Ext.define('C.view.MyTreePanel', {
 		// Create columns for new store
 		Ext.Array.forEach(fields, function (f) {
 			if (f.name == 'percentage') {
-				cols.push({
+				cols.push(/*{
 					header: 'Progress',
 					dataIndex: f.name,
 					width: 210,
@@ -608,17 +608,36 @@ Ext.define('C.view.MyTreePanel', {
 						}, 50);
 						return Ext.String.format('<div id="{0}"></div>', id);
 					}
+				}*/{
+					header   : 'Progress',
+					width    : 150,
+					sortable : false,
+					dataIndex: f.name,
+					renderer: function (v, m, r) {
+						var tmpValue = v / 100;
+						var tmpText = v+'% Completed';
+						var progressRenderer = (function (pValue, pText) {
+							var b = new Ext.ProgressBar();
+							return function(pValue, pText) {
+								b.updateProgress(pValue, pText, true);
+								return Ext.DomHelper.markup(b.getRenderTree());
+							};
+						})(tmpValue, tmpText);
+						return progressRenderer(tmpValue, tmpText);
+					}
 				},
 				{
 					header: '',
-					width: 120,
+					sortable: false,
+					width: 60,
+					dataIndex: 'refresh',
 					renderer: function (v, m, r) {
 						var id = Ext.id();
 						Ext.defer(function () {
 							Ext.widget('button', {
 								renderTo: id,
 								text: 'Refresh',
-								width: 110,
+								/*iconCls: 'refresh',*/
 								disabled: (r.get('percentage') == 100) ? true : false,
 								handler: function () { 
 
@@ -642,7 +661,34 @@ Ext.define('C.view.MyTreePanel', {
 						}, 50);
 						return Ext.String.format('<div id="{0}"></div>', id);
 					}
+				}
+				/*{
+				sortable: false,
+				xtype: 'actioncolumn',
+				width: 50,
+				items: [{
+				icon: 'resources/icons/refresh.png',
+				tooltip: 'Refresh',
+				handler: function(grid, rowIndex, colIndex) {
+				var r = grid.getStore().getAt(rowIndex);
+				Ext.Ajax.request({
+				url: '/cassandra/api/runs/' + r.get('_id'),
+				method: 'GET',
+				scope: this,
+				success: function(response, opts) {
+				var o = Ext.decode(response.responseText);
+
+				r.set('percentage', o.data[0].percentage);
+				if (o.data[0].percentage == 100) {
+				r.set('ended', o.data[0].ended);
+				this.setDisabled(true);
+				}
+				}
 				});
+				}
+				}]
+				}*/
+				);
 			}
 			else if (f.name == 'started' || f.name == 'ended'){
 				cols.push({

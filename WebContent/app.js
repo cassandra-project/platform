@@ -641,17 +641,23 @@ Ext.application({
 		switch (distr_type) {
 			case 'duration': 
 			distrGraphStore.xAxisTitle = 'Duration (Minutes)';
-			distrCmp.down('#val').hide();
+			distrCmp.down('#distrType').setValue('Normal Distribution');
 			myResultsChart = new C.view.DistributionNormalChart({store: distrGraphStore});
+			myResultsChart2 = new C.view.DistributionHistogramChart({store: distrGraphStore});
+			myResultsChart2.hide(); 
 			break;
 			case 'startTime':
 			distrGraphStore.xAxisTitle = 'Start Time (Minute of day)'; 
-			distrCmp.down('#val').hide();
+			distrCmp.down('#distrType').setValue('Normal Distribution');
 			myResultsChart = new C.view.DistributionNormalChart({store: distrGraphStore});
+			myResultsChart2 = new C.view.DistributionHistogramChart({store: distrGraphStore});
+			myResultsChart2.hide(); 
 			break;
 			case 'repeatsNrOfTime': 
 			distrGraphStore.xAxisTitle = 'Daily Repetitions';
-			distrCmp.down('#params').hide();
+			//distrCmp.down('#params').hide();
+			distrCmp.down('#distrType').setValue('Histogram');
+			distrCmp.down('#distrType').readOnly = true;
 			myResultsChart = new C.view.DistributionHistogramChart({store: distrGraphStore});
 			break;
 		}
@@ -668,6 +674,8 @@ Ext.application({
 
 		distrCmp.add(myChartLabel);
 		distrCmp.add(myResultsChart);
+		if (distr_type !== 'repeatsNrOfTime')
+		distrCmp.add(myResultsChart2);
 		distrCmp.add(myClickLabel);
 
 		return distrCmp;
