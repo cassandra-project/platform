@@ -115,6 +115,8 @@ public class Appliance extends Entity {
 	}
 
 	public double getPower(long tick, String type) {
+		try {
+		
 		ConsumptionModel cm = null; 
 		if(type == "p") {
 			cm = pcm;
@@ -159,6 +161,9 @@ public class Appliance extends Entity {
 			power = standByConsumption;
 		}
 		return power;
+		} catch(Exception e) {
+			throw e;
+		}
 	}
 
 	public void turnOff() {

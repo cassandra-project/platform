@@ -92,7 +92,6 @@ public class MongoCopyEntities {
 			String ret = copyApplianceToInstallation(childID, newID,res);
 			DBObject newApp = (DBObject) JSON.parse(ret);
 			String newAppID = ((DBObject)newApp.get("data")).get("_id").toString(); 
-			System.out.println(childID + " - " + newAppID);
 			addedAppliances.put(childID, newAppID);
 		}
 		//Copy Persons of the Installation
@@ -423,7 +422,6 @@ public class MongoCopyEntities {
 			BasicDBList blist = new BasicDBList();
 			for(int i = 0; i < alist.size(); i++) {
 				String key = alist.get(i).toString();
-				System.out.println(key);
 				if(mapping.containsKey(key)) {
 					String id = mapping.get(key);
 					blist.add(id);
