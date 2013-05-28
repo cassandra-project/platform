@@ -112,15 +112,15 @@ public class CopyEntities {
 		if(scnID != null && toPrjID != null) //Scenario to Project
 			answer = copy.copyScenarioToProject(scnID, toPrjID);
 		else if(instID != null && toScnID != null) { //Installation to Scenario
-			answer = copy.copyInstallationToScenario(instID, toScnID, null);
+			answer = copy.copyInstallationToScenario(instID, toScnID, null, true);
 		} else if(smpID != null && toScnID != null) //Simulation Parameter to Scenario
 			answer = copy.copySimParamsToScenario(smpID, toScnID, null);
 		else if(appID != null && toInstID != null) //Appliance to Installation
 			answer = copy.copyApplianceToInstallation(appID, toInstID, null);
 		else if(persID != null && toInstID != null) //Person to Installation
-			answer = copy.copyPersonToInstallation(persID, toInstID, null);
+			answer = copy.copyPersonToInstallation(persID, toInstID, null, false, null);
 		else if(actID != null && toPersID != null) //Activities to Person
-			answer = copy.copyActivityToPerson(actID, toPersID, null);
+			answer = copy.copyActivityToPerson(actID, toPersID, null, false, null);
 		else if(consmodID != null && toAppID != null) //Consumption Model to Appliance
 			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
 					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
@@ -130,7 +130,7 @@ public class CopyEntities {
 			// return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
 					//new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
 			// obsolete
-			answer = copy.copyActivityModelToActivity(actmodID, toActID,null); 
+			answer = copy.copyActivityModelToActivity(actmodID, toActID, null, false, null); 
 		else if(distrID != null && toActmodID != null) //Distribution to Activity Model
 			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
 					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
