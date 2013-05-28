@@ -43,6 +43,7 @@ import eu.cassandra.sim.entities.people.Activity;
 import eu.cassandra.sim.entities.people.Person;
 import eu.cassandra.sim.math.Gaussian;
 import eu.cassandra.sim.math.GaussianMixtureModels;
+import eu.cassandra.sim.math.Histogram;
 import eu.cassandra.sim.math.ProbabilityDistribution;
 import eu.cassandra.sim.math.Uniform;
 import eu.cassandra.sim.utilities.Constants;
@@ -577,6 +578,15 @@ public class Simulation implements Runnable {
          	GaussianMixtureModels gmm = new GaussianMixtureModels(length, w, means, stds);
          	gmm.precompute(0, 1439, 1440);
          	return gmm;
+   		case ("Histogram"):
+   			BasicDBList hList = (BasicDBList)distribution.get("values");
+   			int l = hList.size();
+			double[] v = new double[l];
+			for(int i = 0; i < l; i++) {
+				v[i] = Double.parseDouble(hList.get(i).toString());
+			}
+			Histogram h = new Histogram(v);
+   			return h;
         default:
         	throw new Exception("Non existing start time distribution type. Problem in setting up the simulation.");
         }
