@@ -117,3 +117,21 @@ width: 17px;
 	background-image: url(../icons/close_tabs.png);
 }
 
+.refresh_progress,  .refresh_progress_disabled{
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	background-position : 5px 5px;
+	background-repeat: no-repeat;
+}
+
+.refresh_progress {
+	background-image : url(../icons/refresh.png);
+}
+
+.refresh_progress_disabled {
+	background-image : url(../icons/refresh_disabled.png);
+	pointer-events: none;
+	cursor: default;
+}
+

@@ -108,7 +108,7 @@ Ext.define('C.view.DistributionHistogramChart', {
 					margin: 15
 				});
 				bigMe.axes.items[0].title = this.store.xAxisTitle;
-				bigMe.axes.items[1].title = 'Probability Density(%)';
+				bigMe.axes.items[1].title = 'Probability ';
 				bigMe.width = 680;
 				bigMe.height = 400;
 				var chartWindow = new Ext.Window({

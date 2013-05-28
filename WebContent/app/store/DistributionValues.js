@@ -40,10 +40,6 @@ Ext.define('C.store.DistributionValues', {
 					type: 'float'
 				},
 				{
-					convert: function(v, rec) {
-						//if (store.proxy.reader.rawData.data[0].distrType !== 'Histogram')
-						return v*100;
-					},
 					name: 'y',
 					type: 'float'
 				}
@@ -64,9 +60,19 @@ Ext.define('C.store.DistributionValues', {
 			store.loadData(records.slice(0, 5));
 			else if ( store.proxy.reader.rawData ) {
 				var raw_data = store.proxy.reader.rawData.data[0];
-				if (raw_data.distrType !== 'Histogram') {
+				if (raw_data.distrType == 'Normal Distribution' ) {
 					var params = raw_data.parameters[0];
 					store.loadData(records.slice(Math.max(0, params.mean - 8 * params.std), Math.min(1440, params.mean + 8 * params.std)+1));
+				}
+				else if (raw_data.distrType == 'Gaussian Mixture Models') {
+					var params = raw_data.parameters;
+					var low_i = [];
+					var high_i = [];
+					Ext.each(params, function(param){
+						low_i.push(Math.max(0, param.mean - 8 * param.std));
+						high_i.push( Math.min(1440, param.mean + 8 * param.std));
+					});
+					store.loadData(records.slice(Math.min.apply(Math, low_i), Math.max.apply(Math, high_i)));
 				}
 			}
 		}
