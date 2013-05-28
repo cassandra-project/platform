@@ -133,6 +133,7 @@ Build date: 2012-07-04 21:11:01 (65ff594cd80b9bad45df640c22cc0adb52c95a7b)
  * Ext.Neptune.*
  * Various overrides so the new Neptune theme is supported. This **must** be included for neptune to work.
  */
+
 Ext.define('Ext.Neptune.button.Button', {
 	override: 'Ext.button.Button',
 	
@@ -143,12 +144,12 @@ Ext.define('Ext.Neptune.button.Button', {
         this.addCls(scale);
     }
 });
-
+/*
 Ext.define('Ext.Neptune.form.field.Checkbox', {
 	override: 'Ext.form.field.Checkbox',
-	
-     checkedCls: Ext.baseCSSPrefix + 'form-cb-checked'
+	checkedCls: Ext.baseCSSPrefix + 'form-cb-checked'
 });
+*/
 
 Ext.define('Ext.Neptune.tab.Bar', {
     override: 'Ext.tab.Bar',
@@ -179,7 +180,7 @@ Ext.define('Ext.Neptune.container.ButtonGroup', {
     }
 });
 
-Ext.define('Ext.Neptune.layout.component.field.Trigger', {
+/*Ext.define('Ext.Neptune.layout.component.field.Trigger', {
 	override: 'Ext.layout.component.field.Trigger',
 	
     sizeBodyContents: function(width, height, ownerContext) {
@@ -193,7 +194,7 @@ Ext.define('Ext.Neptune.layout.component.field.Trigger', {
             ownerContext.inputContext.setProp('width', width, true);
         }
 	}
-});
+});*/
 
 Ext.define('Ext.Neptune.menu.Menu', {
 	override: 'Ext.menu.Menu',
@@ -372,7 +373,7 @@ Ext.define('Ext.Neptune.window.MessageBox', {
         me.callParent();
     }
 });
-
+/*
 Ext.define('Ext.Neptune.grid.column.Column', {
     override: 'Ext.grid.column.Column',
 
@@ -448,7 +449,7 @@ Ext.define('Ext.Neptune.grid.column.Column', {
             scope:      me
         });
     }
-});
+});*/
 
 Ext.define('Ext.Neptune.Shadow', {
     override: 'Ext.Shadow',

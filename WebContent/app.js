@@ -26,7 +26,6 @@ Ext.application({
 		'C.view.DistributionForm',
 		'C.view.DynamicGrid',
 		'C.view.InstallationForm',
-		'C.view.ApplianceForm',
 		'C.view.PersonForm',
 		'C.view.SimulationParamsForm',
 		'C.view.ActmodPropertiesForm',
@@ -47,7 +46,12 @@ Ext.application({
 		'C.view.ScenarioForm',
 		'C.view.ActivityForm',
 		'C.view.ResultsLineChart',
-		'C.view.ActivityModelForm'
+		'C.view.ActivityModelForm',
+		'C.view.ApplianceForm',
+		'Ext.grid.*',
+		'Ext.state.*',
+		'Ext.data.*',
+		'Ext.util.*'
 	],
 	models: [
 		'Project',
@@ -107,7 +111,6 @@ Ext.application({
 		'DistributionForm',
 		'DynamicGrid',
 		'InstallationForm',
-		'ApplianceForm',
 		'PersonForm',
 		'SimulationParamsForm',
 		'ActmodPropertiesForm',
@@ -128,7 +131,8 @@ Ext.application({
 		'ScenarioForm',
 		'ActivityForm',
 		'ResultsLineChart',
-		'ActivityModelForm'
+		'ActivityModelForm',
+		'ApplianceForm'
 	],
 	autoCreateViewport: true,
 	controllers: [
@@ -207,7 +211,16 @@ Ext.application({
 				break;
 				case 'Run':
 				cur_record = record.parentNode.c.store.getById(record.get('id'));
-				if (cur_record.get('percentage') == 100) C.app.newRunWindow(cur_record);
+				if (cur_record.get('percentage') == 100) 
+				C.app.newRunWindow(cur_record);
+				else if (cur_record.get('percentage') == -1) {
+					Ext.MessageBox.show({
+						title: 'Failed Run',
+						msg: 'Cannot open a failed run, please chose an other one',
+						buttons: Ext.MessageBox.OK,
+						icon: Ext.MessageBox.ERROR
+					});
+				}
 				return false;
 				case 'RunGraph':
 				myForm = C.app.getResultsGraphForm();
@@ -666,7 +679,7 @@ Ext.application({
 			style: 'font-size:10px;',
 			text:''
 		});
-		myChartLabel.html = '<b>Probability Density</b> (%) Vs <br /><b>'+ distrGraphStore.xAxisTitle +'</b>';
+		myChartLabel.html = '<b>Probability </b> Vs <br /><b>'+ distrGraphStore.xAxisTitle +'</b>';
 		var myClickLabel = new Ext.form.Label({
 			style: 'font-size:10px; font-style:italic;',
 			text: 'Click on the chart to enlarge'
