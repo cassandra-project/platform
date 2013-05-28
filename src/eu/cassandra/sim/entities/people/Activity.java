@@ -201,51 +201,57 @@ public class Activity extends Entity {
 		Vector<Double> probVector;
 		Vector<Appliance> vector;
 
-//		if (simulationWorld.getSimCalendar().isWeekend(tick)) {
-//			System.out.println("isWeekend");
-//			numOfTimesProb = nTimesGivenDay.get("nonworking");
-//			startProb = probStartTime.get("nonworking");
-//			durationProb = probDuration.get("nonworking");
-//			probVector = probApplianceUsed.get("nonworking");
-//			vector = appliances.get("nonworking");
-//		} else {
-//			System.out.println("isNotWeekend");
+		if (simulationWorld.getSimCalendar().isWeekend(tick)) {
+			System.out.println("isWeekend");
+			numOfTimesProb = nTimesGivenDay.get("nonworking");
+			startProb = probStartTime.get("nonworking");
+			durationProb = probDuration.get("nonworking");
+			probVector = probApplianceUsed.get("nonworking");
+			vector = appliances.get("nonworking");
+		} else {
 			numOfTimesProb = nTimesGivenDay.get("working");
 			startProb = probStartTime.get("working");
 			durationProb = probDuration.get("working");
 			probVector = probApplianceUsed.get("working");
 			vector = appliances.get("working");
-//		}
-
-		int numOfTimes = 0;
-		try {
-			numOfTimes = numOfTimesProb.getPrecomputedBin();
-		} catch (Exception e) {
-			logger.error(Utils.stackTraceToString(e.getStackTrace()));
-			e.printStackTrace();
 		}
-		/*
-		 * Decide the duration and start time for each activity activation
-		 */
-		while (numOfTimes > 0) {
-			int duration = Math.max(durationProb.getPrecomputedBin(), 1);
-			int startTime = startProb.getPrecomputedBin();
-			// Select appliances to be switched on
-			for (int j = 0; j < vector.size(); j++) {
-				//if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
-				if (RNG.nextDouble() < 1.0) {
-					Appliance a = vector.get(j);
-					int appDuration = duration;
-					int appStartTime = startTime;
-					String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
-					Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
-					queue.offer(eOn);
-					Event eOff =
-							new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
-					queue.offer(eOff);
-				}
+		
+		if(numOfTimesProb != null && 
+				startProb != null && 
+				durationProb != null && 
+				probVector != null &&
+				vector != null) {
+
+			int numOfTimes = 0;
+			try {
+				numOfTimes = numOfTimesProb.getPrecomputedBin();
+			} catch (Exception e) {
+				logger.error(Utils.stackTraceToString(e.getStackTrace()));
+				e.printStackTrace();
 			}
-			numOfTimes--;
+			/*
+			 * Decide the duration and start time for each activity activation
+			 */
+			while (numOfTimes > 0) {
+				int duration = Math.max(durationProb.getPrecomputedBin(), 1);
+				int startTime = startProb.getPrecomputedBin();
+				// Select appliances to be switched on
+				for (int j = 0; j < vector.size(); j++) {
+					//if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
+					if (RNG.nextDouble() < 1.0) {
+						Appliance a = vector.get(j);
+						int appDuration = duration;
+						int appStartTime = startTime;
+						String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
+						Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
+						queue.offer(eOn);
+						Event eOff =
+								new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
+						queue.offer(eOff);
+					}
+				}
+				numOfTimes--;
+			}
 		}
 	}
 

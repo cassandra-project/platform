@@ -588,7 +588,7 @@ public class Simulation implements Runnable {
 			Histogram h = new Histogram(v);
    			return h;
         default:
-        	throw new Exception("Non existing start time distribution type. Problem in setting up the simulation.");
+        	throw new Exception("Non existing distribution type. Problem in setting up the simulation.");
         }
   	}
 
