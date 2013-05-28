@@ -37,10 +37,12 @@ Ext.define('C.store.DistributionValues', {
 			fields: [
 				{
 					name: 'x',
+					persist: false,
 					type: 'float'
 				},
 				{
 					name: 'y',
+					persist: false,
 					type: 'float'
 				}
 			],
@@ -60,6 +62,11 @@ Ext.define('C.store.DistributionValues', {
 			store.loadData(records.slice(0, 5));
 			else if ( store.proxy.reader.rawData ) {
 				var raw_data = store.proxy.reader.rawData.data[0];
+				if (raw_data.distrType !== 'Histogram' ) {
+					Ext.each(records, function(record){
+						record.set('y', 100*record.get('y'));
+					});
+				}
 				if (raw_data.distrType == 'Normal Distribution' ) {
 					var params = raw_data.parameters[0];
 					store.loadData(records.slice(Math.max(0, params.mean - 8 * params.std), Math.min(1440, params.mean + 8 * params.std)+1));

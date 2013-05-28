@@ -17,6 +17,7 @@ Ext.define('C.view.DistributionNormalChart', {
 	extend: 'Ext.chart.Chart',
 
 	height: 230,
+	html: 'x 10  <span class="sup">-2</span>',
 	margin: '5 0 10 -10',
 	style: 'background:#fff',
 	width: 230,
@@ -53,7 +54,6 @@ Ext.define('C.view.DistributionNormalChart', {
 						}
 					},
 					position: 'left',
-					decimals: 5,
 					minimum: 0
 				}
 			],
@@ -69,7 +69,7 @@ Ext.define('C.view.DistributionNormalChart', {
 						width: 160,
 						height: 60,
 						renderer: function(storeItem, item) {
-							this.setTitle( 'Probability Density(%) : ' + storeItem.get('y')+'%'+ '<br />' +  'time : ' 
+							this.setTitle( 'Probability : ' + storeItem.get('y') +'x 10<span class="sup">-2</span>' + '<br />' +  'time : ' 
 										  + storeItem.get('x') + ' min');
 						}
 					},
