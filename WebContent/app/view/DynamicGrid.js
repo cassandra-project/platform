@@ -49,11 +49,6 @@ Ext.define('C.view.DynamicGrid', {
 					text: '_id'
 				}
 			],
-			plugins: [
-				Ext.create('Ext.grid.plugin.RowEditing', {
-
-				})
-			],
 			selModel: Ext.create('Ext.selection.RowModel', {
 				mode: 'MULTI'
 			}),
@@ -136,10 +131,21 @@ Ext.define('C.view.DynamicGrid', {
 			tools: [
 				{
 					xtype: 'tool',
-					type: 'unpin',
+					tooltip: 'Refresh view',
+					type: 'refresh',
 					listeners: {
 						click: {
 							fn: me.onToolClick,
+							scope: me
+						}
+					}
+				},
+				{
+					xtype: 'tool',
+					type: 'unpin',
+					listeners: {
+						click: {
+							fn: me.onToolClick1,
 							scope: me
 						}
 					}
@@ -508,6 +514,30 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onToolClick: function(tool, e, eOpts) {
+		var node = this.store.navigationNode;
+		var parent_id = (node.get('nodeType') == 'ProjectsCollection')?'':node.parentNode.get('id');
+		var params = {};
+		switch(node.get('nodeType')){
+			case 'ProjectsCollection': params = {};break;
+			case 'ScenariosCollection': params = {'prj_id' : parent_id};break;
+			case 'InstallationsCollection': params = {'scn_id' : parent_id}; break;
+			case 'PricingSchemesCollection': params = {'scn_id' : parent_id}; break;
+			case 'DemographicsCollection': params = {'scn_id' : parent_id}; break;
+			case 'SimulationParamsCollection': params = {'scn_id' : parent_id}; break;
+			case 'PersonsCollection': params = {'inst_id' : parent_id}; break;
+			case 'AppliancesCollection': params = {'inst_id': parent_id}; break;
+			case 'ActivitiesCollection': params = {'pers_id': parent_id}; break;
+			case 'ActivityModelsCollection': params = {'act_id' : parent_id}; break;
+			case 'RunsCollection': params = {'prj_id' : parent_id}; break;
+			default: return false;
+		}
+		while (node.hasChildNodes()) {
+			node.removeChild(node.childNodes[0]);
+		}
+		this.store.load({params: params});
+	},
+
+	onToolClick1: function(tool, e, eOpts) {
 
 		var gridWindow = new Ext.Window({
 			title : this.header.title,
