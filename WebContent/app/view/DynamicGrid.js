@@ -131,21 +131,21 @@ Ext.define('C.view.DynamicGrid', {
 			tools: [
 				{
 					xtype: 'tool',
-					tooltip: 'Refresh view',
-					type: 'refresh',
+					type: 'unpin',
 					listeners: {
 						click: {
-							fn: me.onToolClick,
+							fn: me.onToolClick1,
 							scope: me
 						}
 					}
 				},
 				{
 					xtype: 'tool',
-					type: 'unpin',
+					tooltip: 'Refresh view',
+					type: 'refresh',
 					listeners: {
 						click: {
-							fn: me.onToolClick1,
+							fn: me.onToolClick,
 							scope: me
 						}
 					}
@@ -318,11 +318,23 @@ Ext.define('C.view.DynamicGrid', {
 	onButtonClick111: function(button, e, eOpts) {
 		console.info('cOMPARE clicked.', this, button, e, eOpts);
 
+		var exception = false;
 		var selections = this.getView().getSelectionModel().getSelection();
 		if (selections.length < 2) {
 			Ext.MessageBox.show({title:'Error', msg: 'You need to choose 2 or more runs to compare', icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
 			return false;
 		}
+
+
+		Ext.each(selections, function(selection, index) {
+			if (  selection.get('percentage') !== 100  ) {
+				Ext.MessageBox.show({title:'Error', msg: 'Please choose 2 or more successfully completed runs', icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
+				exception = true;
+				return false;
+			}
+		});
+		if (exception)
+		return false;
 
 		var chartWindow = new Ext.Window({
 			title  : 'Compare runs and KPIs',
@@ -513,30 +525,6 @@ Ext.define('C.view.DynamicGrid', {
 		C.app.createForm(record.node);
 	},
 
-	onToolClick: function(tool, e, eOpts) {
-		var node = this.store.navigationNode;
-		var parent_id = (node.get('nodeType') == 'ProjectsCollection')?'':node.parentNode.get('id');
-		var params = {};
-		switch(node.get('nodeType')){
-			case 'ProjectsCollection': params = {};break;
-			case 'ScenariosCollection': params = {'prj_id' : parent_id};break;
-			case 'InstallationsCollection': params = {'scn_id' : parent_id}; break;
-			case 'PricingSchemesCollection': params = {'scn_id' : parent_id}; break;
-			case 'DemographicsCollection': params = {'scn_id' : parent_id}; break;
-			case 'SimulationParamsCollection': params = {'scn_id' : parent_id}; break;
-			case 'PersonsCollection': params = {'inst_id' : parent_id}; break;
-			case 'AppliancesCollection': params = {'inst_id': parent_id}; break;
-			case 'ActivitiesCollection': params = {'pers_id': parent_id}; break;
-			case 'ActivityModelsCollection': params = {'act_id' : parent_id}; break;
-			case 'RunsCollection': params = {'prj_id' : parent_id}; break;
-			default: return false;
-		}
-		while (node.hasChildNodes()) {
-			node.removeChild(node.childNodes[0]);
-		}
-		this.store.load({params: params});
-	},
-
 	onToolClick1: function(tool, e, eOpts) {
 
 		var gridWindow = new Ext.Window({
@@ -584,10 +572,36 @@ Ext.define('C.view.DynamicGrid', {
 		*/
 	},
 
+	onToolClick: function(tool, e, eOpts) {
+		var node = this.store.navigationNode;
+		var parent_id = (node.get('nodeType') == 'ProjectsCollection')?'':node.parentNode.get('id');
+		var params = {};
+		switch(node.get('nodeType')){
+			case 'ProjectsCollection': params = {};break;
+			case 'ScenariosCollection': params = {'prj_id' : parent_id};break;
+			case 'InstallationsCollection': params = {'scn_id' : parent_id}; break;
+			case 'PricingSchemesCollection': params = {'scn_id' : parent_id}; break;
+			case 'DemographicsCollection': params = {'scn_id' : parent_id}; break;
+			case 'SimulationParamsCollection': params = {'scn_id' : parent_id}; break;
+			case 'PersonsCollection': params = {'inst_id' : parent_id}; break;
+			case 'AppliancesCollection': params = {'inst_id': parent_id}; break;
+			case 'ActivitiesCollection': params = {'pers_id': parent_id}; break;
+			case 'ActivityModelsCollection': params = {'act_id' : parent_id}; break;
+			case 'RunsCollection': params = {'prj_id' : parent_id}; break;
+			default: return false;
+		}
+		while (node.hasChildNodes()) {
+			node.removeChild(node.childNodes[0]);
+		}
+		this.store.load({params: params});
+	},
+
 	onGridpanelBeforeRender: function(component, eOpts) {
-		console.info(component);
+		//console.info(component);
 		if (!component.tab) {
 			component.setHeight(250);
+			component.maxWidth = 1000;
+			//component.maxHeight = 250;
 			component.margin = '0 0 10px 0';
 		}
 		if (component.store.model.getName() == "C.model.Kpi")

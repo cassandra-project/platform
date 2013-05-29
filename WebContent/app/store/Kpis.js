@@ -32,6 +32,8 @@ Ext.define('C.store.Kpis', {
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
+				limitParam: '',
+				startParam: '',
 				url: '/cassandra/api/kpis',
 				reader: {
 					type: 'json',

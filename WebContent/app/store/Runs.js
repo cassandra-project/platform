@@ -32,6 +32,8 @@ Ext.define('C.store.Runs', {
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
+				limitParam: '',
+				startParam: '',
 				url: '/cassandra/api/runs',
 				reader: {
 					type: 'json',
