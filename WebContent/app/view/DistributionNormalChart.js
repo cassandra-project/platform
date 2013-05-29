@@ -16,14 +16,15 @@
 Ext.define('C.view.DistributionNormalChart', {
 	extend: 'Ext.chart.Chart',
 
-	height: 230,
-	html: 'x 10  <span class="sup">-2</span>',
+	height: 260,
+	html: 'x 10<span class="sup">-2</span>',
 	margin: '5 0 10 -10',
+	padding: '0 0 20 0',
 	style: 'background:#fff',
-	width: 230,
+	width: 260,
 	shadow: false,
 	animate: true,
-	insetPadding: 5,
+	insetPadding: 15,
 	store: 'DistributionValues',
 	theme: 'Sky',
 
@@ -37,6 +38,7 @@ Ext.define('C.view.DistributionNormalChart', {
 					fields: [
 						'x'
 					],
+					decimals: 5,
 					minimum: 0,
 					position: 'bottom'
 				},
@@ -115,7 +117,8 @@ Ext.define('C.view.DistributionNormalChart', {
 					store: this.store,
 					width: 680,
 					height: 400,
-					margin: 15
+					margin: 15,
+					insetPadding: 20
 				});
 				bigMe.axes.items[0].title = this.store.xAxisTitle;
 				bigMe.axes.items[1].title = 'Probability ';

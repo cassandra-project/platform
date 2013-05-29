@@ -16,13 +16,13 @@
 Ext.define('C.view.DistributionHistogramChart', {
 	extend: 'Ext.chart.Chart',
 
-	height: 230,
+	height: 260,
 	margin: '5 0 10 -10',
 	style: 'background:#fff',
-	width: 230,
+	width: 260,
 	shadow: false,
 	animate: true,
-	insetPadding: 5,
+	insetPadding: 15,
 	store: 'DistributionValues',
 	theme: 'Sky',
 
