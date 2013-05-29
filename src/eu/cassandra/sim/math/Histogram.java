@@ -38,7 +38,7 @@ public class Histogram implements ProbabilityDistribution{
 	/**
 	  * Constructor. Takes a set of values and put them in the histogram.
 	  */
-	Histogram(double[] values){
+	public Histogram(double[] values){
 		
 		precomputeFrom = 0;
 		precomputeTo = values.length;

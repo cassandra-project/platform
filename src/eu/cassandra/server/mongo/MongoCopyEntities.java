@@ -16,20 +16,26 @@
 */
 package eu.cassandra.server.mongo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.ws.rs.core.HttpHeaders;
 
 import org.bson.types.ObjectId;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.math.Histogram;
 import eu.cassandra.sim.utilities.Utils;
 
 public class MongoCopyEntities {
@@ -66,7 +72,7 @@ public class MongoCopyEntities {
 	 * @param toScnID
 	 * @return
 	 */
-	public String copyInstallationToScenario(String instID, String toScnID ,DBObject answer) {
+	public String copyInstallationToScenario(String instID, String toScnID ,DBObject answer, boolean maintainApps) {
 		DBObject fromObj = DBConn.getConn().getCollection(MongoInstallations.COL_INSTALLATIONS).findOne(new BasicDBObject("_id", new ObjectId(instID)));
 		String oldInstallationID = ((ObjectId)fromObj.get("_id")).toString();
 		fromObj.put(MongoInstallations.REF_SCENARIO, toScnID);
@@ -76,21 +82,25 @@ public class MongoCopyEntities {
 		DBObject res = MongoInstallations.createInstallationObj(fromObj.toString());
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
 		addInfoForCascadedCopy(res,answer,newID);
-		//Copy Persons of the Installation
-		DBObject q = new BasicDBObject(MongoPersons.REF_INSTALLATION, oldInstallationID);
-		DBCursor cursorDoc = DBConn.getConn().getCollection(MongoPersons.COL_PERSONS).find(q);
-		while (cursorDoc.hasNext()) {
-			DBObject obj = cursorDoc.next();
-			String childID = obj.get("_id").toString();
-			copyPersonToInstallation(childID, newID,res);
-		}
 		//Copy Appliances of the Installation
-		q = new BasicDBObject(MongoAppliances.REF_INSTALLATION, oldInstallationID);
-		cursorDoc = DBConn.getConn().getCollection(MongoAppliances.COL_APPLIANCES).find(q);
+		DBObject q = new BasicDBObject(MongoAppliances.REF_INSTALLATION, oldInstallationID);
+		DBCursor cursorDoc = DBConn.getConn().getCollection(MongoAppliances.COL_APPLIANCES).find(q);
+		Map<String,String> addedAppliances = new HashMap<String,String>();
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();
 			String childID = obj.get("_id").toString();
-			copyApplianceToInstallation(childID, newID,res);
+			String ret = copyApplianceToInstallation(childID, newID,res);
+			DBObject newApp = (DBObject) JSON.parse(ret);
+			String newAppID = ((DBObject)newApp.get("data")).get("_id").toString(); 
+			addedAppliances.put(childID, newAppID);
+		}
+		//Copy Persons of the Installation
+		q = new BasicDBObject(MongoPersons.REF_INSTALLATION, oldInstallationID);
+		cursorDoc = DBConn.getConn().getCollection(MongoPersons.COL_PERSONS).find(q);
+		while (cursorDoc.hasNext()) {
+			DBObject obj = cursorDoc.next();
+			String childID = obj.get("_id").toString();
+			copyPersonToInstallation(childID, newID, res, maintainApps, addedAppliances);
 		}
 		return PrettyJSONPrinter.prettyPrint(res);
 	}
@@ -101,7 +111,7 @@ public class MongoCopyEntities {
 	 * @param toInstID
 	 * @return
 	 */
-	public String copyPersonToInstallation(String persID, String toInstID, DBObject answer) {
+	public String copyPersonToInstallation(String persID, String toInstID, DBObject answer, boolean maintainApps, Map<String,String> newApps) {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoPersons.COL_PERSONS).findOne(new BasicDBObject("_id", new ObjectId(persID)));
 		fromObj.put(MongoPersons.REF_INSTALLATION, toInstID);
@@ -118,7 +128,7 @@ public class MongoCopyEntities {
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();
 			String childID = obj.get("_id").toString();
-			copyActivityToPerson(childID, newID,res);
+			copyActivityToPerson(childID, newID, res, maintainApps, newApps);
 		}
 		return PrettyJSONPrinter.prettyPrint(res.toString());
 	}
@@ -157,7 +167,7 @@ public class MongoCopyEntities {
 	 * @param toPersID
 	 * @return
 	 */
-	public String copyActivityToPerson(String actID, String toPersID, DBObject answer) {
+	public String copyActivityToPerson(String actID, String toPersID, DBObject answer, boolean maintainApps, Map<String,String> newApps) {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoActivities.COL_ACTIVITIES).findOne(new BasicDBObject("_id", new ObjectId(actID)));
 		fromObj.put(MongoActivities.REF_PERSON, toPersID);
@@ -177,7 +187,7 @@ public class MongoCopyEntities {
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();
 			String childID = obj.get("_id").toString();
-			copyActivityModelToActivity(childID, newID,res);
+			copyActivityModelToActivity(childID, newID,res, maintainApps, newApps);
 		}
 
 		return PrettyJSONPrinter.prettyPrint(res);
@@ -189,7 +199,7 @@ public class MongoCopyEntities {
 	 * @param toActID
 	 * @return
 	 */
-	public String copyActivityModelToActivity(String actmodID, String toActID, DBObject answer) {
+	public String copyActivityModelToActivity(String actmodID, String toActID, DBObject answer, boolean maintainApps, Map<String,String> newApps) {
 		DBObject fromObj = DBConn.getConn().getCollection(
 				MongoActivityModels.COL_ACTMODELS).findOne(new BasicDBObject("_id", new ObjectId(actmodID)));
 		fromObj.put(MongoActivityModels.REF_ACTIVITY, toActID);
@@ -197,7 +207,11 @@ public class MongoCopyEntities {
 		if(answer == null) {
 			copyOf(fromObj);
 		}
-		stripAppliances(fromObj);
+		if(!maintainApps) {
+			stripAppliances(fromObj);
+		} else {
+			alterAppliances(fromObj, newApps);
+		}
 		DBObject res =  MongoActivityModels.createActivityModelObj(fromObj.toString());
 		String newID = ((DBObject)res.get("data")).get("_id").toString();
 		addInfoForCascadedCopy(res, answer, newID);
@@ -365,7 +379,7 @@ public class MongoCopyEntities {
 		while (cursorDoc.hasNext()) {
 			DBObject obj = cursorDoc.next();
 			String childID = obj.get("_id").toString();
-			copyInstallationToScenario(childID, newID, res);
+			copyInstallationToScenario(childID, newID, res, true);
 		}
 
 		//		//Copy Demographics of the Scenario
@@ -400,5 +414,21 @@ public class MongoCopyEntities {
 	private static void stripAppliances(DBObject obj) {
 		if(obj.containsField("containsAppliances"))
 			obj.removeField("containsAppliances");
+	}
+	
+	private static void alterAppliances(DBObject obj, Map<String, String> mapping) {
+		if(obj.containsField("containsAppliances")) {
+			BasicDBList alist = (BasicDBList)obj.get("containsAppliances");
+			BasicDBList blist = new BasicDBList();
+			for(int i = 0; i < alist.size(); i++) {
+				String key = alist.get(i).toString();
+				if(mapping.containsKey(key)) {
+					String id = mapping.get(key);
+					blist.add(id);
+				}
+			}
+			obj.put("containsAppliances", blist);
+			PrettyJSONPrinter.prettyPrint(obj);
+		}
 	}
 }
