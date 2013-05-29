@@ -17,14 +17,14 @@ Ext.define('C.view.DistributionNormalChart', {
 	extend: 'Ext.chart.Chart',
 
 	height: 260,
-	html: 'x 10<span class="sup">-2</span>',
+	html: '  x 10<span class="sup">-2</span>',
 	margin: '5 0 10 -10',
 	padding: '0 0 20 0',
 	style: 'background:#fff',
 	width: 260,
 	shadow: false,
 	animate: true,
-	insetPadding: 15,
+	insetPadding: 20,
 	store: 'DistributionValues',
 	theme: 'Sky',
 
@@ -38,8 +38,6 @@ Ext.define('C.view.DistributionNormalChart', {
 					fields: [
 						'x'
 					],
-					decimals: 5,
-					minimum: 0,
 					position: 'bottom'
 				},
 				{
@@ -56,6 +54,7 @@ Ext.define('C.view.DistributionNormalChart', {
 						}
 					},
 					position: 'left',
+					decimals: 5,
 					minimum: 0
 				}
 			],
