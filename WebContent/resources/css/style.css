@@ -135,3 +135,9 @@ width: 17px;
 	cursor: default;
 }
 
+.sup {
+  position: relative;
+  bottom: 1ex; 
+  font-size: 80%;
+}
+

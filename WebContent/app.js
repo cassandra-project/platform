@@ -679,6 +679,7 @@ Ext.application({
 			style: 'font-size:10px;',
 			text:''
 		});
+
 		myChartLabel.html = '<b>Probability </b> Vs <br /><b>'+ distrGraphStore.xAxisTitle +'</b>';
 		var myClickLabel = new Ext.form.Label({
 			style: 'font-size:10px; font-style:italic;',
