@@ -32,6 +32,8 @@ Ext.define('C.store.SimulationParams', {
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
+				limitParam: '',
+				startParam: '',
 				url: '/cassandra/api/smp',
 				reader: {
 					type: 'json',

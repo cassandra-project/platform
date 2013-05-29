@@ -32,6 +32,8 @@ Ext.define('C.store.Distributions', {
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
+				limitParam: '',
+				startParam: '',
 				url: '/cassandra/api/distr',
 				reader: {
 					type: 'json',

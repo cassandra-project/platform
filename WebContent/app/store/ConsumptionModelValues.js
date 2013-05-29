@@ -27,6 +27,8 @@ Ext.define('C.store.ConsumptionModelValues', {
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
+				limitParam: '',
+				startParam: '',
 				url: '/cassandra/api/consmod',
 				reader: {
 					type: 'json',
