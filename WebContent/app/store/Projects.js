@@ -32,6 +32,8 @@ Ext.define('C.store.Projects', {
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
+				limitParam: '',
+				startParam: '',
 				url: '/cassandra/api/prj',
 				reader: {
 					type: 'json',

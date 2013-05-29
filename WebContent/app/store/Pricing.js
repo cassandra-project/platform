@@ -32,6 +32,8 @@ Ext.define('C.store.Pricing', {
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
+				limitParam: '',
+				startParam: '',
 				url: '/cassandra/api/prc',
 				reader: {
 					type: 'json',
