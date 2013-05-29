@@ -16,7 +16,7 @@
 Ext.define('C.view.DistributionHistogramChart', {
 	extend: 'Ext.chart.Chart',
 
-	height: 230,
+	height: 250,
 	margin: '5 0 10 -10',
 	style: 'background:#fff',
 	width: 230,

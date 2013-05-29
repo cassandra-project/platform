@@ -16,7 +16,7 @@
 Ext.define('C.view.DistributionNormalChart', {
 	extend: 'Ext.chart.Chart',
 
-	height: 230,
+	height: 250,
 	html: 'x 10  <span class="sup">-2</span>',
 	margin: '5 0 10 -10',
 	style: 'background:#fff',
