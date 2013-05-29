@@ -22,7 +22,7 @@ Ext.define('C.view.DistributionHistogramChart', {
 	width: 260,
 	shadow: false,
 	animate: true,
-	insetPadding: 15,
+	insetPadding: 17,
 	store: 'DistributionValues',
 	theme: 'Sky',
 
@@ -36,7 +36,6 @@ Ext.define('C.view.DistributionHistogramChart', {
 					fields: [
 						'x'
 					],
-					minimum: 0,
 					position: 'bottom'
 				},
 				{
@@ -69,7 +68,7 @@ Ext.define('C.view.DistributionHistogramChart', {
 						width: 160,
 						height: 60,
 						renderer: function(storeItem, item) {
-							this.setTitle( 'Probability Density(%) : ' + storeItem.get('y')+'%'+ '<br />' +  'time : ' 
+							this.setTitle( 'Probability : ' + storeItem.get('y')+ '<br />' +  'time : ' 
 										  + storeItem.get('x') + ' min') ;
 						}
 					},

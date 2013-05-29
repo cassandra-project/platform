@@ -49,6 +49,7 @@ Ext.define('C.view.MyViewport', {
 				{
 					xtype: 'panel',
 					region: 'west',
+					split: true,
 					id: 'west_panel',
 					minWidth: 350,
 					width: 150,
@@ -61,6 +62,7 @@ Ext.define('C.view.MyViewport', {
 				{
 					xtype: 'panel',
 					region: 'center',
+					split: false,
 					id: 'center_panel',
 					title: 'Main Panel',
 					tools: [
@@ -77,9 +79,11 @@ Ext.define('C.view.MyViewport', {
 				{
 					xtype: 'panel',
 					region: 'east',
+					split: true,
 					id: 'east_panel',
 					minWidth: 200,
 					width: 150,
+					resizable: false,
 					layout: {
 						align: 'stretch',
 						type: 'vbox'
