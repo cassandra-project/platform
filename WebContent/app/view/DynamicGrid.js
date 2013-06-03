@@ -110,6 +110,21 @@ Ext.define('C.view.DynamicGrid', {
 									scope: me
 								}
 							}
+						},
+						{
+							xtype: 'button',
+							hidden: true,
+							text: 'Upload file',
+							listeners: {
+								click: {
+									fn: me.onButtonClick1111,
+									scope: me
+								},
+								beforerender: {
+									fn: me.onButtonBeforeRender21,
+									scope: me
+								}
+							}
 						}
 					]
 				}
@@ -516,6 +531,20 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onButtonBeforeRender2: function(component, eOpts) {
+		if (this.store.model.getName() == "C.model.Run")
+		component.show();
+	},
+
+	onButtonClick1111: function(button, e, eOpts) {
+
+		var formWindow = new Ext.Window({
+			items  : new C.view.FileUploadForm(),
+			title  : 'Upload file'
+		}); 
+		formWindow.show();
+	},
+
+	onButtonBeforeRender21: function(component, eOpts) {
 		if (this.store.model.getName() == "C.model.Run")
 		component.show();
 	},

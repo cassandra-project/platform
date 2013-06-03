@@ -100,6 +100,7 @@ Ext.define('C.view.SimulationParamsForm', {
 								{
 									xtype: 'textfield',
 									hidden: true,
+									itemId: 'prc_id',
 									width: 246,
 									fieldLabel: 'Pricing Scheme',
 									name: 'prc_id'
@@ -173,6 +174,18 @@ Ext.define('C.view.SimulationParamsForm', {
 
 	onTextfieldRender11: function(component, eOpts) {
 		var myForm = this.getForm();
+		if (myForm.findField("prc_id").getValue()) {
+			var prc_id = myForm.findField("prc_id").getValue();
+			Ext.Ajax.request({
+				url: '/cassandra/api/prc/' + prc_id,
+				method: 'GET',
+				scope: this,
+				success: function(response, eOpts) {	
+					response = JSON.parse(response.responseText);
+					myForm.setValues({prc_name: response.data[0].name});
+				}
+			});
+		}
 		new Ext.dd.DropTarget(this.body.dom.getElementsByClassName('dropTarget')[0],{
 			ddGroup:'ddGlobal',
 			notifyDrop: function(dds,e,data) {	
