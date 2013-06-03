@@ -71,11 +71,11 @@ Ext.define('C.view.ConsModChart', {
 						}
 					},
 					title: '\'Active Power (W)\'',
+					axis: 'left',
 					xField: 'x',
 					yField: [
 						'p'
 					],
-					fill: true,
 					selectionTolerance: 6,
 					showMarkers: false,
 					smooth: 3
@@ -95,11 +95,11 @@ Ext.define('C.view.ConsModChart', {
 						}
 					},
 					title: '\'Reactive Power (VA)\'',
+					axis: 'left',
 					xField: 'x',
 					yField: [
 						'q'
 					],
-					fill: true,
 					selectionTolerance: 6,
 					showMarkers: false,
 					smooth: 3
@@ -117,19 +117,19 @@ Ext.define('C.view.ConsModChart', {
 	},
 
 	onChartAfterRender: function(component, eOpts) {
-		component.store.on('load',function(store, records){
-			var y_axis = component.axes.getRange()[1];
-			var y_axis_max = (store.max('p') > store.max('q')) ?  store.max('p') :  store.max('q');
-			y_axis.maximum = y_axis_max + y_axis_max/10;
+		/*component.store.on('load',function(store, records){
+		var y_axis = component.axes.getRange()[1];
+		var y_axis_max = (store.max('p') > store.max('q')) ?  store.max('p') :  store.max('q');
+		y_axis.maximum = y_axis_max + y_axis_max/10;
 
-			var y_axis_min = (store.min('p') < store.min('q')) ?  store.min('p') :  store.min;
-			y_axis.minimum = (y_axis_min < 0) ? y_axis_min - y_axis_min/10 : 0;
+		var y_axis_min = (store.min('p') < store.min('q')) ?  store.min('p') :  store.min;
+		y_axis.minimum = (y_axis_min < 0) ? y_axis_min - y_axis_min/10 : 0;
 
-			try {
-				component.redraw();
-			}
-			catch(e) {}
-		});
+		try {
+		component.redraw();
+		}
+		catch(e) {}
+		});*/
 	}
 
 });

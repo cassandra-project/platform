@@ -48,6 +48,7 @@ Ext.application({
 		'C.view.ResultsLineChart',
 		'C.view.ActivityModelForm',
 		'C.view.ApplianceForm',
+		'C.view.FileUploadForm',
 		'Ext.grid.*',
 		'Ext.state.*',
 		'Ext.data.*',
@@ -132,7 +133,8 @@ Ext.application({
 		'ActivityForm',
 		'ResultsLineChart',
 		'ActivityModelForm',
-		'ApplianceForm'
+		'ApplianceForm',
+		'FileUploadForm'
 	],
 	autoCreateViewport: true,
 	controllers: [
