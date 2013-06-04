@@ -45,6 +45,10 @@ Ext.define('C.model.Run', {
 			persist: false
 		},
 		{
+			name: 'state',
+			persist: false
+		},
+		{
 			name: 'smp_id'
 		}
 	]
