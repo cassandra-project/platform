@@ -218,7 +218,7 @@ Ext.application({
 				else if (cur_record.get('percentage') == -1) {
 					Ext.MessageBox.show({
 						title: 'Failed Run',
-						msg: 'Cannot open a failed run, please chose another one',
+						msg: cur_record.get('state')? cur_record.get('state'):'Cannot open a failed run, please chose another one',
 						buttons: Ext.MessageBox.OK,
 						icon: Ext.MessageBox.ERROR
 					});
