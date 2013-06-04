@@ -71,16 +71,16 @@ Ext.define('C.view.ActmodPropertiesForm', {
 									name: 'description'
 								},
 								{
-									xtype: 'combobox',
+									xtype: 'textfield',
 									width: 246,
-									fieldLabel: 'Day type  <span style=color:red>*</span>',
+									fieldLabel: 'Day type',
 									name: 'day_type',
-									allowBlank: false,
-									displayField: 'day_type',
-									forceSelection: true,
-									queryMode: 'local',
-									store: 'DayTypeStore',
-									valueField: 'day_type'
+									listeners: {
+										beforerender: {
+											fn: me.onTextfieldBeforeRender,
+											scope: me
+										}
+									}
 								},
 								{
 									xtype: 'checkboxfield',
@@ -138,6 +138,10 @@ Ext.define('C.view.ActmodPropertiesForm', {
 		if(this.getBubbleParent())
 		this.getBubbleParent().getBubbleParent().setTitle(newValue);
 		this.form.getRecord().node.set({'name':newValue});
+	},
+
+	onTextfieldBeforeRender: function(component, eOpts) {
+		component.helpText = 'The following would be valid input examples: </br>- "any" </br>- "weekdays" </br>- "weekends" </br>- specific days: i.e. "[Mon, Tue, Thu]" </br>- specific dates: i.e. "{31/03, 04/05}"';
 	},
 
 	onButtonClick2: function(button, e, eOpts) {

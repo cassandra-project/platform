@@ -78,7 +78,12 @@ Ext.define('C.view.ConsModChart', {
 					],
 					selectionTolerance: 6,
 					showMarkers: false,
-					smooth: 3
+					smooth: 3,
+					style: {
+						fill: 'rgb(224, 20, 20)',
+						stroke: 'rgb(224, 20, 20)',
+						'stroke-width': 3
+					}
 				},
 				{
 					type: 'line',
@@ -102,7 +107,12 @@ Ext.define('C.view.ConsModChart', {
 					],
 					selectionTolerance: 6,
 					showMarkers: false,
-					smooth: 3
+					smooth: 3,
+					style: {
+						fill: 'rgb(22, 54, 221)',
+						stroke: 'rgb(22, 54, 221)',
+						'stroke-width': 3
+					}
 				}
 			],
 			listeners: {

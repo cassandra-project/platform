@@ -35,11 +35,7 @@
         "day_type": {
             "type": "string",
             "description": "The day type that this activity model concerns",
-            "optional": true,
-            "enum": [
-                "nonworking",
-                "working"
-            ]
+            "optional": true
         },
         "shiftable": {
             "type": "boolean",
