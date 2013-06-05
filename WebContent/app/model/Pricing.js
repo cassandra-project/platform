@@ -72,10 +72,21 @@ Ext.define('C.model.Pricing', {
 			type: 'float'
 		},
 		{
+			name: 'onekw24',
+			persist: false,
+			type: 'float'
+		},
+		{
 			defaultValue: [
 				
 			],
 			name: 'levels'
+		},
+		{
+			defaultValue: [
+				
+			],
+			name: 'timezones'
 		},
 		{
 			defaultValue: [

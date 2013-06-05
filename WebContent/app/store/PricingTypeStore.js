@@ -38,6 +38,10 @@ Ext.define('C.store.PricingTypeStore', {
 				{
 					pricingTypeName: 'All Inclusive Pricing',
 					pricingTypeTag: 'AllInclusivePricing'
+				},
+				{
+					pricingTypeName: 'TOU Pricing',
+					pricingTypeTag: 'TOUPricing'
 				}
 			],
 			fields: [

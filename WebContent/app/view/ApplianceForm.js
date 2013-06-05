@@ -213,11 +213,13 @@ Ext.define('C.view.ApplianceForm', {
 	},
 
 	onTextareafieldBeforeRender: function(component, eOpts) {
-		component.helpText = 'A valid input example would be: </br>{"n":0,"params":[{"n":1,"values":[{"p":60,"d":200,"s":0}]}]}';
+		component.helpText = 'P-Expression: the expression that provides the active power curve</br>p-Expression has the following form:</br>{m {n1 [p1,d1,s1] [p2,d2,s2]}, {n2 [p3,d3,s3]}, ...}</br>respectively, with:</br> - p: active power</br> - d: duration in minutes </br> - s: slope';
+		component.url = 'https://github.com/cassandra-project/platform/wiki/Appliance-and-consumption-model-form';
 	},
 
 	onTextareafieldBeforeRender1: function(component, eOpts) {
-		component.helpText = 'A valid input example would be: </br>{"n":0,"params":[{"n":1,"values":[{"q":60,"d":200,"s":0}]}]}';
+		component.helpText = 'Q-Expression: the expression that provides the re-active power curve</br>q-Expression has the following form:</br>{m {n1 [q1,d1,s1] [q2,d2,s2]}, {n2 [q3,d3,s3]}, ...}</br>respectively, with:</br> - q: reactive power</br> - d: duration in minutes </br> - s: slope';
+		component.url = 'https://github.com/cassandra-project/platform/wiki/Appliance-and-consumption-model-form';
 	},
 
 	onButtonClick2: function(button, e, eOpts) {
