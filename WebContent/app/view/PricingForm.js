@@ -70,21 +70,21 @@ Ext.define('C.view.PricingForm', {
 						{
 							xtype: 'numberfield',
 							width: 246,
-							fieldLabel: 'Billing Cycle',
+							fieldLabel: 'Billing </br>Cycle',
 							name: 'billingCycle',
 							allowDecimals: false
 						},
 						{
 							xtype: 'numberfield',
 							width: 246,
-							fieldLabel: 'Fixed Charge',
+							fieldLabel: 'Fixed </br>Charge',
 							name: 'fixedCharge'
 						},
 						{
 							xtype: 'numberfield',
 							itemId: 'offpeakPrice',
 							width: 246,
-							fieldLabel: 'Offpeak Price',
+							fieldLabel: 'Offpeak </br>Price',
 							name: 'offpeakPrice'
 						}
 					]
