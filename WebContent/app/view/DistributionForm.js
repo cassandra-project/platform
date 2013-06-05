@@ -91,6 +91,10 @@ Ext.define('C.view.DistributionForm', {
 								beforerender: {
 									fn: me.onTextareafieldBeforeRender,
 									scope: me
+								},
+								change: {
+									fn: me.onValChange,
+									scope: me
 								}
 							}
 						},
@@ -154,11 +158,29 @@ Ext.define('C.view.DistributionForm', {
 	},
 
 	onTextareafieldBeforeRender: function(component, eOpts) {
-		component.helpText = 'A valid input example would be: [3,4]';
+		component.helpText = 'For Histogram one needs to insert values:</br>[1,2,3,4...]';
+		component.url = 'https://github.com/cassandra-project/platform/wiki/Activity-Model-form';
+	},
+
+	onValChange: function(field, newValue, oldValue, eOpts) {
+		var valuesDistr = newValue.trim();
+		try {
+			valuesDistr = JSON.parse(valuesDistr);
+		}
+		catch(e) {
+			return false;
+		}
+		if (this.query('chart')[1]) {
+			if ( valuesDistr.length > 100) {
+				this.query('chart')[1].hide();
+				this.query('chart')[0].show();
+			}
+		}
 	},
 
 	onTextareafieldBeforeRender1: function(component, eOpts) {
-		component.helpText = 'A valid input example would be: </br>[{"w":103,"mean":203.3,"std":103.4}]' ;
+		component.helpText = 'For the Uniform Distribution one needs to insert an expression with start and end values:</br>[{"start":100,"end":200}]</br></br>For the Normal Distribution one needs to insert an expression with mean and std values:</br>[{"mean":45,"std":10}]</br></br>Finally, for the Gaussian Mixture Models one needs to insert tuples of w, mean and std:</br>[{"w":1 , "mean":45,"std":10}, {"w":1 , "mean":100,"std":10}]' ;
+		component.url = 'https://github.com/cassandra-project/platform/wiki/Activity-Model-form';
 	},
 
 	onButtonClick2: function(button, e, eOpts) {

@@ -31,8 +31,8 @@ Ext.define('C.view.ScenarioForm', {
 			items: [
 				{
 					xtype: 'container',
+					flex: 2,
 					itemId: 'dataContainer',
-					maxWidth: 710,
 					autoScroll: true,
 					layout: {
 						type: 'anchor'
@@ -92,6 +92,7 @@ Ext.define('C.view.ScenarioForm', {
 				},
 				{
 					xtype: 'container',
+					flex: 1,
 					itemId: 'pieChartContainer',
 					margin: '0 0 0 20px',
 					minHeight: 500,
