@@ -121,7 +121,7 @@
                         "description": "End Time"
                     },
                     "price" : {
-                        "type": "string",
+                        "type": "number",
                         "description": "price",
                         "optional" : true
                     }
