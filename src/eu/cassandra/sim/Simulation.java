@@ -118,6 +118,7 @@ public class Simulation implements Runnable {
   			int mccount = 0;
   			double mcrunsRatio = 1.0/mcruns;
   			for(int i = 0; i < mcruns; i++) {
+  				System.out.println(i);
   				tick = 0;
   	  			double maxPower = 0;
   	  			double avgPower = 0;
