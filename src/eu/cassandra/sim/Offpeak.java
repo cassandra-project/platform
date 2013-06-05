@@ -2,17 +2,17 @@ package eu.cassandra.sim;
 
 public class Offpeak {
 	
-	private double from;
+	private String from;
 		
-	private double to;
+	private String to;
 		
-	public Offpeak(int afrom, int ato) {
+	public Offpeak(String afrom, String ato) {
 		from = afrom;
 		to = ato;
 	}
 		
-	public double getFrom() { return from; }
+	public String getFrom() { return from; }
 		
-	public double getTo() { return to; }
+	public String getTo() { return to; }
 
 }
