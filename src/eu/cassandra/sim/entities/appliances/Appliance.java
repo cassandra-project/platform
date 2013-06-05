@@ -162,6 +162,8 @@ public class Appliance extends Entity {
 		}
 		return power;
 		} catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(name);
 			throw e;
 		}
 	}

@@ -27,6 +27,9 @@ public class SimCalendar {
 	private String granularity = "Minute";
 	private int granularityValue = 1;
 	private int duration = 0;
+	
+	private static final String[] ABBR_DAYS = {"NA", "Sun", "Mon", "Tue", "Wed",
+		"Thu", "Fri", "Sat"};
 
 	public SimCalendar() {
 
@@ -195,6 +198,22 @@ public class SimCalendar {
 		if (day == Calendar.SATURDAY || day == Calendar.SUNDAY)
 			return true;
 		return false;
+	}
+	
+	public String getCurrentDate(int tick) {
+		Calendar temp = Calendar.getInstance();
+		int gran = getGranularityRaw();
+		temp.add(gran, tick * granularityValue);
+		int day = temp.get(Calendar.DAY_OF_MONTH);
+		int month = temp.get(Calendar.MONTH) + 1;
+		return day + "/" + month;
+	}
+	
+	public String getDayOfWeek(int tick) {
+		Calendar temp = Calendar.getInstance();
+		int gran = getGranularityRaw();
+		temp.add(gran, tick * granularityValue);
+		return ABBR_DAYS[temp.get(Calendar.DAY_OF_WEEK)];
 	}
 
 	public String toString () {

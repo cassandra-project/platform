@@ -333,6 +333,7 @@ public class Simulation implements Runnable {
 	    			act.addStartTime(actmodDayType, startDist);
 	    			act.addTimes(actmodDayType, timesDist);
 	    			// add appliances
+	    			System.out.println(actmodDoc.toString());
 		    		BasicDBList containsAppliances = (BasicDBList)actmodDoc.get("containsAppliances");
 		    		for(int l = 0; l < containsAppliances.size(); l++) {
 		    			String containAppId = (String)containsAppliances.get(l);

@@ -26,7 +26,8 @@
                 "ScalarEnergyPricing",
                 "ScalarEnergyPricingTimeZones",
                 "EnergyPowerPricing",
-                "AllInclusivePricing"
+                "AllInclusivePricing",
+                "TOUPricing"
             ]
         },
         "fixedCharge": {
@@ -73,6 +74,11 @@
             "type": "number",
             "description": "Additional cost",
             "optional": true
+        },
+        "onekw24": {
+            "type": "number",
+            "description": "Cost of an appliance of 1kW turned on for 24 hours",
+            "optional": true
         },  
         "levels": {
             "type": "array",
@@ -93,6 +99,30 @@
                     "level" : {
                         "type": "number",
                         "description": "Power level",
+                        "optional" : true
+                    }
+                }
+            }
+        },
+        "timezones": {
+            "type": "array",
+            "description": "An array pricing levels",
+            "optional": true,
+            "items" : {
+                "type" : "object",
+                "description" : "Timezones",
+                "properties" : {
+                    "starttime" : {
+                        "type": "string",
+                        "description": "Start Time"
+                    },           
+                    "endtime" : {
+                        "type": "string",
+                        "description": "End Time"
+                    },
+                    "price" : {
+                        "type": "string",
+                        "description": "price",
                         "optional" : true
                     }
                 }
