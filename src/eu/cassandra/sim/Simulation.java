@@ -122,8 +122,10 @@ public class Simulation implements Runnable {
   	  			double maxPower = 0;
   	  			double avgPower = 0;
   	  			double energy = 0;
+  	  			double energyOffpeak = 0;
   	  			double cost = 0;
   	  			double billingCycleEnergy = 0;
+  	  			double billingCycleEnergyOffpeak = 0;
   	  			double billingCycleDays = 0;
   	  			while (tick < endTick) {
   	  				// If it is the beginning of the day create the events
@@ -165,7 +167,11 @@ public class Simulation implements Runnable {
 		  				double power = installation.getCurrentPower();
 		  				installation.updateMaxPower(power);
 		  				installation.updateAvgPower(power/endTick);
-		  				installation.updateEnergy(power);
+		  				if(pricing.isOffpeak(tick)) {
+		  					installation.updateEnergyOffpeak(power);
+		  				} else {
+		  					installation.updateEnergy(power);
+		  				}
 		  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
 		  				sumPower += power;
 		//  				String name = installation.getName();
@@ -173,16 +179,24 @@ public class Simulation implements Runnable {
 		//  				+ "Power: " + power);
 		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  		  				+ "Power: " + power);
-		  				if(billingCycleDays == pricing.getBillingCycle()) {
+		  				if(billingCycleDays % pricing.getBillingCycle() == 0) {
 		  					installation.updateCost(pricing);
 		  				}
 		  			}
 		  			if(sumPower > maxPower) maxPower = sumPower;
 		  			avgPower += sumPower/endTick;
-		  			energy += (sumPower/1000.0) * Constants.MINUTE_HOUR_RATIO;
-		  			if(billingCycleDays == pricing.getBillingCycle()) {
-		  				cost += pricing.calculateCost(energy, billingCycleEnergy);
+		  			if(pricing.isOffpeak(tick)) {
+		  				energyOffpeak += (sumPower/1000.0) * Constants.MINUTE_HOUR_RATIO;
+		  			} else {
+		  				energy += (sumPower/1000.0) * Constants.MINUTE_HOUR_RATIO;
+		  			}
+		  			if(billingCycleDays % pricing.getBillingCycle() == 0) {
+		  				cost += pricing.calculateCost(energy, 
+		  						billingCycleEnergy, 
+		  						energyOffpeak,
+		  						billingCycleEnergyOffpeak);
 		  				billingCycleEnergy = energy;
+		  				billingCycleEnergyOffpeak = energyOffpeak;
 		  			}
 		  			m.addAggregatedTickResult(tick, sumPower, 0);
 		  			tick++;
@@ -199,7 +213,10 @@ public class Simulation implements Runnable {
   	  						installation.getEnergy() * mcrunsRatio, 
   	  						installation.getCost() * mcrunsRatio);
   	  			}
-  	  			cost += pricing.calculateCost(energy, billingCycleEnergy);
+  	  			cost += pricing.calculateCost(energy, 
+  	  					billingCycleEnergy,
+  						energyOffpeak,
+  						billingCycleEnergyOffpeak);
   	  			m.addKPIs(MongoResults.AGGR, 
   	  					maxPower * mcrunsRatio, 
   	  					avgPower * mcrunsRatio, 

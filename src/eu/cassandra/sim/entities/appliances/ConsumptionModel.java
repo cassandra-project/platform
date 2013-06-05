@@ -107,7 +107,11 @@ public class ConsumptionModel extends Entity {
 					try {
 						t.v = ((Double)((DBObject)values.get(j)).get(type)).doubleValue();
 					} catch(ClassCastException e) {
-						t.v = (double)((Integer)((DBObject)values.get(j)).get(type)).intValue();
+						try {
+							t.v = (double)((Integer)((DBObject)values.get(j)).get(type)).intValue();
+						} catch(ClassCastException e1) {
+							t.v = (double)((Long)((DBObject)values.get(j)).get(type)).intValue();
+						}
 					} catch(NullPointerException npe) {
 						throw 
 						new BadParameterException("Bad parameter: power parameter name should be " + type);
@@ -115,7 +119,11 @@ public class ConsumptionModel extends Entity {
 					try {
 						t.d = ((Integer)((DBObject)values.get(j)).get("d")).intValue();
 					} catch(ClassCastException e) {
-						t.d = ((Double)((DBObject)values.get(j)).get("d")).intValue();
+						try {
+							t.d = ((Double)((DBObject)values.get(j)).get("d")).intValue();
+						} catch(ClassCastException e1) {
+							t.d = ((Long)((DBObject)values.get(j)).get("d")).intValue();
+						}
 					} catch(NullPointerException npe) {
 						throw 
 						new BadParameterException("Bad parameter: duration parameter name should be d");
@@ -125,7 +133,11 @@ public class ConsumptionModel extends Entity {
 					try {
 						t.s = ((Double)((DBObject)values.get(j)).get("s")).doubleValue();
 					} catch(ClassCastException e) {
-						t.s = (double)((Integer)((DBObject)values.get(j)).get("s")).intValue();
+						try {
+							t.s = (double)((Integer)((DBObject)values.get(j)).get("s")).intValue();
+						} catch(ClassCastException e1) {
+							t.s = (double)((Long)((DBObject)values.get(j)).get("s")).intValue();
+						}
 					} catch(NullPointerException npe) {
 						throw 
 						new BadParameterException("Bad parameter: slope parameter name should be s");

@@ -39,6 +39,8 @@ public class Installation extends Entity {
 	private double avgPower = 0;
 	private double energy = 0;
 	private double previousEnergy = 0;
+	private double energyOffpeak = 0;
+	private double previousEnergyOffpeak = 0;
 	private double cost = 0;
 	
 	public static class Builder {
@@ -116,9 +118,14 @@ public class Installation extends Entity {
     	energy += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
     }
     
+    public void updateEnergyOffpeak(double power) {
+    	energyOffpeak += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
+    }
+    
     public void updateCost(PricingPolicy pp) {
-    	cost += pp.calculateCost(energy, previousEnergy);
+    	cost += pp.calculateCost(energy, previousEnergy, energyOffpeak, previousEnergyOffpeak);
     	previousEnergy = energy;
+    	previousEnergyOffpeak = energyOffpeak;
     }
     
     public double getEnergy() {

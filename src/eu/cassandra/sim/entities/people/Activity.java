@@ -78,11 +78,7 @@ public class Activity extends Entity {
 			description = adesc;
 			type = atype;
 			appliances = new HashMap<String, Vector<Appliance>>();
-			appliances.put("working", new Vector<Appliance>());
-			appliances.put("nonworking", new Vector<Appliance>());
 			probApplianceUsed = new HashMap<String, Vector<Double>>();
-			probApplianceUsed.put("working", new Vector<Double>());
-			probApplianceUsed.put("nonworking", new Vector<Double>());
 			nTimesGivenDay = new HashMap<String, ProbabilityDistribution>();
 			probStartTime = new HashMap<String, ProbabilityDistribution>();
 			probDuration = new HashMap<String, ProbabilityDistribution>();
@@ -130,8 +126,14 @@ public class Activity extends Entity {
 	}
 
 	public void addAppliance (String day, Appliance a, Double prob) {
+		if(appliances.get(day) == null) {
+			appliances.put(day, new Vector<Appliance>());
+		}
 		Vector<Appliance> vector = appliances.get(day);
 		vector.add(a);
+		if(probApplianceUsed.get(day) == null) {
+			probApplianceUsed.put(day, new Vector<Double>());
+		}
 		Vector<Double> probVector = probApplianceUsed.get(day);
 		probVector.add(prob);
 	}
