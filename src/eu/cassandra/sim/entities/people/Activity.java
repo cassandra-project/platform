@@ -16,6 +16,8 @@
 package eu.cassandra.sim.entities.people;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -35,6 +37,12 @@ import eu.cassandra.sim.utilities.Utils;
 
 public class Activity extends Entity {
 	static Logger logger = Logger.getLogger(Activity.class);
+	
+	private final static String WEEKDAYS = "weekdays";
+	private final static String WEEKENDS = "weekends";
+	private final static String NONWORKING = "nonworking";
+	private final static String WORKING = "working";
+	private final static String ANY = "any";
 
 	private final HashMap<String, ProbabilityDistribution> nTimesGivenDay;
 	private final HashMap<String, ProbabilityDistribution> probStartTime;
@@ -187,6 +195,18 @@ public class Activity extends Entity {
 	public SimulationParams getSimulationWorld () {
 		return simulationWorld;
 	}
+	
+	private String getKey(String keyword) {
+		Set<String> set = nTimesGivenDay.keySet();
+		Iterator<String> iter = set.iterator();
+		while(iter.hasNext()) {
+			String key = iter.next();
+			if(key.contains(keyword)) {
+				return key;
+			}
+		}
+		return new String();
+	}
 
 	public void
 		updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue) {
@@ -200,27 +220,68 @@ public class Activity extends Entity {
 		
 		Vector<Double> probVector;
 		Vector<Appliance> vector;
-
-		if (simulationWorld.getSimCalendar().isWeekend(tick)) {
-			System.out.println("isWeekend");
-			numOfTimesProb = nTimesGivenDay.get("nonworking");
-			startProb = probStartTime.get("nonworking");
-			durationProb = probDuration.get("nonworking");
-			probVector = probApplianceUsed.get("nonworking");
-			vector = appliances.get("nonworking");
-		} else {
-			numOfTimesProb = nTimesGivenDay.get("working");
-			startProb = probStartTime.get("working");
-			durationProb = probDuration.get("working");
-			probVector = probApplianceUsed.get("working");
-			vector = appliances.get("working");
-		}
 		
-		if(numOfTimesProb != null && 
-				startProb != null && 
-				durationProb != null && 
-				probVector != null &&
-				vector != null) {
+		// First search for specific days
+		String date = simulationWorld.getSimCalendar().getCurrentDate(tick);
+		String dayOfWeek = simulationWorld.getSimCalendar().getDayOfWeek(tick);
+		String dateKey = getKey(date);
+		String dayOfWeekKey = getKey(dayOfWeek);
+		boolean weekend = simulationWorld.getSimCalendar().isWeekend(tick);
+		numOfTimesProb = nTimesGivenDay.get(dateKey);
+		startProb = probStartTime.get(dateKey);
+		durationProb = probDuration.get(dateKey);
+		probVector = probApplianceUsed.get(dateKey);
+		vector = appliances.get(dateKey);
+		// Then search for specific days
+		if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
+			numOfTimesProb = nTimesGivenDay.get(dayOfWeekKey);
+			startProb = probStartTime.get(dayOfWeekKey);
+			durationProb = probDuration.get(dayOfWeekKey);
+			probVector = probApplianceUsed.get(dayOfWeekKey);
+			vector = appliances.get(dayOfWeekKey);
+			// Then for weekdays and weekends
+			if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
+				if (weekend) {
+					numOfTimesProb = nTimesGivenDay.get(WEEKENDS);
+					startProb = probStartTime.get(WEEKENDS);
+					durationProb = probDuration.get(WEEKENDS);
+					probVector = probApplianceUsed.get(WEEKENDS);
+					vector = appliances.get(WEEKENDS);
+				} else {
+					numOfTimesProb = nTimesGivenDay.get(WEEKDAYS);
+					startProb = probStartTime.get(WEEKDAYS);
+					durationProb = probDuration.get(WEEKDAYS);
+					probVector = probApplianceUsed.get(WEEKDAYS);
+					vector = appliances.get(WEEKDAYS);
+				}
+				// Backwards compatibility
+				if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
+					if (weekend) {
+						numOfTimesProb = nTimesGivenDay.get(NONWORKING);
+						startProb = probStartTime.get(NONWORKING);
+						durationProb = probDuration.get(NONWORKING);
+						probVector = probApplianceUsed.get(NONWORKING);
+						vector = appliances.get(NONWORKING);
+					} else {
+						numOfTimesProb = nTimesGivenDay.get(WORKING);
+						startProb = probStartTime.get(WORKING);
+						durationProb = probDuration.get(WORKING);
+						probVector = probApplianceUsed.get(WORKING);
+						vector = appliances.get(WORKING);
+					}
+					// Then for any
+					if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
+						numOfTimesProb = nTimesGivenDay.get(ANY);
+						startProb = probStartTime.get(ANY);
+						durationProb = probDuration.get(ANY);
+						probVector = probApplianceUsed.get(ANY);
+						vector = appliances.get(ANY);
+					}
+				}				
+			}
+		}
+
+		if(notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
 
 			int numOfTimes = 0;
 			try {
@@ -253,6 +314,18 @@ public class Activity extends Entity {
 				numOfTimes--;
 			}
 		}
+	}
+	
+	public boolean notNull(Object a, 
+			Object b, 
+			Object c, 
+			Object d, 
+			Object e) {
+		return a != null && 
+				b != null && 
+				c != null && 
+				d != null &&
+				e != null;
 	}
 
 	@Override
