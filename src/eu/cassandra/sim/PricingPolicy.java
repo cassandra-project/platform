@@ -71,6 +71,19 @@ public class PricingPolicy {
 					levels.add(l);
 				}
 				break;
+			case "EnergyPowerPricing":
+				billingCycle = Integer.parseInt(dbo.get("billingCycle").toString());
+				fixedCharge = Double.parseDouble(dbo.get("fixedCharge").toString());
+				contractedCapacity = Integer.parseInt(dbo.get("contractedCapacity").toString());
+				energyPricing = Double.parseDouble(dbo.get("energyPrice").toString());
+				powerPricing = Double.parseDouble(dbo.get("powerPrice").toString());
+				break;
+			case "AllInclusivePricing":
+				billingCycle = Integer.parseInt(dbo.get("billingCycle").toString());
+				fixedCharge = Double.parseDouble(dbo.get("fixedCharge").toString());
+				fixedCost = Integer.parseInt(dbo.get("fixedCost").toString());
+				additionalCost = Double.parseDouble(dbo.get("additionalCost").toString());
+				contractedEnergy = Double.parseDouble(dbo.get("contractedEnergy").toString());
 			default:
 				break;
 		}
@@ -108,6 +121,16 @@ public class PricingPolicy {
 						cost += level * price;
 					}
 				}
+				break;
+			case "EnergyPowerPricing":
+				cost += fixedCharge;
+				cost += remainingEnergy * energyPricing;
+				cost += contractedCapacity * powerPricing;
+				break;
+			case "AllInclusivePricing":
+				cost += fixedCharge;
+				cost += fixedCost;
+				cost += Math.max((remainingEnergy-contractedEnergy),0) * additionalCost;
 				break;
 			case "NoPricing" :
 				break;
