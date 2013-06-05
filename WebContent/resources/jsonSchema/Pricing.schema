@@ -137,11 +137,11 @@
                 "description" : "Time zones",
                 "properties" : {           
                     "from" : {
-                        "type": "integer",
+                        "type": "string",
                         "description": "The probability of appearance for this appliance"
                     },
                     "to" : {
-                        "type": "integer",
+                        "type": "string",
                         "description": "The probability of appearance for this appliance"
                     }
                 }

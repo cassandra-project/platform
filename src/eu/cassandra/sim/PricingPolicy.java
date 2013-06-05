@@ -3,6 +3,7 @@ package eu.cassandra.sim;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.bson.types.ObjectId;
 
@@ -14,6 +15,7 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 
 import eu.cassandra.server.mongo.MongoPricingPolicy;
+import eu.cassandra.sim.utilities.Constants;
 
 public class PricingPolicy {
 	
@@ -43,6 +45,8 @@ public class PricingPolicy {
 	
 	private double additionalCost;
 	
+	private double offpeakPrice;
+	
 	private ArrayList<Level> levels;
 	
 	private ArrayList<Offpeak> offpeaks;
@@ -69,6 +73,33 @@ public class PricingPolicy {
 					double level = Double.parseDouble(levelObj.get("level").toString());
 					Level l = new Level(price, level);
 					levels.add(l);
+				}
+				break;
+			case "ScalarEnergyPricingTimeZones":
+				billingCycle = Integer.parseInt(dbo.get("billingCycle").toString());
+				fixedCharge = Double.parseDouble(dbo.get("fixedCharge").toString());
+				offpeakPrice = Double.parseDouble(dbo.get("offpeakPrice").toString());
+				// Parse levels
+				BasicDBList levelsObj2 = (BasicDBList)dbo.get("levels");
+				DBObject levelObj2;
+				levels = new ArrayList<Level>();
+				for(int i = 0; i < levelsObj2.size(); i++) {
+					levelObj2 =  (DBObject)levelsObj2.get(i);
+					double price = Double.parseDouble(levelObj2.get("price").toString());
+					double level = Double.parseDouble(levelObj2.get("level").toString());
+					Level l = new Level(price, level);
+					levels.add(l);
+				}
+				// Parse timezones
+				BasicDBList tzs = (BasicDBList)dbo.get("offpeak");
+				DBObject tz;
+				offpeaks = new ArrayList<Offpeak>();
+				for(int i = 0; i < levelsObj2.size(); i++) {
+					levelObj2 =  (DBObject)levelsObj2.get(i);
+					String from = levelObj2.get("from").toString();
+					String to = levelObj2.get("to").toString();
+					Offpeak o = new Offpeak(from, to);
+					offpeaks.add(o);
 				}
 				break;
 			case "EnergyPowerPricing":
@@ -101,7 +132,8 @@ public class PricingPolicy {
 		return type;
 	}
 	
-	public double calculateCost(double toEnergy, double fromEnergy) {
+	public double calculateCost(double toEnergy, double fromEnergy,
+			double toEnergyOffpeak, double fromEnergyOffpeak) {
 		double remainingEnergy = toEnergy - fromEnergy;
 		double cost = 0;
 		switch(type) {
@@ -122,6 +154,25 @@ public class PricingPolicy {
 					}
 				}
 				break;
+			case "ScalarEnergyPricingTimeZones":
+				cost += fixedCharge;
+				for(int i = levels.size()-1; i >= 0; i--) {
+					double level = levels.get(i).getLevel();
+					double price = levels.get(i).getPrice();
+					if(remainingEnergy < level) {
+						cost += remainingEnergy * price;
+						break;
+					} else if(!(level > 0)) {
+						cost += remainingEnergy * price;
+						break;
+					} else {
+						remainingEnergy -= level;
+						cost += level * price;
+					}
+				}
+				double remainingEnergyOffpeak = toEnergyOffpeak - fromEnergyOffpeak;
+				cost += remainingEnergyOffpeak * offpeakPrice;
+				break;
 			case "EnergyPowerPricing":
 				cost += fixedCharge;
 				cost += remainingEnergy * energyPricing;
@@ -138,6 +189,24 @@ public class PricingPolicy {
 				break;
 		}
 		return cost;
+	}
+	
+	public boolean isOffpeak(int tick) {
+		if(type.equalsIgnoreCase("ScalarEnergyPricingTimeZones")) {
+			int minutesInDay = tick % Constants.MIN_IN_DAY;
+			Iterator<Offpeak> iter = offpeaks.iterator();
+			while(iter.hasNext()) {
+				Offpeak o = iter.next();
+				String[] fromTokens = o.getFrom().split(":");
+				String[] toTokens = o.getTo().split(":");
+				int from = Integer.parseInt(fromTokens[0]) * 60 + Integer.parseInt(fromTokens[1]);
+				int to = Integer.parseInt(toTokens[0]) * 60 + Integer.parseInt(toTokens[1]);
+				if(minutesInDay >= from && minutesInDay < to) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -157,7 +226,7 @@ public class PricingPolicy {
 		PricingPolicy pp = new PricingPolicy(pricingPolicy);
 		System.out.println(pp.getType());
 		System.out.println(pp.getFixedCharge());
-		System.out.println(pp.calculateCost(1500, 0));
+		System.out.println(pp.calculateCost(1500, 0, 0, 0));
 	}
 
 }
