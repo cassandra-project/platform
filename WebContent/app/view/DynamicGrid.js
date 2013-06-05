@@ -629,7 +629,7 @@ Ext.define('C.view.DynamicGrid', {
 		//console.info(component);
 		if (!component.tab) {
 			component.setHeight(250);
-			component.maxWidth = 1000;
+			component.setWidth(750);
 			//component.maxHeight = 250;
 			component.margin = '0 0 10px 0';
 		}

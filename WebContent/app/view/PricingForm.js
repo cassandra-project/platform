@@ -70,21 +70,21 @@ Ext.define('C.view.PricingForm', {
 						{
 							xtype: 'numberfield',
 							width: 246,
-							fieldLabel: 'Billing Cycle',
+							fieldLabel: 'Billing </br>Cycle',
 							name: 'billingCycle',
 							allowDecimals: false
 						},
 						{
 							xtype: 'numberfield',
 							width: 246,
-							fieldLabel: 'Fixed Charge',
+							fieldLabel: 'Fixed </br>Charge',
 							name: 'fixedCharge'
 						},
 						{
 							xtype: 'numberfield',
 							itemId: 'offpeakPrice',
 							width: 246,
-							fieldLabel: 'Offpeak Price',
+							fieldLabel: 'Offpeak </br>Price',
 							name: 'offpeakPrice'
 						}
 					]
@@ -323,8 +323,7 @@ Ext.define('C.view.PricingForm', {
 							width: 200,
 							fieldLabel: 'Contracted Capacity',
 							labelWidth: 60,
-							name: 'contractedCapacity',
-							allowDecimals: false
+							name: 'contractedCapacity'
 						},
 						{
 							xtype: 'numberfield',
@@ -373,6 +372,95 @@ Ext.define('C.view.PricingForm', {
 							fieldLabel: 'Additional Cost',
 							labelWidth: 60,
 							name: 'additionalCost'
+						}
+					]
+				},
+				{
+					xtype: 'fieldset',
+					itemId: 'TOUPricing',
+					layout: {
+						type: 'auto'
+					},
+					title: 'Extra Parameters',
+					items: [
+						{
+							xtype: 'numberfield',
+							width: 200,
+							fieldLabel: 'Onekw24',
+							labelWidth: 60,
+							name: 'onekw24',
+							readOnly: true
+						},
+						{
+							xtype: 'gridpanel',
+							margin: '10 0 0 0',
+							title: 'Timezones',
+							store: 'TimezonesStore',
+							viewConfig: {
+								minHeight: 70
+							},
+							dockedItems: [
+								{
+									xtype: 'toolbar',
+									dock: 'top',
+									width: 508,
+									items: [
+										{
+											xtype: 'button',
+											text: 'New',
+											listeners: {
+												click: {
+													fn: me.onButtonClick212,
+													scope: me
+												}
+											}
+										},
+										{
+											xtype: 'button',
+											text: 'Delete',
+											listeners: {
+												click: {
+													fn: me.onButtonClick1212,
+													scope: me
+												}
+											}
+										}
+									]
+								}
+							],
+							plugins: [
+								Ext.create('Ext.grid.plugin.RowEditing', {
+									clicksToMoveEditor: 1
+								})
+							],
+							columns: [
+								{
+									xtype: 'gridcolumn',
+									dataIndex: 'starttime',
+									text: 'Starttime',
+									editor: {
+										xtype: 'timefield',
+										invalidText: '{0} is not a valid time. </br> (i.e. 24:56)'
+									}
+								},
+								{
+									xtype: 'gridcolumn',
+									dataIndex: 'endtime',
+									text: 'Endtime',
+									editor: {
+										xtype: 'timefield',
+										invalidText: '{0} is not a valid time. </br> (i.e. 24:56)'
+									}
+								},
+								{
+									xtype: 'numbercolumn',
+									dataIndex: 'price',
+									text: 'Price',
+									editor: {
+										xtype: 'numberfield'
+									}
+								}
+							]
 						}
 					]
 				},
@@ -468,21 +556,41 @@ Ext.define('C.view.PricingForm', {
 
 	},
 
+	onButtonClick212: function(button, e, eOpts) {
+
+		this.query('grid')[3].store.insert(0, {starttime:"", endtime:"", price : 0});
+		this.query('grid')[3].plugins[0].startEdit(0, 0);
+
+
+
+
+	},
+
+	onButtonClick1212: function(button, e, eOpts) {
+		console.info('Delete clicked.', this, button, e, eOpts);
+
+		var selections = this.query('grid')[3].getView().getSelectionModel().getSelection();
+		this.query('grid')[3].store.remove(selections);
+
+	},
+
 	onButtonClick1: function(button, e, eOpts) {
 		var levels = [];
 		var offpeak = []; 
 		var levelsData = [];
+		var timezones = [];
 		var myForm = this.getForm();
 		var record = myForm.getRecord();
 		var values = myForm.getValues();
 
-		if (record.get('type') == 'ScalarEnergyPricing') {
+		switch (record.get('type')) {
+			case 'ScalarEnergyPricing':
 			levelsData = this.query('grid')[0].store.data;
 			Ext.each(levelsData.items, function(index){
 				levels.push(index.data);
 			});
-		}
-		else if (record.get('type') == 'ScalarEnergyPricingTimeZones') {
+			break;
+			case 'ScalarEnergyPricingTimeZones':
 			levelsData = this.query('grid')[1].store.data;
 			Ext.each(levelsData.items, function(index){
 				levels.push(index.data);
@@ -491,7 +599,15 @@ Ext.define('C.view.PricingForm', {
 			Ext.each(offpeakData.items, function(index){
 				offpeak.push(index.data);
 			});
+			break;
+			case 'TOUPricing':
+			var timezonesData = this.query('grid')[3].store.data;
+			Ext.each(timezonesData.items, function(index){
+				timezones.push(index.data);
+			});
+			break;
 		}
+
 
 		record.set({
 			'name' : values.name,
@@ -507,7 +623,8 @@ Ext.define('C.view.PricingForm', {
 			'powerPrice' : (record.get('type') == 'EnergyPowerPricing') ? values.powerPrice : 0,
 			'contractedEnergy' : (record.get('type') == 'AllInclusivePricing') ? values.contractedEnergy : 0,
 			'fixedCost' : (record.get('type') == 'AllInclusivePricing') ? values.fixedCost : 0,
-			'additionalCost' : (record.get('type') == 'AllInclusivePricing') ? values.additionalCost : 0
+			'additionalCost' : (record.get('type') == 'AllInclusivePricing') ? values.additionalCost : 0,
+			'timezones': timezones
 		});
 
 		this.dirtyForm = false;

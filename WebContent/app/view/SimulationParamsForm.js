@@ -197,7 +197,8 @@ Ext.define('C.view.SimulationParamsForm', {
 	},
 
 	onTextfieldBeforeRender1: function(component, eOpts) {
-		component.helpText = 'You can add a Pricing Scheme by selecting it from the Projects Tree and dropping it here';
+		component.helpText = 'Pricing Scheme: the pricing scheme under which the energy consumption of the installations will be billed.</br>You can add a Pricing Scheme by selecting it from the Projects Tree and dropping it here';
+		component.url = 'https://github.com/cassandra-project/platform/wiki/Simulation-parameters-form';
 	},
 
 	onButtonClick2: function(button, e, eOpts) {
@@ -245,6 +246,9 @@ Ext.define('C.view.SimulationParamsForm', {
 	},
 
 	onButtonClick21: function(button, e, eOpts) {
+		//invoke "Update" button click event
+		this.query('button')[0].fireEvent('click', this.query('button'));
+
 		var project_node = this.getForm().getRecord().node.parentNode.parentNode.parentNode.parentNode;
 		if (! (project_node.lastChild.c) ) project_node.lastChild.expand();
 		/*Ext.getCmp('uiNavigationTreePanel').getView().fireEvent('itemdblclick',project_node.lastChild, project_node.lastChild);*/

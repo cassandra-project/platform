@@ -104,7 +104,8 @@ Ext.application({
 		'Pricing',
 		'PricingTypeStore',
 		'LevelsStore',
-		'OffpickStore'
+		'OffpickStore',
+		'TimezonesStore'
 	],
 	views: [
 		'MyViewport',
@@ -395,14 +396,22 @@ Ext.application({
 						}
 						else if ( distr_record.get('_id') == record.get('repeatsNrOfTime')) {
 							myCurrentCmp = myRepeatsCmp;
+							var onlyHisto = true;
 						}
 						else {return true;}
 
 						myCurrentCmp.getForm().loadRecord(distr_record);
+
 						myCurrentCmp.getForm().setValues({ 
 							params: JSON.stringify(distr_record.get('parameters')),
 							val: JSON.stringify(distr_record.get('values'))
 						});
+						/*if (!onlyHisto && distr_record.get('distrType') == 'Histogram') {
+						myCurrentCmp.query('chart')[0].hide();
+						}
+						else
+						myCurrentCmp.query('chart')[1].hide();
+						*/
 						myCurrentCmp.query('chart')[0].store.proxy.url += '/' + distr_record.get('_id');
 						myCurrentCmp.query('chart')[0].store.load();
 
@@ -884,12 +893,17 @@ Ext.application({
 
 		myFormCmp.getComponent(record.get('type')).show();
 
-		if (record.get('type') == 'ScalarEnergyPricing' ) {
+		switch (record.get('type')) {
+			case 'ScalarEnergyPricing':
 			myFormCmp.query('grid')[0].store.loadData(record.get('levels'));
-		}
-		else if (record.get('type') == 'ScalarEnergyPricingTimeZones') {
+			break;
+			case 'ScalarEnergyPricingTimeZones':
 			myFormCmp.query('grid')[1].store.loadData(record.get('levels'));
 			myFormCmp.query('grid')[2].store.loadData(record.get('offpeak'));
+			break;
+			case 'TOUPricing':
+			myFormCmp.query('grid')[3].store.loadData(record.get('timezones'));
+			break;
 		}
 
 		myForm.loadRecord(record);

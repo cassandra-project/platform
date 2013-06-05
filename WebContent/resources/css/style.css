@@ -141,3 +141,9 @@ width: 17px;
   font-size: 80%;
 }
 
+.info {
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+	background: url(../icons/information.png) no-repeat 0 0;
+}

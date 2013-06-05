@@ -142,6 +142,7 @@ Ext.define('C.view.ActmodPropertiesForm', {
 
 	onTextfieldBeforeRender: function(component, eOpts) {
 		component.helpText = 'The following would be valid input examples: </br>- "any" </br>- "weekdays" </br>- "weekends" </br>- specific days: i.e. "[Mon, Tue, Thu]" </br>- specific dates: i.e. "{31/03, 04/05}"';
+		component.url = 'https://github.com/cassandra-project/platform/wiki/Activity-Model-form';
 	},
 
 	onButtonClick2: function(button, e, eOpts) {
