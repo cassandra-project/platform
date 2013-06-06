@@ -430,7 +430,13 @@ Ext.define('C.view.PricingForm', {
 							],
 							plugins: [
 								Ext.create('Ext.grid.plugin.RowEditing', {
-									clicksToMoveEditor: 1
+									clicksToMoveEditor: 1,
+									listeners: {
+										edit: {
+											fn: me.onRowEditingEdit,
+											scope: me
+										}
+									}
 								})
 							],
 							columns: [
@@ -440,7 +446,8 @@ Ext.define('C.view.PricingForm', {
 									text: 'Starttime',
 									editor: {
 										xtype: 'timefield',
-										invalidText: '{0} is not a valid time. </br> (i.e. 24:56)'
+										invalidText: '{0} is not a valid time. </br> (i.e. 24:56)',
+										format: 'H:i'
 									}
 								},
 								{
@@ -449,7 +456,8 @@ Ext.define('C.view.PricingForm', {
 									text: 'Endtime',
 									editor: {
 										xtype: 'timefield',
-										invalidText: '{0} is not a valid time. </br> (i.e. 24:56)'
+										invalidText: '{0} is not a valid time. </br> (i.e. 24:56)',
+										format: 'H:i'
 									}
 								},
 								{
@@ -572,6 +580,14 @@ Ext.define('C.view.PricingForm', {
 		var selections = this.query('grid')[3].getView().getSelectionModel().getSelection();
 		this.query('grid')[3].store.remove(selections);
 
+	},
+
+	onRowEditingEdit: function(editor, e, eOpts) {
+		console.info(editor, e ,eOpts);
+		if (e.newValues.starttime !== e.originalValues.starttime && new Date(e.newValues.starttime) !== "Invalid Date")
+		e.record.set("starttime", Ext.Date.format(new Date(e.newValues.starttime), "H:i"));
+		if (e.newValues.endtime !== e.originalValues.endtime && new Date(e.newValues.endtime) !== "Invalid Date")
+		e.record.set("endtime", Ext.Date.format(new Date(e.newValues.endtime), "H:i"));
 	},
 
 	onButtonClick1: function(button, e, eOpts) {
