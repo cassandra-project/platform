@@ -122,8 +122,8 @@ public class Installation extends Entity {
     	energyOffpeak += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
     }
     
-    public void updateCost(PricingPolicy pp) {
-    	cost += pp.calculateCost(energy, previousEnergy, energyOffpeak, previousEnergyOffpeak);
+    public void updateCost(PricingPolicy pp, int tick) {
+    	cost += pp.calculateCost(energy, previousEnergy, energyOffpeak, previousEnergyOffpeak, tick);
     	previousEnergy = energy;
     	previousEnergyOffpeak = energyOffpeak;
     }

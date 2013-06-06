@@ -36,10 +36,12 @@ import eu.cassandra.server.mongo.MongoDemographics;
 import eu.cassandra.server.mongo.MongoDistributions;
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.MongoPersons;
+import eu.cassandra.server.mongo.MongoPricingPolicy;
 import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.MongoSimParam;
+import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.entities.appliances.GUIConsumptionModel;
 import eu.cassandra.sim.math.GUIDistribution;
 import eu.cassandra.sim.utilities.Utils;
@@ -487,6 +489,10 @@ public class MongoDBQueries {
 				else if(collection.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS) &&
 						dbObj1.containsField("_id")) {
 					obj = getValues(obj,httpHeaders,obj.get("_id").toString(),MongoConsumptionModels.COL_CONSMODELS);
+				} else if(collection.equalsIgnoreCase(MongoPricingPolicy.COL_PRICING)) {
+					PricingPolicy pp = new PricingPolicy(obj);
+					double oneKw24Cost = pp.calcOneKw24();
+					obj.put("onekw24", oneKw24Cost);
 				}
 
 				if(obj.containsField("_id"))

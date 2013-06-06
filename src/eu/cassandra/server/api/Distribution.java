@@ -56,7 +56,6 @@ public class Distribution {
 	 */
 	@PUT
 	public Response updateDistribution(@PathParam("distr_id") String distr_id, String message) {
-		System.out.println(message);
 		return  Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDistributions().updateDistribution(distr_id,message)));
 	}
 

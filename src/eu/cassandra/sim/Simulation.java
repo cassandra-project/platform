@@ -179,8 +179,8 @@ public class Simulation implements Runnable {
 		//  				+ "Power: " + power);
 		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  		  				+ "Power: " + power);
-		  				if(billingCycleDays % pricing.getBillingCycle() == 0) {
-		  					installation.updateCost(pricing);
+		  				if(billingCycleDays % pricing.getBillingCycle() == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
+		  					installation.updateCost(pricing, tick);
 		  				}
 		  			}
 		  			if(sumPower > maxPower) maxPower = sumPower;
@@ -190,11 +190,12 @@ public class Simulation implements Runnable {
 		  			} else {
 		  				energy += (sumPower/1000.0) * Constants.MINUTE_HOUR_RATIO;
 		  			}
-		  			if(billingCycleDays % pricing.getBillingCycle() == 0) {
+		  			if(billingCycleDays % pricing.getBillingCycle() == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
 		  				cost += pricing.calculateCost(energy, 
 		  						billingCycleEnergy, 
 		  						energyOffpeak,
-		  						billingCycleEnergyOffpeak);
+		  						billingCycleEnergyOffpeak,
+		  						tick);
 		  				billingCycleEnergy = energy;
 		  				billingCycleEnergyOffpeak = energyOffpeak;
 		  			}
@@ -206,7 +207,7 @@ public class Simulation implements Runnable {
 		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   	  			}
   	  			for(Installation installation: installations) {
-  	  				installation.updateCost(pricing); // update the rest of the energy
+  	  				installation.updateCost(pricing, tick); // update the rest of the energy
   	  				m.addKPIs(installation.getId(), 
   	  						installation.getMaxPower() * mcrunsRatio, 
   	  						installation.getAvgPower() * mcrunsRatio, 
@@ -216,7 +217,8 @@ public class Simulation implements Runnable {
   	  			cost += pricing.calculateCost(energy, 
   	  					billingCycleEnergy,
   						energyOffpeak,
-  						billingCycleEnergyOffpeak);
+  						billingCycleEnergyOffpeak,
+  						tick);
   	  			m.addKPIs(MongoResults.AGGR, 
   	  					maxPower * mcrunsRatio, 
   	  					avgPower * mcrunsRatio, 
@@ -350,7 +352,6 @@ public class Simulation implements Runnable {
 	    			act.addStartTime(actmodDayType, startDist);
 	    			act.addTimes(actmodDayType, timesDist);
 	    			// add appliances
-	    			System.out.println(actmodDoc.toString());
 		    		BasicDBList containsAppliances = (BasicDBList)actmodDoc.get("containsAppliances");
 		    		for(int l = 0; l < containsAppliances.size(); l++) {
 		    			String containAppId = (String)containsAppliances.get(l);
