@@ -297,8 +297,8 @@ public class Simulation implements Runnable {
 	    		String appname = (String)applianceDoc.get("name");
 		    	String appdescription = (String)applianceDoc.get("description");
 		    	String apptype = (String)applianceDoc.get("type");
-		    	double standy = Double.parseDouble(applianceDoc.get("standy_consumption").toString());
-		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
+		    	double standy = Utils.getDouble(applianceDoc.get("standy_consumption"));
+		    	boolean base = Utils.getBoolean(applianceDoc.get("base"));
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
 		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
 		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
