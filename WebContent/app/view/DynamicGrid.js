@@ -359,6 +359,9 @@ Ext.define('C.view.DynamicGrid', {
 			autoScroll : true
 		}); 
 
+		chartWindow.show();
+		chartWindow.setLoading(true, true);
+
 		var fields = 
 		[{
 			name: 'x',
@@ -413,17 +416,19 @@ Ext.define('C.view.DynamicGrid', {
 
 
 			tempStore.on('load',function(store, records){
+
 				if (dataArray.length === 0)
 				Ext.each(store.data.items, function(item,inner_index) {
 					dataArray.push({'x':item.get('x'), 'y0':item.get('y')});
 				});
-				else 
-				Ext.each(store.data.items, function(item,inner_index) {
-					dataArray[inner_index]['y'+index] = item.get('y');
-				});
-
+				else {
+					var index =Object.keys(dataArray[0]).length - 1;
+					Ext.each(store.data.items, function(item,inner_index) {
+						dataArray[inner_index]['y'+ index] = item.get('y');
+					});
+				}
 				//check if dataArray is filled with all data
-				if (dataArray[0]['y' + (selections.length - 1)]) {
+				if (dataArray[0].hasOwnProperty(['y' + (selections.length - 1)])) {
 
 					var mystore = Ext.create('Ext.data.Store', {
 						fields: fields
@@ -468,7 +473,7 @@ Ext.define('C.view.DynamicGrid', {
 					});
 
 					chartWindow.insert(0, myResultsChart);
-					chartWindow.show();
+					chartWindow.setLoading(false);
 				}
 			});
 			tempStore.load();
