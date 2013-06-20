@@ -63,7 +63,7 @@ public class MongoInstallations {
 		else {
 			return new MongoDBQueries().getEntity(httpHeaders,COL_INSTALLATIONS,"scenario_id", 
 					scn_id, filters, sort, limit, skip, "Installations retrieved successfully",count).toString();
-		}
+		}	
 	}
 
 

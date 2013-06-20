@@ -1,0 +1,30 @@
+{
+    "name": "Graph",
+    "type": "object",
+    "description": "Setting to create a graph",
+    "properties": {
+        "graphType": {
+            "type": "string",
+            "description": "The Scenario this Installation belongs to",
+            "enum": [
+                "InstallationType",
+                "PersonType",
+                "TotalConsumption",
+                "AverageConsumption",
+                "MinConsumption",
+                "MaxConsumption",
+                "TotalConsumptionPerHour",
+                "AverageConsumptionPerHour",
+                "MinConsumptionPerHour",
+                "MaxConsumptionPerHour",
+                "TotalConsumptionPerDay",
+                "AverageConsumptionPerDay",
+                "MinConsumptionPerDay",
+                "MaxConsumptionPerDay",
+                "ActivityConsumption"
+            ],
+            "optional": false
+        }
+    },
+    "additionalProperties" : false
+}
