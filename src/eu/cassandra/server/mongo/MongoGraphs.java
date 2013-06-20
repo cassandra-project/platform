@@ -22,23 +22,22 @@ public class MongoGraphs {
 	 * @param dataToInsert
 	 * @param httpHeaders
 	 * @return
-	 * curl -k -i --data  @graph.json    --header Content-type:application/json --header dbname:5194cbd3e4b0f0bb234bd64a https://localhost:8443/cassandra/api/csn
 	 */
 	public String createGraph(String dataToInsert,@Context HttpHeaders httpHeaders) {
-		int numOfNodes = createNodes(httpHeaders);
 		DBObject answer = new MongoDBQueries().insertData(COL_GRAPHS ,dataToInsert,
-				"Graph created successfully with " + numOfNodes + " nodes",JSONValidator.GRAPH_SCHEMA,httpHeaders);
-		System.out.println(answer);
-		System.out.println(((DBObject)(answer.get("data"))).get("_id").toString());
+				"Graph created successfully",JSONValidator.GRAPH_SCHEMA,httpHeaders);
+		String graph_id = ((DBObject)(answer.get("data"))).get("_id").toString();
+		createNodes(graph_id,httpHeaders);
 		return answer.toString();
 	}
 
 	/**
 	 * 
-	 * @param scn_id
+	 * @param graph_id
 	 * @param httpHeaders
+	 * @return
 	 */
-	private int createNodes(HttpHeaders httpHeaders) {
+	private int createNodes(String graph_id,HttpHeaders httpHeaders) {
 		int numOfNodes = 0;
 		String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 
@@ -47,6 +46,7 @@ public class MongoGraphs {
 			DBObject installationsObj = cursorDoc.next();
 			String instID = installationsObj.get("_id").toString();
 			DBObject installationNode = new BasicDBObject("inst_id",instID);
+			installationNode.put("graph_id", graph_id);
 			DBConn.getConn(dbName).getCollection(COL_CSN_NODES).insert(installationNode);
 			numOfNodes++;
 		}
