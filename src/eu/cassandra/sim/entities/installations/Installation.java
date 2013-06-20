@@ -34,7 +34,8 @@ public class Installation extends Entity {
 	private Vector<Appliance> appliances;
 	private Vector<Installation> subInstallations;
 	private LocationInfo locationInfo;
-	private double currentPower;
+	private double currentPowerP;
+	private double currentPowerQ;
 	private double maxPower = 0;
 	private double avgPower = 0;
 	private double energy = 0;
@@ -54,7 +55,8 @@ public class Installation extends Entity {
         private Vector<Person> persons = new Vector<Person>();
         private Vector<Appliance> appliances = new Vector<Appliance>();
         private Vector<Installation> subInstallations;
-        private double currentPower = 0.0;
+        private double currentPowerP = 0.0;
+        private double currentPowerQ = 0.0;
         
         public Builder(String aid, String aname, String adescription, String atype) {
         	id = aid;
@@ -141,15 +143,22 @@ public class Installation extends Entity {
 	}
 
 	public void updateRegistry(int tick) {
-		float power = 0f;
+		float p = 0f;
+		float q = 0f;
 		for(Appliance appliance : getAppliances()) {
-			power += appliance.getPower(tick, "p");
+			p += appliance.getPower(tick, "p");
+			q += appliance.getPower(tick, "q");
 		}
-		currentPower = power;
+		currentPowerP = p;
+		currentPowerQ = q;
 	}
 
-	public double getCurrentPower() {
-		return currentPower;
+	public double getCurrentPowerP() {
+		return currentPowerP;
+	}
+	
+	public double getCurrentPowerQ() {
+		return currentPowerQ;
 	}
     
     public Vector<Person> getPersons() {
