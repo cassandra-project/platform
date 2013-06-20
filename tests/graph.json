@@ -1,5 +1,6 @@
 {
-        "graphType" : "InstallationType"
+        "graphType" : "PersonType",
+        "minWeight" : 2.0
 }
  
  

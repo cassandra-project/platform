@@ -24,6 +24,10 @@
                 "ActivityConsumption"
             ],
             "optional": false
+        },
+       "minWeight" : {
+           "type": "number",
+            "optional": true                
         }
     },
     "additionalProperties" : false
