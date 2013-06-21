@@ -145,7 +145,6 @@ public class Runs {
 			// Pricing Policy
 			String prc_id = (String)simParams.get("prc_id");
 			if(prc_id != null && prc_id.matches("[a-z0-9]{24}")) { // Optionally provided
-				System.out.println(prc_id + " - " + simParams);
 				query.put("_id", new ObjectId(prc_id));
 				DBObject pricingPolicy = DBConn.getConn().getCollection(MongoPricingPolicy.COL_PRICING).findOne(query);
 				checkForNull(pricingPolicy, "The provided Pricing Policy was not found in the DB.");

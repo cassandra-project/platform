@@ -13,28 +13,28 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package eu.cassandra.sim;
 
-package eu.cassandra.sim.utilities;
-
-/**
- * Class to hold constants
- * 
- * @author Cassandra developers
- *
- */
-public class Constants {
+public class Period {
 	
-	public final static int MIN_IN_HOUR = 60;
+	private String from;
+		
+	private String to;
 	
-	public final static int MIN_IN_DAY = 60 * 24;
+	private double price;
+		
+	public Period(String afrom, String ato, double aprice) {
+		from = afrom;
+		to = ato;
+		price = aprice;
+	}
+		
+	public String getFrom() { return from; }
+		
+	public String getTo() { return to; }
 	
-	public final static double MINUTE_HOUR_RATIO = 1.0/60.0;
+	public void setTo(String ato) { to = ato; }
 	
-	public final static int MU = 0;
-	
-	public final static int SIGMA = 1;
-	
-	public final static String AUTHORIZATION_FAIL = 
-			"{ \"success\": false, \"message\": \"User authorization failed\", \"errors\": { \"exception\": \"User and or password do not match.\" }}";
+	public double getPrice() { return price; }
 
 }

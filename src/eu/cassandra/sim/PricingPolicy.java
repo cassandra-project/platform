@@ -66,6 +66,8 @@ public class PricingPolicy {
 	
 	private ArrayList<Offpeak> offpeaks;
 	
+	private ArrayList<Period> periods;
+	
 	public PricingPolicy() {
 		billingCycle = 1;
 		fixedCharge = 0;
@@ -75,6 +77,22 @@ public class PricingPolicy {
 	public PricingPolicy(DBObject dbo) throws ParseException {
 		type = dbo.get("type").toString();
 		switch(type) {
+			case "TOUPricing":
+				billingCycle = Integer.parseInt(dbo.get("billingCycle").toString());
+				fixedCharge = Double.parseDouble(dbo.get("fixedCharge").toString());
+				// Parse levels
+				BasicDBList periodsObj = (BasicDBList)dbo.get("timezones");
+				DBObject periodObj;
+				periods = new ArrayList<Period>();
+				for(int i = 0; i < periodsObj.size(); i++) {
+					periodObj =  (DBObject)periodsObj.get(i);
+					String from = periodObj.get("starttime").toString();
+					String to = periodObj.get("endtime").toString();
+					double price = Double.parseDouble(periodObj.get("price").toString());
+					Period p = new Period(from, to, price);
+					periods.add(p);
+				}
+				break;
 			case "ScalarEnergyPricing":
 				billingCycle = Integer.parseInt(dbo.get("billingCycle").toString());
 				fixedCharge = Double.parseDouble(dbo.get("fixedCharge").toString());
@@ -147,11 +165,43 @@ public class PricingPolicy {
 		return type;
 	}
 	
+	public double calcOneKw24() {
+		double cost = 0;
+		if(type.equalsIgnoreCase("TOUPricing")) {
+			Iterator<Period> iter = periods.iterator();
+			while(iter.hasNext()) {
+				Period p = iter.next();
+				if(p.getTo().equalsIgnoreCase("00:00")) p.setTo("24:00");
+				String[] fromTokens = p.getFrom().split(":");
+				String[] toTokens = p.getTo().split(":");
+				int from = Integer.parseInt(fromTokens[0]) * 60 + Integer.parseInt(fromTokens[1]);
+				int to = Integer.parseInt(toTokens[0]) * 60 + Integer.parseInt(toTokens[1]);
+				cost += Math.max(0, to-from) * p.getPrice() * Constants.MINUTE_HOUR_RATIO;
+			}
+		}
+		return cost;
+	}
+	
 	public double calculateCost(double toEnergy, double fromEnergy,
-			double toEnergyOffpeak, double fromEnergyOffpeak) {
+			double toEnergyOffpeak, double fromEnergyOffpeak, int tick) {
 		double remainingEnergy = toEnergy - fromEnergy;
 		double cost = 0;
 		switch(type) {
+			case "TOUPricing":
+				int minutesInDay = tick % Constants.MIN_IN_DAY;
+				Iterator<Period> iter = periods.iterator();
+				while(iter.hasNext()) {
+					Period p = iter.next();
+					if(p.getTo().equalsIgnoreCase("00:00")) p.setTo("24:00");
+					String[] fromTokens = p.getFrom().split(":");
+					String[] toTokens = p.getTo().split(":");
+					int from = Integer.parseInt(fromTokens[0]) * 60 + Integer.parseInt(fromTokens[1]);
+					int to = Integer.parseInt(toTokens[0]) * 60 + Integer.parseInt(toTokens[1]);
+					if(minutesInDay >= from && minutesInDay < to) {
+						cost += (toEnergy - fromEnergy) * p.getPrice();
+					}
+				}
+				break;
 			case "ScalarEnergyPricing":
 				cost += fixedCharge;
 				for(int i = levels.size()-1; i >= 0; i--) {
@@ -241,7 +291,7 @@ public class PricingPolicy {
 		PricingPolicy pp = new PricingPolicy(pricingPolicy);
 		System.out.println(pp.getType());
 		System.out.println(pp.getFixedCharge());
-		System.out.println(pp.calculateCost(1500, 0, 0, 0));
+		System.out.println(pp.calculateCost(1500, 0, 0, 0, 1));
 	}
 
 }

@@ -46,6 +46,22 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 public class Utils {
 	
+	public static boolean getBoolean(Object o) {
+		if(o == null) {
+			return false;
+		} else {
+			return ((Boolean)o).booleanValue();
+		}
+	}
+	
+	public static double getDouble(Object o) {
+		if(o == null) {
+			return 0.0;
+		} else {
+			return Double.parseDouble(o.toString());
+		}
+	}
+	
 	public static String stackTraceToString(StackTraceElement[] s) {
 		String returnMessage = new String();
 		for(int i = 0; i < s.length; i++) {

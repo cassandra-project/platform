@@ -36,10 +36,12 @@ import eu.cassandra.server.mongo.MongoDemographics;
 import eu.cassandra.server.mongo.MongoDistributions;
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.MongoPersons;
+import eu.cassandra.server.mongo.MongoPricingPolicy;
 import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.MongoSimParam;
+import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.entities.appliances.GUIConsumptionModel;
 import eu.cassandra.sim.math.GUIDistribution;
 import eu.cassandra.sim.utilities.Utils;
@@ -487,6 +489,10 @@ public class MongoDBQueries {
 				else if(collection.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS) &&
 						dbObj1.containsField("_id")) {
 					obj = getValues(obj,httpHeaders,obj.get("_id").toString(),MongoConsumptionModels.COL_CONSMODELS);
+				} else if(collection.equalsIgnoreCase(MongoPricingPolicy.COL_PRICING)) {
+					PricingPolicy pp = new PricingPolicy(obj);
+					double oneKw24Cost = pp.calcOneKw24();
+					obj.put("onekw24", oneKw24Cost);
 				}
 
 				if(obj.containsField("_id"))
@@ -585,14 +591,14 @@ public class MongoDBQueries {
 			}
 			dBObject.put("values", list);
 			// Obsolete?
-//			if((pvalues == null || pvalues.length==0) && dBObject.containsField("pvalues")) {; 
-//				BasicDBList t = (BasicDBList)dBObject.get("pvalues");
-//				pvalues = Utils.dblist2doubleArr(t); 
-//			}
-//			if((qvalues == null || qvalues.length==0) && dBObject.containsField("qvalues")) {; 
-//				BasicDBList t = (BasicDBList)dBObject.get("qvalues");
-//				qvalues = Utils.dblist2doubleArr(t); 
-//			}
+			//			if((pvalues == null || pvalues.length==0) && dBObject.containsField("pvalues")) {; 
+			//				BasicDBList t = (BasicDBList)dBObject.get("pvalues");
+			//				pvalues = Utils.dblist2doubleArr(t); 
+			//			}
+			//			if((qvalues == null || qvalues.length==0) && dBObject.containsField("qvalues")) {; 
+			//				BasicDBList t = (BasicDBList)dBObject.get("qvalues");
+			//				qvalues = Utils.dblist2doubleArr(t); 
+			//			}
 		}
 
 		return dBObject;
@@ -785,17 +791,31 @@ public class MongoDBQueries {
 	}
 
 
+	public DBObject insertData(String coll, String dataToInsert, 
+			String successMessage, int schemaType) {
+		return insertData(coll, dataToInsert, successMessage,(String[])null,
+				(String[])null,null, schemaType,null);
+	}
+
 	/**
 	 * 
 	 * @param coll
 	 * @param dataToInsert
 	 * @param successMessage
+	 * @param schemaType
+	 * @param httpHeaders
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage, int schemaType) {
+			String successMessage, int schemaType,HttpHeaders httpHeaders) {
 		return insertData(coll, dataToInsert, successMessage,(String[])null,
-				(String[])null,null, schemaType);
+				(String[])null,null, schemaType,httpHeaders);
+	}
+
+	public DBObject insertData(String coll, String dataToInsert, 
+			String successMessage,String refColl, String refKeyName, int schemaType) {
+		return insertData(coll, dataToInsert, successMessage, new String[] {refColl},
+				new String[] {refKeyName}, new boolean[] {false}, schemaType,null);
 	}
 
 	/**
@@ -805,23 +825,49 @@ public class MongoDBQueries {
 	 * @param successMessage
 	 * @param refColl
 	 * @param refKeyName
+	 * @param schemaType
+	 * @param httpHeaders
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
-			String successMessage,String refColl, String refKeyName, int schemaType) {
+			String successMessage,String refColl, String refKeyName, int schemaType,HttpHeaders httpHeaders) {
 		return insertData(coll, dataToInsert, successMessage, new String[] {refColl},
-				new String[] {refKeyName}, new boolean[] {false}, schemaType);
+				new String[] {refKeyName}, new boolean[] {false}, schemaType, httpHeaders);
 	}
+
 
 	/**
 	 * 
-	 * @param queryMessage
+	 * @param coll
+	 * @param dataToInsert
 	 * @param successMessage
+	 * @param refColl
+	 * @param refKeyName
+	 * @param canBeNull
+	 * @param schemaType
 	 * @return
 	 */
 	public DBObject insertData(String coll, String dataToInsert, 
 			String successMessage, String[] refColl, String[] refKeyName, 
 			boolean[] canBeNull, int schemaType) {
+		return insertData(coll, dataToInsert, successMessage, refColl, refKeyName, canBeNull, schemaType,null); 
+	}
+
+	/**
+	 * 
+	 * @param coll
+	 * @param dataToInsert
+	 * @param successMessage
+	 * @param refColl
+	 * @param refKeyName
+	 * @param canBeNull
+	 * @param schemaType
+	 * @param httpHeaders
+	 * @return
+	 */
+	public DBObject insertData(String coll, String dataToInsert, 
+			String successMessage, String[] refColl, String[] refKeyName, 
+			boolean[] canBeNull, int schemaType,HttpHeaders httpHeaders) {
 		DBObject data;
 		try {
 			data = (DBObject)JSON.parse(dataToInsert);
@@ -835,7 +881,10 @@ public class MongoDBQueries {
 					ensureThatRefKeyExists(data, refColl[i], refKeyName[i],canBeNull[i]);
 				}
 			}
-			DBConn.getConn().getCollection(coll).insert(data);
+			if(httpHeaders == null)
+				DBConn.getConn().getCollection(coll).insert(data);
+			else
+				DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).getCollection(coll).insert(data);
 		}catch(com.mongodb.util.JSONParseException e) {
 			return jSON2Rrn.createJSONError("Error parsing JSON input", e.getMessage());
 		}catch(Exception e) {
@@ -1148,7 +1197,7 @@ public class MongoDBQueries {
 			return jSON2Rrn.createJSONError("Error in retrieving results", e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * curl -i  --header "dbname:run_id" 'http://localhost:8080/cassandra/api/kpis?inst_id=instID'
 	 * curl -i  --header "dbname:run_id" 'http://localhost:8080/cassandra/api/kpis'
@@ -1196,7 +1245,7 @@ public class MongoDBQueries {
 	 * @param httpHeaders
 	 * @return
 	 */
-	private String getDbNameFromHTTPHeader(HttpHeaders httpHeaders) {
+	public static String getDbNameFromHTTPHeader(HttpHeaders httpHeaders) {
 		if(httpHeaders == null || httpHeaders.getRequestHeaders() == null || 
 				!httpHeaders.getRequestHeaders().containsKey("dbname") )
 			return null;

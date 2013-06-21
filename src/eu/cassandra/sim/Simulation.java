@@ -100,6 +100,7 @@ public class Simulation implements Runnable {
 		scenario = ascenario;
 		dbname = adbname;
 		m = new MongoResults(dbname);
+		m.createIndexes();
   		RNG.init();
 	}
   
@@ -119,6 +120,10 @@ public class Simulation implements Runnable {
   			double mcrunsRatio = 1.0/mcruns;
   			for(int i = 0; i < mcruns; i++) {
   				tick = 0;
+  				double avgPPowerPerHour = 0;
+  				double avgQPowerPerHour = 0;
+  				double[] avgPPowerPerHourPerInst = new double[installations.size()];
+  				double[] avgQPowerPerHourPerInst = new double[installations.size()];
   	  			double maxPower = 0;
   	  			double avgPower = 0;
   	  			double energy = 0;
@@ -127,6 +132,7 @@ public class Simulation implements Runnable {
   	  			double billingCycleEnergy = 0;
   	  			double billingCycleEnergyOffpeak = 0;
   	  			double billingCycleDays = 0;
+  	  			
   	  			while (tick < endTick) {
   	  				// If it is the beginning of the day create the events
   	  				if (tick % Constants.MIN_IN_DAY == 0) {
@@ -161,52 +167,88 @@ public class Simulation implements Runnable {
 					 *  Calculate the total power for this simulation step for all the
 					 *  installations.
 					 */
-					float sumPower = 0;
+					float sumP = 0;
+					float sumQ = 0;
+					int counter = 0;
 		  			for(Installation installation: installations) {
 		  				installation.nextStep(tick);
-		  				double power = installation.getCurrentPower();
-		  				installation.updateMaxPower(power);
-		  				installation.updateAvgPower(power/endTick);
+		  				double p = installation.getCurrentPowerP();
+		  				double q = installation.getCurrentPowerQ();
+		  				installation.updateMaxPower(p);
+		  				installation.updateAvgPower(p/endTick);
 		  				if(pricing.isOffpeak(tick)) {
-		  					installation.updateEnergyOffpeak(power);
+		  					installation.updateEnergyOffpeak(p);
 		  				} else {
-		  					installation.updateEnergy(power);
+		  					installation.updateEnergy(p);
 		  				}
-		  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
-		  				sumPower += power;
+		  				m.addTickResultForInstallation(tick, 
+		  						installation.getId(), 
+		  						p * mcrunsRatio, 
+		  						q * mcrunsRatio, 
+		  						MongoResults.COL_INSTRESULTS);
+		  				sumP += p;
+		  				sumQ += q;
+		  				avgPPowerPerHour += p;
+		  				avgQPowerPerHour += q;
+		  				avgPPowerPerHourPerInst[counter] += p;
+		  				avgQPowerPerHourPerInst[counter] += q;
 		//  				String name = installation.getName();
 		//  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  				+ "Power: " + power);
 		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  		  				+ "Power: " + power);
-		  				if(billingCycleDays % pricing.getBillingCycle() == 0) {
-		  					installation.updateCost(pricing);
+		  				if(billingCycleDays % pricing.getBillingCycle() == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
+		  					installation.updateCost(pricing, tick);
 		  				}
+		  				counter++;
 		  			}
-		  			if(sumPower > maxPower) maxPower = sumPower;
-		  			avgPower += sumPower/endTick;
+		  			if(sumP > maxPower) maxPower = sumP;
+		  			avgPower += sumP/endTick;
 		  			if(pricing.isOffpeak(tick)) {
-		  				energyOffpeak += (sumPower/1000.0) * Constants.MINUTE_HOUR_RATIO;
+		  				energyOffpeak += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 		  			} else {
-		  				energy += (sumPower/1000.0) * Constants.MINUTE_HOUR_RATIO;
+		  				energy += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 		  			}
-		  			if(billingCycleDays % pricing.getBillingCycle() == 0) {
+		  			if(billingCycleDays % pricing.getBillingCycle() == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
 		  				cost += pricing.calculateCost(energy, 
 		  						billingCycleEnergy, 
 		  						energyOffpeak,
-		  						billingCycleEnergyOffpeak);
+		  						billingCycleEnergyOffpeak,
+		  						tick);
 		  				billingCycleEnergy = energy;
 		  				billingCycleEnergyOffpeak = energyOffpeak;
 		  			}
-		  			m.addAggregatedTickResult(tick, sumPower, 0);
+		  			m.addAggregatedTickResult(tick, 
+		  					sumP * mcrunsRatio, 
+		  					sumQ * mcrunsRatio, 
+		  					MongoResults.COL_AGGRRESULTS);
 		  			tick++;
+		  			if(tick % Constants.MIN_IN_HOUR == 0) {
+		  				m.addAggregatedTickResult((tick/Constants.MIN_IN_HOUR), 
+		  						(avgPPowerPerHour/Constants.MIN_IN_HOUR) * mcrunsRatio, 
+		  						(avgQPowerPerHour/Constants.MIN_IN_HOUR) * mcrunsRatio, 
+		  						MongoResults.COL_AGGRRESULTS_HOURLY);
+		  				avgPPowerPerHour = 0;
+		  				avgQPowerPerHour = 0;
+		  				counter = 0;
+			  			for(Installation installation: installations) {
+			  				m.addTickResultForInstallation((tick/Constants.MIN_IN_HOUR), 
+			  						installation.getId(),
+			  						(avgPPowerPerHourPerInst[counter]/Constants.MIN_IN_HOUR) * mcrunsRatio, 
+			  						(avgQPowerPerHourPerInst[counter]/Constants.MIN_IN_HOUR) * mcrunsRatio, 
+			  						MongoResults.COL_INSTRESULTS_HOURLY);
+			  				avgPPowerPerHourPerInst[counter] = 0;
+			  				avgQPowerPerHourPerInst[counter] = 0;
+			  				counter++;
+			  			}
+		  			}
 		  			mccount++;
 		  			percentage = (int)(mccount * 100.0 / (mcruns * endTick));
 		  			objRun.put("percentage", percentage);
 		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   	  			}
   	  			for(Installation installation: installations) {
-  	  				installation.updateCost(pricing); // update the rest of the energy
+  	  				installation.updateCost(pricing, tick); // update the rest of the energy
   	  				m.addKPIs(installation.getId(), 
   	  						installation.getMaxPower() * mcrunsRatio, 
   	  						installation.getAvgPower() * mcrunsRatio, 
@@ -216,19 +258,25 @@ public class Simulation implements Runnable {
   	  			cost += pricing.calculateCost(energy, 
   	  					billingCycleEnergy,
   						energyOffpeak,
-  						billingCycleEnergyOffpeak);
+  						billingCycleEnergyOffpeak,
+  						tick);
   	  			m.addKPIs(MongoResults.AGGR, 
   	  					maxPower * mcrunsRatio, 
   	  					avgPower * mcrunsRatio, 
   	  					energy * mcrunsRatio, 
   	  					cost * mcrunsRatio);
   			}
-  			for(int i = 0; i < endTick; i++) {
-  				for(Installation installation: installations) {
-  					m.normalize(i,installation.getId(), mcruns);
-  				}
-  				m.normalize(i, mcruns);
-  			}
+  			// Obsolete normalization code (to be removed) now it is done on the fly
+//  			for(int i = 0; i < endTick; i++) {
+//  				for(Installation installation: installations) {
+//  					m.normalize(i,installation.getId(), mcruns, MongoResults.COL_INSTRESULTS);
+//  					System.out.println(installation.getId());
+//  					m.normalize(i,installation.getId(), mcruns, MongoResults.COL_INSTRESULTS_HOURLY);
+//  					System.out.println(installation.getId());
+//  				}
+//  				m.normalize(i, mcruns, MongoResults.COL_AGGRRESULTS);
+//  				m.normalize(i, mcruns, MongoResults.COL_AGGRRESULTS_HOURLY);
+//  			}
 	  		long endTime = System.currentTimeMillis();
 	  		objRun.put("ended", endTime);
 	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
@@ -295,8 +343,8 @@ public class Simulation implements Runnable {
 	    		String appname = (String)applianceDoc.get("name");
 		    	String appdescription = (String)applianceDoc.get("description");
 		    	String apptype = (String)applianceDoc.get("type");
-		    	double standy = Double.parseDouble(applianceDoc.get("standy_consumption").toString());
-		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
+		    	double standy = Utils.getDouble(applianceDoc.get("standy_consumption"));
+		    	boolean base = Utils.getBoolean(applianceDoc.get("base"));
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
 		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
 		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
@@ -350,7 +398,6 @@ public class Simulation implements Runnable {
 	    			act.addStartTime(actmodDayType, startDist);
 	    			act.addTimes(actmodDayType, timesDist);
 	    			// add appliances
-	    			System.out.println(actmodDoc.toString());
 		    		BasicDBList containsAppliances = (BasicDBList)actmodDoc.get("containsAppliances");
 		    		for(int l = 0; l < containsAppliances.size(); l++) {
 		    			String containAppId = (String)containsAppliances.get(l);
