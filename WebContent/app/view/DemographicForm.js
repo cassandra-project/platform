@@ -74,8 +74,7 @@ Ext.define('C.view.DemographicForm', {
 											xtype: 'textfield',
 											width: 246,
 											fieldLabel: 'Number of entities',
-											name: 'numberOfEntities',
-											readOnly: true
+											name: 'numberOfEntities'
 										}
 									]
 								},
@@ -141,6 +140,7 @@ Ext.define('C.view.DemographicForm', {
 		record.set({
 			'name':values.name,
 			'type': values.type,
+			'numberOfEntities': values.numberOfEntities,
 			'description': values.description,
 			'generators': gridGenerators
 		});

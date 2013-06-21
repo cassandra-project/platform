@@ -68,6 +68,12 @@ Ext.define('C.view.InstallationForm', {
 								{
 									xtype: 'textfield',
 									width: 246,
+									fieldLabel: 'Transformer ID',
+									name: 'trans_id'
+								},
+								{
+									xtype: 'textfield',
+									width: 246,
 									fieldLabel: 'Location',
 									name: 'location'
 								},
