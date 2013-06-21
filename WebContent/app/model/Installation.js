@@ -32,6 +32,10 @@ Ext.define('C.model.Installation', {
 			type: 'string'
 		},
 		{
+			name: 'trans_id',
+			type: 'string'
+		},
+		{
 			name: 'scenario_id'
 		},
 		{
