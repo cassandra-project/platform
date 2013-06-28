@@ -32,15 +32,21 @@ Ext.define('C.view.MyTabPanel', {
 					fn: me.onTabpanelBeforeRender,
 					scope: me
 				}
-			}
+			},
+			dockedItems: [
+				{
+					xtype: 'toolbar',
+					dock: 'top'
+				}
+			]
 		});
 
 		me.callParent(arguments);
 	},
 
 	onMainTabPanelTabChange: function(tabPanel, newCard, oldCard, eOpts) {
+		var activeTab = tabPanel.getActiveTab();
 		if (C.dbname) {
-			var activeTab = tabPanel.getActiveTab();
 			if (Ext.getClassName(activeTab) != 'C.view.ResultsGraphForm') {	
 				activeTab.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
 				activeTab.query('.field').forEach(function(c){c.readOnly = true;});
@@ -66,6 +72,10 @@ Ext.define('C.view.MyTabPanel', {
 				});
 			}
 		}
+
+		var breadcrumb = C.app.setBreadcrumb(activeTab.corresponding_node);
+		tabPanel.dockedItems.items[0].removeAll();
+		tabPanel.dockedItems.items[0].add(breadcrumb);
 	},
 
 	onTabpanelBeforeRender: function(component, eOpts) {
