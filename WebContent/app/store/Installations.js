@@ -30,10 +30,10 @@ Ext.define('C.store.Installations', {
 			remoteFilter: true,
 			storeId: 'MyJsonStore2',
 			clearOnPageLoad: false,
+			pageSize: 2,
 			proxy: {
 				type: 'rest',
-				limitParam: '',
-				startParam: '',
+				startParam: 'skip',
 				url: '/cassandra/api/inst',
 				reader: {
 					type: 'json',
@@ -83,6 +83,7 @@ Ext.define('C.store.Installations', {
 		}else{
 			console.info('Store is not bound to a navigation node. Nothing to render there.');
 		}
+
 	},
 
 	onJsonstoreUpdate: function(store, record, operation, modifiedFieldNames, eOpts) {

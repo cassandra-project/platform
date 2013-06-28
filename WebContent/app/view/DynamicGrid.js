@@ -209,6 +209,7 @@ Ext.define('C.view.DynamicGrid', {
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
+					case 'Activity': targetID = 'toPersID'; meID = 'actID'; break;
 					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
 
 					default: return false;
@@ -643,7 +644,49 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onGridpanelAfterRender: function(component, eOpts) {
-		/*abstractcomponent.addDocked(new Ext.toolbar.Paging( {store : abstractcomponent.store, dock: 'bottom'} ));*/
+		var node = component.store.navigationNode;
+		if (!node)
+		return false;
+		var parent_id = (node.get('nodeType') == 'ProjectsCollection')?'':node.parentNode.get('id');
+		var inputArray = {};
+		switch(node.get('nodeType')){
+			case 'ProjectsCollection': inputArray = {};break;
+			case 'ScenariosCollection': inputArray = {'prj_id' : parent_id};break;
+			case 'InstallationsCollection': inputArray = {'scn_id' : parent_id}; break;
+			case 'PricingSchemesCollection': inputArray = {'scn_id' : parent_id}; break;
+			case 'DemographicsCollection': inputArray = {'scn_id' : parent_id}; break;
+			case 'SimulationParamsCollection': inputArray = {'scn_id' : parent_id}; break;
+			case 'PersonsCollection': inputArray = {'inst_id' : parent_id}; break;
+			case 'AppliancesCollection': inputArray = {'inst_id': parent_id}; break;
+			case 'ActivitiesCollection': inputArray = {'pers_id': parent_id}; break;
+			case 'ActivityModelsCollection': inputArray = {'act_id' : parent_id}; break;
+			default: return false;
+		}
+
+		var myToolbar = new Ext.toolbar.Paging( {
+			store : component.store, 
+			dock: 'bottom',
+			displayInfo: true,
+			displayMsg: 'Displaying records {0} - {1} of {2}',
+			emptyMsg: "No topics to display",
+			doRefresh : function(){
+				// Keep or remove these code
+				var me = component,
+					current = me.store.currentPage;
+
+				if (me.fireEvent('beforechange', me, current) !== false) {
+					while (node.hasChildNodes()) {
+						node.removeChild(node.childNodes[0]);
+					}
+					me.store.loadPage(current);
+				}
+			}
+
+		} );
+
+		myToolbar.store.proxy.extraParams = inputArray;
+
+		component.addDocked(myToolbar);
 	}
 
 });
