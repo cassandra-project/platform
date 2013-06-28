@@ -112,6 +112,7 @@ Ext.define('C.view.MyTreePanel', {
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
 					case 'Appliance': targetID = 'toInstID'; meID = 'appID'; break;
+					case 'Activity': targetID = 'toPersID'; meID = 'actID'; break;
 					case 'ActivityModel': targetID = 'toActID'; meID = 'actmodID'; break;
 
 					default: return false;
@@ -169,20 +170,7 @@ Ext.define('C.view.MyTreePanel', {
 	},
 
 	onTreeviewItemDblClick: function(dataview, record, item, index, e, eOpts) {
-		var breadcrumb = record.getPath();
-		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
-		var tabs = Ext.getCmp('MainTabPanel');
-		var isOpen = false;
-		Ext.each (tabs.items.items, function(item, index) {
-			if (item.pathToMe == pathToMe) {
-				tabs.setActiveTab(item);
-				isOpen = true;
-				return false;
-			}
-		});
-		if (!isOpen) 
-		C.app.createForm(record);
-
+		C.app.openTab(record);
 	},
 
 	onUiNavigationTreePanelAfterRender: function(component, eOpts) {

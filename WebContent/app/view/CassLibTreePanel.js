@@ -65,20 +65,7 @@ Ext.define('C.view.CassLibTreePanel', {
 	},
 
 	onTreeviewItemDblClick: function(dataview, record, item, index, e, eOpts) {
-		var breadcrumb = record.getPath();
-		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
-		var tabs = Ext.getCmp('MainTabPanel');
-		var isOpen = false;
-		Ext.each (tabs.items.items, function(item, index) {
-			if (item.pathToMe == pathToMe) {
-				tabs.setActiveTab(item);
-				isOpen = true;
-				return false;
-			}
-		});
-		if (!isOpen) 
-		C.app.createForm(record);
-
+		C.app.openTab(record);
 	},
 
 	onTreepanelItemAppend: function(nodeinterface, node, index, eOpts) {
