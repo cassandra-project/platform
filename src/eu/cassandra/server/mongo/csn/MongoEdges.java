@@ -143,7 +143,7 @@ public class MongoEdges {
 				if( dif < minWeight) {
 					edge = new BasicDBObject("type",graphType);
 					edge.put("minWeight", minWeight);
-					edge.put("dif", dif);
+					edge.put("weight", dif);
 				}
 			}
 			//Else perday or perhour

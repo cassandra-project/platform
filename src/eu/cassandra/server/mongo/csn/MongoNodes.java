@@ -105,6 +105,7 @@ public class MongoNodes {
 					if(perHourP.containsKey((int)(hours%24)))
 						v += perHourP.get((int)(hours%24));
 					perHourP.put((int)(hours%24), v);
+					System.out.println((int)(hours%24) + "\t" +v);
 				}
 				if(q != null) {
 					sumQ += Double.parseDouble(q);
