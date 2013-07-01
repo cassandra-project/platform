@@ -31,6 +31,6 @@
   <env-entry>
     <env-entry-name>mongo.db</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>test</env-entry-value>
+    <env-entry-value>test1</env-entry-value>
   </env-entry>
 </web-app>
