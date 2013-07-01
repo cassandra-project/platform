@@ -49,13 +49,12 @@ Ext.define('C.store.Projects', {
 					fn: me.onJsonstoreLoad,
 					scope: me
 				},
-				update: {
-					fn: me.onJsonstoreUpdate,
-					single: false,
-					scope: me
-				},
 				remove: {
 					fn: me.onJsonstoreRemove,
+					scope: me
+				},
+				update: {
+					fn: me.onJsonstoreUpdate,
 					scope: me
 				}
 			}
@@ -86,14 +85,18 @@ Ext.define('C.store.Projects', {
 
 	},
 
+	onJsonstoreRemove: function(store, record, index, eOpts) {
+		store.navigationNode.removeChild(record.node);
+	},
+
 	onJsonstoreUpdate: function(store, record, operation, modifiedFieldNames, eOpts) {
-		console.info('Projects data updated.', store, record, operation, eOpts);
+		console.info('Projectas data updated.', store, record, operation, eOpts);
 		if (!record.node) {
 			if (operation == 'commit') {
 				console.info('++ Node does not exist. Creating it.');
 				var node = store.navigationNode.appendChild({
 					id: record.get('_id'),
-					name: record.get('name'),
+					name: record.data.name,
 					nodeType: 'Project',
 					nodeId: record.get('_id'),
 					nodeStoreId: store.storeId,
@@ -108,10 +111,6 @@ Ext.define('C.store.Projects', {
 			}
 		}
 
-	},
-
-	onJsonstoreRemove: function(store, record, index, eOpts) {
-		store.navigationNode.removeChild(record.node);
 	}
 
 });

@@ -145,22 +145,7 @@ Ext.application({
 
 	createForm: function(record) {
 		if (!record.isExpanded())record.expand();//basic in order to be rendered
-		/*
-		var breadcrumb = record.getPath();
-		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
-		var namesBreadcrumb = record.getPath('name');
-		var tabs = Ext.getCmp('MainTabPanel');
-		var isOpen = false;
-		Ext.each (tabs.items.items, function(item, index) {
-		if (item.pathToMe == pathToMe) {
-		tabs.setActiveTab(item);
-		isOpen = true;
-		return false;
-		}
-		});
-		if (!isOpen) {*/
-		var breadcrumb = record.getPath();
-		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
+
 		var cmpToAdd;
 
 		if (record.get('nodeType').search('Collection') > 0 ) {
@@ -242,22 +227,30 @@ Ext.application({
 			catch (e){}
 		}
 
-		var namesBreadcrumb = record.getPath('name');
+
 		var tabPanel = Ext.getCmp('MainTabPanel');
 		cmpToAdd.closable = true;
+		cmpToAdd.corresponding_node = record;
+
+		var breadcrumb = C.app.setBreadcrumb(record);
+		tabPanel.dockedItems.items[0].removeAll();
+		tabPanel.dockedItems.items[0].add(breadcrumb);
 		tabPanel.add(cmpToAdd);
 		//neptune stuff
-		cmpToAdd.setTitle(namesBreadcrumb.split('/').join(" &rsaquo; "));
-		cmpToAdd.tab.setText(record.get('name'));
-		//cmpToAdd.setTitle(record.get('name'));
+		/*cmpToAdd.setTitle(namesBreadcrumb.split('/').join(" &rsaquo; "));*/
+		/*cmpToAdd.setTitle(C.app.setBreadcrump(record));*/
+
+		cmpToAdd.setTitle(record.get('name'));
+
 		if (record.parentNode && record.parentNode.data.icon) {
 			cmpToAdd.tab.setIcon(record.parentNode.data.icon);
 		}
 		//cmpToAdd.tab.getEl().addCls('x-tab-strip-closable');
-		cmpToAdd.pathToMe = pathToMe;
+		cmpToAdd.pathToMe = record.get('nodeType')+':'+record.getPath();
 		tabPanel.setActiveTab(cmpToAdd);
 		//tabPanel.getActiveTab().header.setTitle(namesBreadcrumb.split('/').join(" &rsaquo; "));
 		tabPanel.getActiveTab().header.show();
+
 		//}
 	},
 
@@ -831,6 +824,7 @@ Ext.application({
 		grid.closable = false;
 		grid.setTitle("KPIs");
 		grid.query("tool")[0].hide();
+		grid.query("tool")[1].hide();
 		myFormCmp.insert(3, grid);
 
 		return myFormCmp;
@@ -908,6 +902,64 @@ Ext.application({
 
 		myForm.loadRecord(record);
 		return myFormCmp;
+	},
+
+	setBreadcrumb: function(node) {
+		var breadcrumb = [];
+
+		var createBtn = function(n){
+			return Ext.create('Ext.Button', {
+				id: 'bb' + n.id,
+				text: n.get('name') + '<span class="rsaquo">  &rsaquo; </span>',
+				cls : 'breadcrumb_btn',
+				overCls : 'breadcrumb_btn_over',
+				pressedCls : 'breadcrumb_btn_over',
+				handler: function () {
+					C.app.openTab(n);	
+				}
+			});
+		};
+
+		while (!node.get('root')) {
+			breadcrumb.unshift(createBtn(node));
+			node = node.parentNode;
+		}
+
+		//add root node
+		breadcrumb.unshift(
+		Ext.create('Ext.Button', {
+			id: 'bbroot',
+			text: node.get('name') + '<span class="rsaquo">  &rsaquo; </span>',
+			cls : 'breadcrumb_btn',
+			overCls : 'breadcrumb_btn_over',
+			pressedCls : 'breadcrumb_btn_over',
+			handler: function () {
+				C.app.openTab(node);	
+			}
+		})
+		);
+
+		console.info(breadcrumb);
+		return breadcrumb;
+
+
+
+	},
+
+	openTab: function(record) {
+		var breadcrumb = record.getPath();
+		var pathToMe =  record.get('nodeType')+':'+breadcrumb;
+		var tabs = Ext.getCmp('MainTabPanel');
+		var isOpen = false;
+		Ext.each (tabs.items.items, function(item, index) {
+			if (item.pathToMe == pathToMe) {
+				tabs.setActiveTab(item);
+				isOpen = true;
+				return false;
+			}
+		});
+		if (!isOpen) 
+		C.app.createForm(record);
 	}
 
 });
