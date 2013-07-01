@@ -1,6 +1,6 @@
 {
-        "graphType" : "PersonType",
-        "minWeight" : 2.0
+        "graphType" : "MaxConsumptionP",
+        "minWeight" : 100.0
 }
  
  
