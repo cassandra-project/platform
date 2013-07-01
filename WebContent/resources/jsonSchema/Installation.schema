@@ -17,7 +17,12 @@
             "type": "string",
             "description": "Type of the installation",
             "optional": true
-        },                
+        },
+        "trans_id": {
+            "type": "string",
+            "description": "Transformer ID the installation belongs to",
+            "optional": true
+        },                     
         "description": {
             "type": "string",
             "description": "Description of the installation",
