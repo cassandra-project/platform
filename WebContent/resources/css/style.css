@@ -168,3 +168,9 @@ width: 17px;
 	vertical-align: middle;
 	margin-bottom: 6px;
 }
+
+.small_text {
+	font-size:11px; 
+	font-style:italic;
+	text-align: center;
+}
