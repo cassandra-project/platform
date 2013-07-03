@@ -1,5 +1,6 @@
 {
-        "graphType" : "InstallationType"
+        "graphType" : "MaxConsumptionP",
+        "minWeight" : 100.0
 }
  
  
