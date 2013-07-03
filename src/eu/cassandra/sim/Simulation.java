@@ -113,7 +113,7 @@ public class Simulation implements Runnable {
 		query.put("_id", new ObjectId(dbname));
 		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   		try {
-  			logger.info("Run " + dbname + " started @ " + Calendar.getInstance().getTimeInMillis());
+  			System.out.println("Run " + dbname + " started @ " + Calendar.getInstance().getTimeInMillis());
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
@@ -283,7 +283,7 @@ public class Simulation implements Runnable {
 	  		logger.info("Time elapsed for Run " + dbname + ": " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
 	  		logger.info("Run " + dbname + " ended @ " + Calendar.getInstance().toString());
   		} catch(Exception e) {
-  			logger.error(Utils.stackTraceToString(e.getStackTrace()));
+  			System.out.println(Utils.stackTraceToString(e.getStackTrace()));
   			// Change the run object in the db to reflect the exception
   			if(objRun != null) {
   				objRun.put("percentage", -1);
