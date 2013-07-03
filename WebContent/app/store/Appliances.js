@@ -65,7 +65,6 @@ Ext.define('C.store.Appliances', {
 	onJsonstoreLoad: function(store, records, successful, eOpts) {
 		if(store.navigationNode){
 			Ext.each(records, function(record, index){
-				var root_id = store.navigationNode.store.treeStore.tree.root.get('id');
 				var node = store.navigationNode.appendChild({
 					id: record.data._id,
 					name: record.data.name,
