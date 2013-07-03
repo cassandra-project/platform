@@ -27,12 +27,15 @@ public class MongoResults {
 
 	public final static String COL_APPRESULTS = "app_results";
 	public final static String COL_INSTRESULTS = "inst_results";
+	public final static String INST_RESULTS_HOUR = "inst_results_hourly";
 	public final static String COL_INSTRESULTS_HOURLY = "inst_results_hourly";
 	public final static String COL_AGGRRESULTS = "aggr_results";
 	public final static String COL_AGGRRESULTS_HOURLY = "aggr_results_hourly";
 	public final static String COL_INSTKPIS = "inst_kpis";
 	public final static String COL_AGGRKPIS = "aggr_kpis";
 	public final static String AGGR = "aggr";
+	
+	
 	
 	private String dbname;
 	

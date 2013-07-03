@@ -272,7 +272,7 @@ public class MongoDBQueries {
 			String filters, String sort, int limit, int skip,
 			String successMsg,  boolean count, String...fieldNames) {
 		DBObject query;
-		BasicDBObject fields;
+		BasicDBObject fields = null;
 		try {
 			query = new BasicDBObject();
 			if(qKey != null && qValue != null && 
@@ -281,8 +281,10 @@ public class MongoDBQueries {
 			}
 			else if(qKey != null && qValue != null) {
 				try{
-					if(filters != null)
+					if(filters != null) {
+						System.out.println(PrettyJSONPrinter.prettyPrint(filters));
 						query = (DBObject)JSON.parse(filters);
+					}
 					else
 						query = new BasicDBObject();
 				}catch(Exception e) {
@@ -291,14 +293,22 @@ public class MongoDBQueries {
 				}
 				query.put(qKey, qValue);
 			}
-			fields = new BasicDBObject();
-			for(String fieldName: fieldNames) {
-				fields.put(fieldName, 1);
+			if(fieldNames != null) {
+				fields = new BasicDBObject();
+				for(String fieldName: fieldNames) {
+					fields.put(fieldName, 1);
+				}
 			}
 		}catch(Exception e) {
+			e.printStackTrace();
 			return jSON2Rrn.createJSONError("Cannot get entity for collection: " + coll + 
 					" with qKey=" + qKey + " and qValue=" + qValue,e);
 		}
+		System.out.println(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders) );
+		System.out.println(coll);
+		System.out.println(query);
+		System.out.println(fields);
+
 		return new MongoDBQueries().executeFindQuery(httpHeaders,
 				coll,query,fields, successMsg, sort, limit, skip, count);
 	}
@@ -522,7 +532,6 @@ public class MongoDBQueries {
 			String id, String coll) throws JSONSchemaNotValidException, BadParameterException {
 		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
 			double values[] = null;
-			double points[] = null;
 			if(dBObject.containsField("parameters")){
 				String type = MongoActivityModels.REF_DISTR_STARTTIME ;
 				if(DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)).getCollection("act_models").
