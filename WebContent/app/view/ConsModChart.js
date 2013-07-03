@@ -17,6 +17,7 @@ Ext.define('C.view.ConsModChart', {
 	extend: 'Ext.chart.Chart',
 
 	height: 400,
+	html: '<p class = "small_text">Two consumption model cycles are presented</p>',
 	style: 'background:#fff',
 	width: 700,
 	shadow: false,
