@@ -20,6 +20,8 @@ public class MongoGraphs {
 	public final static String COL_GRAPHS = "graphs";
 	public final static String COL_CSN_NODES = "csn_nodes";
 	public final static String COL_CSN_EDGES = "csn_edges";
+	
+	public final static String COL_CSN_CLUSTERS = "csn_clusters";
 
 
 	/**
