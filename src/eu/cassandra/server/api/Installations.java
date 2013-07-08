@@ -27,6 +27,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.utilities.Utils;
@@ -52,8 +56,14 @@ public class Installations {
 			@QueryParam("count") boolean count,
 			@QueryParam("pertype") boolean pertype,
 			@Context HttpHeaders httpHeaders) {
-		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoInstallations().
-				getInstallations(httpHeaders,scn_id,filters,sort, limit,skip,count,pertype)));
+		String page = new MongoInstallations().
+				getInstallations(httpHeaders,scn_id,filters,sort,limit,skip,count,pertype);
+		String countResponse = 
+				(new MongoInstallations()).getInstallations(httpHeaders,scn_id,null,null,0,0,true,false);
+		DBObject jsonResponse = (DBObject) JSON.parse(countResponse);
+		BasicDBList list = (BasicDBList)jsonResponse.get("data");
+		DBObject object = (DBObject)list.get(0);
+		return Utils.returnResponseWithAppend(page, "total_size", (Integer)object.get("count"));
 	}
 
 	/**

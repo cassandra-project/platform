@@ -40,6 +40,7 @@ import com.mongodb.MongoException;
 import com.mongodb.util.JSON;
 
 import eu.cassandra.server.mongo.util.DBConn;
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -254,6 +255,16 @@ public class Utils {
 	  DBObject jsonResponse = (DBObject) JSON.parse(json);
 	  if(Boolean.parseBoolean(jsonResponse.get("success").toString())) {
 		  return Response.ok(json, MediaType.APPLICATION_JSON).build();
+	  } else {
+		  return Response.status(Response.Status.BAD_REQUEST).entity(json).build();
+	  }
+  }
+  
+  public static Response returnResponseWithAppend(String json, String key, Integer value) {
+	  DBObject jsonResponse = (DBObject) JSON.parse(json);
+	  if(Boolean.parseBoolean(jsonResponse.get("success").toString())) {
+		  jsonResponse.put(key, value);
+		  return Response.ok(PrettyJSONPrinter.prettyPrint(jsonResponse.toString()), MediaType.APPLICATION_JSON).build();
 	  } else {
 		  return Response.status(Response.Status.BAD_REQUEST).entity(json).build();
 	  }

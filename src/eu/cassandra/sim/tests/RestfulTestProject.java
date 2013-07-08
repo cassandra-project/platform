@@ -1,5 +1,6 @@
 /*   
-   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.el)
+
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,28 +15,32 @@
    limitations under the License.
 */
 package eu.cassandra.sim.tests;
+
 import java.io.BufferedReader;
+import java.io.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.lang.Runtime;
+
 
 
 public class RestfulTestProject
 {
 	
-	private static final String CMD = "tests\\TestAHouseScenario\\RestTestProject.bat";
-	private static final String CMD2 = "tests\\TestAHouseScenario\\RestTestScenario.bat";
-	private static final String CMD3 = "tests\\TestAHouseScenario\\RestTestInstallation.bat";
-	private static final String CMD4 = "tests\\TestAHouseScenario\\RestTestPerson.bat";
-	private static final String CMD5 = "tests\\TestAHouseScenario\\RestTestActivity.bat";
-	private static final String CMD6 = "tests\\TestAHouseScenario\\RestTestAppliance.bat";
-	private static final String CMD7 = "tests\\TestAHouseScenario\\RestTestConsumptionModel.bat";
-	private static final String CMD8 = "tests\\TestAHouseScenario\\RestTestDistr.bat";
-	private static final String CMD9 = "tests\\TestAHouseScenario\\RestTestActivityModel.bat";
-	private static final String CMD10 = "tests\\TestAHouseScenario\\RestTestSimParams.bat";
-	private static final String CMD11 = "tests\\TestAHouseScenario\\RestTestRun.bat";
-	    public static void main(String args[]) {
+	private static final String CMD = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestProject.bat";
+	private static final String CMD2 = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestScenario.bat";
+	private static final String CMD3 = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestInstallation.bat";
+	private static final String CMD4 = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestPerson.bat";
+	private static final String CMD5 = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestActivity.bat";
+	private static final String CMD6 = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestAppliance.bat";
+	private static final String CMD7 = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestConsumptionModel.bat";
+	private static final String CMD8 = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestDistr.bat";
+	private static final String CMD9 = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestActivityModel.bat";
+	private static final String CMD10 = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestSimParams.bat";
+	private static final String CMD11 = "C:\\workspace\\RestTEsting\\src\\TestAHouseScenario\\RestTestRun.bat";
+	  public static void main(String args[]) {
 
 	        try {
 	            // Run "netsh" Windows command
@@ -44,6 +49,9 @@ public class RestfulTestProject
 	            // Get input streams
 	            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
 	            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+	            System.out.println("Before");
+	            URL location = RestfulTestProject.class.getProtectionDomain().getCodeSource().getLocation();
+	        	System.out.println("CWD : "+ location);
 
 	            // Read command standard output
 	            String s;
@@ -64,14 +72,14 @@ public class RestfulTestProject
 	
 	
 	
-	/*public  static void main(String[] args) throws IOException{
+	  /*	  	public  static void main(String[] args) throws IOException{
 		//String cmd= "./tests/TestAHouseScenario/script";
 	System.out.println("Before");
 	
-	URL location = RestfulTest.class.getProtectionDomain().getCodeSource().getLocation();
+	URL location = RestfulTestProject.class.getProtectionDomain().getCodeSource().getLocation();
 	System.out.println("CWD : "+ location);
 	
-	Process proc = Runtime.getRuntime().exec("tests\\TestAHouseScenario\\script2.bat" );
+	Process proc = Runtime.getRuntime().exec("cmd.exe /c TestAHouseScenario\\script2.bat" );
 	
 	InputStream stderr = proc.getErrorStream();
 	InputStreamReader isr = new InputStreamReader(stderr);
