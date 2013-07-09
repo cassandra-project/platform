@@ -54,7 +54,7 @@ public class Projects {
 		String usr_id = Utils.userChecked(httpHeaders);
 		if(usr_id != null) {
 			logger.info(usr_id + " has logged in!");
-			String json = PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, usr_id, count));
+			String json = PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, usr_id, null, count));
 			return Response.ok(json, MediaType.APPLICATION_JSON).build();
 		} else {
 			return Response.status(Response.Status.UNAUTHORIZED).entity("User and or password do not match").build();

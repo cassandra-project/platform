@@ -19,10 +19,17 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.sim.utilities.Utils;
 
 public class MongoProjects {
 
@@ -35,15 +42,18 @@ public class MongoProjects {
 	 * @param projectID
 	 * @return
 	 */
-	public String getProjects(HttpHeaders httpHeaders, String usr_id, boolean count) {
-		if(usr_id == null) {
-			return new JSONtoReturn().createJSONError(
-					"Only the Projects of a particular User can be retrieved", 
-					new RestQueryParamMissingException("usr_id QueryParam is missing")).toString();
-		}
-		else {
+	public String getProjects(HttpHeaders httpHeaders, String usr_id, String prj_id, boolean count) {
+		if(usr_id != null) {
 			return new MongoDBQueries().getEntity(httpHeaders,COL_PROJECTS, "usr_id", usr_id, 
 					"Project(s) retrieved successfully",count).toString();
+		}
+		else if(prj_id != null) {
+			return new MongoDBQueries().getEntity(httpHeaders,COL_PROJECTS, "_id", prj_id, 
+					"Project(s) retrieved successfully",count).toString();
+		} else {
+			return new JSONtoReturn().createJSONError(
+					"Only the Projects of a particular User or of a particular project id can be retrieved", 
+					new RestQueryParamMissingException("usr_id or prj_id QueryParam is missing")).toString();
 		}
 	}
 
@@ -53,8 +63,31 @@ public class MongoProjects {
 	 * @return
 	 */
 	public String createProject(String dataToInsert) {
-		return new MongoDBQueries().insertData(COL_PROJECTS, dataToInsert, 
+		String response =  new MongoDBQueries().insertData(COL_PROJECTS, dataToInsert, 
 				"Project created successfully",JSONValidator.PROJECT_SCHEMA).toString();
+		return withAddedWarnings(response, false);
+	}
+	
+	private String withAddedWarnings(String response, boolean ary) {
+		if(Utils.failed(response)) return response;
+		DBObject jsonResponse = (DBObject) JSON.parse(response);
+		DBObject data = (DBObject) jsonResponse.get("data");
+		String objID = new String();
+		if(ary) {
+			objID = (String)((DBObject)((BasicDBList)data).get(0)).get("_id");
+		} else {
+			objID = (String)data.get("_id");
+		}
+		DBObject returnQuery = 
+				new MongoDBQueries().getEntity(MongoScenarios.COL_SCENARIOS, MongoScenarios.REF_PROJECT, objID);
+		System.out.println(returnQuery);
+		if(returnQuery == null) {
+			BasicDBList list = new BasicDBList();
+			String warning = "Add at least one scenario for this project.";
+			list.add(warning);
+			jsonResponse.put("warnings", list);
+		}
+		return jsonResponse.toString();
 	}
 
 	/**
@@ -75,8 +108,9 @@ public class MongoProjects {
 	 * @return
 	 */
 	public String updateProject(String id,String jsonToUpdate) {
-		return new MongoDBQueries().updateDocument("_id", 
+		String response = new MongoDBQueries().updateDocument("_id", 
 				id,jsonToUpdate,COL_PROJECTS,"Project updated successfully",
 				JSONValidator.PROJECT_SCHEMA).toString();
+		return withAddedWarnings(response, true);
 	}
 }
