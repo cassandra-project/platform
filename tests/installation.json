@@ -2,11 +2,7 @@
         "name" : "Installation 1",
         "type" : "Installation Type",
         "description" : "Installation description",
-        "scenario_id": "5061c8c7e4b017b914cb0d2d",
-        "belongsToInstallation" : "5061c911e4b017b914cb0d2e",
-        "location" : "Description of location",
-        "x" : 234.232,
-        "y" : 12.14
+        "scenario_id": "51dbd946e4b061eefea001d8"
  }
  
  
