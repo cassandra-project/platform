@@ -15,28 +15,42 @@
 */
 package eu.cassandra.server.api;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Scanner;
+
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.apache.commons.io.IOUtils;
  
 @Path("file")
 public class UploadFileService {
+	
+	@javax.ws.rs.core.Context 
+	ServletContext context;
  
 	@POST
 	@Path("/upload")
-	@Consumes("text/csv")
-	public Response uploadFile(InputStream is) {
+	@Consumes("application/zip")
+	public Response uploadFile(InputStream is) throws IOException {
  
-		String uploadedFileLocation = "demo.csv";
+		String uploadedFileLocation = context.getRealPath("/resources") + 
+				"/demo.zip";
+		
+		System.out.println(uploadedFileLocation);
  
 		// save it
-		writeToFile(is, "demo.csv");
+		writeToFile(is, uploadedFileLocation);
  
 		String output = "File uploaded to : " + uploadedFileLocation;
  
@@ -44,9 +58,9 @@ public class UploadFileService {
  
 	}
  
-	// save uploaded file to new location
 	private void writeToFile(InputStream uploadedInputStream,
 		String uploadedFileLocation) {
+ 
 		try {
 			OutputStream out = new FileOutputStream(new File(
 					uploadedFileLocation));

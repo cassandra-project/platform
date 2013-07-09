@@ -19,7 +19,9 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
@@ -72,7 +74,32 @@ public class MongoPersons {
 	 * @return
 	 */
 	public String createPerson(String dataToInsert) {
-		return createPersonObj(dataToInsert).toString();
+		String response = createPersonObj(dataToInsert).toString();
+		return withAddedWarnings(response, false);
+	}
+	
+	private String withAddedWarnings(String response, boolean ary) {
+		if(Utils.failed(response)) return response;
+		DBObject jsonResponse = (DBObject) JSON.parse(response);
+		DBObject data = (DBObject) jsonResponse.get("data");
+		String objID =  new String();
+		if(ary) {
+			objID = (String)((DBObject)((BasicDBList)data).get(0)).get("_id");
+		} else {
+			objID = (String)data.get("_id");
+		}
+		BasicDBList list = new BasicDBList();
+		DBObject returnQuery = 
+				new MongoDBQueries().getEntity(MongoActivities.COL_ACTIVITIES, "pers_id", objID);
+		if(returnQuery == null) {
+			String warning = "Add at least one activity for this person.";
+			list.add(warning);
+		}
+		
+		if(!list.isEmpty()) {
+			jsonResponse.put("warnings", list);
+		}
+		return jsonResponse.toString();
 	}
 	
 	public static DBObject createPersonObj(String dataToInsert) {
@@ -111,6 +138,6 @@ public class MongoPersons {
 					COL_PERSONS, "Person updated successfully",
 					"users" ,"inst_id",JSONValidator.PERSON_SCHEMA).toString();
 		}
-		return returnMsg;
+		return withAddedWarnings(returnMsg, true);
 	}
 }

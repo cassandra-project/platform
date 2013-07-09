@@ -19,10 +19,15 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.sim.utilities.Utils;
 
 public class MongoScenarios {
 
@@ -65,9 +70,39 @@ public class MongoScenarios {
 	 * @return
 	 */
 	public String createScenario(String dataToInsert) {
-		return new MongoDBQueries().insertData(COL_SCENARIOS,dataToInsert,
+		String response = new MongoDBQueries().insertData(COL_SCENARIOS,dataToInsert,
 				"Scenario created successfully", MongoProjects.COL_PROJECTS ,
 				"project_id",JSONValidator.SCENARIO_SCHEMA).toString();
+		return withAddedWarnings(response, false);
+	}
+	
+	private String withAddedWarnings(String response, boolean ary) {
+		if(Utils.failed(response)) return response;
+		DBObject jsonResponse = (DBObject) JSON.parse(response);
+		DBObject data = (DBObject) jsonResponse.get("data");
+		String objID =  new String();
+		if(ary) {
+			objID = (String)((DBObject)((BasicDBList)data).get(0)).get("_id");
+		} else {
+			objID = (String)data.get("_id");
+		}
+		BasicDBList list = new BasicDBList();
+		DBObject returnQuery = 
+				new MongoDBQueries().getEntity(MongoInstallations.COL_INSTALLATIONS, MongoInstallations.REF_SCENARIO, objID);
+		if(returnQuery == null) {
+			String warning = "Add at least one installation for this scenario.";
+			list.add(warning);
+		}
+		returnQuery = 
+				new MongoDBQueries().getEntity(MongoSimParam.COL_SIMPARAM, "scn_id", objID);
+		if(returnQuery == null) {
+			String warning = "Add at least one set of simulation parameters for this scenario.";
+			list.add(warning);
+		}
+		if(!list.isEmpty()) {
+			jsonResponse.put("warnings", list);
+		}
+		return jsonResponse.toString();
 	}
 
 	/**
@@ -88,9 +123,10 @@ public class MongoScenarios {
 	 * @return
 	 */
 	public String updateScenario(String id,String jsonToUpdate) {
-		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
+		String response = new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_SCENARIOS, "Scenarios updated successfully", 
 				MongoProjects.COL_PROJECTS ,"project_id",JSONValidator.SCENARIO_SCHEMA).toString(); 
+		return withAddedWarnings(response, true);
 	}
 
 }

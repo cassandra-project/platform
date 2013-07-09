@@ -13,19 +13,15 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.server.mongo.util;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.List;
-
-import javax.servlet.ServletContext;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -54,6 +50,9 @@ public class JSONValidator {
 	public static final int SIMPARAM_SCHEMA = 10;
 	public static final int PRICING_SCHEMA = 11;
 	public static final int GRAPH_SCHEMA = 12;
+
+	public static final int CLUSTER_SCHEMA = 100;
+	public static final int CLUSTER_PARAM_SCHEMA = 101;
 
 	/**
 	 * 
@@ -88,6 +87,10 @@ public class JSONValidator {
 		case PRICING_SCHEMA:  fileName += "Pricing.schema";
 		break;
 		case GRAPH_SCHEMA:  fileName += "Graph.schema";
+		break;
+		case CLUSTER_SCHEMA: fileName += "Cluster.schema";
+		break;
+		case CLUSTER_PARAM_SCHEMA: fileName += "ClusterParameters.schema";
 		break;
 		}
 		return fileName;

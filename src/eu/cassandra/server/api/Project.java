@@ -46,7 +46,7 @@ public class Project {
 	@GET
 	public Response getProject(@PathParam("prj_id") String prj_id,
 			@Context HttpHeaders httpHeaders) {
-		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders,prj_id,false)));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, null, prj_id,false)));
 	}
 
 	/**

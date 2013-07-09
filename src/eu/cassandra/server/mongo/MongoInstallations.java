@@ -18,7 +18,9 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 import eu.cassandra.server.api.exceptions.MongoRefNotFoundException;
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
@@ -75,7 +77,8 @@ public class MongoInstallations {
 	 * @return
 	 */
 	public String createInstallation(String dataToInsert) {
-		return createInstallationObj(dataToInsert).toString();
+		String response = createInstallationObj(dataToInsert).toString();
+		return withAddedWarnings(response, false);
 	}
 	
 	public static DBObject createInstallationObj(String dataToInsert) {
@@ -94,6 +97,36 @@ public class MongoInstallations {
 					new boolean[] {false},JSONValidator.INSTALLATION_SCHEMA);
 		}
 		return returnObj;
+	}
+	
+	private String withAddedWarnings(String response, boolean ary) {
+		if(Utils.failed(response)) return response;
+		DBObject jsonResponse = (DBObject) JSON.parse(response);
+		DBObject data = (DBObject) jsonResponse.get("data");
+		System.out.println(response);
+		String objID =  new String();
+		if(ary) {
+			objID = (String)((DBObject)((BasicDBList)data).get(0)).get("_id");
+		} else {
+			objID = (String)data.get("_id");
+		}
+		BasicDBList list = new BasicDBList();
+		DBObject returnQuery = 
+				new MongoDBQueries().getEntity(MongoPersons.COL_PERSONS, MongoPersons.REF_INSTALLATION, objID);
+		if(returnQuery == null) {
+			String warning = "Add at least one person for this installation.";
+			list.add(warning);
+		}
+		returnQuery = 
+				new MongoDBQueries().getEntity(MongoAppliances.COL_APPLIANCES, MongoAppliances.REF_INSTALLATION, objID);
+		if(returnQuery == null) {
+			String warning = "Add at least one appliance for this installation.";
+			list.add(warning);
+		}
+		if(!list.isEmpty()) {
+			jsonResponse.put("warnings", list);
+		}
+		return jsonResponse.toString();
 	}
 
 	/**
@@ -124,7 +157,7 @@ public class MongoInstallations {
 					COL_INSTALLATIONS, "Installations updated successfully",
 					"users" ,"scenario_id",JSONValidator.INSTALLATION_SCHEMA).toString();
 		}
-		return returnMsg;
+		return withAddedWarnings(returnMsg, true);
 	}
 
 

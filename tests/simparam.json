@@ -1,7 +1,8 @@
 {
         "name" : "A simulation",
-        "numberOfDay" : 44,
-        "scn_id" : "5006a550e4b05ff53eb83fe0",
+        "numberOfDays" : 44,
+        "scn_id" : "51dbd946e4b061eefea001d8",
+        "mcruns" : 1,
         "locationInfo" : "Athens",
         "calendar" : {
             "dayOfMonth" : 20,

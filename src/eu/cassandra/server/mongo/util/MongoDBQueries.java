@@ -351,6 +351,18 @@ public class MongoDBQueries {
 		query.put("_id", new ObjectId(id));
 		return DBConn.getConn().getCollection(collection).findOne(query);
 	}
+	
+	/**
+	 * 
+	 * @param collection
+	 * @param id
+	 * @return
+	 */
+	public DBObject getEntity(String collection, String key, String value) {
+		BasicDBObject query = new BasicDBObject();
+		query.put(key, value);
+		return DBConn.getConn().getCollection(collection).findOne(query);
+	}
 
 	/**
 	 * 

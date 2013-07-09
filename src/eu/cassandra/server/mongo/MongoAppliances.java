@@ -20,7 +20,9 @@ import java.util.Vector;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
@@ -108,7 +110,8 @@ public class MongoAppliances {
 	 * @return
 	 */
 	public String createAppliance(String dataToInsert) {
-		return createApplianceObj(dataToInsert).toString();
+		String response = createApplianceObj(dataToInsert).toString();
+		return withAddedWarnings(response, false);
 	}
 	
 	public static DBObject createApplianceObj(String dataToInsert) {
@@ -122,6 +125,28 @@ public class MongoAppliances {
 					"inst_id",JSONValidator.APPLIANCE_SCHEMA);
 		}
 		return returnObj;
+	}
+	
+	private String withAddedWarnings(String response, boolean ary) {
+		if(Utils.failed(response)) return response;
+		DBObject jsonResponse = (DBObject) JSON.parse(response);
+		DBObject data = (DBObject) jsonResponse.get("data");
+		System.out.println(response);
+		String objID = new String();
+		if(ary) {
+			objID = (String)((DBObject)((BasicDBList)data).get(0)).get("_id");
+		} else {
+			objID = (String)data.get("_id");
+		}
+		DBObject returnQuery = 
+				new MongoDBQueries().getEntity(MongoConsumptionModels.COL_CONSMODELS, "app_id", objID);
+		if(returnQuery == null) {
+			BasicDBList list = new BasicDBList();
+			String warning = "Add a consumption model for this appliance.";
+			list.add(warning);
+			jsonResponse.put("warnings", list);
+		}
+		return jsonResponse.toString();
 	}
 
 	/**
@@ -151,6 +176,6 @@ public class MongoAppliances {
 					COL_APPLIANCES, "Appliance updated successfully",
 					"users" ,"inst_id",JSONValidator.APPLIANCE_SCHEMA).toString();
 		}
-		return returnMsg;
+		return withAddedWarnings(returnMsg, false);
 	}
 }

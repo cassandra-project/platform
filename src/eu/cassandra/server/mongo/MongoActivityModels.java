@@ -19,7 +19,9 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
@@ -75,7 +77,8 @@ public class MongoActivityModels {
 	 */
 	
 	public String createActivityModel(String dataToInsert) {
-		return createActivityModelObj(dataToInsert).toString();
+		String response = createActivityModelObj(dataToInsert).toString();
+		return withAddedWarnings(response, false);
 	}
 	
 	public static DBObject createActivityModelObj(String dataToInsert) {
@@ -96,6 +99,36 @@ public class MongoActivityModels {
 					new boolean[] {false},JSONValidator.ACTIVITYMODEL_SCHEMA);
 		}
 		return returnObj;
+	}
+	
+	private String withAddedWarnings(String response, boolean ary) {
+		if(Utils.failed(response)) return response;
+		DBObject jsonResponse = (DBObject) JSON.parse(response);
+		DBObject data = (DBObject) jsonResponse.get("data");
+		if(ary) {
+			data = (DBObject)((BasicDBList)data).get(0);
+		}
+		BasicDBList list = new BasicDBList();
+		if(((BasicDBList)data.get("containsAppliances")) == null || ((BasicDBList)data.get("containsAppliances")).isEmpty()) {
+			String warning = "Add at least one appliance for this activity model.";
+			list.add(warning);
+		}
+		if(data.get("duration") == null) {
+			String warning = "Add a duration distribution for this activity model.";
+			list.add(warning);
+		}
+		if(data.get("startTime") == null) {
+			String warning = "Add a start time distribution for this activity model.";
+			list.add(warning);
+		}
+		if(data.get("repeatsNrOfTime") == null) {
+			String warning = "Add a number of times distribution for this activity model.";
+			list.add(warning);
+		}
+		if(!list.isEmpty()) {
+			jsonResponse.put("warnings", list);
+		}
+		return jsonResponse.toString();
 	}
 
 	/**
@@ -127,6 +160,6 @@ public class MongoActivityModels {
 					COL_ACTMODELS, "Activity Model updated successfully",
 					"users" ,"act_id",JSONValidator.ACTIVITYMODEL_SCHEMA).toString();
 		}
-		return returnMsg;
+		return withAddedWarnings(returnMsg, true);
 	}
 }

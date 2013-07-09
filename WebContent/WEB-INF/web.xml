@@ -23,6 +23,9 @@
   <listener>
     <listener-class>eu.cassandra.server.IServletContextListener</listener-class>
   </listener>
+  <listener>
+    <listener-class>eu.cassandra.server.mongo.csn.CSNTypes</listener-class>
+  </listener>
   <env-entry>
     <env-entry-name>mongo.host.address</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>

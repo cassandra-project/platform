@@ -1,0 +1,7 @@
+{
+        "name" : "ClusterParameters",
+        "graph_id" : "51d13998e4b0ebea2a3e81f6",
+        "clustermethod" : "kmeans",
+        "clusterbasedon" : "AverageConsumptionP",
+        "n": 4
+}
