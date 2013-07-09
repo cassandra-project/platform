@@ -6,6 +6,8 @@ import java.util.Vector;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import org.bson.types.ObjectId;
+
 import weka.clusterers.HierarchicalClusterer;
 import weka.clusterers.SimpleKMeans;
 import weka.core.Attribute;
@@ -55,6 +57,7 @@ public class MongoCluster {
 			else 
 				return null;
 		}catch(Exception e) {
+			e.printStackTrace();
 			return jSON2Rrn.createJSONError(message,e);
 		}
 	}
@@ -239,6 +242,8 @@ public class MongoCluster {
 	 */
 	private DBObject saveClusters(String graph_id, String method, HashMap<Integer,Vector<String>> clusters, HttpHeaders httpHeaders) {
 		DBObject clusterObject = new BasicDBObject("method",method);
+		ObjectId objectId = new ObjectId();
+		clusterObject.put("_id", objectId);
 		clusterObject.put("graph_id", graph_id);
 		clusterObject.put("n", clusters.keySet().size());
 		for(int j=0;j<clusters.keySet().size();j++) {
@@ -246,6 +251,17 @@ public class MongoCluster {
 		}
 		String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 		DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_CLUSTERS).insert(clusterObject);
+		
+		//Inverse (node to cluster) 
+		for(int j=0;j<clusters.keySet().size();j++) {
+			Vector<String> nodeIDs = clusters.get(j);
+			for(String nodeID : nodeIDs) {
+				DBObject ob = new BasicDBObject(nodeID,"cluster_" + j);
+				ob.put("graph_id", graph_id);
+				ob.put("clustersid", objectId.toString());
+				DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_NODES2CLUSTERS).insert(ob);
+			}
+		}
 
 		return new MongoDBQueries().insertData(
 				MongoGraphs.COL_CSN_CLUSTERS, clusterObject.toString(), "Clusters Created", null, null, null, JSONValidator.CLUSTER_SCHEMA, httpHeaders);
