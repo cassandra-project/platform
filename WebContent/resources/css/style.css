@@ -1,4 +1,4 @@
-#MainTabPanel-body,  .gridbg, #center_panel-body{
+/*#MainTabPanel-body, */ .gridbg, #center_panel-body{
 /*background-color: #E4EAED !important;
 background-image: -webkit-gradient(linear, 50% 0%, 50% 1, color-stop(100%, #F3F6F7), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 0% 50%, 1 50%, color-stop(100%, #F3F6F7), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 50% 0%, 50% 1, color-stop(100%, rgba(255, 255, 255, 0.3)), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 0% 50%, 1 50%, color-stop(100%, rgba(255, 255, 255, 0.3)), color-stop(100%, rgba(243, 246, 247, 0)));
 background-image: -webkit-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
@@ -60,10 +60,10 @@ background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
 }
 
 
-.x-tab-bar-default .x-tabbar-scroll-left, .x-tab-bar-default .x-tabbar-scroll-right {
+/*.x-tab-bar-default .x-tabbar-scroll-left, .x-tab-bar-default .x-tabbar-scroll-right {
 	width: 31px;
 	height: 40px
-}
+}*/
 
 
 /*changed in neptune css
@@ -80,10 +80,10 @@ background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
 background-image: url(../icons/header_pattern.png);	
 }
 
-.x-tab-close-btn, .x-tab-active .x-tab-close-btn::after {
+/*.x-tab-close-btn, .x-tab-active .x-tab-close-btn::after {
 background-image: none;
 background-color: #252925 !important;
-}
+}*/
 
 .x-tab {
 background-image:none;
@@ -98,6 +98,7 @@ background-image: url(../icons/grid_pattern.png);
 .x-tab-top-active {
 background-image: none;
 background-color: #F39926 !important;
+color: #fff !impotrant;
 }
 
 #logo-text {
@@ -108,13 +109,15 @@ font-family: "century gothic", Arial, Verdana, sans-serif;
 }
 
 .treeIcon {
-width: 17px;
+width: 16px;
 }
 
-.number_field {margin-top: 10px}
+.number_field {/*margin-top: 10px*/}
 
-.remove_tabs {
-	background-image: url(../icons/close_tabs.png);
+
+.remove_tabs .x-tool-img {
+background-image: url(../icons/close_tabs.png);
+background-color: transparent !important;
 }
 
 .refresh_progress,  .refresh_progress_disabled{
@@ -155,9 +158,15 @@ width: 17px;
 	border: none;
 }
 
-.breadcrumb_btn_over button{
+.x-breadcrumb_btn_over {
 	text-decoration: underline;
-	color: #136cb4;
+	color: #136cb4 !important;
+}
+
+.not_clickable {
+	pointer-events: none;
+	cursor: default;
+	color: #dcdcdc !important;
 }
 
 .rsaquo {
@@ -173,4 +182,16 @@ width: 17px;
 	font-size:11px; 
 	font-style:italic;
 	text-align: center;
+}
+
+#warnings {
+	padding: 10px;
+	border-radius: 5px;
+	background-color: #ffa100;
+}
+
+#warnings li {
+	list-style-type: none;
+	background: url(../icons/warning.png) no-repeat 0 1px;
+	padding-left: 20px
 }
