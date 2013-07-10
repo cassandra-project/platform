@@ -25,23 +25,8 @@ public class MongoEdges {
 	public final static String  MinConsumptionQ = "MinConsumptionQ";
 	public final static String MaxConsumptionQ = "MaxConsumptionQ";
 
-	public final static String TotalConsumptionPerHourP = "TotalConsumptionPerHourP";
-	public final static String AverageConsumptionPerHourP = "AverageConsumptionPerHourP";
-	public final static String MinConsumptionPerHourP = "MinConsumptionPerHourP";
-	public final static String MaxConsumptionPerHourP = "MaxConsumptionPerHourP";
-	public final static String TotalConsumptionPerHourQ = "TotalConsumptionPerHourQ";
-	public final static String AverageConsumptionPerHourQ = "AverageConsumptionPerHourQ";
-	public final static String MinConsumptionPerHourQ = "MinConsumptionPerHourQ";
-	public final static String MaxConsumptionPerHourQ = "MaxConsumptionPerHourQ";
-
-	public final static String TotalConsumptionPerDayP = "TotalConsumptionPerDayP";
-	public final static String AverageConsumptionPerDayP = "AverageConsumptionPerDayP";
-	public final static String MinConsumptionPerDayP = "MinConsumptionPerDayP";
-	public final static String MaxConsumptionPerDayP = "MaxConsumptionPerDayP";
-	public final static String TotalConsumptionPerDayQ = "TotalConsumptionPerDayQ";
-	public final static String AverageConsumptionPerDayQ = "AverageConsumptionPerDayQ";
-	public final static String MinConsumptionPerDayQ = "MinConsumptionPerDayQ";
-	public final static String MaxConsumptionPerDayQ = "MaxConsumptionPerDayQ";
+	public final static String ConsumptionPerHourP = "ConsumptionPerHourP";
+	public final static String ConsumptionPerHourQ = "ConsumptionPerHourQ";
 
 	/**
 	 * 
@@ -79,31 +64,31 @@ public class MongoEdges {
 			edge = decideIfToCreateEdge(edge, inst1, inst2, "personType", graphType,null); 
 		}
 		//Sum
-		else if(graphType.equalsIgnoreCase(TotalConsumptionP) || graphType.equalsIgnoreCase(TotalConsumptionPerHourP) || graphType.equalsIgnoreCase(TotalConsumptionPerDayP)) {
+		else if(graphType.equalsIgnoreCase(TotalConsumptionP) ) {
 			edge = decideIfToCreateEdge(edge, inst1, inst2, "sumP", graphType,minWeight); 
 		}
-		else if(graphType.equalsIgnoreCase(TotalConsumptionQ) || graphType.equalsIgnoreCase(TotalConsumptionPerHourQ) || graphType.equalsIgnoreCase(TotalConsumptionPerDayQ)) {
+		else if(graphType.equalsIgnoreCase(TotalConsumptionQ) ) {
 			edge = decideIfToCreateEdge(edge, inst1, inst2, "sumQ", graphType,minWeight); 
 		}
 		//avgP
-		else if(graphType.equalsIgnoreCase(AverageConsumptionP) || graphType.equalsIgnoreCase(AverageConsumptionPerHourP) || graphType.equalsIgnoreCase(AverageConsumptionPerDayP)) {
+		else if(graphType.equalsIgnoreCase(AverageConsumptionP) ) {
 			edge = decideIfToCreateEdge(edge, inst1, inst2, "avgP", graphType,minWeight); 
 		}
-		else if(graphType.equalsIgnoreCase(AverageConsumptionQ) || graphType.equalsIgnoreCase(AverageConsumptionPerHourQ) || graphType.equalsIgnoreCase(AverageConsumptionPerDayQ)) {
+		else if(graphType.equalsIgnoreCase(AverageConsumptionQ) ) {
 			edge = decideIfToCreateEdge(edge, inst1, inst2, "avgQ", graphType,minWeight); 
 		}
 		//Min
-		else if(graphType.equalsIgnoreCase(MinConsumptionP) || graphType.equalsIgnoreCase(MinConsumptionPerHourP) || graphType.equalsIgnoreCase(MinConsumptionPerDayP) ) {
+		else if(graphType.equalsIgnoreCase(MinConsumptionP)  ) {
 			edge = decideIfToCreateEdge(edge, inst1, inst2, "minP", graphType,minWeight); 
 		}
-		else if(graphType.equalsIgnoreCase(MinConsumptionQ) || graphType.equalsIgnoreCase(MinConsumptionPerHourQ) || graphType.equalsIgnoreCase(MinConsumptionPerDayQ)) {
+		else if(graphType.equalsIgnoreCase(MinConsumptionQ) ) {
 			edge = decideIfToCreateEdge(edge, inst1, inst2, "minQ", graphType,minWeight); 
 		}
 		//Max
-		else if(graphType.equalsIgnoreCase(MaxConsumptionP) || graphType.equalsIgnoreCase(MaxConsumptionPerHourP) || graphType.equalsIgnoreCase(MaxConsumptionPerDayP)) {
+		else if(graphType.equalsIgnoreCase(MaxConsumptionP)) {
 			edge = decideIfToCreateEdge(edge, inst1, inst2, "maxP", graphType,minWeight); 
 		}
-		else if(graphType.equalsIgnoreCase(MaxConsumptionQ) || graphType.equalsIgnoreCase(MaxConsumptionPerHourQ) || graphType.equalsIgnoreCase(MaxConsumptionPerDayQ)) {
+		else if(graphType.equalsIgnoreCase(MaxConsumptionQ) ) {
 			edge = decideIfToCreateEdge(edge, inst1, inst2, "maxQ", graphType,minWeight); 
 		}
 

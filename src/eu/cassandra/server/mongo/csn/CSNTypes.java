@@ -27,6 +27,12 @@ public class CSNTypes implements ServletContextListener{
 
 		csnTypesMap.put(MongoEdges.MaxConsumptionP , "maxP");
 		csnTypesMap.put(MongoEdges.MaxConsumptionQ , "maxQ");
+		
+		//
+		csnTypesMap.put(MongoEdges.ConsumptionPerHourP , "hoursP");
+		csnTypesMap.put(MongoEdges.ConsumptionPerHourQ , "hoursQ");
+		
+		
 
 		//		//Sum
 		//		graphType.equalsIgnoreCase(TotalConsumptionPerHourP) || graphType.equalsIgnoreCase(TotalConsumptionPerDayP)) {

@@ -16,6 +16,7 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -74,8 +75,9 @@ public class MongoCluster {
 		if(!clusterBasedOn.toLowerCase().contains("per")) {
 			attributes.addElement(new Attribute("att0"));
 		}else {
-			for(int i=0;i<24;i++) 
+			for(int i=0;i<24;i++) {
 				attributes.addElement(new Attribute("att" + i));
+			}
 		}
 		Instances instances = new Instances("data", attributes, 0);
 
@@ -98,16 +100,15 @@ public class MongoCluster {
 						values = new double[1];
 						values[0] = v;
 					}
-				}
-				else if(clusterBasedOn.toLowerCase().contains("per")) {
-					if(vS instanceof Vector<?>) {
-						Vector<?> v = (Vector<?>)vS;
-						values = new double[v.size()];
-						for(int i=0;i<v.size();i++) {
-							Object d = v.get(i);
-							if(d instanceof Double) {
-								values[i] = (Double)d;
-								System.out.println(values[i]);
+					else {
+						if(vS instanceof BasicDBList) {
+							BasicDBList v = (BasicDBList)vS;
+							values = new double[v.size()];
+							for(int i=0;i<v.size();i++) {
+								Object d = v.get(i);
+								if(d instanceof Double) {
+									values[i] = (Double)d;
+								}
 							}
 						}
 					}
@@ -115,9 +116,6 @@ public class MongoCluster {
 			}
 			if(values != null) {
 				Instance instance = new Instance(1,values);
-				System.out.println((instance==null?true:false) + "\t" + values.length);
-				System.out.println(instance.numAttributes() );
-				System.out.println(instance.toString());
 				instances.add(instance);
 			}
 		}
@@ -162,7 +160,6 @@ public class MongoCluster {
 					cluster.add(nodeIDs.get(i));
 					clusters.put(clusterNum, cluster);
 				}
-				//System.out.printf("Instance %d -> Cluster %d \n", i, clusterNum);
 				i++;
 			}
 			nodeIDs.clear();
@@ -184,48 +181,47 @@ public class MongoCluster {
 				h.setNumClusters(numberOfClusters);
 			h.buildClusterer(instances);
 
+			HashMap<Integer,Vector<String>> clusters = new HashMap<Integer,Vector<String>>();
 			double[] arr;
 			for(int i=0; i<instances.numInstances(); i++) {
+				String nodeId = nodeIDs.get(i);
 				arr = h.distributionForInstance(instances.instance(i));
-				for(int j=0; j< arr.length; j++)
+				for(int j=0; j< arr.length; j++) {
+					if(arr[j] == 1.0) {
+						if(!clusters.containsKey(j)) {
+							Vector<String> nodes = new Vector<String>();
+							nodes.add(nodeId);
+							clusters.put(j, nodes);
+						}else {
+							Vector<String> nodes = clusters.get(j);
+							nodes.add(nodeId);
+							clusters.put(j, nodes);
+						}
+					}
 					System.out.print(arr[j]+",");
+				}
 				System.out.println();
 
 			}
+			return saveClusters(graph_id, "hierarchical", clusters, httpHeaders);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return new JSONtoReturn().createJSONError(message,e);
+		}
+	}
 
-			System.out.println(h.numberOfClusters());
 
-
-			//////////////////////////////////////////
-			//			SimpleKMeans kmeans = new SimpleKMeans();
-			//			kmeans.setSeed((int)Calendar.getInstance().getTimeInMillis());
-			//			// This is the important parameter to set
-			//			kmeans.setPreserveInstancesOrder(true);
-			//			kmeans.setNumClusters(numberOfClusters);
-			//			kmeans.buildClusterer(instances);
-			//
-			//			// This array returns the cluster number (starting with 0) for each instance
-			//			// The array has as many elements as the number of instances
-			//			int[] assignments = kmeans.getAssignments();
-			//
-			//			int i=0;
+	public DBObject clusterGraphEgdetweenness(String message, String graph_id, String clusterBasedOn, int numberOfClusters, HttpHeaders httpHeaders) {
+		try {
+			Instances instances = getInstances(clusterBasedOn, graph_id,httpHeaders);
+			
+			
+			
 			HashMap<Integer,Vector<String>> clusters = new HashMap<Integer,Vector<String>>();
-			//			for(int clusterNum : assignments) {
-			//				if(clusters.containsKey(clusterNum)) {
-			//					Vector<String> cluster = clusters.get(clusterNum);
-			//					cluster.add(nodeIDs.get(i));
-			//					clusters.put(clusterNum, cluster);
-			//				}
-			//				else {
-			//					Vector<String> cluster = new Vector<String>();
-			//					cluster.add(nodeIDs.get(i));
-			//					clusters.put(clusterNum, cluster);
-			//				}
-			//				//System.out.printf("Instance %d -> Cluster %d \n", i, clusterNum);
-			//				i++;
-			//			}
-			//			nodeIDs.clear();
-			return saveClusters(graph_id, "kmeans", clusters, httpHeaders);
+			
+			
+			
+			return saveClusters(graph_id, "hierarchical", clusters, httpHeaders);
 		}catch(Exception e) {
 			e.printStackTrace();
 			return new JSONtoReturn().createJSONError(message,e);

@@ -22,23 +22,8 @@
                     "MinConsumptionQ",
                     "MaxConsumptionQ",
 
-                    "TotalConsumptionPerHourP",
-                    "AverageConsumptionPerHourP",
-                    "MinConsumptionPerHourP",
-                    "MaxConsumptionPerHourP",
-                    "TotalConsumptionPerHourQ",
-                    "AverageConsumptionPerHourQ",
-                    "MinConsumptionPerHourQ",
-                    "MaxConsumptionPerHourQ",
-
-                    "TotalConsumptionPerDayP",
-                    "AverageConsumptionPerDayP",
-                    "MinConsumptionPerDayP",
-                    "MaxConsumptionPerDayP",
-                    "TotalConsumptionPerDayQ",
-                    "AverageConsumptionPerDayQ",
-                    "MinConsumptionPerDayQ",
-                    "MaxConsumptionPerDayQ"
+                    "ConsumptionPerHourP",
+                    "ConsumptionPerHourQ"
             ],
             "optional": false
         },    

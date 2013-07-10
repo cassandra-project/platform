@@ -16,12 +16,7 @@
                 "TotalConsumptionPerHour",
                 "AverageConsumptionPerHour",
                 "MinConsumptionPerHour",
-                "MaxConsumptionPerHour",
-                "TotalConsumptionPerDay",
-                "AverageConsumptionPerDay",
-                "MinConsumptionPerDay",
-                "MaxConsumptionPerDay",
-                "ActivityConsumption"
+                "MaxConsumptionPerHour"
             ],
             "optional": false
         }
