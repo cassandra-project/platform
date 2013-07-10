@@ -31,7 +31,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-//import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.IOUtils;
  
 @Path("file")
 public class UploadFileService {
@@ -41,7 +41,7 @@ public class UploadFileService {
  
 	@POST
 	@Path("/upload")
-	@Consumes("multipart/form-data")
+	@Consumes("application/zip")
 	public Response uploadFile(InputStream is) throws IOException {
  
 		String uploadedFileLocation = context.getRealPath("/resources") + 
