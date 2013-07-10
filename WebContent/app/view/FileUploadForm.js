@@ -45,7 +45,10 @@ Ext.define('C.view.FileUploadForm', {
 								url: '/cassandra/api/file/upload',
 								waitMsg: 'Uploading your file...',
 								success: function(fp, o) {
-									msg('Success', 'Processed file "' + o.result.file + '" on the server');
+									Ext.sliding_box.msg('Success',  'Processed file "' + o.result.file + '" on the server');
+								},
+								failure: function(fp, o) {
+									Ext.MessageBox.show({title:'Error', msg: "File upload failed.</br> Please try uploading your file again.", icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
 								}
 							});
 						}
