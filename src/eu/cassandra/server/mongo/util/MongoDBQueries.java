@@ -159,26 +159,6 @@ public class MongoDBQueries {
 		return getEntity(httpHeaders,coll, qKey, qValue, null, null, 0, 0, successMsg, counter, fieldNames);
 	}
 
-	/**
-	 * 
-	 * @param coll
-	 * @param qKey
-	 * @param qValue
-	 * @param filters
-	 * @param sort
-	 * @param limit
-	 * @param skip
-	 * @param successMsg
-	 * @param fieldNames
-	 * @return
-	 */
-	public DBObject getEntity(String coll, String qKey, String qValue, 
-			String filters, String sort, int limit, int skip,
-			String successMsg, int counter, String...fieldNames) {
-		return getEntity(coll, qKey, qValue, filters, sort, limit, skip,
-				successMsg, counter, fieldNames);
-	}
-
 
 	/**
 	 * 

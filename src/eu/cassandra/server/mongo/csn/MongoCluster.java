@@ -241,29 +241,35 @@ public class MongoCluster {
 	 * @return
 	 */
 	private DBObject saveClusters(String graph_id, String method, HashMap<Integer,Vector<String>> clusters, HttpHeaders httpHeaders) {
+		JSONtoReturn jSON2Rrn = new JSONtoReturn();
 		DBObject clusterObject = new BasicDBObject("method",method);
 		ObjectId objectId = new ObjectId();
 		clusterObject.put("_id", objectId);
 		clusterObject.put("graph_id", graph_id);
-		clusterObject.put("n", clusters.keySet().size());
-		for(int j=0;j<clusters.keySet().size();j++) {
-			clusterObject.put("cluster_" + j, clusters.get(j));
-		}
-		String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
-		DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_CLUSTERS).insert(clusterObject);
-		
-		//Inverse (node to cluster) 
-		for(int j=0;j<clusters.keySet().size();j++) {
-			Vector<String> nodeIDs = clusters.get(j);
-			for(String nodeID : nodeIDs) {
-				DBObject ob = new BasicDBObject(nodeID,"cluster_" + j);
-				ob.put("graph_id", graph_id);
-				ob.put("clustersid", objectId.toString());
-				DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_NODES2CLUSTERS).insert(ob);
+		try {
+			clusterObject.put("n", clusters.keySet().size());
+			for(int j=0;j<clusters.keySet().size();j++) {
+				clusterObject.put("cluster_" + j, clusters.get(j));
 			}
-		}
+			String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
+			DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_CLUSTERS).insert(clusterObject);
 
-		return new MongoDBQueries().insertData(
-				MongoGraphs.COL_CSN_CLUSTERS, clusterObject.toString(), "Clusters Created", null, null, null, JSONValidator.CLUSTER_SCHEMA, httpHeaders);
+			//Inverse (node to cluster) 
+			for(int j=0;j<clusters.keySet().size();j++) {
+				Vector<String> nodeIDs = clusters.get(j);
+				for(String nodeID : nodeIDs) {
+					DBObject ob = new BasicDBObject("node_id",nodeID);
+					ob.put("cluster", "cluster_" + j);
+					ob.put("graph_id", graph_id);
+					ob.put("clustersid", objectId.toString());
+					DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_NODES2CLUSTERS).insert(ob);
+				}
+			}
+			return jSON2Rrn.createJSONInsertPostMessage("Clusters Created", clusterObject) ;
+		}catch(com.mongodb.util.JSONParseException e) {
+			return jSON2Rrn.createJSONError("Error parsing JSON input", e.getMessage());
+		}catch(Exception e) {
+			return jSON2Rrn.createJSONError(clusterObject.toString(),e);
+		}
 	}
 }

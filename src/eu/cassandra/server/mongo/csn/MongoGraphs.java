@@ -17,7 +17,7 @@ import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 public class MongoGraphs {
 
-	public final static String COL_GRAPHS = "graphs";
+	public final static String COL_GRAPHS = "csn_graphs";
 	public final static String COL_CSN_NODES = "csn_nodes";
 	public final static String COL_CSN_EDGES = "csn_edges";
 	

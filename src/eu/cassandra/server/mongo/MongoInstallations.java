@@ -47,8 +47,8 @@ public class MongoInstallations {
 	}
 
 	/**
-	 *  curl 'http://localhost:8080/cassandra/api/inst?scn_id=4ff5bca7e4b0082c63d08df3&limt=20&filter=\{x:234.232\}&sort=\{y:-1\}'
 	 * 
+	 *  curl 'http://localhost:8080/cassandra/api/inst?scn_id=4ff5bca7e4b0082c63d08df3&limt=20&filter=\{x:234.232\}&sort=\{y:-1\}'
 	 * @param scn_id
 	 * @return
 	 */
