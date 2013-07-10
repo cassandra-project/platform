@@ -154,10 +154,8 @@ public class MongoNodes {
 			installationNode.put("hoursP", hourVecP);
 			installationNode.put("hoursQ", hourVecQ);
 
-
 			DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_NODES).insert(installationNode);
 			nodes.add(installationNode);
-			System.out.println(nodeCounter++ + " Node: " + installationNode);
 		}
 		return nodes;
 	}

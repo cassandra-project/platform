@@ -23,6 +23,8 @@ public class MongoGraphs {
 	
 	public final static String COL_CSN_CLUSTERS = "csn_clusters";
 	public final static String COL_CSN_NODES2CLUSTERS = "csn_nodes2clusters";
+	
+	public final static String COL_CSN_EDGES_REMOVED = "csn_edges_removed";
 
 	/**
 	 * 
@@ -31,11 +33,9 @@ public class MongoGraphs {
 	 * @return
 	 */
 	public String createGraph(String dataToInsert,@Context HttpHeaders httpHeaders) {
-		System.out.println(dataToInsert);
 		if(dataToInsert != null) {
 			DBObject answer = new MongoDBQueries().insertData(COL_GRAPHS ,dataToInsert,
 					"Graph created successfully",JSONValidator.GRAPH_SCHEMA,httpHeaders);
-			System.out.println(PrettyJSONPrinter.prettyPrint(answer));
 			String graph_id = ((DBObject)(answer.get("data"))).get("_id").toString();
 			String graphType = ((DBObject)(answer.get("data"))).get("graphType").toString();
 			String minWeight = ((DBObject)(answer.get("data"))).get("minWeight").toString();
@@ -115,6 +115,12 @@ public class MongoGraphs {
 	 */
 	public String getEdge(String edgeID, HttpHeaders httpHeaders) {
 		return new MongoDBQueries().getEntity(httpHeaders,COL_CSN_EDGES,"_id",edgeID,"CSN edges retrieved successfully").toString();
+	}
+	
+	
+	public String getEdgesRemoved(String clustersid,HttpHeaders httpHeaders) {
+		return new MongoDBQueries().getEntity(httpHeaders,COL_CSN_EDGES_REMOVED,"clustersid",clustersid,
+				"CSN edges removed from edge betweeness clusterer retrieved successfully").toString();
 	}
 
 	/**

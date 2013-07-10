@@ -25,7 +25,7 @@
                     "ConsumptionPerHourP",
                     "ConsumptionPerHourQ"
             ],
-            "optional": false
+            "optional": true
         },    
         "clustermethod": {
             "type": "string",

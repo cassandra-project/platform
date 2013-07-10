@@ -43,7 +43,6 @@ public class MongoEdges {
 			for(int j=i+1;j<nodes.size();j++) {
 				DBObject edge = createEdge(graphType, minWeight, nodes.get(i),nodes.get(j),httpHeaders);
 				if(edge != null) {
-					System.out.println(edgeCounter++  + "\t" + i + "," + j);
 					edge.put("graph_id", graph_id);
 					edge.put("inst_id1", nodes.get(i).get("_id").toString());
 					edge.put("inst_id2", nodes.get(j).get("_id").toString());
@@ -105,16 +104,9 @@ public class MongoEdges {
 	 * @return
 	 */
 	private DBObject decideIfToCreateEdge(DBObject edge, DBObject inst1, DBObject inst2, String instObjectKey, String graphType, Double minWeight) {
-
-		System.out.println(instObjectKey);
-		System.out.println(graphType);
-		System.out.println(minWeight);
-
 		if(inst1.get(instObjectKey) != null && inst2.get(instObjectKey) != null) {
 			//If create edges based on Node Type or Person Type
 			if(minWeight == null) {
-				System.out.println(inst1.get(instObjectKey));
-				System.out.println(inst2.get(instObjectKey));
 				if(inst1.get(instObjectKey).toString().equalsIgnoreCase(inst2.get(instObjectKey).toString())) {
 					edge = new BasicDBObject("type",graphType);
 				}
@@ -123,7 +115,6 @@ public class MongoEdges {
 			else if(!graphType.toLowerCase().contains("per")) {
 				Double v1 = Double.parseDouble(inst1.get(instObjectKey).toString());
 				Double v2 = Double.parseDouble(inst2.get(instObjectKey).toString());
-				System.out.println(v1 + "\t" + v2 + "\t" + minWeight);
 				double dif = Math.abs(v1-v2);
 				if( dif < minWeight) {
 					edge = new BasicDBObject("type",graphType);

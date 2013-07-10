@@ -26,6 +26,7 @@ public class CSNEdge {
 			@PathParam("csnedges_id") String edge_id,
 			@Context HttpHeaders httpHeaders){
 		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoGraphs().getEdge(edge_id,httpHeaders)));
+
 	}
 
 }
