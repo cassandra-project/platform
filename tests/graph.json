@@ -1,6 +1,7 @@
 {
         "graphType" : "MaxConsumptionP",
-        "minWeight" : 100.0
+        "minWeight" : 100.0,
+        "noedges" : "false"
 }
  
  

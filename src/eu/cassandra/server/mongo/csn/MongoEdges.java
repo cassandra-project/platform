@@ -14,7 +14,10 @@ public class MongoEdges {
 
 	public final static String InstallationType = "InstallationType";
 	public final static String PersonType = "PersonType";
-
+	public final static String TransformerID = "TransformerID";
+	public final static String TopologicalDistance = "TopologicalDistance";
+	public final static String SocialDistance = "SocialDistance";
+	
 	public final static String TotalConsumptionP = "TotalConsumptionP";
 	public final static String AverageConsumptionP = "AverageConsumptionP";
 	public final static String  MinConsumptionP = "MinConsumptionP";
@@ -36,13 +39,14 @@ public class MongoEdges {
 	 * @param minWeight
 	 * @param httpHeaders
 	 */
-	public void createEdges(Vector<DBObject> nodes, String graph_id, String graphType, Double minWeight, HttpHeaders httpHeaders) {
+	public int createEdges(Vector<DBObject> nodes, String graph_id, String graphType, Double minWeight, HttpHeaders httpHeaders) {
 		int edgeCounter = 0;
 		String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 		for(int i=0;i<nodes.size()-1;i++) {
 			for(int j=i+1;j<nodes.size();j++) {
 				DBObject edge = createEdge(graphType, minWeight, nodes.get(i),nodes.get(j),httpHeaders);
 				if(edge != null) {
+					edgeCounter++;
 					edge.put("graph_id", graph_id);
 					edge.put("inst_id1", nodes.get(i).get("_id").toString());
 					edge.put("inst_id2", nodes.get(j).get("_id").toString());
@@ -50,6 +54,7 @@ public class MongoEdges {
 				}
 			}
 		}
+		return edgeCounter;
 	}
 
 	private DBObject createEdge(String graphType, Double minWeight, DBObject inst1, DBObject inst2, HttpHeaders httpHeaders) {
@@ -61,6 +66,18 @@ public class MongoEdges {
 		//PersonType
 		else if(graphType.equalsIgnoreCase(PersonType)) {
 			edge = decideIfToCreateEdge(edge, inst1, inst2, "personType", graphType,null); 
+		}
+		//TransformerID
+		else if(graphType.equalsIgnoreCase(TransformerID)) {
+			edge = decideIfToCreateEdge(edge, inst1, inst2, TransformerID, graphType,null); 
+		}
+		//TopologicalDistance
+		else if(graphType.equalsIgnoreCase(TopologicalDistance)) {
+			edge = decideIfToCreateEdge(edge, inst1, inst2, TopologicalDistance, graphType,null); 
+		}
+		//
+		else if(graphType.equalsIgnoreCase(SocialDistance)) {
+			edge = decideIfToCreateEdge(edge, inst1, inst2, SocialDistance, graphType,null); 
 		}
 		//Sum
 		else if(graphType.equalsIgnoreCase(TotalConsumptionP) ) {

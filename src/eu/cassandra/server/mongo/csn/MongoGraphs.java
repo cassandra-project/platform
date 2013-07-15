@@ -13,17 +13,16 @@ import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
-import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 public class MongoGraphs {
 
 	public final static String COL_GRAPHS = "csn_graphs";
 	public final static String COL_CSN_NODES = "csn_nodes";
 	public final static String COL_CSN_EDGES = "csn_edges";
-	
+
 	public final static String COL_CSN_CLUSTERS = "csn_clusters";
 	public final static String COL_CSN_NODES2CLUSTERS = "csn_nodes2clusters";
-	
+
 	public final static String COL_CSN_EDGES_REMOVED = "csn_edges_removed";
 
 	/**
@@ -34,18 +33,31 @@ public class MongoGraphs {
 	 */
 	public String createGraph(String dataToInsert,@Context HttpHeaders httpHeaders) {
 		if(dataToInsert != null) {
-			DBObject answer = new MongoDBQueries().insertData(COL_GRAPHS ,dataToInsert,
-					"Graph created successfully",JSONValidator.GRAPH_SCHEMA,httpHeaders);
-			String graph_id = ((DBObject)(answer.get("data"))).get("_id").toString();
-			String graphType = ((DBObject)(answer.get("data"))).get("graphType").toString();
-			String minWeight = ((DBObject)(answer.get("data"))).get("minWeight").toString();
-			Double minWeightD = null;
-			if(minWeight != null) 
-				minWeightD = Double.parseDouble(minWeight);
+			try {
+				DBObject answer = new MongoDBQueries().insertData(COL_GRAPHS ,dataToInsert,
+						"Graph created successfully",JSONValidator.GRAPH_SCHEMA,httpHeaders);
+				System.out.println(answer);
+				String graph_id = ((DBObject)(answer.get("data"))).get("_id").toString();
+				String graphType = ((DBObject)(answer.get("data"))).get("graphType").toString();
+				String minWeight = ((DBObject)(answer.get("data"))).get("minWeight").toString();
+				Double minWeightD = null;
+				if(minWeight != null) 
+					minWeightD = Double.parseDouble(minWeight);
 
-			Vector<DBObject> nodes = new MongoNodes().createNodes(graph_id,httpHeaders);
-			new MongoEdges().createEdges(nodes, graph_id, graphType, minWeightD, httpHeaders);
-			return answer.toString();
+				Vector<DBObject> nodes = new MongoNodes().createNodes(graph_id,httpHeaders);
+				((DBObject)answer.get("data")).put("NumberOfNodes", nodes.size());
+
+				if(!(((DBObject)(answer.get("data"))).containsField("noedges") && ((DBObject)(answer.get("data"))).get("noedges").toString().toLowerCase().equalsIgnoreCase("true"))){
+					int numberOfEdges = new MongoEdges().createEdges(nodes, graph_id, graphType, minWeightD, httpHeaders);
+					((DBObject)answer.get("data")).put("NumberOfEdges", numberOfEdges);
+				}
+				else{
+					((DBObject)answer.get("data")).put("NumberOfEdges", 0);
+				}
+				return answer.toString();
+			}catch(Exception e) {
+				return new JSONtoReturn().createJSONError(dataToInsert,e).toString();
+			}
 		}
 		else {
 			return new JSONtoReturn().createJSONError(dataToInsert,new NullPointerException()).toString();
@@ -116,8 +128,8 @@ public class MongoGraphs {
 	public String getEdge(String edgeID, HttpHeaders httpHeaders) {
 		return new MongoDBQueries().getEntity(httpHeaders,COL_CSN_EDGES,"_id",edgeID,"CSN edges retrieved successfully").toString();
 	}
-	
-	
+
+
 	public String getEdgesRemoved(String clustersid,HttpHeaders httpHeaders) {
 		return new MongoDBQueries().getEntity(httpHeaders,COL_CSN_EDGES_REMOVED,"clustersid",clustersid,
 				"CSN edges removed from edge betweeness clusterer retrieved successfully").toString();

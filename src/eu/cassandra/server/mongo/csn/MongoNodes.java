@@ -29,7 +29,6 @@ public class MongoNodes {
 	 */
 	public Vector<DBObject>  createNodes(String graph_id,HttpHeaders httpHeaders) {
 		DecimalFormat decim = new DecimalFormat("#.##");
-		int nodeCounter = 0;
 		String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 
 		Vector<DBObject> nodes = new Vector<DBObject>();
@@ -39,7 +38,7 @@ public class MongoNodes {
 			String inst_id = installationsObj.get("_id").toString();
 
 			Double maxPd = 0.0;
-			DBCursor maxPcursor = DBConn.getConn(dbName).getCollection(MongoResults.INST_RESULTS_HOUR).find(
+			DBCursor maxPcursor = DBConn.getConn(dbName).getCollection(MongoResults.COL_INSTRESULTS_HOURLY).find(
 					new BasicDBObject("inst_id",inst_id),new BasicDBObject("p",1)).sort(new BasicDBObject( "p",-1)).limit(1);
 			DBObject maxP = null;
 			if(maxPcursor != null) {
@@ -51,7 +50,7 @@ public class MongoNodes {
 			}
 
 			Double maxQd = 0.0;
-			DBCursor maxQcursor = DBConn.getConn(dbName).getCollection(MongoResults.INST_RESULTS_HOUR).find(
+			DBCursor maxQcursor = DBConn.getConn(dbName).getCollection(MongoResults.COL_INSTRESULTS_HOURLY).find(
 					new BasicDBObject("inst_id",inst_id),new BasicDBObject("q",1)).sort(new BasicDBObject( "q",-1)).limit(1);
 			DBObject maxQ = null;
 			if(maxQcursor != null) {
@@ -63,7 +62,7 @@ public class MongoNodes {
 			}
 
 			Double minPd = 0.0;
-			DBCursor minPcursor = DBConn.getConn(dbName).getCollection(MongoResults.INST_RESULTS_HOUR).find(
+			DBCursor minPcursor = DBConn.getConn(dbName).getCollection(MongoResults.COL_INSTRESULTS_HOURLY).find(
 					new BasicDBObject("inst_id",inst_id),new BasicDBObject("p",1)).sort(new BasicDBObject( "p",1)).limit(1);
 			DBObject minP = null;
 			if(minPcursor != null) {
@@ -75,7 +74,7 @@ public class MongoNodes {
 			}
 
 			Double minQd = 0.0;
-			DBCursor minQcursor = DBConn.getConn(dbName).getCollection(MongoResults.INST_RESULTS_HOUR).find(
+			DBCursor minQcursor = DBConn.getConn(dbName).getCollection(MongoResults.COL_INSTRESULTS_HOURLY).find(
 					new BasicDBObject("inst_id",inst_id),new BasicDBObject("q",1)).sort(new BasicDBObject( "q",1)).limit(1);
 			DBObject minQ = null;
 			if(minQcursor != null) {
@@ -86,7 +85,7 @@ public class MongoNodes {
 				minQcursor.close();
 			}
 
-			DBCursor cursor = DBConn.getConn(dbName).getCollection(MongoResults.INST_RESULTS_HOUR).find(
+			DBCursor cursor = DBConn.getConn(dbName).getCollection(MongoResults.COL_INSTRESULTS_HOURLY).find(
 					new BasicDBObject("inst_id",inst_id));
 			int hours = 0;
 			Double avgP = 0.0;

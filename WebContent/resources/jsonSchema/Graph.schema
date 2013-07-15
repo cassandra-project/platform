@@ -9,17 +9,43 @@
             "enum": [
                 "InstallationType",
                 "PersonType",
+                "TransformerID",
+                "TopologicalDistance",
+                "SocialDistance",
+                
+                
+                
+                "EnergyConsumption",
+                "EnergyConsumption",
+                "EnergyConsumptionPerHour",
+                "PowerPerHourP",
+                "PowerPerHourQ",
+                
+                
+                
+                
+                
+  
+                
                 "TotalConsumption",
-                "AverageConsumption",
-                "MinConsumption",
-                "MaxConsumption",
-                "TotalConsumptionPerHour",
+                "AverageConsumptionP",
+                                "AverageConsumptionQ",
+                "MinConsumptionP",
+                                "MinConsumptionQ",
+                "MaxConsumptionP",
+                "MaxConsumptionQ",
+
                 "AverageConsumptionPerHour",
                 "MinConsumptionPerHour",
                 "MaxConsumptionPerHour"
             ],
             "optional": false
+        },
+        "noedges": {
+            "type": "string",
+            "description": "If true then don't create edges",
+            "optional": true
         }
     },
-    "additionalProperties" : false
+    "additionalProperties" : true
 }
