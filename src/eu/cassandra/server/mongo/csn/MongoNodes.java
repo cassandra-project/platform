@@ -29,7 +29,6 @@ public class MongoNodes {
 	 */
 	public Vector<DBObject>  createNodes(String graph_id,HttpHeaders httpHeaders) {
 		DecimalFormat decim = new DecimalFormat("#.##");
-		int nodeCounter = 0;
 		String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 
 		Vector<DBObject> nodes = new Vector<DBObject>();
