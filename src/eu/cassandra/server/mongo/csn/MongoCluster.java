@@ -1,8 +1,6 @@
 package eu.cassandra.server.mongo.csn;
 
-import java.awt.Color;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +27,6 @@ import com.mongodb.util.JSON;
 
 import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
-import edu.uci.ics.jung.graph.event.GraphEvent.Edge;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;

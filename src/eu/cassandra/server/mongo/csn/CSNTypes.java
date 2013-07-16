@@ -16,22 +16,22 @@ public class CSNTypes implements ServletContextListener{
 		csnTypesMap.put(MongoEdges.InstallationType , "type");
 		csnTypesMap.put(MongoEdges.PersonType , "personType");
 		
-		csnTypesMap.put(MongoEdges.TotalConsumptionP , "sumP");
-		csnTypesMap.put(MongoEdges.TotalConsumptionQ , "sumQ");
-		
-		csnTypesMap.put(MongoEdges.AverageConsumptionP , "avgP");
-		csnTypesMap.put(MongoEdges.AverageConsumptionQ , "avgQ");
-
-		csnTypesMap.put(MongoEdges.MinConsumptionP , "minP");
-		csnTypesMap.put(MongoEdges.MinConsumptionQ , "minQ");
-
-		csnTypesMap.put(MongoEdges.MaxConsumptionP , "maxP");
-		csnTypesMap.put(MongoEdges.MaxConsumptionQ , "maxQ");
-		
-		//
-		csnTypesMap.put(MongoEdges.ConsumptionPerHourP , "hoursP");
-		csnTypesMap.put(MongoEdges.ConsumptionPerHourQ , "hoursQ");
-		
+//		csnTypesMap.put(MongoEdges.TotalConsumptionP , "sumP");
+//		csnTypesMap.put(MongoEdges.TotalConsumptionQ , "sumQ");
+//		
+//		csnTypesMap.put(MongoEdges.AverageConsumptionP , "avgP");
+//		csnTypesMap.put(MongoEdges.AverageConsumptionQ , "avgQ");
+//
+//		csnTypesMap.put(MongoEdges.MinConsumptionP , "minP");
+//		csnTypesMap.put(MongoEdges.MinConsumptionQ , "minQ");
+//
+//		csnTypesMap.put(MongoEdges.MaxConsumptionP , "maxP");
+//		csnTypesMap.put(MongoEdges.MaxConsumptionQ , "maxQ");
+//		
+//		//
+//		csnTypesMap.put(MongoEdges.ConsumptionPerHourP , "hoursP");
+//		csnTypesMap.put(MongoEdges.ConsumptionPerHourQ , "hoursQ");
+//		
 		
 
 		//		//Sum

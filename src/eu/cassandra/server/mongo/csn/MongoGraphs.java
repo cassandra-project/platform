@@ -36,7 +36,6 @@ public class MongoGraphs {
 			try {
 				DBObject answer = new MongoDBQueries().insertData(COL_GRAPHS ,dataToInsert,
 						"Graph created successfully",JSONValidator.GRAPH_SCHEMA,httpHeaders);
-				System.out.println(answer);
 				String graph_id = ((DBObject)(answer.get("data"))).get("_id").toString();
 				String graphType = ((DBObject)(answer.get("data"))).get("graphType").toString();
 				String minWeight = ((DBObject)(answer.get("data"))).get("minWeight").toString();
@@ -47,6 +46,7 @@ public class MongoGraphs {
 				Vector<DBObject> nodes = new MongoNodes().createNodes(graph_id,httpHeaders);
 				((DBObject)answer.get("data")).put("NumberOfNodes", nodes.size());
 
+
 				if(!(((DBObject)(answer.get("data"))).containsField("noedges") && ((DBObject)(answer.get("data"))).get("noedges").toString().toLowerCase().equalsIgnoreCase("true"))){
 					int numberOfEdges = new MongoEdges().createEdges(nodes, graph_id, graphType, minWeightD, httpHeaders);
 					((DBObject)answer.get("data")).put("NumberOfEdges", numberOfEdges);
@@ -56,6 +56,7 @@ public class MongoGraphs {
 				}
 				return answer.toString();
 			}catch(Exception e) {
+				e.printStackTrace();
 				return new JSONtoReturn().createJSONError(dataToInsert,e).toString();
 			}
 		}

@@ -7,8 +7,10 @@ import javax.ws.rs.core.HttpHeaders;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
+import eu.cassandra.server.mongo.MongoPersons;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 public class MongoEdges {
 
@@ -16,20 +18,22 @@ public class MongoEdges {
 	public final static String PersonType = "PersonType";
 	public final static String TransformerID = "TransformerID";
 	public final static String TopologicalDistance = "TopologicalDistance";
+	public final static String Location = "Location";
 	public final static String SocialDistance = "SocialDistance";
-	
-	public final static String TotalConsumptionP = "TotalConsumptionP";
-	public final static String AverageConsumptionP = "AverageConsumptionP";
-	public final static String  MinConsumptionP = "MinConsumptionP";
-	public final static String MaxConsumptionP = "MaxConsumptionP";
 
-	public final static String TotalConsumptionQ = "TotalConsumptionQ";
-	public final static String AverageConsumptionQ = "AverageConsumptionQ";
-	public final static String  MinConsumptionQ = "MinConsumptionQ";
-	public final static String MaxConsumptionQ = "MaxConsumptionQ";
+	public final static String TotalEnergyConsumption = "TotalEnergyConsumption";
 
-	public final static String ConsumptionPerHourP = "ConsumptionPerHourP";
-	public final static String ConsumptionPerHourQ = "ConsumptionPerHourQ";
+	public final static String MaxHourlyEnergyConsumption = "MaxHourlyEnergyConsumption";
+	public final static String MinHourlyEnergyConsumption = "MinHourlyEnergyConsumption";
+
+	public final static String AverageActivePowerPerHour = "AverageActivePowerPerHour";
+	public final static String AverageReactivePowerPerHour = "AverageReactivePowerPerHour";
+
+	public final static String MaxActivePowerPerHour = "MaxActivePowerPerHour";
+	public final static String MaxReactivePowerPerHour = "MaxReactivePowerPerHour";
+
+	public final static String MinActivePowerPerHour = "MinActivePowerPerHour";
+	public final static String MinReactivePowerPerHour = "MinReactivePowerPerHour";
 
 	/**
 	 * 
@@ -59,90 +63,235 @@ public class MongoEdges {
 
 	private DBObject createEdge(String graphType, Double minWeight, DBObject inst1, DBObject inst2, HttpHeaders httpHeaders) {
 		DBObject edge = null;
+		boolean createEdge = false;
 		//InstallationType
-		if(graphType.equalsIgnoreCase(InstallationType)) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, "type", graphType,null); 
+		if(graphType.equalsIgnoreCase(InstallationType) || graphType.equalsIgnoreCase(InstallationType)) {
+			if(equalInNodes("type", inst1, inst2)){
+				createEdge = true;
+			}
 		}
 		//PersonType
 		else if(graphType.equalsIgnoreCase(PersonType)) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, "personType", graphType,null); 
+			if(equalPersonType(inst1, inst2, httpHeaders)){
+				createEdge = true;
+			}
 		}
 		//TransformerID
 		else if(graphType.equalsIgnoreCase(TransformerID)) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, TransformerID, graphType,null); 
+			if(equalInNodes(TransformerID, inst1, inst2)){
+				createEdge = true;
+			}
 		}
 		//TopologicalDistance
 		else if(graphType.equalsIgnoreCase(TopologicalDistance)) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, TopologicalDistance, graphType,null); 
+			//@ToDo
 		}
-		//
+		//Locations
+		else if(graphType.equalsIgnoreCase(Location)) {
+			if(equalInNodes(Location.toLowerCase(), inst1, inst2)){
+				createEdge = true;
+			}
+		}
+		//SocialDistance
 		else if(graphType.equalsIgnoreCase(SocialDistance)) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, SocialDistance, graphType,null); 
+			if(equalInNodes(Location.toLowerCase(), inst1, inst2)){
+				createEdge = true;
+			}
 		}
-		//Sum
-		else if(graphType.equalsIgnoreCase(TotalConsumptionP) ) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, "sumP", graphType,minWeight); 
+		
+		//All other 
+		else {
+			edge = decideIfToCreateEdge(inst1, inst2, graphType, minWeight, httpHeaders);
 		}
-		else if(graphType.equalsIgnoreCase(TotalConsumptionQ) ) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, "sumQ", graphType,minWeight); 
-		}
-		//avgP
-		else if(graphType.equalsIgnoreCase(AverageConsumptionP) ) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, "avgP", graphType,minWeight); 
-		}
-		else if(graphType.equalsIgnoreCase(AverageConsumptionQ) ) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, "avgQ", graphType,minWeight); 
-		}
-		//Min
-		else if(graphType.equalsIgnoreCase(MinConsumptionP)  ) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, "minP", graphType,minWeight); 
-		}
-		else if(graphType.equalsIgnoreCase(MinConsumptionQ) ) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, "minQ", graphType,minWeight); 
-		}
-		//Max
-		else if(graphType.equalsIgnoreCase(MaxConsumptionP)) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, "maxP", graphType,minWeight); 
-		}
-		else if(graphType.equalsIgnoreCase(MaxConsumptionQ) ) {
-			edge = decideIfToCreateEdge(edge, inst1, inst2, "maxQ", graphType,minWeight); 
-		}
+
+		//		public final static String MaxHourlyEnergyConsumption = "MaxHourlyEnergyConsumption";
+		//		public final static String MinHourlyEnergyConsumption = "MinHourlyEnergyConsumption";
+		//		public final static String AverageActivePowerPerHour = "AverageActivePowerPerHour";
+		//		public final static String AverageReactivePowerPerHour = "AverageReactivePowerPerHour";
+		//		public final static String MaxActivePowerPerHour = "MaxActivePowerPerHour";
+		//		public final static String MaxReactivePowerPerHour = "MaxReactivePowerPerHour";
+		//		public final static String MinActivePowerPerHour = "MinActivePowerPerHour";
+		//		public final static String MinReactivePowerPerHour = "MinReactivePowerPerHour";
+
+		//
+		//		else if(graphType.equalsIgnoreCase(TotalConsumptionQ) ) {
+		//			edge = decideIfToCreateEdge(edge, inst1, inst2, "sumQ", graphType,minWeight); 
+		//		}
+		//		//avgP
+		//		else if(graphType.equalsIgnoreCase(AverageConsumptionP) ) {
+		//			edge = decideIfToCreateEdge(edge, inst1, inst2, "avgP", graphType,minWeight); 
+		//		}
+		//		else if(graphType.equalsIgnoreCase(AverageConsumptionQ) ) {
+		//			edge = decideIfToCreateEdge(edge, inst1, inst2, "avgQ", graphType,minWeight); 
+		//		}
+		//		//Min
+		//		else if(graphType.equalsIgnoreCase(MinConsumptionP)  ) {
+		//			edge = decideIfToCreateEdge(edge, inst1, inst2, "minP", graphType,minWeight); 
+		//		}
+		//		else if(graphType.equalsIgnoreCase(MinConsumptionQ) ) {
+		//			edge = decideIfToCreateEdge(edge, inst1, inst2, "minQ", graphType,minWeight); 
+		//		}
+		//		//Max
+		//		else if(graphType.equalsIgnoreCase(MaxConsumptionP)) {
+		//			edge = decideIfToCreateEdge(edge, inst1, inst2, "maxP", graphType,minWeight); 
+		//		}
+		//		else if(graphType.equalsIgnoreCase(MaxConsumptionQ) ) {
+		//			edge = decideIfToCreateEdge(edge, inst1, inst2, "maxQ", graphType,minWeight); 
+		//		}
+
+		if(createEdge)
+			edge = new BasicDBObject("type",graphType);
 
 		return edge;
 	}
 
+
 	/**
 	 * 
-	 * @param edge
+	 * @param instObjectKey
+	 * @param inst1
+	 * @param inst2
+	 * @return
+	 */
+	private boolean equalInNodes(String instObjectKey, DBObject inst1, DBObject inst2) {
+		if(inst1.get(instObjectKey) != null && inst2.get(instObjectKey) != null) {
+			if(inst1.get(instObjectKey).toString().equalsIgnoreCase(inst2.get(instObjectKey).toString())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	/**
+	 * 
 	 * @param inst1
 	 * @param inst2
 	 * @param instObjectKey
-	 * @param graphType
+	 * @param minWeight
+	 * @param httpHeaders
 	 * @return
 	 */
-	private DBObject decideIfToCreateEdge(DBObject edge, DBObject inst1, DBObject inst2, String instObjectKey, String graphType, Double minWeight) {
-		if(inst1.get(instObjectKey) != null && inst2.get(instObjectKey) != null) {
-			//If create edges based on Node Type or Person Type
-			if(minWeight == null) {
-				if(inst1.get(instObjectKey).toString().equalsIgnoreCase(inst2.get(instObjectKey).toString())) {
-					edge = new BasicDBObject("type",graphType);
-				}
-			}
-			//Else if create edges based on P or Q (max,min, avg)
-			else if(!graphType.toLowerCase().contains("per")) {
+	private DBObject decideIfToCreateEdge(DBObject inst1, DBObject inst2, String instObjectKey, Double minWeight, HttpHeaders httpHeaders) {
+		//		Double v2 = Double.parseDouble(inst2.get(instObjectKey).toString());
+		DBObject edge = null;
+		if(instObjectKey.equalsIgnoreCase(TotalEnergyConsumption) ||
+				instObjectKey.equalsIgnoreCase(MaxHourlyEnergyConsumption) || 
+				instObjectKey.equalsIgnoreCase(MinHourlyEnergyConsumption) || 
+				instObjectKey.equalsIgnoreCase(AverageActivePowerPerHour) || 
+				instObjectKey.equalsIgnoreCase(AverageReactivePowerPerHour) || 
+				instObjectKey.equalsIgnoreCase(MaxReactivePowerPerHour) || 
+				instObjectKey.equalsIgnoreCase(MaxHourlyEnergyConsumption) || 
+				instObjectKey.equalsIgnoreCase(MinActivePowerPerHour) || 
+				instObjectKey.equalsIgnoreCase(MinReactivePowerPerHour)) {
+			if(inst1.containsField(instObjectKey) && inst2.containsField(instObjectKey)) {
+				System.out.println(instObjectKey + "\n\n" + PrettyJSONPrinter.prettyPrint(inst1));
 				Double v1 = Double.parseDouble(inst1.get(instObjectKey).toString());
 				Double v2 = Double.parseDouble(inst2.get(instObjectKey).toString());
 				double dif = Math.abs(v1-v2);
-				if( dif < minWeight) {
-					edge = new BasicDBObject("type",graphType);
+				if( dif > minWeight) {
+					edge = new BasicDBObject("type",instObjectKey);
 					edge.put("minWeight", minWeight);
 					edge.put("weight", dif);
 				}
 			}
-			//Else perday or perhour
-			else {
-			}
 		}
 		return edge;
 	}
+
+
+//	/**
+//	 * 
+//	 * @param v1
+//	 * @param v2
+//	 * @param minWeight
+//	 * @param instObjectKey
+//	 * @return
+//	 */
+//	private DBObject createEdge(Double v1, Double v2, Double minWeight, String instObjectKey) {
+//		DBObject edge = null;
+//		double dif = Math.abs(v1-v2);
+//		if( dif < minWeight) {
+//			edge = new BasicDBObject("type",instObjectKey);
+//			edge.put("minWeight", minWeight);
+//			edge.put("weight", dif);
+//		}
+//		return edge;
+//	}
+
+
+	/**
+	 * 
+	 * @param inst1
+	 * @param inst2
+	 * @param httpHeaders
+	 * @return
+	 */
+	private boolean equalPersonType(DBObject inst1, DBObject inst2, HttpHeaders httpHeaders) {
+		String instObjectKey = "type";
+		DBObject person1 = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).
+				getCollection(MongoPersons.COL_PERSONS).findOne(new BasicDBObject("inst_id",inst1.get("inst_id").toString()));
+		DBObject person2 = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).
+				getCollection(MongoPersons.COL_PERSONS).findOne(new BasicDBObject("inst_id",inst2.get("inst_id").toString()));
+
+		if(person1.get(instObjectKey) != null && person2.get(instObjectKey) != null) {
+			if(person1.get(instObjectKey).toString().equalsIgnoreCase(person1.get(instObjectKey).toString())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+//	private double getSum(DBObject inst, HttpHeaders httpHeaders) {
+//		double value = 0.0;
+//		DBCursor results = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).getCollection(
+//				MongoResults.COL_INSTRESULTS_HOURLY_EN).find(new BasicDBObject("inst_id",inst.get("_id").toString()));
+//		while(results.hasNext()) {
+//			DBObject obj = results.next();
+//			if(obj.containsField("p")) {
+//				String v = obj.get("p").toString();
+//				value += Double.parseDouble(v);
+//			}
+//		}
+//		results.close();
+//		return value;
+//	}
+
+
+	//	/**
+	//	 * 
+	//	 * @param edge
+	//	 * @param inst1
+	//	 * @param inst2
+	//	 * @param instObjectKey
+	//	 * @param graphType
+	//	 * @return
+	//	 */
+	//	private DBObject decideIfToCreateEdge(DBObject edge, DBObject inst1, DBObject inst2, String instObjectKey, String graphType, Double minWeight) {
+	//
+	//		if(inst1.get(instObjectKey) != null && inst2.get(instObjectKey) != null) {
+	//			//If create edges based on Node Type or Person Type
+	//			if(minWeight == null) {
+	//				if(inst1.get(instObjectKey).toString().equalsIgnoreCase(inst2.get(instObjectKey).toString())) {
+	//					edge = new BasicDBObject("type",graphType);
+	//				}
+	//			}
+	//			//Else if create edges based on P or Q (max,min, avg)
+	//			else if(!graphType.toLowerCase().contains("per")) {
+	//				Double v1 = Double.parseDouble(inst1.get(instObjectKey).toString());
+	//				Double v2 = Double.parseDouble(inst2.get(instObjectKey).toString());
+	//				double dif = Math.abs(v1-v2);
+	//				if( dif < minWeight) {
+	//					edge = new BasicDBObject("type",graphType);
+	//					edge.put("minWeight", minWeight);
+	//					edge.put("weight", dif);
+	//				}
+	//			}
+	//			//Else perday or perhour
+	//			else {
+	//			}
+	//		}
+	//		return edge;
+	//	}
 }
