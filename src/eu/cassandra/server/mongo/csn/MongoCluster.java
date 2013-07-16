@@ -77,12 +77,12 @@ public class MongoCluster {
 	 */
 	private Instances getInstances(String clusterBasedOn, String graph_id, HttpHeaders httpHeaders) {
 		FastVector attributes = new FastVector();
-		if(!clusterBasedOn.toLowerCase().contains("per")) {
-			attributes.addElement(new Attribute("att0"));
-		}else {
+		if(clusterBasedOn.equalsIgnoreCase("hoursP") || clusterBasedOn.equalsIgnoreCase("hoursQ") || clusterBasedOn.equalsIgnoreCase("hoursE"))  {
 			for(int i=0;i<24;i++) {
 				attributes.addElement(new Attribute("att" + i));
 			}
+		}else {
+			attributes.addElement(new Attribute("att0"));
 		}
 		Instances instances = new Instances("data", attributes, 0);
 
@@ -94,18 +94,20 @@ public class MongoCluster {
 			DBObject installationDBObj = nodes.next();
 			nodeIDs.add(installationDBObj.get("_id").toString());
 			//If graph was build based on Person or Installation Type do nothing
-			if(clusterBasedOn.equals(MongoEdges.PersonType) || clusterBasedOn.equals(MongoEdges.InstallationType)) {
+			if(clusterBasedOn.equalsIgnoreCase(MongoEdges.PersonType) || 
+					clusterBasedOn.equalsIgnoreCase(MongoEdges.InstallationType) ||
+					clusterBasedOn.equalsIgnoreCase(MongoEdges.TransformerID)	||     
+					clusterBasedOn.equalsIgnoreCase(MongoEdges.TopologicalDistance) ||
+					clusterBasedOn.equalsIgnoreCase(MongoEdges.Location) ||
+					clusterBasedOn.equalsIgnoreCase(MongoEdges.Location) ||
+					clusterBasedOn.equalsIgnoreCase(MongoEdges.SocialDistance)) {
 				continue;
 			}
 			else {
 				Object vS =  installationDBObj.get(CSNTypes.getCsnTypes(clusterBasedOn));
 				if(vS != null) {
-					if(!clusterBasedOn.toLowerCase().contains("per")) {
-						Double v = Double.parseDouble(vS.toString());
-						values = new double[1];
-						values[0] = v;
-					}
-					else {
+					if(clusterBasedOn.equalsIgnoreCase("hoursP") || clusterBasedOn.equalsIgnoreCase("hoursQ") || 
+							clusterBasedOn.equalsIgnoreCase("hoursE"))  {
 						if(vS instanceof BasicDBList) {
 							BasicDBList v = (BasicDBList)vS;
 							values = new double[v.size()];
@@ -116,6 +118,11 @@ public class MongoCluster {
 								}
 							}
 						}
+					}
+					else {
+						Double v = Double.parseDouble(vS.toString());
+						values = new double[1];
+						values[0] = v;
 					}
 				}
 			}
@@ -305,7 +312,7 @@ public class MongoCluster {
 					DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_NODES2CLUSTERS).insert(ob);
 				}
 			}
-			
+
 			//Edges Removed
 			if(edgesRemoved != null) {
 				for(int i=0;i<edgesRemoved.size();i++) {

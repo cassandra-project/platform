@@ -34,6 +34,12 @@ public class MongoEdges {
 
 	public final static String MinActivePowerPerHour = "MinActivePowerPerHour";
 	public final static String MinReactivePowerPerHour = "MinReactivePowerPerHour";
+	
+	public final static String hoursP = "hoursP";
+	public final static String hoursQ = "hoursQ";
+	public final static String hoursE = "hoursE";
+	
+	
 
 	/**
 	 * 

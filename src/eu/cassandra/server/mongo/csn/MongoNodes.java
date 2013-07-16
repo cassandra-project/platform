@@ -119,20 +119,29 @@ public class MongoNodes {
 			DBCursor c = DBConn.getConn(dbName).getCollection(MongoResults.COL_INSTRESULTS_HOURLY_EN).find(
 					new BasicDBObject("inst_id",inst_id));
 			double totalEnergyConsumption = 0.0;
+			HashMap<Integer,Double> perHourE = new HashMap<Integer,Double>();
+			int hours = 0;
 			while(c.hasNext()) {
 				DBObject inst_result_hour = c.next();
 				if(inst_result_hour.containsField("p")) {
 					String p = inst_result_hour.get("p").toString();
 					double v = Double.parseDouble(p);
 					totalEnergyConsumption += v;
+					
+					if(perHourE.containsKey((int)(hours%24))) {
+						v += perHourE.get((int)(hours%24));
+					}
+					perHourE.put((int)(hours%24), v);
+					
 				}
+				hours++;
 			}
 			c.close();
 
 
 			DBCursor cursor = DBConn.getConn(dbName).getCollection(MongoResults.COL_INSTRESULTS_HOURLY).find(
 					new BasicDBObject("inst_id",inst_id));
-			int hours = 0;
+			hours = 0;
 			Double averageActivePowerPerHour = 0.0;
 			Double averageReactivePowerPerHour = 0.0;
 			HashMap<Integer,Double> perHourP = new HashMap<Integer,Double>();
@@ -220,9 +229,17 @@ public class MongoNodes {
 				if(perHourQ.containsKey(i))
 					hourVecQ.add(Double.parseDouble(decim.format(perHourQ.get(i))));
 			}
+			
+			Vector<Double> hourVecE = new Vector<Double>();
+			for(int i=0;i<24;i++) {
+				if(perHourE.containsKey(i))
+					hourVecE.add(Double.parseDouble(decim.format(perHourE.get(i))));
+			}
+			
 
 			installationNode.put("hoursP", hourVecP);
 			installationNode.put("hoursQ", hourVecQ);
+			installationNode.put("hoursE", hourVecE);
 
 			DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_NODES).insert(installationNode);
 			nodes.add(installationNode);
