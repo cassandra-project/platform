@@ -10,7 +10,6 @@ import com.mongodb.DBObject;
 import eu.cassandra.server.mongo.MongoPersons;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
-import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 public class MongoEdges {
 
@@ -58,8 +57,10 @@ public class MongoEdges {
 				if(edge != null) {
 					edgeCounter++;
 					edge.put("graph_id", graph_id);
-					edge.put("inst_id1", nodes.get(i).get("_id").toString());
-					edge.put("inst_id2", nodes.get(j).get("_id").toString());
+					edge.put("node_id1", nodes.get(i).get("_id").toString());
+					edge.put("node_id2", nodes.get(j).get("_id").toString());
+					edge.put("inst_id1", nodes.get(i).get("inst_id").toString());
+					edge.put("inst_id2", nodes.get(j).get("inst_id").toString());
 					DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_EDGES).insert(edge);
 				}
 			}
@@ -191,7 +192,6 @@ public class MongoEdges {
 				instObjectKey.equalsIgnoreCase(MinActivePowerPerHour) || 
 				instObjectKey.equalsIgnoreCase(MinReactivePowerPerHour)) {
 			if(inst1.containsField(instObjectKey) && inst2.containsField(instObjectKey)) {
-				System.out.println(instObjectKey + "\n\n" + PrettyJSONPrinter.prettyPrint(inst1));
 				Double v1 = Double.parseDouble(inst1.get(instObjectKey).toString());
 				Double v2 = Double.parseDouble(inst2.get(instObjectKey).toString());
 				double dif = Math.abs(v1-v2);

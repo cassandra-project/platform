@@ -1,6 +1,6 @@
 {
         "graphType" : "MinReactivePowerPerHour",
-        "minWeight" : 1,
+        "minWeight" : 1.1,
         "noedges" : "false"
 }
  

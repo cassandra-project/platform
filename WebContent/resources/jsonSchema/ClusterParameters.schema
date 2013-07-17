@@ -35,7 +35,7 @@
                 "hoursE"
                 
             ],
-            "optional": true
+            "optional": false
         },    
         "clustermethod": {
             "type": "string",

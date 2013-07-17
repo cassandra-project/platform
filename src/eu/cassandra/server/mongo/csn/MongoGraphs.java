@@ -36,6 +36,9 @@ public class MongoGraphs {
 			try {
 				DBObject answer = new MongoDBQueries().insertData(COL_GRAPHS ,dataToInsert,
 						"Graph created successfully",JSONValidator.GRAPH_SCHEMA,httpHeaders);
+				if(!answer.get("success").toString().equalsIgnoreCase("true")) {
+					return new JSONtoReturn().createJSONError(answer.toString(),new Exception()).toString();
+				}
 				String graph_id = ((DBObject)(answer.get("data"))).get("_id").toString();
 				String graphType = ((DBObject)(answer.get("data"))).get("graphType").toString();
 				String minWeight = ((DBObject)(answer.get("data"))).get("minWeight").toString();

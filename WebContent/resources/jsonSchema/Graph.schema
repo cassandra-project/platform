@@ -29,6 +29,11 @@
             ],
             "optional": false
         },
+        "minWeight": {
+            "type": "number",
+            "description": "Min weight threshold",
+            "optional": false
+        },        
         "noedges": {
             "type": "string",
             "description": "If true then don't create edges",
