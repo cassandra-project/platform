@@ -77,9 +77,11 @@ Ext.define('C.view.MyTabPanel', {
 			}
 		}
 
-		var breadcrumb = C.app.setBreadcrumb(activeTab.corresponding_node);
-		tabPanel.dockedItems.items[0].removeAll();
-		tabPanel.dockedItems.items[0].add(breadcrumb);
+		if (activeTab.corresponding_node) {
+			var breadcrumb = C.app.setBreadcrumb(activeTab.corresponding_node);
+			tabPanel.dockedItems.items[0].removeAll();
+			tabPanel.dockedItems.items[0].add(breadcrumb);
+		}
 	},
 
 	onTabpanelBeforeRender: function(component, eOpts) {

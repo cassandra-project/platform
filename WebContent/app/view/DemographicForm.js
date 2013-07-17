@@ -16,7 +16,6 @@
 Ext.define('C.view.DemographicForm', {
 	extend: 'Ext.form.Panel',
 
-	padding: 5,
 	autoScroll: true,
 	layout: {
 		type: 'auto'

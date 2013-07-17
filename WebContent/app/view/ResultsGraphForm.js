@@ -16,7 +16,6 @@
 Ext.define('C.view.ResultsGraphForm', {
 	extend: 'Ext.form.Panel',
 
-	padding: 5,
 	width: 710,
 	autoScroll: true,
 	layout: {

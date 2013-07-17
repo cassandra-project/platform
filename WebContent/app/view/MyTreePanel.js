@@ -32,6 +32,7 @@ Ext.define('C.view.MyTreePanel', {
 				height: 91,
 				margin: '5px 0 0 0',
 				width: 200,
+				loadMask: true,
 				loadingText: 'loading...',
 				plugins: [
 					Ext.create('Ext.tree.plugin.TreeViewDragDrop', {
@@ -72,7 +73,14 @@ Ext.define('C.view.MyTreePanel', {
 		console.info('Before node drop.', this, node, data, overModel, dropPosition, dropHandlers, eOpts);
 		// TODO Rename ALL the collections to itemCollection instead of itemsCollection
 		//if(overModel.raw.nodeType == data.records[0].raw.nodeType + 'sCollection'){
+		if (overModel.get('page')) { //if dummy pagination node then return false
+			return false;
+		}
 		var record = (data.records[0].node) ? data.records[0].node : data.records[0];
+		if  (record.paginationNode) {
+			record.paginationNode.expand();
+			record = record.node;
+		}
 		var nodeType = record.get('nodeType');
 		// Node from tree || Node from grid.
 		if (record.parentNode.get('nodeType') == overModel.get('nodeType')){
@@ -363,14 +371,14 @@ Ext.define('C.view.MyTreePanel', {
 							storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
 							navigationNode: record
 						});
-						record.c.store.proxy.extraParams = {'scn_id': record.parentNode.get('nodeId')};
-						record.c.store.load({/*
+						//record.c.store.proxy.extraParams = {'scn_id': record.parentNode.get('nodeId')};
+						record.c.store.load({
 							params: {
 								scn_id: record.parentNode.get('nodeId')
-							}*/
+							}
 						});
 					}
-					else  {
+					else if (!record.hasChildNodes()) {
 						var page = record.get('page');
 						var store = record.parentNode.c.store;
 						Ext.each(store.data.items.slice( (page-1)*C.limit, page * C.limit ), function(store_record, index){

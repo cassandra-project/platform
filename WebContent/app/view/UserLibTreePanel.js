@@ -69,12 +69,18 @@ Ext.define('C.view.UserLibTreePanel', {
 
 	onTreedragdroppluginBeforeDrop: function(node, data, overModel, dropPosition, dropHandlers, eOpts) {
 		console.info('Before node drop.', this, node, data, overModel, dropPosition, dropHandlers, eOpts);
-
+		if (overModel.get('page')) { //if dummy pagination node then return false
+			return false;
+		}
 		var record = (data.records[0].node) ? data.records[0].node : data.records[0];
-		var nodeType = record.get('nodeType');
+		if  (record.paginationNode) {
+			record.paginationNode.expand();
+			record = record.node;
+		}
+		var nodeType = record.get('nodeType') ;
 
 		// Node from tree || Node from grid.
-		if (record.parentNode.get('nodeType') == overModel.get('nodeType')){
+		if (record.parentNode.get('nodeType') == overModel.get('nodeType') && !overModel.get('page')){
 			// record can be a lot of things, navigation record, grid row.
 			// Get the actuall data from its store to skip unwanted behaviour.
 			dropHandlers.cancelDrop();
@@ -215,7 +221,7 @@ Ext.define('C.view.UserLibTreePanel', {
 							}*/
 						});
 					}
-					else  {
+					else if (!record.hasChildNodes()) {
 						var page = record.get('page');
 						var store = record.parentNode.c.store;
 						Ext.each(store.data.items.slice( (page-1)*C.limit, page * C.limit ), function(store_record, index){

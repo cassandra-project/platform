@@ -17,7 +17,6 @@ Ext.define('C.view.DynamicGrid', {
 	extend: 'Ext.grid.Panel',
 
 	minHeight: 250,
-	padding: 5,
 	autoScroll: true,
 	title: 'My Grid Panel',
 	columnLines: false,
@@ -254,7 +253,6 @@ Ext.define('C.view.DynamicGrid', {
 
 	onButtonClick: function(button, e, eOpts) {
 		console.info('Add clicked.', this, button, e, eOpts);
-
 		var parent_id = (this.store.navigationNode.get('nodeType') == 'ProjectsCollection')?'':this.store.navigationNode.parentNode.get('id');
 		var inputArray = {};
 		switch(this.store.navigationNode.get('nodeType')){
@@ -277,7 +275,7 @@ Ext.define('C.view.DynamicGrid', {
 		var cur_record = new currentModel(inputArray);
 
 
-		this.store.insert(0, cur_record);
+		this.store.add(cur_record);
 
 
 		/*this.store.on('update', function(abstractstore, records, operation) {
@@ -311,13 +309,15 @@ Ext.define('C.view.DynamicGrid', {
 			//check if there are open tabs with selections and if yes, close them
 			Ext.each(selections, function(selection, index) {
 				var node = selection.node;
-				var pathToMe =  node.get('nodeType')+':'+node.getPath();
-				Ext.each (tabs.items.items, function(item, index) {
-					if (item.pathToMe == pathToMe) {
-						item.close();
-						return false;
-					}
-				});
+				if (node) {
+					var pathToMe =  node.get('nodeType')+':'+node.getPath();
+					Ext.each (tabs.items.items, function(item, index) {
+						if (item.pathToMe == pathToMe) {
+							item.close();
+							return false;
+						}
+					});
+				}
 			});
 
 			this.store.remove(selections);
@@ -329,8 +329,11 @@ Ext.define('C.view.DynamicGrid', {
 
 		var selections = this.getView().getSelectionModel().getSelection();
 		if (selections) {
-			Ext.each(selections, function(index){
-				C.app.createForm(index.node);
+			Ext.each(selections, function(record){
+				if (!record.node && record.paginationNode)
+				record.paginationNode.expand();
+				if (record.node)
+				C.app.createForm(record.node);
 			});
 		}
 	},
@@ -565,8 +568,10 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onGridpanelItemDblClick: function(dataview, record, item, index, e, eOpts) {
+		if (!record.node && record.paginationNode)
+		record.paginationNode.expand();
 		if (record.node)
-		C.app.createForm(record.node);
+		C.app.openTab(record.node);
 	},
 
 	onToolClick1: function(tool, e, eOpts) {
@@ -617,27 +622,7 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onToolClick: function(tool, e, eOpts) {
-		var node = this.store.navigationNode;
-		var parent_id = (node.get('nodeType') == 'ProjectsCollection')?'':node.parentNode.get('id');
-		var params = {};
-		switch(node.get('nodeType')){
-			case 'ProjectsCollection': params = {};break;
-			case 'ScenariosCollection': params = {'prj_id' : parent_id};break;
-			case 'InstallationsCollection': params = {'scn_id' : parent_id}; break;
-			case 'PricingSchemesCollection': params = {'scn_id' : parent_id}; break;
-			case 'DemographicsCollection': params = {'scn_id' : parent_id}; break;
-			case 'SimulationParamsCollection': params = {'scn_id' : parent_id}; break;
-			case 'PersonsCollection': params = {'inst_id' : parent_id}; break;
-			case 'AppliancesCollection': params = {'inst_id': parent_id}; break;
-			case 'ActivitiesCollection': params = {'pers_id': parent_id}; break;
-			case 'ActivityModelsCollection': params = {'act_id' : parent_id}; break;
-			case 'RunsCollection': params = {'prj_id' : parent_id}; break;
-			default: return false;
-		}
-		while (node.hasChildNodes()) {
-			node.removeChild(node.childNodes[0]);
-		}
-		this.store.load({params: params});
+		C.app.refreshGrid(this.store);
 	},
 
 	onGridpanelBeforeRender: function(component, eOpts) {

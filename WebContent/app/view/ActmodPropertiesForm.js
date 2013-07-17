@@ -17,7 +17,6 @@ Ext.define('C.view.ActmodPropertiesForm', {
 	extend: 'Ext.form.Panel',
 
 	margin: '10px 0',
-	padding: '',
 	width: 687,
 	autoScroll: true,
 	layout: {

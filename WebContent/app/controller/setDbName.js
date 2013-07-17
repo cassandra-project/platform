@@ -61,6 +61,8 @@ Ext.define('C.controller.setDbName', {
 					warnings_html += "<li>" + warning + "</li>";
 				});
 				warnings_html += "</ul>";
+				if (Ext.getDom("warnings"))
+				Ext.getDom("warnings").parentElement.remove();
 				Ext.getCmp("MainTabPanel").getActiveTab().insert(0, { html: warnings_html });
 			}
 
