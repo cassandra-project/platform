@@ -16,10 +16,9 @@
 Ext.define('C.view.ScenarioForm', {
 	extend: 'Ext.form.Panel',
 
-	padding: 5,
 	autoScroll: true,
 	layout: {
-		type: 'hbox'
+		type: 'auto'
 	},
 	bodyPadding: 10,
 	title: 'My Form',
@@ -31,93 +30,101 @@ Ext.define('C.view.ScenarioForm', {
 			items: [
 				{
 					xtype: 'container',
-					flex: 2,
-					itemId: 'dataContainer',
-					autoScroll: true,
 					layout: {
-						type: 'anchor'
+						type: 'hbox'
 					},
 					items: [
 						{
-							xtype: 'fieldset',
-							padding: '10px',
-							width: 400,
-							title: 'Properties',
+							xtype: 'container',
+							flex: 2,
+							itemId: 'dataContainer',
+							autoScroll: true,
+							layout: {
+								type: 'anchor'
+							},
 							items: [
 								{
-									xtype: 'textfield',
-									width: 246,
-									fieldLabel: 'Name',
-									name: 'name',
-									listeners: {
-										change: {
-											fn: me.onTextfieldChange1,
-											scope: me
+									xtype: 'fieldset',
+									padding: '10px',
+									width: 400,
+									title: 'Properties',
+									items: [
+										{
+											xtype: 'textfield',
+											width: 246,
+											fieldLabel: 'Name',
+											name: 'name',
+											listeners: {
+												change: {
+													fn: me.onTextfieldChange1,
+													scope: me
+												}
+											}
+										},
+										{
+											xtype: 'textareafield',
+											width: 300,
+											fieldLabel: 'Notes',
+											name: 'description'
+										},
+										{
+											xtype: 'combobox',
+											width: 246,
+											fieldLabel: 'Setup <span style=color:red>*</span>',
+											name: 'setup',
+											allowBlank: false,
+											displayField: 'setup',
+											queryMode: 'local',
+											store: 'SetupStore',
+											valueField: 'setup'
+										},
+										{
+											xtype: 'button',
+											itemId: 'btn',
+											margin: '10px 0 0 185px',
+											width: 70,
+											text: 'Update',
+											listeners: {
+												click: {
+													fn: me.onButtonClick2,
+													scope: me
+												}
+											}
 										}
-									}
-								},
-								{
-									xtype: 'textareafield',
-									width: 300,
-									fieldLabel: 'Notes',
-									name: 'description'
-								},
-								{
-									xtype: 'combobox',
-									width: 246,
-									fieldLabel: 'Setup <span style=color:red>*</span>',
-									name: 'setup',
-									allowBlank: false,
-									displayField: 'setup',
-									queryMode: 'local',
-									store: 'SetupStore',
-									valueField: 'setup'
-								},
-								{
-									xtype: 'button',
-									itemId: 'btn',
-									margin: '10px 0 0 185px',
-									width: 70,
-									text: 'Update',
-									listeners: {
-										click: {
-											fn: me.onButtonClick2,
-											scope: me
-										}
-									}
+									]
 								}
 							]
-						}
-					]
-				},
-				{
-					xtype: 'container',
-					flex: 1,
-					itemId: 'pieChartContainer',
-					margin: '0 0 0 20px',
-					minHeight: 500,
-					layout: {
-						align: 'center',
-						padding: '10px',
-						type: 'vbox'
-					},
-					items: [
-						{
-							xtype: 'label',
-							style: 'font-size:20px;font-weight:bold;',
-							text: 'Charts'
 						},
 						{
-							xtype: 'label',
+							xtype: 'container',
 							flex: 1,
-							width: 162,
-							text: 'Pie Chart 1: Person Types'
-						},
-						{
-							xtype: 'label',
-							flex: 1,
-							width: 162,
-							text: 'Pie Chart 2: Appliance Types'
+							itemId: 'pieChartContainer',
+							margin: '0 0 0 20px',
+							minHeight: 500,
+							layout: {
+								align: 'center',
+								padding: '10px',
+								type: 'vbox'
+							},
+							items: [
+								{
+									xtype: 'label',
+									style: 'font-size:20px;font-weight:bold;',
+									text: 'Charts'
+								},
+								{
+									xtype: 'label',
+									flex: 1,
+									width: 162,
+									text: 'Pie Chart 1: Person Types'
+								},
+								{
+									xtype: 'label',
+									flex: 1,
+									width: 162,
+									text: 'Pie Chart 2: Appliance Types'
+								}
+							]
 						}
 					]
 				}
@@ -184,13 +191,13 @@ Ext.define('C.view.ScenarioForm', {
 				var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
 				grid.closable = false;
 				grid.setTitle(childNode.get('name'));
-				this.getComponent('dataContainer').add(grid);
+				this.down('#dataContainer').add(grid);
 			}
 			else if (record.node.childNodes.length == 3) {
 				var demoNode = record.node.childNodes[2];
 				record.node.removeChild(demoNode);
 				var demoGrid = this.getComponent('dataContainer').query('grid')[2];
-				this.getComponent('dataContainer').remove(demoGrid);
+				this.down('#dataContainer').remove(demoGrid);
 			}
 			myForm.findField('setup').readOnly = true;
 		}

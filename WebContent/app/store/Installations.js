@@ -28,7 +28,7 @@ Ext.define('C.store.Installations', {
 			autoSync: true,
 			model: 'C.model.Installation',
 			remoteFilter: true,
-			storeId: 'MyJsonStore',
+			storeId: 'Installations',
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
@@ -65,7 +65,7 @@ Ext.define('C.store.Installations', {
 
 	onJsonstoreLoad: function(store, records, successful, eOpts) {
 		if(store.navigationNode){
-			if (records.length <= C.limit)
+			if (records.length <= C.limit) 
 			Ext.each(records/*store.proxy.reader.rawData.data*/, function(record, index){
 				console.info('++ Node does not exist. Creating it.');
 				var node = store.navigationNode.appendChild({
@@ -83,9 +83,10 @@ Ext.define('C.store.Installations', {
 				record.node = node;
 			});
 			else {
-				var pages = store.totalCount / C.limit + 1;
+				var pages = Math.ceil(store.totalCount / C.limit);
 				var counter = 1;
-				while (counter <= pages) {
+				//TODO find a solution for expandable last node instead of this crappy hack
+				while ( counter <= (pages + 1) ) {
 					var node = store.navigationNode.appendChild({
 						name: 'Installations (page '+ counter + ')',
 						nodeType: 'InstallationsCollection',
@@ -96,9 +97,16 @@ Ext.define('C.store.Installations', {
 						page: counter,
 						clickable: false
 					});
-
 					counter++;
 				}
+
+				//crappy hack
+				var last_index = store.navigationNode.childNodes.length - 1;
+				store.navigationNode.childNodes[last_index].remove();
+
+				Ext.each(records/*store.proxy.reader.rawData.data*/, function(record, index){
+					record.paginationNode = store.navigationNode.childNodes[parseInt(index/C.limit)];
+				});
 			}
 		}else{
 			console.info('Store is not bound to a navigation node. Nothing to render there.');
@@ -123,15 +131,53 @@ Ext.define('C.store.Installations', {
 					fakeChildren: true,
 					draggable: false
 				});
+				//if (store.totalCount  < C.limit) {
 				record.node = node;
-				C.app.createForm(record.node);
-			}
-		}
+				//}
+				/*else {
+				if ( store.totalCount == C.limit )  {
 
+				var previous_nodes = store.navigationNode.childNodes;
+				var first_page = store.navigationNode.appendChild({
+				name: 'Installations (page 1)',
+				nodeType: 'InstallationsCollection',
+				leaf: false,
+				expandable:   true,
+				fakeChildren: true,
+				draggable: false,
+				page: 1,
+				clickable: false
+				});
+				first_page.appendChild(previous_nodes.slice(0, C.limit));
+				store.navigationNode.appendChild({
+				name: 'Installations (page 2)',
+				nodeType: 'InstallationsCollection',
+				leaf: false,
+				expandable:   true,
+				fakeChildren: true,
+				draggable: false,
+				page: 2,
+				clickable: false
+				});
+				}
+
+				record.paginationNode = store.navigationNode.getChildAt(store.navigationNode.childNodes.length-1);
+				record.node = record.paginationNode.appendChild(node);
+				//record.node = node;
+			}
+			*/
+			C.app.createForm(record.node);
+			C.app.refreshGrid(store);
+		}
+	}
 	},
 
 	onJsonstoreRemove: function(store, record, index, isMove, eOpts) {
+		if (record.paginationNode) 
+		record.paginationNode.removeChild(record.node);
+		else if (record.node)
 		store.navigationNode.removeChild(record.node);
+
 	}
 
 });

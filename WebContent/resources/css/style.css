@@ -120,6 +120,11 @@ background-image: url(../icons/close_tabs.png);
 background-color: transparent !important;
 }
 
+.search .x-tool-img {
+background-image: url(../icons/search.png);
+background-color: transparent !important;
+}
+
 .refresh_progress,  .refresh_progress_disabled{
 	width: 20px;
 	height: 20px;

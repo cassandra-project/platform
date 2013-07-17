@@ -16,7 +16,6 @@
 Ext.define('C.view.ActivityForm', {
 	extend: 'Ext.form.Panel',
 
-	padding: 5,
 	autoScroll: true,
 	layout: {
 		type: 'auto'

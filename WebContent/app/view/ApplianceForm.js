@@ -16,7 +16,6 @@
 Ext.define('C.view.ApplianceForm', {
 	extend: 'Ext.form.Panel',
 
-	padding: 5,
 	autoScroll: true,
 	layout: {
 		align: 'center',

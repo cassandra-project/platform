@@ -16,7 +16,6 @@
 Ext.define('C.view.PricingForm', {
 	extend: 'Ext.form.Panel',
 
-	padding: 5,
 	autoScroll: true,
 	layout: {
 		type: 'auto'

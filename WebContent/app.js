@@ -41,7 +41,8 @@ Ext.application({
 		'Demographic',
 		'DemographicEntity',
 		'Kpi',
-		'Pricing'
+		'Pricing',
+		'Search'
 	],
 	stores: [
 		'Projects',
@@ -77,7 +78,9 @@ Ext.application({
 		'LevelsStore',
 		'OffpickStore',
 		'TimezonesStore',
-		'Installations'
+		'Installations',
+		'SelectCollectionStore',
+		'SearchStore'
 	],
 	views: [
 		'MyViewport',
@@ -107,7 +110,8 @@ Ext.application({
 		'ResultsLineChart',
 		'ActivityModelForm',
 		'ApplianceForm',
-		'FileUploadForm'
+		'FileUploadForm',
+		'SearchGrid'
 	],
 	autoCreateViewport: true,
 	controllers: [
@@ -117,6 +121,10 @@ Ext.application({
 
 	createForm: function(record) {
 		if (!record.isExpanded())record.expand();//basic in order to be rendered
+
+		if (!record.isRoot() && !record.parentNode.isExpanded())record.parentNode.expand();//so that selected records are always visible on the tree
+
+		Ext.getCmp('uiNavigationTreePanel').getSelectionModel().select(record);
 
 		var cmpToAdd;
 
@@ -263,7 +271,7 @@ Ext.application({
 			}
 		});
 		myPersonPie = new C.view.TypesPieChart({store: myPersonTypesStore, legend: {position:'right'}});
-		myFormCmp.getComponent('pieChartContainer').insert(1, myPersonPie);
+		myFormCmp.down('#pieChartContainer').insert(1, myPersonPie);
 
 		myApplianceTypesStore = new C.store.ApplianceTypesStore({});
 		myApplianceTypesStore.load({
@@ -272,7 +280,7 @@ Ext.application({
 			}
 		});
 		myAppliancePie = new C.view.TypesPieChart({store: myApplianceTypesStore, legend: {position:'right'}});
-		myFormCmp.getComponent('pieChartContainer').insert(3, myAppliancePie);
+		myFormCmp.down('#pieChartContainer').insert(3, myAppliancePie);
 
 		Ext.each (record.node.childNodes, function(childNode, index) {
 			if(!childNode.c){
@@ -315,7 +323,7 @@ Ext.application({
 			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(childNode.c.store);
 			grid.closable = false;
 			grid.setTitle(childNode.get('name'));
-			myFormCmp.getComponent('dataContainer').insert(index + 1, grid);
+			myFormCmp.down('#dataContainer').insert(index + 1, grid);
 		});
 
 		console.info(record);
@@ -934,6 +942,30 @@ Ext.application({
 		});
 		if (!isOpen) 
 		C.app.createForm(record);
+	},
+
+	refreshGrid: function(store) {
+		var node = store.navigationNode;
+		var parent_id = (node.get('nodeType') == 'ProjectsCollection')?'':node.parentNode.get('id');
+		var params = {};
+		switch(node.get('nodeType')){
+			case 'ProjectsCollection': params = {};break;
+			case 'ScenariosCollection': params = {'prj_id' : parent_id};break;
+			case 'InstallationsCollection': params = {'scn_id' : parent_id}; break;
+			case 'PricingSchemesCollection': params = {'scn_id' : parent_id}; break;
+			case 'DemographicsCollection': params = {'scn_id' : parent_id}; break;
+			case 'SimulationParamsCollection': params = {'scn_id' : parent_id}; break;
+			case 'PersonsCollection': params = {'inst_id' : parent_id}; break;
+			case 'AppliancesCollection': params = {'inst_id': parent_id}; break;
+			case 'ActivitiesCollection': params = {'pers_id': parent_id}; break;
+			case 'ActivityModelsCollection': params = {'act_id' : parent_id}; break;
+			case 'RunsCollection': params = {'prj_id' : parent_id}; break;
+			default: return false;
+		}
+		while (node.hasChildNodes()) {
+			node.removeChild(node.childNodes[0]);
+		}
+		store.load({params: params});
 	}
 
 });
