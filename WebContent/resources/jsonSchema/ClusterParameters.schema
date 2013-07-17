@@ -12,18 +12,28 @@
             "type": "string",
             "description": "The clustering method to be used",
                "enum": [
-                    "TotalConsumptionP",
-                    "AverageConsumptionP",
-                    "MinConsumptionP",
-                    "MaxConsumptionP",
-
-                    "TotalConsumptionQ",
-                    "AverageConsumptionQ",
-                    "MinConsumptionQ",
-                    "MaxConsumptionQ",
-
-                    "ConsumptionPerHourP",
-                    "ConsumptionPerHourQ"
+                "TransformerID",
+                "TopologicalDistance",
+                "Location",
+                "SocialDistance",
+                
+                "TotalEnergyConsumption",
+                "MaxHourlyEnergyConsumption",
+                "MinHourlyEnergyConsumption",
+                
+                "AverageActivePowerPerHour",
+                "AverageReactivePowerPerHour",
+                
+                "MaxActivePowerPerHour",
+                "MaxReactivePowerPerHour",
+                
+                "MinActivePowerPerHour",
+                "MinReactivePowerPerHour",
+                
+                "hoursP",
+                "hoursQ",
+                "hoursE"
+                
             ],
             "optional": true
         },    

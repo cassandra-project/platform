@@ -1,6 +1,6 @@
 {
-        "graphType" : "MaxConsumptionP",
-        "minWeight" : 100.0,
+        "graphType" : "MinReactivePowerPerHour",
+        "minWeight" : 1,
         "noedges" : "false"
 }
  

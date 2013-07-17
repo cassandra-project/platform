@@ -16,24 +16,30 @@ public class CSNTypes implements ServletContextListener{
 		csnTypesMap.put(MongoEdges.InstallationType , "type");
 		csnTypesMap.put(MongoEdges.PersonType , "personType");
 		
-		csnTypesMap.put(MongoEdges.TotalConsumptionP , "sumP");
-		csnTypesMap.put(MongoEdges.TotalConsumptionQ , "sumQ");
+		csnTypesMap.put(MongoEdges.TransformerID , "TransformerID");
+		csnTypesMap.put(MongoEdges.TopologicalDistance , "TopologicalDistance");
 		
-		csnTypesMap.put(MongoEdges.AverageConsumptionP , "avgP");
-		csnTypesMap.put(MongoEdges.AverageConsumptionQ , "avgQ");
+		csnTypesMap.put(MongoEdges.Location , "Location");
+		csnTypesMap.put(MongoEdges.SocialDistance , "SocialDistance");
 
-		csnTypesMap.put(MongoEdges.MinConsumptionP , "minP");
-		csnTypesMap.put(MongoEdges.MinConsumptionQ , "minQ");
+		csnTypesMap.put(MongoEdges.TotalEnergyConsumption , "TotalEnergyConsumption");
+		csnTypesMap.put(MongoEdges.MaxHourlyEnergyConsumption , "MaxHourlyEnergyConsumption");
 
-		csnTypesMap.put(MongoEdges.MaxConsumptionP , "maxP");
-		csnTypesMap.put(MongoEdges.MaxConsumptionQ , "maxQ");
+		csnTypesMap.put(MongoEdges.MinHourlyEnergyConsumption , "MinHourlyEnergyConsumption");
+		csnTypesMap.put(MongoEdges.AverageActivePowerPerHour , "AverageActivePowerPerHour");
 		
 		//
-		csnTypesMap.put(MongoEdges.ConsumptionPerHourP , "hoursP");
-		csnTypesMap.put(MongoEdges.ConsumptionPerHourQ , "hoursQ");
+		csnTypesMap.put(MongoEdges.AverageReactivePowerPerHour , "AverageReactivePowerPerHour");
+		csnTypesMap.put(MongoEdges.MaxActivePowerPerHour , "MaxActivePowerPerHour");
 		
+		csnTypesMap.put(MongoEdges.MaxReactivePowerPerHour , "MaxReactivePowerPerHour");
+		csnTypesMap.put(MongoEdges.MinActivePowerPerHour , "MinActivePowerPerHour");
+		csnTypesMap.put(MongoEdges.MinReactivePowerPerHour , "MinReactivePowerPerHour");
 		
-
+		csnTypesMap.put(MongoEdges.hoursP , "hoursP");
+		csnTypesMap.put(MongoEdges.hoursQ , "hoursQ");
+		csnTypesMap.put(MongoEdges.hoursE , "hoursE");
+		
 		//		//Sum
 		//		graphType.equalsIgnoreCase(TotalConsumptionPerHourP) || graphType.equalsIgnoreCase(TotalConsumptionPerDayP)) {
 		//			edge = decideIfToCreateEdge(edge, inst1, inst2, "sumP", graphType,minWeight); 

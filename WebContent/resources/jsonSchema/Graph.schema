@@ -11,33 +11,21 @@
                 "PersonType",
                 "TransformerID",
                 "TopologicalDistance",
+                "Location",
                 "SocialDistance",
                 
+                "TotalEnergyConsumption",
+                "MaxHourlyEnergyConsumption",
+                "MinHourlyEnergyConsumption",
                 
+                "AverageActivePowerPerHour",
+                "AverageReactivePowerPerHour",
                 
-                "EnergyConsumption",
-                "EnergyConsumption",
-                "EnergyConsumptionPerHour",
-                "PowerPerHourP",
-                "PowerPerHourQ",
+                "MaxActivePowerPerHour",
+                "MaxReactivePowerPerHour",
                 
-                
-                
-                
-                
-  
-                
-                "TotalConsumption",
-                "AverageConsumptionP",
-                                "AverageConsumptionQ",
-                "MinConsumptionP",
-                                "MinConsumptionQ",
-                "MaxConsumptionP",
-                "MaxConsumptionQ",
-
-                "AverageConsumptionPerHour",
-                "MinConsumptionPerHour",
-                "MaxConsumptionPerHour"
+                "MinActivePowerPerHour",
+                "MinReactivePowerPerHour"
             ],
             "optional": false
         },
