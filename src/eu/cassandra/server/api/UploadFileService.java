@@ -32,6 +32,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
  
 @Path("file")
 public class UploadFileService {
@@ -41,16 +44,18 @@ public class UploadFileService {
  
 	@POST
 	@Path("/upload")
-	@Consumes("application/zip")
-	public Response uploadFile(InputStream is) throws IOException {
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response uploadFile(
+			@FormDataParam("file") InputStream uploadedInputStream,
+			@FormDataParam("file") FormDataContentDisposition fileDetail) {
  
 		String uploadedFileLocation = context.getRealPath("/resources") + 
-				"/demo.zip";
+				"/" + fileDetail.getFileName();
 		
 		System.out.println(uploadedFileLocation);
  
 		// save it
-		writeToFile(is, uploadedFileLocation);
+		writeToFile(uploadedInputStream, uploadedFileLocation);
  
 		String output = "File uploaded to : " + uploadedFileLocation;
  

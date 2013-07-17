@@ -1,7 +1,7 @@
 {
         "name" : "ClusterParameters",
-        "graph_id" : "51d13998e4b0ebea2a3e81f6",
+        "graph_id" : "51e598dae4b075a35e69422f",
         "clustermethod" : "kmeans",
-        "clusterbasedon" : "AverageConsumptionP",
-        "n": 4
+        "clusterbasedon" : "hoursE",
+        "n": 2
 }

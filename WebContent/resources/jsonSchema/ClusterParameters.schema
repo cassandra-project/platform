@@ -1,0 +1,62 @@
+{
+    "name": "ClusterParameters",
+    "type": "object",
+    "description": "Cluster parameters to cluster a graph",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name",
+            "optional": true
+        },
+        "clusterbasedon": {
+            "type": "string",
+            "description": "The clustering method to be used",
+               "enum": [
+                "TransformerID",
+                "TopologicalDistance",
+                "Location",
+                "SocialDistance",
+                
+                "TotalEnergyConsumption",
+                "MaxHourlyEnergyConsumption",
+                "MinHourlyEnergyConsumption",
+                
+                "AverageActivePowerPerHour",
+                "AverageReactivePowerPerHour",
+                
+                "MaxActivePowerPerHour",
+                "MaxReactivePowerPerHour",
+                
+                "MinActivePowerPerHour",
+                "MinReactivePowerPerHour",
+                
+                "hoursP",
+                "hoursQ",
+                "hoursE"
+                
+            ],
+            "optional": false
+        },    
+        "clustermethod": {
+            "type": "string",
+            "description": "Clustering method",
+            "enum": [
+                    "kmeans",
+                    "hierarchical",
+                    "graphedgebetweenness"
+            ],
+            "optional": false
+        },
+        "graph_id": {
+            "type": "string",
+            "description": "The graph the cluster assignment belongs",
+            "optional": false
+        },
+        "n": {
+            "type": "integer",
+            "description": "Total number of clusters to create",
+            "optional": false
+        }
+     },
+    "additionalProperties" : false
+}

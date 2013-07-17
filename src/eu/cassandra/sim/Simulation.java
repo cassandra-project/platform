@@ -228,6 +228,10 @@ public class Simulation implements Runnable {
 		  						(avgPPowerPerHour/Constants.MIN_IN_HOUR) * mcrunsRatio, 
 		  						(avgQPowerPerHour/Constants.MIN_IN_HOUR) * mcrunsRatio, 
 		  						MongoResults.COL_AGGRRESULTS_HOURLY);
+		  				m.addAggregatedTickResult((tick/Constants.MIN_IN_HOUR), 
+		  						(avgPPowerPerHour) * mcrunsRatio, 
+		  						(avgQPowerPerHour) * mcrunsRatio, 
+		  						MongoResults.COL_AGGRRESULTS_HOURLY_EN);
 		  				avgPPowerPerHour = 0;
 		  				avgQPowerPerHour = 0;
 		  				counter = 0;
@@ -237,6 +241,11 @@ public class Simulation implements Runnable {
 			  						(avgPPowerPerHourPerInst[counter]/Constants.MIN_IN_HOUR) * mcrunsRatio, 
 			  						(avgQPowerPerHourPerInst[counter]/Constants.MIN_IN_HOUR) * mcrunsRatio, 
 			  						MongoResults.COL_INSTRESULTS_HOURLY);
+			  				m.addTickResultForInstallation((tick/Constants.MIN_IN_HOUR), 
+			  						installation.getId(),
+			  						(avgPPowerPerHourPerInst[counter]) * mcrunsRatio, 
+			  						(avgQPowerPerHourPerInst[counter]) * mcrunsRatio, 
+			  						MongoResults.COL_INSTRESULTS_HOURLY_EN);
 			  				avgPPowerPerHourPerInst[counter] = 0;
 			  				avgQPowerPerHourPerInst[counter] = 0;
 			  				counter++;

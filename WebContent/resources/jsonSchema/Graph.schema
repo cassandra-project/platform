@@ -9,22 +9,36 @@
             "enum": [
                 "InstallationType",
                 "PersonType",
-                "TotalConsumption",
-                "AverageConsumption",
-                "MinConsumption",
-                "MaxConsumption",
-                "TotalConsumptionPerHour",
-                "AverageConsumptionPerHour",
-                "MinConsumptionPerHour",
-                "MaxConsumptionPerHour",
-                "TotalConsumptionPerDay",
-                "AverageConsumptionPerDay",
-                "MinConsumptionPerDay",
-                "MaxConsumptionPerDay",
-                "ActivityConsumption"
+                "TransformerID",
+                "TopologicalDistance",
+                "Location",
+                "SocialDistance",
+                
+                "TotalEnergyConsumption",
+                "MaxHourlyEnergyConsumption",
+                "MinHourlyEnergyConsumption",
+                
+                "AverageActivePowerPerHour",
+                "AverageReactivePowerPerHour",
+                
+                "MaxActivePowerPerHour",
+                "MaxReactivePowerPerHour",
+                
+                "MinActivePowerPerHour",
+                "MinReactivePowerPerHour"
             ],
             "optional": false
+        },
+        "minWeight": {
+            "type": "number",
+            "description": "Min weight threshold",
+            "optional": false
+        },        
+        "noedges": {
+            "type": "string",
+            "description": "If true then don't create edges",
+            "optional": true
         }
     },
-    "additionalProperties" : false
+    "additionalProperties" : true
 }
