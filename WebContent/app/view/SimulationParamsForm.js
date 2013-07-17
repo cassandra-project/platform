@@ -16,7 +16,6 @@
 Ext.define('C.view.SimulationParamsForm', {
 	extend: 'Ext.form.Panel',
 
-	padding: 5,
 	width: 431,
 	layout: {
 		type: 'auto'

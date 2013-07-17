@@ -76,6 +76,20 @@ Ext.define('C.view.MyViewport', {
 							},
 							cls: 'remove_tabs',
 							tooltip: 'Close All Tabs'
+						},
+						{
+							xtype: 'tool',
+							handler: function(event, toolEl, owner, tool) {
+								if (Ext.getCmp('MainTabPanel')) {
+									var tabPanel = Ext.getCmp('MainTabPanel');
+									var searchGrid = new C.view.SearchGrid();
+									tabPanel.add(searchGrid);
+									tabPanel.doLayout();
+									tabPanel.setActiveTab(searchGrid);
+								}
+							},
+							cls: 'search',
+							tooltip: 'Search'
 						}
 					]
 				},

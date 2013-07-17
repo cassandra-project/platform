@@ -136,7 +136,7 @@ Ext.define('C.view.CassLibTreePanel', {
 									}*/
 								});
 							}
-							else  {
+							else if (!record.hasChildNodes()) {
 								var page = record.get('page');
 								var store = record.parentNode.c.store;
 								Ext.each(store.data.items.slice( (page-1)*C.limit, page * C.limit ), function(store_record, index){
