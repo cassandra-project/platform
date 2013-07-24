@@ -3,9 +3,9 @@
     "type": "object",
     "description": "Pricing schema",
     "properties": {
-        "scn_id": {
+        "prj_id": {
             "type": "string",
-            "description": "The ObjectId of the Scenario that the Pricing policy belong",
+            "description": "The ObjectId of the Project that the Pricing policy belongs to",
             "optional": false
         },
         "name": {

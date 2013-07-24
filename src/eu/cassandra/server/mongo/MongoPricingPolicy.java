@@ -27,7 +27,7 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoPricingPolicy {
 
 	public final static String COL_PRICING = "pricing";
-	public final static String REF_SCENARIO = "scn_id";
+	public final static String REF_PROJECT = "prj_id";
 	public final static String REF_ENTITY = "entity_id";
 	
 	/**
@@ -54,7 +54,7 @@ public class MongoPricingPolicy {
 					new RestQueryParamMissingException("scn_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(httpHeaders, COL_PRICING,"scn_id", 
+			return new MongoDBQueries().getEntity(httpHeaders, COL_PRICING, REF_PROJECT, 
 					scn_id, "Pricing policies retrieved successfully",count).toString();
 		}
 	}
@@ -68,7 +68,7 @@ public class MongoPricingPolicy {
 	public String createPricingPolicy(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_PRICING, dataToInsert,
 				"Pricing policy created successfully", MongoScenarios.COL_SCENARIOS ,
-				"scn_id",JSONValidator.PRICING_SCHEMA).toString();
+				REF_PROJECT, JSONValidator.PRICING_SCHEMA).toString();
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class MongoPricingPolicy {
 	public String updatePricingPolicy(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_PRICING, "Pricing policy updated successfully",
-				MongoScenarios.COL_SCENARIOS ,"scn_id",JSONValidator.PRICING_SCHEMA).toString();
+				MongoScenarios.COL_SCENARIOS , REF_PROJECT,JSONValidator.PRICING_SCHEMA).toString();
 	}
 }
 
