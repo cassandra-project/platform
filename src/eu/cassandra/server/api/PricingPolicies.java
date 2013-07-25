@@ -38,8 +38,8 @@ import eu.cassandra.sim.utilities.Utils;
 public class PricingPolicies {
 
 	@GET
-	public Response getPricingPolicies(@QueryParam("scn_id") String scn_id, @QueryParam("count") boolean count, @Context HttpHeaders httpHeaders) {
-		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoPricingPolicy().getPricingPolicies(httpHeaders, scn_id, count)));
+	public Response getPricingPolicies(@QueryParam("prj_id") String prj_id, @QueryParam("count") boolean count, @Context HttpHeaders httpHeaders) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoPricingPolicy().getPricingPolicies(httpHeaders, prj_id, count)));
 	}
 
 	@POST

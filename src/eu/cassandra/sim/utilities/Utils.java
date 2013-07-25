@@ -39,6 +39,10 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import com.mongodb.util.JSON;
 
+import eu.cassandra.sim.math.ProbabilityDistribution;
+import eu.cassandra.sim.math.Gaussian;
+import eu.cassandra.sim.math.GaussianMixtureModels;
+
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
@@ -279,6 +283,53 @@ public class Utils {
 	  }
   }
 
+  // Almost copy of the corresponding functions of the Mallet toolkit,
+  // http://mallet.cs.umass.edu
+  /**
+   * Function copied by the Mallet toolbox: http://mallet.cs.umass.edu
+   *
+   * Returns the KL divergence, K(p1 || p2).
+   *
+   * The log is w.r.t. base 2. <p>
+   *
+   * *Note*: If any value in <tt>p2</tt> is <tt>0.0</tt> then the KL-divergence
+   * is <tt>infinite</tt>. 
+   * 
+   */
+  public static double klDivergence(double[] p1, double[] p2) {
+    assert(p1.length == p2.length);
+    double klDiv = 0.0;
+    for (int i = 0; i < p1.length; ++i) {
+      if (p1[i] == 0) {
+        continue;
+      }
+      if (p2[i] == 0) {
+        return Double.POSITIVE_INFINITY;
+      }
+      klDiv += p1[i] * Math.log(p1[i] / p2[i]);
+    }
+    return klDiv / Math.log(2);
+  }
+
+  /**
+   * Function copied by the Mallet toolbox: http://mallet.cs.umass.edu
+   *
+   * Returns the Jensen-Shannon divergence.
+   */
+  public static double jensenShannonDivergence(double[] p1, double[] p2) {
+    assert(p1.length == p2.length);
+    double[] average = new double[p1.length];
+    for (int i = 0; i < p1.length; ++i) {
+      average[i] += (p1[i] + p2[i])/2;
+    }
+    return (klDivergence(p1, average) + klDivergence(p2, average))/2;
+  }
+
+  public static double histogramDistance(double[] histogram1, double[] histogram2)
+  {
+    return jensenShannonDivergence(histogram1, histogram2);
+  }
+
   /**
    * @param args
  * @throws MongoException 
@@ -294,6 +345,19 @@ public class Utils {
 	  System.out.println(authenticate("a3lyY2hhOmxhbGExMjM=", db));
 	  System.out.println(MD5HashGenerator.generateMd5Hash("demo", "511cf876bf13fde604000000"));
 	  System.out.println(MD5HashGenerator.generateMd5Hash("demo", "512df4d4bd32fc4c0c000000"));
-  }
 
+          // Test for probability distribution
+/*          Gaussian probDist1 = new Gaussian(800, 200);
+          double[] p2 = {0.25, 0.6, 0.15};
+          double[] m2 = {400, 800, 1200};
+          double[] s2 = {100, 200, 10};
+          GaussianMixtureModels probDist2 = new GaussianMixtureModels(3, p2, m2, s2);
+
+          probDist1.precompute(0, 1440, 1440);
+          probDist2.precompute(0, 1440, 1440);          
+          double dist = histogramDistance(probDist1.getHistogram(),
+                                          probDist2.getHistogram());
+          System.out.println("Distribution distance: " + Double.toString(dist));
+ */
+  }
 }

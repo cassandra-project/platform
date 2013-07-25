@@ -42,6 +42,8 @@ public class PricingPolicy {
 	
 	public final static int ALL_INCLUSIVE_PRICING = 3;
 	
+	public final static int TOU_PRICING = 3;
+	
 	private String type;
 	
 	private double fixedCharge;
