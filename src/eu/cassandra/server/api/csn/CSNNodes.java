@@ -5,8 +5,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -20,8 +18,8 @@ import eu.cassandra.sim.utilities.Utils;
 public class CSNNodes {
 
 	/**
-	 * curl -k -i  --header dbname:51c34c7a712efe578ab670f6 'https://localhost:8443/cassandra/api/csnnodes?graph_id=51d13998e4b0ebea2a3e81f6'
-	 * curl -k -i  --header dbname:51c34c7a712efe578ab670f6 'https://localhost:8443/cassandra/api/csnnodes?graph_id=51d13998e4b0ebea2a3e81f6&limit=200&skip=100&filter=\{sumP:\{$gt:1000\}\}'
+	 * curl -k -i  'https://localhost:8443/cassandra/api/csnnodes?graph_id=51d13998e4b0ebea2a3e81f6'
+	 * curl -k -i  'https://localhost:8443/cassandra/api/csnnodes?graph_id=51d13998e4b0ebea2a3e81f6&limit=200&skip=100&filter=\{sumP:\{$gt:1000\}\}'
 	 * @param graph_id
 	 * @param httpHeaders
 	 * @return
@@ -32,10 +30,9 @@ public class CSNNodes {
 			@QueryParam("filter") String filters,
 			@QueryParam("limit") int limit,
 			@QueryParam("skip") int skip,
-			@QueryParam("count") boolean count,
-			@Context HttpHeaders httpHeaders) 
+			@QueryParam("count") boolean count) 
 	{
-		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoGraphs().getNodes(graph_id, httpHeaders,filters, 
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoGraphs().getNodes(graph_id, filters, 
 				limit, skip, count)));
 	}
 }

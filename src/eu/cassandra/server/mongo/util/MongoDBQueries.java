@@ -515,8 +515,6 @@ public class MongoDBQueries {
 			if(dbName == null)
 				dbName = getDbNameFromHTTPHeader(httpHeaders);
 
-			System.out.println(dbName);
-
 			DBCursor cursorDoc = null;
 			if(count) {
 				BasicDBObject dbObject = new BasicDBObject(); 
@@ -533,8 +531,6 @@ public class MongoDBQueries {
 					cursorDoc = DBConn.getConn(dbName).
 							getCollection(collection).find(dbObj1,dbObj2);
 				}
-
-				System.out.println(dbObj1 + "\t" + dbObj2);
 			}
 			if(sort != null)	{
 				try{

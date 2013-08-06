@@ -5,7 +5,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -21,17 +21,20 @@ import eu.cassandra.sim.utilities.Utils;
 @Consumes(MediaType.APPLICATION_JSON)
 public class CSNClusters {
 
-	//curl -k -i --data  @clusterparams.json    --header Content-type:application/json --header dbname:51c34c7a712efe578ab670f6 https://localhost:8443/cassandra/api/csnclusters
+	//curl -k -i --data  @clusterparams.json    --header Content-type:application/json https://localhost:8443/cassandra/api/csnclusters
 	@POST
-	public Response clusterGraph(String message,@Context HttpHeaders httpHeaders) {
-		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoCluster().cluster(message, httpHeaders)));
+	public Response clusterGraph(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoCluster().cluster(message)));
 	}
 
-	//curl -k -i    --header Content-type:application/json --header dbname:51c34c7a712efe578ab670f6 https://localhost:8443/cassandra/api/csnclusters
+	//curl -k -i    --header Content-type:application/json  'https://localhost:8443/cassandra/api/csnclusters?run_id=f'
 	@GET
-	public Response getClusters(@Context HttpHeaders httpHeaders){
+	public Response getClusters(@QueryParam("run_id") String run_id){
+		String run_idK = null;
+		if(run_id != null)
+			run_idK = "run_id";
 		String r = PrettyJSONPrinter.prettyPrint(
-				new MongoDBQueries().getEntity(httpHeaders, MongoGraphs.COL_CSN_CLUSTERS,null,null,
+				new MongoDBQueries().getEntity((HttpHeaders)null, MongoGraphs.COL_CSN_CLUSTERS,run_idK,run_id,
 						"CSN clusters retrieved successfully",new String[]{"_id","method","graph_id","n"}));
 		return Utils.returnResponse(r);
 	}

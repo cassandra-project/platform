@@ -58,7 +58,8 @@ public class MongoEdges {
 					edge.put("node_id2", nodes.get(j).get("_id").toString());
 					edge.put("inst_id1", nodes.get(i).get("inst_id").toString());
 					edge.put("inst_id2", nodes.get(j).get("inst_id").toString());
-					DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_EDGES).insert(edge);
+					edge.put("run_id", dbName);
+					DBConn.getConn().getCollection(MongoGraphs.COL_CSN_EDGES).insert(edge);
 				}
 			}
 		}

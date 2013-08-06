@@ -4,8 +4,6 @@ import java.util.Vector;
 
 import javax.ws.rs.core.HttpHeaders;
 
-import org.apache.http.client.methods.HttpGet;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -76,8 +74,12 @@ public class MongoGraphs {
 	 * @return
 	 */
 	public String getGraphs(String run_id) {
-		return new MongoDBQueries().getEntity(run_id, COL_GRAPHS,null,null,"CSN graphs retrieved successfully").toString();
+		if(run_id != null)
+			return new MongoDBQueries().getEntity((HttpHeaders)null,COL_GRAPHS,"run_id",run_id,"CSN graphs retrieved successfully").toString();
+		else
+			return new MongoDBQueries().getEntity((HttpHeaders)null, COL_GRAPHS,null,null,"CSN graphs retrieved successfully").toString();
 	}
+
 
 
 	/**
@@ -87,19 +89,7 @@ public class MongoGraphs {
 	 * @return
 	 */
 	public String deleteGraph(String id,HttpHeaders httpHeaders) {
-		return deleteGraph(id,httpHeaders, null);
-	}
-
-
-	/**
-	 * 
-	 * @param id
-	 * @param httpHeaders
-	 * @return
-	 */
-	public String deleteGraph(String id,HttpHeaders httpHeaders, String dbName) {
-		if(dbName == null)
-			dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
+			String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 
 		//Delete Nodes and Edges of the graph
 		DBConn.getConn(dbName).getCollection(COL_CSN_NODES).findAndRemove(new BasicDBObject("graph_id",id));
@@ -115,8 +105,8 @@ public class MongoGraphs {
 	 * @param httpHeaders
 	 * @return
 	 */
-	public String getNode(String nodeID, HttpHeaders httpHeaders) {
-		return new MongoDBQueries().getEntity(httpHeaders,COL_CSN_NODES,"_id",nodeID,"CSN nodes retrieved successfully").toString();
+	public String getNode(String nodeID) {
+		return new MongoDBQueries().getEntity((HttpHeaders)null,COL_CSN_NODES,"_id",nodeID,"CSN nodes retrieved successfully").toString();
 	}
 
 	/**
@@ -125,7 +115,7 @@ public class MongoGraphs {
 	 * @param httpHeaders
 	 * @return
 	 */
-	public String getNodes(String graph_id, HttpHeaders httpHeaders,String filters, 
+	public String getNodes(String graph_id, String filters, 
 			int limit, int skip, boolean count) {
 		if(graph_id == null) {
 			return new JSONtoReturn().createJSONError(
@@ -133,7 +123,7 @@ public class MongoGraphs {
 					new RestQueryParamMissingException("graph_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(httpHeaders,COL_CSN_NODES,"graph_id", 
+			return new MongoDBQueries().getEntity(null,COL_CSN_NODES,"graph_id", 
 					graph_id, filters, null, limit, skip, "Nodes retrieved successfully",count,(String[])null).toString();
 		}
 	}
@@ -144,13 +134,13 @@ public class MongoGraphs {
 	 * @param httpHeaders
 	 * @return
 	 */
-	public String getEdge(String edgeID, HttpHeaders httpHeaders) {
-		return new MongoDBQueries().getEntity(httpHeaders,COL_CSN_EDGES,"_id",edgeID,"CSN edges retrieved successfully").toString();
+	public String getEdge(String edgeID) {
+		return new MongoDBQueries().getEntity((HttpHeaders)null,COL_CSN_EDGES,"_id",edgeID,"CSN edges retrieved successfully").toString();
 	}
 
 
-	public String getEdgesRemoved(String clustersid,HttpHeaders httpHeaders) {
-		return new MongoDBQueries().getEntity(httpHeaders,COL_CSN_EDGES_REMOVED,"clustersid",clustersid,
+	public String getEdgesRemoved(String clustersid) {
+		return new MongoDBQueries().getEntity((HttpHeaders)null,COL_CSN_EDGES_REMOVED,"clustersid",clustersid,
 				"CSN edges removed from edge betweeness clusterer retrieved successfully").toString();
 	}
 
@@ -160,7 +150,7 @@ public class MongoGraphs {
 	 * @param httpHeaders
 	 * @return
 	 */
-	public String getEdges(String graph_id, HttpHeaders httpHeaders,String filters, 
+	public String getEdges(String graph_id, String filters, 
 			int limit, int skip, boolean count) {
 		if(graph_id == null) {
 			return new JSONtoReturn().createJSONError(
@@ -168,7 +158,7 @@ public class MongoGraphs {
 					new RestQueryParamMissingException("graph_id QueryParam is missing")).toString();
 		}
 		else {
-			return new MongoDBQueries().getEntity(httpHeaders,COL_CSN_EDGES,"graph_id", 
+			return new MongoDBQueries().getEntity(null,COL_CSN_EDGES,"graph_id", 
 					graph_id, filters, null, limit, skip, "Edges retrieved successfully",count,(String[])null).toString();
 		}
 	}

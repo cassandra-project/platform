@@ -237,8 +237,10 @@ public class MongoNodes {
 			installationNode.put("hoursP", hourVecP);
 			installationNode.put("hoursQ", hourVecQ);
 			installationNode.put("hoursE", hourVecE);
+			installationNode.put("run_id", dbName);
 
-			DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_NODES).insert(installationNode);
+
+			DBConn.getConn().getCollection(MongoGraphs.COL_CSN_NODES).insert(installationNode);
 			nodes.add(installationNode);
 		}
 		return nodes;

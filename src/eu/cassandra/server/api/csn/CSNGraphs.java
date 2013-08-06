@@ -32,11 +32,9 @@ public class CSNGraphs {
 	}
 
 
-	//curl -k -i   -X DELETE   'https://localhost:8443/cassandra/api/csn?run_id=f&graph_id=516d0a0e4b0d67558c1625e'
+	//curl -k -i   -X DELETE   'https://localhost:8443/cassandra/api/csn?graph_id=516d0a0e4b0d67558c1625e'
 	@DELETE
-	public Response deleteGraph(@QueryParam("run_id") String run_id, @QueryParam("graph_id") String graph_id) {
-		System.out.println(run_id);
-		System.out.println(graph_id);
-		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoGraphs().deleteGraph(graph_id, null, run_id)));
+	public Response deleteGraph(@QueryParam("graph_id") String graph_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoGraphs().deleteGraph(graph_id, null)));
 	}
 }
