@@ -11,10 +11,6 @@
             "type": "string",
             "optional": false
         },
-        "img_path"  : {
-            "type": "string",
-            "optional": true
-        },
         "graphType": {
             "type": "string",
             "description": "The Scenario this Installation belongs to",
