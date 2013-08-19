@@ -6,7 +6,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,23 +28,22 @@ import eu.cassandra.sim.utilities.Utils;
 @Consumes(MediaType.APPLICATION_JSON)
 public class CSNCluster {
 
-	//curl -k -i    --header Content-type:application/json --header dbname:51c34c7a712efe578ab670f6 'https://localhost:8443/cassandra/api/csnclusters/51da9206e4b0def72b1e65b8'
+	//curl -k -i    --header Content-type:application/json 'https://localhost:8443/cassandra/api/csnclusters/51da9206e4b0def72b1e65b8'
 	@GET
 	public Response getCluster(
-			@PathParam("csncluster_id") String csncluster_id,
-			@Context HttpHeaders httpHeaders){
+			@PathParam("csncluster_id") String csncluster_id){
 		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(
-				new MongoDBQueries().getEntity(httpHeaders,MongoGraphs.COL_CSN_CLUSTERS,"_id",csncluster_id,"CSN cluster retrieved successfully")));
+				new MongoDBQueries().getEntity((HttpHeaders)null,MongoGraphs.COL_CSN_CLUSTERS,"_id",csncluster_id,"CSN cluster retrieved successfully")));
 	}
 
-	//curl -i -k -X DELETE --header dbname:51c34c7a712efe578ab670f6 'https://localhost:8443/cassandra/api/csnclusters/51da9206e4b0def72b1e65b8'
+	//curl -i -k -X DELETE  'https://localhost:8443/cassandra/api/csnclusters/51da9206e4b0def72b1e65b8'
 	@DELETE
-	public Response deleteCluster(@PathParam("csncluster_id") String csncluster_id,@Context HttpHeaders httpHeaders) {
+	public Response deleteCluster(@PathParam("csncluster_id") String csncluster_id) {
 		JSONtoReturn jSON2Rrn = new JSONtoReturn();
 		DBObject objRemoved = null;
 		try {
 			DBObject deleteQuery = new BasicDBObject("_id", new ObjectId(csncluster_id));
-			objRemoved = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).getCollection(MongoGraphs.COL_CSN_CLUSTERS).findAndRemove(deleteQuery);
+			objRemoved = DBConn.getConn().getCollection(MongoGraphs.COL_CSN_CLUSTERS).findAndRemove(deleteQuery);
 		}catch(Exception e) {
 			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError("remove db." + MongoGraphs.COL_CSN_CLUSTERS + " with id=" + csncluster_id,e)));
 		}

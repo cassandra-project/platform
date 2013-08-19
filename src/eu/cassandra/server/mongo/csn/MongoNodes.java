@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Vector;
 
-import javax.ws.rs.core.HttpHeaders;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
@@ -14,7 +13,6 @@ import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.MongoPersons;
 import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.server.mongo.util.DBConn;
-import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoNodes {
 
@@ -27,9 +25,8 @@ public class MongoNodes {
 	 * @param httpHeaders
 	 * @return
 	 */
-	public Vector<DBObject>  createNodes(String graph_id,HttpHeaders httpHeaders) {
+	public Vector<DBObject>  createNodes(String graph_id, String dbName) {
 		DecimalFormat decim = new DecimalFormat("#.##");
-		String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 
 		Vector<DBObject> nodes = new Vector<DBObject>();
 		DBCursor cursorDoc = DBConn.getConn(dbName).getCollection(MongoInstallations.COL_INSTALLATIONS).find();
@@ -240,8 +237,10 @@ public class MongoNodes {
 			installationNode.put("hoursP", hourVecP);
 			installationNode.put("hoursQ", hourVecQ);
 			installationNode.put("hoursE", hourVecE);
+			installationNode.put("run_id", dbName);
 
-			DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_NODES).insert(installationNode);
+
+			DBConn.getConn().getCollection(MongoGraphs.COL_CSN_NODES).insert(installationNode);
 			nodes.add(installationNode);
 		}
 		return nodes;

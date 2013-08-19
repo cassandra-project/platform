@@ -2,14 +2,12 @@ package eu.cassandra.server.mongo.csn;
 
 import java.util.Vector;
 
-import javax.ws.rs.core.HttpHeaders;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 import eu.cassandra.server.mongo.MongoPersons;
 import eu.cassandra.server.mongo.util.DBConn;
-import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoEdges {
 
@@ -48,12 +46,11 @@ public class MongoEdges {
 	 * @param minWeight
 	 * @param httpHeaders
 	 */
-	public int createEdges(Vector<DBObject> nodes, String graph_id, String graphType, Double minWeight, HttpHeaders httpHeaders) {
+	public int createEdges(Vector<DBObject> nodes, String graph_id, String graphType, Double minWeight, String dbName) {
 		int edgeCounter = 0;
-		String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 		for(int i=0;i<nodes.size()-1;i++) {
 			for(int j=i+1;j<nodes.size();j++) {
-				DBObject edge = createEdge(graphType, minWeight, nodes.get(i),nodes.get(j),httpHeaders);
+				DBObject edge = createEdge(graphType, minWeight, nodes.get(i),nodes.get(j),dbName);
 				if(edge != null) {
 					edgeCounter++;
 					edge.put("graph_id", graph_id);
@@ -61,14 +58,15 @@ public class MongoEdges {
 					edge.put("node_id2", nodes.get(j).get("_id").toString());
 					edge.put("inst_id1", nodes.get(i).get("inst_id").toString());
 					edge.put("inst_id2", nodes.get(j).get("inst_id").toString());
-					DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_EDGES).insert(edge);
+					edge.put("run_id", dbName);
+					DBConn.getConn().getCollection(MongoGraphs.COL_CSN_EDGES).insert(edge);
 				}
 			}
 		}
 		return edgeCounter;
 	}
 
-	private DBObject createEdge(String graphType, Double minWeight, DBObject inst1, DBObject inst2, HttpHeaders httpHeaders) {
+	private DBObject createEdge(String graphType, Double minWeight, DBObject inst1, DBObject inst2, String dbName) {
 		DBObject edge = null;
 		boolean createEdge = false;
 		//InstallationType
@@ -79,7 +77,7 @@ public class MongoEdges {
 		}
 		//PersonType
 		else if(graphType.equalsIgnoreCase(PersonType)) {
-			if(equalPersonType(inst1, inst2, httpHeaders)){
+			if(equalPersonType(inst1, inst2, dbName)){
 				createEdge = true;
 			}
 		}
@@ -108,7 +106,7 @@ public class MongoEdges {
 		
 		//All other 
 		else {
-			edge = decideIfToCreateEdge(inst1, inst2, graphType, minWeight, httpHeaders);
+			edge = decideIfToCreateEdge(inst1, inst2, graphType, minWeight);
 		}
 
 		//		public final static String MaxHourlyEnergyConsumption = "MaxHourlyEnergyConsumption";
@@ -179,7 +177,7 @@ public class MongoEdges {
 	 * @param httpHeaders
 	 * @return
 	 */
-	private DBObject decideIfToCreateEdge(DBObject inst1, DBObject inst2, String instObjectKey, Double minWeight, HttpHeaders httpHeaders) {
+	private DBObject decideIfToCreateEdge(DBObject inst1, DBObject inst2, String instObjectKey, Double minWeight) {
 		//		Double v2 = Double.parseDouble(inst2.get(instObjectKey).toString());
 		DBObject edge = null;
 		if(instObjectKey.equalsIgnoreCase(TotalEnergyConsumption) ||
@@ -233,13 +231,10 @@ public class MongoEdges {
 	 * @param httpHeaders
 	 * @return
 	 */
-	private boolean equalPersonType(DBObject inst1, DBObject inst2, HttpHeaders httpHeaders) {
+	private boolean equalPersonType(DBObject inst1, DBObject inst2, String dbName) {
 		String instObjectKey = "type";
-		DBObject person1 = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).
-				getCollection(MongoPersons.COL_PERSONS).findOne(new BasicDBObject("inst_id",inst1.get("inst_id").toString()));
-		DBObject person2 = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).
-				getCollection(MongoPersons.COL_PERSONS).findOne(new BasicDBObject("inst_id",inst2.get("inst_id").toString()));
-
+		DBObject person1 = DBConn.getConn(dbName).getCollection(MongoPersons.COL_PERSONS).findOne(new BasicDBObject("inst_id",inst1.get("inst_id").toString()));
+		DBObject person2 = DBConn.getConn(dbName).getCollection(MongoPersons.COL_PERSONS).findOne(new BasicDBObject("inst_id",inst2.get("inst_id").toString()));
 		if(person1.get(instObjectKey) != null && person2.get(instObjectKey) != null) {
 			if(person1.get(instObjectKey).toString().equalsIgnoreCase(person1.get(instObjectKey).toString())) {
 				return true;

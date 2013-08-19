@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import org.bson.types.ObjectId;
 
 import weka.clusterers.HierarchicalClusterer;
@@ -30,7 +28,6 @@ import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
-import eu.cassandra.server.mongo.util.MongoDBQueries;
 
 public class MongoCluster {
 
@@ -42,23 +39,30 @@ public class MongoCluster {
 	 * @param httpHeaders
 	 * @return
 	 */
-	public DBObject cluster(String message, HttpHeaders httpHeaders) {
+	public DBObject cluster(String message) {
 		JSONtoReturn jSON2Rrn = new JSONtoReturn();
 		try {
 			new JSONValidator().isValid(message, JSONValidator.CLUSTER_PARAM_SCHEMA);
 			DBObject params = (DBObject)JSON.parse(message);
 			String graph_id  = params.get("graph_id").toString();
+			String run_id = null;
+
+			DBObject r = DBConn.getConn().getCollection(MongoGraphs.COL_GRAPHS).findOne(new BasicDBObject("_id",new ObjectId(graph_id)));
+			if(r.containsField("run_id")) {
+				run_id = r.get("run_id").toString();
+			}
+
 			String clusterBasedOn  = params.get("clusterbasedon").toString();
 			Integer numberOfClusters = Integer.parseInt(params.get("n").toString());
 			String clusterMethod = params.get("clustermethod").toString();
 			if(clusterMethod.equalsIgnoreCase("kmeans")) {
-				return clusterKmeans(message, graph_id, clusterBasedOn, numberOfClusters, httpHeaders);
+				return clusterKmeans(message, graph_id, run_id,clusterBasedOn, numberOfClusters);
 			}
 			else if(clusterMethod.equalsIgnoreCase("hierarchical")) {
-				return clusterHierarchical(message, graph_id, clusterBasedOn, numberOfClusters, httpHeaders);
+				return clusterHierarchical(message, graph_id, run_id,clusterBasedOn, numberOfClusters);
 			}
 			else if(clusterMethod.equalsIgnoreCase("graphedgebetweenness")) {
-				return clusterGraphEgdetweenness(message, graph_id, clusterBasedOn, numberOfClusters, httpHeaders);
+				return clusterGraphEgdetweenness(message, graph_id, run_id,clusterBasedOn, numberOfClusters);
 			}
 			else 
 				return null;
@@ -75,7 +79,7 @@ public class MongoCluster {
 	 * @param httpHeaders
 	 * @return
 	 */
-	private Instances getInstances(String clusterBasedOn, String graph_id, HttpHeaders httpHeaders) {
+	private Instances getInstances(String clusterBasedOn, String graph_id) {
 		FastVector attributes = new FastVector();
 		if(clusterBasedOn.equalsIgnoreCase("hoursP") || clusterBasedOn.equalsIgnoreCase("hoursQ") || clusterBasedOn.equalsIgnoreCase("hoursE"))  {
 			for(int i=0;i<24;i++) {
@@ -86,7 +90,7 @@ public class MongoCluster {
 		}
 		Instances instances = new Instances("data", attributes, 0);
 
-		DBCursor nodes = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).getCollection(
+		DBCursor nodes = DBConn.getConn().getCollection(
 				MongoGraphs.COL_CSN_NODES).find(new BasicDBObject("graph_id",graph_id));
 		//Get all nodes
 		while(nodes.hasNext()) {
@@ -144,9 +148,9 @@ public class MongoCluster {
 	 * @param httpHeaders
 	 * @return
 	 */
-	private DBObject clusterKmeans(String message, String graph_id, String clusterBasedOn, int numberOfClusters, HttpHeaders httpHeaders) {
+	private DBObject clusterKmeans(String message, String graph_id, String run_id, String clusterBasedOn, int numberOfClusters) {
 		try {
-			Instances instances = getInstances(clusterBasedOn, graph_id,httpHeaders);
+			Instances instances = getInstances(clusterBasedOn, graph_id);
 
 			SimpleKMeans kmeans = new SimpleKMeans();
 			kmeans.setSeed((int)Calendar.getInstance().getTimeInMillis());
@@ -175,16 +179,16 @@ public class MongoCluster {
 				i++;
 			}
 			nodeIDs.clear();
-			return saveClusters(graph_id, "kmeans", clusters, null, httpHeaders);
+			return saveClusters(graph_id, run_id, "kmeans", clusters, null);
 		}catch(Exception e) {
 			e.printStackTrace();
 			return new JSONtoReturn().createJSONError(message,e);
 		}
 	}
 
-	public DBObject clusterHierarchical(String message, String graph_id, String clusterBasedOn, int numberOfClusters, HttpHeaders httpHeaders) {
+	public DBObject clusterHierarchical(String message, String graph_id, String run_id, String clusterBasedOn, int numberOfClusters) {
 		try {
-			Instances instances = getInstances(clusterBasedOn, graph_id,httpHeaders);
+			Instances instances = getInstances(clusterBasedOn, graph_id);
 
 			HierarchicalClusterer h = new HierarchicalClusterer();
 			h.setOptions(new String[] {"-L", "AVERAGE"});
@@ -212,7 +216,7 @@ public class MongoCluster {
 					}
 				}
 			}
-			return saveClusters(graph_id, "hierarchical", clusters, null,httpHeaders);
+			return saveClusters(graph_id, run_id, "hierarchical", clusters, null);
 		}catch(Exception e) {
 			e.printStackTrace();
 			return new JSONtoReturn().createJSONError(message,e);
@@ -220,11 +224,11 @@ public class MongoCluster {
 	}
 
 
-	public DBObject clusterGraphEgdetweenness(String message, String graph_id, String clusterBasedOn, int numberOfEdgesToRemove, HttpHeaders httpHeaders) {
+	public DBObject clusterGraphEgdetweenness(String message, String graph_id, String run_id, String clusterBasedOn, int numberOfEdgesToRemove) {
 		try {
 			UndirectedSparseGraph<String, CEdge> graph = new UndirectedSparseGraph<String, CEdge>();
 
-			DBCursor nodes = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).getCollection(
+			DBCursor nodes = DBConn.getConn().getCollection(
 					MongoGraphs.COL_CSN_NODES).find(new BasicDBObject("graph_id",graph_id));
 			while(nodes.hasNext()) {
 				DBObject installationDBObj = nodes.next();
@@ -232,7 +236,7 @@ public class MongoCluster {
 			}
 			nodes.close();
 
-			DBCursor edges = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).getCollection(
+			DBCursor edges = DBConn.getConn().getCollection(
 					MongoGraphs.COL_CSN_EDGES).find(new BasicDBObject("graph_id",graph_id));
 			while(edges.hasNext()) {
 				DBObject edgeObj = edges.next();
@@ -272,7 +276,7 @@ public class MongoCluster {
 
 			List<CEdge> edgesRemoved = clusterer.getEdgesRemoved();
 
-			return saveClusters(graph_id, "graphedgebetweenness", clusters, edgesRemoved, httpHeaders);
+			return saveClusters(graph_id, run_id, "graphedgebetweenness", clusters, edgesRemoved);
 		}catch(Exception e) {
 			e.printStackTrace();
 			return new JSONtoReturn().createJSONError(message,e);
@@ -287,19 +291,19 @@ public class MongoCluster {
 	 * @param httpHeaders
 	 * @return
 	 */
-	private DBObject saveClusters(String graph_id, String method, HashMap<Integer,Vector<String>> clusters, List<CEdge> edgesRemoved, HttpHeaders httpHeaders) {
+	private DBObject saveClusters(String graph_id, String run_id, String method, HashMap<Integer,Vector<String>> clusters, List<CEdge> edgesRemoved) {
 		JSONtoReturn jSON2Rrn = new JSONtoReturn();
 		DBObject clusterObject = new BasicDBObject("method",method);
 		ObjectId objectId = new ObjectId();
 		clusterObject.put("_id", objectId);
 		clusterObject.put("graph_id", graph_id);
+		clusterObject.put("run_id", run_id);
 		try {
 			clusterObject.put("n", clusters.keySet().size());
 			for(int j=0;j<clusters.keySet().size();j++) {
 				clusterObject.put("cluster_" + j, clusters.get(j));
 			}
-			String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
-			DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_CLUSTERS).insert(clusterObject);
+			DBConn.getConn().getCollection(MongoGraphs.COL_CSN_CLUSTERS).insert(clusterObject);
 
 			//Inverse (node to cluster) 
 			for(int j=0;j<clusters.keySet().size();j++) {
@@ -309,7 +313,9 @@ public class MongoCluster {
 					ob.put("cluster", "cluster_" + j);
 					ob.put("graph_id", graph_id);
 					ob.put("clustersid", objectId.toString());
-					DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_NODES2CLUSTERS).insert(ob);
+					if(run_id != null)
+						ob.put("run_id", run_id);
+					DBConn.getConn().getCollection(MongoGraphs.COL_CSN_NODES2CLUSTERS).insert(ob);
 				}
 			}
 
@@ -320,7 +326,9 @@ public class MongoCluster {
 					DBObject ob = new BasicDBObject("edge_id",edgeID);
 					ob.put("graph_id", graph_id);
 					ob.put("clustersid", objectId.toString());
-					DBConn.getConn(dbName).getCollection(MongoGraphs.COL_CSN_EDGES_REMOVED).insert(ob);
+					if(run_id != null)
+						ob.put("run_id", run_id);
+					DBConn.getConn().getCollection(MongoGraphs.COL_CSN_EDGES_REMOVED).insert(ob);
 				}
 			}
 			return jSON2Rrn.createJSONInsertPostMessage("Clusters Created", clusterObject) ;
