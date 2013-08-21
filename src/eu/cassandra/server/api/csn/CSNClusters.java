@@ -29,7 +29,13 @@ public class CSNClusters {
 
 	//curl -k -i    --header Content-type:application/json  'https://localhost:8443/cassandra/api/csnclusters?run_id=f'
 	@GET
-	public Response getClusters(@QueryParam("run_id") String run_id){
+	public Response getClusters(@QueryParam("run_id") String run_id,@QueryParam("graph_id") String graph_id){
+		if(graph_id != null) {
+			String r = PrettyJSONPrinter.prettyPrint(
+					new MongoDBQueries().getEntity((HttpHeaders)null, MongoGraphs.COL_CSN_CLUSTERS,"graph_id",graph_id,
+							"CSN clusters retrieved successfully",new String[]{"_id","method","graph_id","n"}));
+			return Utils.returnResponse(r);
+		}
 		String run_idK = null;
 		if(run_id != null)
 			run_idK = "run_id";
