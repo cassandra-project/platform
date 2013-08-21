@@ -73,9 +73,11 @@ public class MongoGraphs {
 	 * @param httpHeaders
 	 * @return
 	 */
-	public String getGraphs(String run_id) {
+	public String getGraphs(String run_id,String prj_id) {
 		if(run_id != null)
 			return new MongoDBQueries().getEntity((HttpHeaders)null,COL_GRAPHS,"run_id",run_id,"CSN graphs retrieved successfully").toString();
+		else if(prj_id != null)
+			return new MongoDBQueries().getEntity((HttpHeaders)null,COL_GRAPHS,"prj_id",prj_id,"CSN graphs retrieved successfully").toString();
 		else
 			return new MongoDBQueries().getEntity((HttpHeaders)null, COL_GRAPHS,null,null,"CSN graphs retrieved successfully").toString();
 	}
@@ -89,7 +91,7 @@ public class MongoGraphs {
 	 * @return
 	 */
 	public String deleteGraph(String id,HttpHeaders httpHeaders) {
-			String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
+		String dbName = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 
 		//Delete Nodes and Edges of the graph
 		DBConn.getConn(dbName).getCollection(COL_CSN_NODES).findAndRemove(new BasicDBObject("graph_id",id));

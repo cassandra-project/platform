@@ -27,8 +27,8 @@ public class CSNGraphs {
 	
 	//curl -k -i    --header Content-type:application/json  https://localhost:8443/cassandra/api/csn?run_id=f
 	@GET
-	public Response getGraphs(@QueryParam("run_id") String run_id){
-		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoGraphs().getGraphs(run_id)));
+	public Response getGraphs(@QueryParam("run_id") String run_id, @QueryParam("prj_id") String prj_id){
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoGraphs().getGraphs(run_id,prj_id)));
 	}
 
 
