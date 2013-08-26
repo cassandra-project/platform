@@ -28,7 +28,7 @@ Ext.define('C.store.Scenarios', {
 			autoSync: true,
 			model: 'C.model.Scenario',
 			remoteFilter: true,
-			storeId: 'MyJsonStore1',
+			storeId: 'Scenarios',
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',

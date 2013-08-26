@@ -25,7 +25,7 @@ Ext.define('C.store.ActmodAppliances', {
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
 			model: 'C.model.Appliance',
-			storeId: 'MyStore1'
+			storeId: 'ActmodAppliances'
 		}, cfg)]);
 	}
 });
