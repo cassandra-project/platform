@@ -582,21 +582,6 @@ public class MongoDBQueries {
 	 * @param dBObject
 	 * @param httpHeaders
 	 * @param id
-	 * @param coll
-	 * @return
-	 * @throws JSONSchemaNotValidException
-	 * @throws BadParameterException
-	 */
-	private DBObject getValues(DBObject dBObject, HttpHeaders httpHeaders, 
-			String id, String coll) throws JSONSchemaNotValidException, BadParameterException {
-		return getValues(dBObject, httpHeaders, null, id, coll);
-	}
-
-	/**
-	 * 
-	 * @param dBObject
-	 * @param httpHeaders
-	 * @param id
 	 * @return
 	 * @throws JSONSchemaNotValidException 
 	 * @throws BadParameterException 
