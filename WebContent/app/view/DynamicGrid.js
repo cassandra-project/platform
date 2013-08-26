@@ -33,6 +33,7 @@ Ext.define('C.view.DynamicGrid', {
 				loadingText: 'loading..',
 				plugins: [
 					Ext.create('Ext.grid.plugin.DragDrop', {
+						containerScroll: true,
 						ddGroup: 'ddGlobal'
 					})
 				],
@@ -126,6 +127,21 @@ Ext.define('C.view.DynamicGrid', {
 									scope: me
 								}
 							}
+						},
+						{
+							xtype: 'button',
+							hidden: true,
+							text: 'Create CSN',
+							listeners: {
+								click: {
+									fn: me.onButtonClick1112,
+									scope: me
+								},
+								beforerender: {
+									fn: me.onButtonBeforeRender22,
+									scope: me
+								}
+							}
 						}
 					]
 				}
@@ -166,11 +182,6 @@ Ext.define('C.view.DynamicGrid', {
 						}
 					}
 				}
-			],
-			plugins: [
-				Ext.create('Ext.grid.plugin.BufferedRenderer', {
-
-				})
 			]
 		});
 
@@ -185,7 +196,18 @@ Ext.define('C.view.DynamicGrid', {
 		Returning 0 To this event signals that the data transfer operation should not take place, but that
 		the gesture was valid, and that the repair operation should not take place.
 		*/
+		if (!overModel)
+		return false;
 		var record = (data.records[0].node) ? data.records[0].node : data.records[0];
+
+		//make sure overModel.node is rendered
+		if (!overModel.node)
+		overModel.paginationNode.expand();
+
+		//if record belongs to Cassandra Library return false
+		debugger;
+		if (overModel.node.getOwnerTree().getRootNode().get('id') == C.lib_id)
+		return false;
 
 		if('C.model.'+record.get('nodeType')==this.store.model.modelName){
 			dropHandlers.cancelDrop();
@@ -197,7 +219,7 @@ Ext.define('C.view.DynamicGrid', {
 				case 'Scenario': parent_idKey = 'project_id'; break;
 				case 'SimulationParam': parent_idKey = 'scn_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
-				case 'Pricing': parent_idKey = 'scn_id'; break;
+				case 'Pricing': parent_idKey = 'prj_id'; break;
 				case 'Demographic': parent_idKey = 'scn_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
@@ -259,7 +281,7 @@ Ext.define('C.view.DynamicGrid', {
 			case 'ProjectsCollection': inputArray = {};break;
 			case 'ScenariosCollection': inputArray = {'project_id' : parent_id};break;
 			case 'InstallationsCollection': inputArray = {'scenario_id' : parent_id}; break;
-			case 'PricingSchemesCollection': inputArray = {'scn_id' : parent_id}; break;
+			case 'PricingSchemesCollection': inputArray = {'prj_id' : parent_id}; break;
 			case 'DemographicsCollection': inputArray = {'scn_id' : parent_id}; break;
 			case 'SimulationParamsCollection': 
 			var calendar = C.app.getCalendar( new Date());
@@ -274,17 +296,9 @@ Ext.define('C.view.DynamicGrid', {
 		var currentModel = this.store.getProxy().getModel();
 		var cur_record = new currentModel(inputArray);
 
-
 		this.store.add(cur_record);
 
 
-		/*this.store.on('update', function(abstractstore, records, operation) {
-		if (operation == 'commit') {
-		var record = this.getAt(0);
-		C.app.createForm(record.node);
-		}
-		});
-		*/
 
 		//this.plugins[0].startEdit(0, 0);
 
@@ -567,6 +581,26 @@ Ext.define('C.view.DynamicGrid', {
 		component.show();
 	},
 
+	onButtonClick1112: function(button, e, eOpts) {
+		var selection = this.getView().getSelectionModel().getSelection()[0];
+		if (!selection) {
+			Ext.MessageBox.show({title:'Error', msg: 'You need to select a run from the grid', icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK});
+			return false;
+		}
+
+		var formWindow = new Ext.Window({
+			items  : new C.view.CsnForm({run: selection.data}),
+			title  : 'Create CSN'
+		}); 
+
+		formWindow.show();
+	},
+
+	onButtonBeforeRender22: function(component, eOpts) {
+		if (this.store.model.getName() == "C.model.Run")
+		component.show();
+	},
+
 	onGridpanelItemDblClick: function(dataview, record, item, index, e, eOpts) {
 		if (!record.node && record.paginationNode)
 		record.paginationNode.expand();
@@ -577,9 +611,12 @@ Ext.define('C.view.DynamicGrid', {
 	onToolClick1: function(tool, e, eOpts) {
 
 		var gridWindow = new Ext.Window({
-			title : this.header.title,
+			title : this.title,
 			items : this,
 			layout: 'fit',
+			width: 700,
+			height: 500,
+			autoScroll: true,
 			tools: [
 			{
 				xtype: 'tool',
@@ -590,6 +627,7 @@ Ext.define('C.view.DynamicGrid', {
 						var gridWindow = this.getBubbleParent().getBubbleParent();
 						var gridPanel = gridWindow.query("grid")[0];
 						var tabPanel = Ext.getCmp('MainTabPanel');
+						tabPanel.dockedItems.items[0].show();
 						tabPanel.add(gridPanel);
 						tabPanel.setActiveTab(gridPanel);
 						tabPanel.getActiveTab().header.show();
@@ -604,7 +642,7 @@ Ext.define('C.view.DynamicGrid', {
 		gridWindow.show();
 		if (this.hidden) this.show();
 		this.header.hide();
-
+		Ext.getCmp("MainTabPanel").dockedItems.items[0].hide();
 		/*tool.hide();
 		this.query("tool")[1].show();*/
 
@@ -639,7 +677,7 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onGridpanelAfterRender: function(component, eOpts) {
-		return false;
+		/*return false;
 		var node = component.store.navigationNode;
 		if (!node)
 		return false;
@@ -685,7 +723,7 @@ Ext.define('C.view.DynamicGrid', {
 
 		myToolbar.store.proxy.extraParams = inputArray;
 
-		component.addDocked(myToolbar);
+		component.addDocked(myToolbar);*/
 	}
 
 });
