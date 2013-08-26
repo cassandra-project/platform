@@ -16,6 +16,7 @@
 Ext.define('C.view.DistributionForm', {
 	extend: 'Ext.form.Panel',
 
+	autoRender: true,
 	border: '0 0 0 0',
 	margin: 10,
 	style: 'border: none',
@@ -182,7 +183,7 @@ Ext.define('C.view.DistributionForm', {
 
 	onButtonClick2: function(button, e, eOpts) {
 		var myForm = this.getForm();
-		var record = myForm.getRecord();
+		var record =myForm.getRecord();
 		var values = myForm.getValues();
 
 		var parameters = myForm.getFieldValues().params.trim();
