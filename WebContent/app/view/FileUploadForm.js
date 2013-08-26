@@ -32,7 +32,7 @@ Ext.define('C.view.FileUploadForm', {
 				{
 					xtype: 'filefield',
 					anchor: '100%',
-					formBind: true,
+					formBind: false,
 					fieldLabel: 'File',
 					labelWidth: 30,
 					name: 'file'
@@ -46,10 +46,15 @@ Ext.define('C.view.FileUploadForm', {
 								url: '/cassandra/api/file/upload',
 								waitMsg: 'Uploading your file....',
 								success: function(fp, o) {
-									Ext.sliding_box.msg('Success',  'Processed file "' + o.result.file + '" on the server');
+
+									Ext.MessageBox.show({title:'Success', msg: o.response.responseText, icon: Ext.MessageBox.INFO, buttons: Ext.MessageBox.OK}); 
+
 								},
 								failure: function(fp, o) {
-									Ext.MessageBox.show({title:'Error', msg: "File upload failed.</br> Please try uploading your file again.", icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
+									Ext.sliding_box.msg('Success',   'File successfully uploaded to server ');
+									Ext.MessageBox.show({title:'Success', msg: o.response.responseText, icon: Ext.MessageBox.INFO, buttons: Ext.MessageBox.OK});
+									//TODO: change this to work properly when success : true is returned
+									//Ext.MessageBox.show({title:'Error', msg: "File upload failed.</br> Please try uploading your file again.", icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
 								}
 							});
 						}
