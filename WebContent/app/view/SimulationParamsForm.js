@@ -168,7 +168,8 @@ Ext.define('C.view.SimulationParamsForm', {
 
 	onTextfieldChange1111: function(field, newValue, oldValue, eOpts) {
 		this.setTitle(newValue);
-		this.form.getRecord().node.set({'name':newValue});
+		var node = C.app.getNodeFromTree(this.form.getRecord().internalId);
+		node.set({'name':newValue});
 	},
 
 	onTextfieldRender11: function(component, eOpts) {
@@ -202,7 +203,8 @@ Ext.define('C.view.SimulationParamsForm', {
 
 	onButtonClick2: function(button, e, eOpts) {
 		var myForm = this.getForm();
-		var record = myForm.getRecord();
+		var node = C.app.getNodeFromTree(myForm.getRecord().internalId);
+		var record = C.app.getRecordByNode(node);
 		var values = myForm.getValues();
 
 		var calendar = {};
@@ -246,31 +248,41 @@ Ext.define('C.view.SimulationParamsForm', {
 
 	onButtonClick21: function(button, e, eOpts) {
 		//invoke "Update" button click event
-		this.query('button')[0].fireEvent('click', this.query('button'));
+		this.query('button')[0].fireEvent('click', this.query('button')[0]);
+		var smp_node = C.app.getNodeFromTree(this.getForm().getRecord().internalId);
+		var project_node = smp_node.parentNode.parentNode.parentNode.parentNode;
+		var runsNode = project_node.findChild('name','Runs');
 
-		var project_node = this.getForm().getRecord().node.parentNode.parentNode.parentNode.parentNode;
-		if (! (project_node.lastChild.c) ) project_node.lastChild.expand();
-		/*Ext.getCmp('uiNavigationTreePanel').getView().fireEvent('itemdblclick',project_node.lastChild, project_node.lastChild);*/
-		var node = project_node.lastChild;
-		var run_store = node.c.store;
-		run_store.on('add', function(store, record, operation, eOpts ) {
-			var breadcrumb = node.getPath();
-			var pathToMe =  node.get('nodeType')+':'+breadcrumb;
-			var tabs = Ext.getCmp('MainTabPanel');
-			var isOpen = false;
-			Ext.each (tabs.items.items, function(item, index) {
-				if (item.pathToMe == pathToMe) {
-					tabs.setActiveTab(item);
-					isOpen = true;
-					return false;
-				}
+		//if runs store doesn't exist create it
+		if (!runsNode.c) {
+			runsNode.c = {
+				store : new C.store.Runs({
+					storeId: 'RunCollectionStore-prj_id-'+project_node.get('nodeId'),
+					navigationNode: runsNode
+				})
+			};
+			runsNode.c.store.on('add', function(store, record, operation, eOpts ) {
+				C.app.openTab(runsNode);
 			});
-			if (!isOpen) 
-			C.app.createForm(node);
-		});	
+			runsNode.c.store.on('load',function (store, records, successful, eOpts ){
+				store.add(new C.model.Run({smp_id : smp_node.get('id')}));
+			}, null, {single: true} );
+
+				runsNode.c.store.load({
+					params: {
+						prj_id: project_node.get('nodeId')
+					}
+				});
+			}
+			else {
+				runsNode.c.store.on('add', function(store, record, operation, eOpts ) {
+					C.app.openTab(runs_node);
+				});
+				runsNode.c.store.add(new C.model.Csn({smp_id : smp_node.get('id')}));
+			}
 
 
-		run_store.insert(0, new C.model.Run({smp_id : this.getForm().getRecord().node.get('id')}));
+
 	}
 
 });

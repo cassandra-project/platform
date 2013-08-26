@@ -136,7 +136,8 @@ Ext.define('C.view.ActmodPropertiesForm', {
 	onTextfieldChange11: function(field, newValue, oldValue, eOpts) {
 		if(this.getBubbleParent())
 		this.getBubbleParent().getBubbleParent().setTitle(newValue);
-		this.form.getRecord().node.set({'name':newValue});
+		var node = C.app.getNodeFromTree(this.form.getRecord().internalId);
+		node.set({'name':newValue});
 	},
 
 	onTextfieldBeforeRender: function(component, eOpts) {
@@ -147,7 +148,8 @@ Ext.define('C.view.ActmodPropertiesForm', {
 	onButtonClick2: function(button, e, eOpts) {
 		var gridIds = [];
 		var myForm = this.getForm();
-		var record = myForm.getRecord();
+		var node = C.app.getNodeFromTree(myForm.getRecord().internalId);
+		var record = C.app.getRecordByNode(node);
 		var values = myForm.getValues();
 
 		var gridData = this.query('grid')[0].store.data;

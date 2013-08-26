@@ -66,7 +66,7 @@ Ext.define('C.store.Installations', {
 	onJsonstoreLoad: function(store, records, successful, eOpts) {
 		if(store.navigationNode){
 			if (records.length <= C.limit) 
-			Ext.each(records/*store.proxy.reader.rawData.data*/, function(record, index){
+			Ext.each(records, function(record, index){
 				console.info('++ Node does not exist. Creating it.');
 				var node = store.navigationNode.appendChild({
 					id: record.get('_id'),
@@ -88,6 +88,7 @@ Ext.define('C.store.Installations', {
 				//TODO find a solution for expandable last node instead of this crappy hack
 				while ( counter <= (pages + 1) ) {
 					var node = store.navigationNode.appendChild({
+						id: "pagination_" + counter + "_" + store.navigationNode.get("id"),
 						name: 'Installations (page '+ counter + ')',
 						nodeType: 'InstallationsCollection',
 						leaf: false,
@@ -97,6 +98,8 @@ Ext.define('C.store.Installations', {
 						page: counter,
 						clickable: false
 					});
+					node.id = node.get('id');
+
 					counter++;
 				}
 
@@ -104,7 +107,7 @@ Ext.define('C.store.Installations', {
 				var last_index = store.navigationNode.childNodes.length - 1;
 				store.navigationNode.childNodes[last_index].remove();
 
-				Ext.each(records/*store.proxy.reader.rawData.data*/, function(record, index){
+				Ext.each(records, function(record, index){
 					record.paginationNode = store.navigationNode.childNodes[parseInt(index/C.limit)];
 				});
 			}
@@ -131,53 +134,27 @@ Ext.define('C.store.Installations', {
 					fakeChildren: true,
 					draggable: false
 				});
-				//if (store.totalCount  < C.limit) {
+
 				record.node = node;
-				//}
-				/*else {
-				if ( store.totalCount == C.limit )  {
 
-				var previous_nodes = store.navigationNode.childNodes;
-				var first_page = store.navigationNode.appendChild({
-				name: 'Installations (page 1)',
-				nodeType: 'InstallationsCollection',
-				leaf: false,
-				expandable:   true,
-				fakeChildren: true,
-				draggable: false,
-				page: 1,
-				clickable: false
-				});
-				first_page.appendChild(previous_nodes.slice(0, C.limit));
-				store.navigationNode.appendChild({
-				name: 'Installations (page 2)',
-				nodeType: 'InstallationsCollection',
-				leaf: false,
-				expandable:   true,
-				fakeChildren: true,
-				draggable: false,
-				page: 2,
-				clickable: false
-				});
-				}
+				C.app.createForm(record.node);
 
-				record.paginationNode = store.navigationNode.getChildAt(store.navigationNode.childNodes.length-1);
-				record.node = record.paginationNode.appendChild(node);
-				//record.node = node;
 			}
-			*/
-			C.app.createForm(record.node);
-			C.app.refreshGrid(store);
 		}
-	}
 	},
 
 	onJsonstoreRemove: function(store, record, index, isMove, eOpts) {
-		if (record.paginationNode) 
-		record.paginationNode.removeChild(record.node);
+		if (record.paginationNode) {
+			record.paginationNode.removeChild(record.node);
+			if (!record.paginationNode.hasChildNodes())
+			record.paginationNode.remove();
+			if (store.navigationNode.childNodes.length == 1) {
+				var lasting_node = store.navigationNode.childNodes[0];
+				store.navigationNode.appendChild(lasting_node.childNodes);
+			}
+		}
 		else if (record.node)
 		store.navigationNode.removeChild(record.node);
-
 	}
 
 });

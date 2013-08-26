@@ -29,10 +29,6 @@ Ext.define('C.view.MyTabPanel', {
 				tabchange: {
 					fn: me.onMainTabPanelTabChange,
 					scope: me
-				},
-				beforerender: {
-					fn: me.onTabpanelBeforeRender,
-					scope: me
 				}
 			},
 			dockedItems: [
@@ -78,14 +74,18 @@ Ext.define('C.view.MyTabPanel', {
 		}
 
 		if (activeTab.corresponding_node) {
-			var breadcrumb = C.app.setBreadcrumb(activeTab.corresponding_node);
+			var node = C.app.getNodeFromTree(activeTab.corresponding_node.internalId);
+			if (!node) {
+				var parent_node = C.app.getNodeFromTree(activeTab.corresponding_parent.get("id"));
+				parent_node.expand();
+				node = C.app.getNodeFromTree(activeTab.corresponding_node.internalId);
+			}
+			var breadcrumb = C.app.setBreadcrumb(node);
 			tabPanel.dockedItems.items[0].removeAll();
 			tabPanel.dockedItems.items[0].add(breadcrumb);
+			if (tabPanel.dockedItems.items[0].hidden)
+			tabPanel.dockedItems.items[0].show();
 		}
-	},
-
-	onTabpanelBeforeRender: function(component, eOpts) {
-
 	}
 
 });

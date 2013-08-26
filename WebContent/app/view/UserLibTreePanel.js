@@ -34,6 +34,7 @@ Ext.define('C.view.UserLibTreePanel', {
 				loadingText: 'loading...',
 				plugins: [
 					Ext.create('Ext.tree.plugin.TreeViewDragDrop', {
+						containerScroll: true,
 						ddGroup: 'ddGlobal'
 					})
 				],
@@ -77,10 +78,9 @@ Ext.define('C.view.UserLibTreePanel', {
 			record.paginationNode.expand();
 			record = record.node;
 		}
-		var nodeType = record.get('nodeType') ;
 
 		// Node from tree || Node from grid.
-		if (record.parentNode.get('nodeType') == overModel.get('nodeType') && !overModel.get('page')){
+		if ( record.parentNode.get('nodeType') == overModel.get('nodeType') ){
 			// record can be a lot of things, navigation record, grid row.
 			// Get the actuall data from its store to skip unwanted behaviour.
 			dropHandlers.cancelDrop();
@@ -92,7 +92,7 @@ Ext.define('C.view.UserLibTreePanel', {
 				case 'Scenario': parent_idKey = 'project_id'; break;
 				case 'SimulationParam': parent_idKey = 'scn_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
-				case 'Pricing': parent_idKey = 'scn_id'; break;
+				case 'Pricing': parent_idKey = 'prj_id'; break;
 				case 'Demographic': parent_idKey = 'scn_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
@@ -214,11 +214,11 @@ Ext.define('C.view.UserLibTreePanel', {
 							storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
 							navigationNode: record
 						});
-						record.c.store.proxy.extraParams = {'scn_id': record.parentNode.get('nodeId')};
-						record.c.store.load({/*
+						//record.c.store.proxy.extraParams = {'scn_id': record.parentNode.get('nodeId')};
+						record.c.store.load({
 							params: {
 								scn_id: record.parentNode.get('nodeId')
-							}*/
+							}
 						});
 					}
 					else if (!record.hasChildNodes()) {
@@ -240,9 +240,8 @@ Ext.define('C.view.UserLibTreePanel', {
 							});
 							store_record.node = node;
 						});
-					}
+					}			
 					break;
-
 					case 'PersonsCollection':
 					//record.removeAll();
 					console.info('Creating store for persons.');

@@ -105,7 +105,7 @@ Ext.define('C.view.SearchGrid', {
 									allowBlank: false,
 									listeners: {
 										render: {
-											fn: me.onTextfieldRender1,
+											fn: me.onTextfieldRender11,
 											scope: me
 										}
 									}
@@ -238,7 +238,7 @@ Ext.define('C.view.SearchGrid', {
 
 	},
 
-	onTextfieldRender1: function(component, eOpts) {
+	onTextfieldRender11: function(component, eOpts) {
 		var myForm = component.up('form').getForm();
 		new Ext.dd.DropTarget(component.up('form').body.dom.getElementsByClassName('dropTarget')[0],{
 			ddGroup:'ddGlobal',

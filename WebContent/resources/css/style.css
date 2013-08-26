@@ -200,3 +200,10 @@ background-color: transparent !important;
 	background: url(../icons/warning.png) no-repeat 0 1px;
 	padding-left: 20px
 }
+
+#no_graph_data {
+	width: 700px;
+	text-align: center;
+	padding: 150px 0;
+	color: #157fcc;
+}

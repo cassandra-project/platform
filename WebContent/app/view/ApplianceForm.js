@@ -208,7 +208,8 @@ Ext.define('C.view.ApplianceForm', {
 
 	onTextfieldChange111111: function(field, newValue, oldValue, eOpts) {
 		this.setTitle(newValue);
-		this.form.getRecord().node.set({'name':newValue});
+		var node = C.app.getNodeFromTree(this.form.getRecord().internalId);
+		node.set({'name':newValue});
 	},
 
 	onTextareafieldBeforeRender: function(component, eOpts) {
@@ -224,7 +225,8 @@ Ext.define('C.view.ApplianceForm', {
 	onButtonClick2: function(button, e, eOpts) {
 
 		var myForm = this.getForm();
-		var record = myForm.getRecord();
+		var node = C.app.getNodeFromTree(myForm.getRecord().internalId);
+		var record = C.app.getRecordByNode(node);
 		var myConsModChartStore = this.query('chart')[0].store;
 
 		myForm.updateRecord();

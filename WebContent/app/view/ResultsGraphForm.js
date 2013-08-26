@@ -186,7 +186,7 @@ Ext.define('C.view.ResultsGraphForm', {
 		var dataSize = parseInt(-defaultFrom/defaultAggrUnit) + parseInt( (numberOfDays*1440) / defaultAggrUnit);
 
 		if (!formValues.to) 
-		delete formValues.to;console.info(dataSize);
+		delete formValues.to;
 
 		if ( dataSize > 1000 ) {
 			Ext.MessageBox.alert('Error', 'Too many plot data! Chart will not be loaded!'); 

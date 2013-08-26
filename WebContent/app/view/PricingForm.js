@@ -484,6 +484,18 @@ Ext.define('C.view.PricingForm', {
 						}
 					}
 				}
+			],
+			tools: [
+				{
+					xtype: 'tool',
+					type: 'unpin',
+					listeners: {
+						click: {
+							fn: me.onToolClick11,
+							scope: me
+						}
+					}
+				}
 			]
 		});
 
@@ -492,7 +504,8 @@ Ext.define('C.view.PricingForm', {
 
 	onTextfieldChange11: function(field, newValue, oldValue, eOpts) {
 		this.setTitle(newValue);
-		this.form.getRecord().node.set({'name':newValue});
+		var node = C.app.getNodeFromTree(this.form.getRecord().internalId);
+		node.set({'name':newValue});
 	},
 
 	onComboboxChange: function(field, newValue, oldValue, eOpts) {
@@ -595,7 +608,8 @@ Ext.define('C.view.PricingForm', {
 		var levelsData = [];
 		var timezones = [];
 		var myForm = this.getForm();
-		var record = myForm.getRecord();
+		var node = C.app.getNodeFromTree(myForm.getRecord().internalId);
+		var record = C.app.getRecordByNode(node);
 		var values = myForm.getValues();
 
 		switch (record.get('type')) {
@@ -649,6 +663,10 @@ Ext.define('C.view.PricingForm', {
 		if (record.isNew)
 		record.isNew = false;
 		//record.save();
+	},
+
+	onToolClick11: function(tool, e, eOpts) {
+		C.app.handleFormUnpin();
 	}
 
 });
