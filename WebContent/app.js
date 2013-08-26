@@ -42,7 +42,8 @@ Ext.application({
 		'DemographicEntity',
 		'Kpi',
 		'Pricing',
-		'Search'
+		'Search',
+		'Csn'
 	],
 	stores: [
 		'Projects',
@@ -80,7 +81,11 @@ Ext.application({
 		'TimezonesStore',
 		'Installations',
 		'SelectCollectionStore',
-		'SearchStore'
+		'SearchStore',
+		'Csn',
+		'CsnGraphTypeStore',
+		'ClusterBasedonStore',
+		'ClusterMethodStore'
 	],
 	views: [
 		'MyViewport',
@@ -111,7 +116,9 @@ Ext.application({
 		'ActivityModelForm',
 		'ApplianceForm',
 		'FileUploadForm',
-		'SearchGrid'
+		'SearchGrid',
+		'CsnForm',
+		'CsnClusterForm'
 	],
 	autoCreateViewport: true,
 	controllers: [
@@ -135,50 +142,42 @@ Ext.application({
 		else {
 
 			var myForm;
-			var cur_record;
+			var cur_record = C.app.getRecordByNode(record);
 			switch(record.get('nodeType')) {
 				case 'Project': 
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getProjectForm(cur_record);
 				break;
 				case 'Scenario':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getScenarioForm(cur_record);
 				break;
 				case 'Installation':
-				cur_record = record.parentNode.get('page') ? record.parentNode.parentNode.c.store.getById(record.get('id')) :record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getInstallationForm(cur_record);
 				break;
 				case 'Appliance':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getApplianceForm(cur_record);
 				break;
 				case 'Person':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getPersonForm(cur_record);
 				break;
 				case 'Activity':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getActivityForm(cur_record);
 				break;
 				case 'ActivityModel':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getActivityModelForm(cur_record);
 				break;
 				case 'SimulationParam':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getSimulationParamsForm(cur_record);
 				break;
 				case 'Pricing':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getPricingForm(cur_record);
 				break;
 				case 'Demographic':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				myForm = C.app.getDemographicForm(cur_record);
 				break;
+				case 'Csn':
+				myForm = C.app.getCsnForm(cur_record);
+				break;
 				case 'Run':
-				cur_record = record.parentNode.c.store.getById(record.get('id'));
 				if (cur_record.get('percentage') == 100) 
 				C.app.newRunWindow(cur_record);
 				else if (cur_record.get('percentage') == -1) {
@@ -198,7 +197,7 @@ Ext.application({
 			}
 
 			cmpToAdd = myForm;
-			cmpToAdd.dirtyForm = true;
+			//cmpToAdd.dirtyForm = true;
 			try {
 				if (record.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
 					cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
@@ -207,11 +206,11 @@ Ext.application({
 			catch (e){}
 		}
 
-
+		//debugger;
 		var tabPanel = Ext.getCmp('MainTabPanel');
 		cmpToAdd.closable = true;
 		cmpToAdd.corresponding_node = record;
-
+		cmpToAdd.corresponding_parent = record.parentNode;
 
 		if (!tabPanel.down("tab"))
 		tabPanel.dockedItems.items[0].show();
@@ -219,24 +218,22 @@ Ext.application({
 		var breadcrumb = C.app.setBreadcrumb(record);
 		tabPanel.dockedItems.items[0].removeAll();
 		tabPanel.dockedItems.items[0].add(breadcrumb);
+
 		cmpToAdd.setTitle(record.get('name'));
 		tabPanel.add(cmpToAdd);
 		tabPanel.doLayout();
-		//neptune stuff
-		/*cmpToAdd.setTitle(namesBreadcrumb.split('/').join(" &rsaquo; "));*/
-		/*cmpToAdd.setTitle(C.app.setBreadcrump(record));*/
-
-
 
 		if (record.parentNode && record.parentNode.data.icon) {
 			cmpToAdd.tab.setIcon(record.parentNode.data.icon);
 		}
 		//cmpToAdd.tab.getEl().addCls('x-tab-strip-closable');
+
 		cmpToAdd.pathToMe = record.get('nodeType')+':'+record.getPath();
+
 		tabPanel.setActiveTab(cmpToAdd);
 
-		//tabPanel.getActiveTab().header.setTitle(namesBreadcrumb.split('/').join(" &rsaquo; "));
-		//tabPanel.getActiveTab().header.show();
+
+
 
 		//}
 	},
@@ -252,18 +249,7 @@ Ext.application({
 			myForm.findField('setup').readOnly = true;
 		}
 
-		/*var out='';
-		var params = record.get('model').params;
-		for (var param_key in params) {
 
-		out = out + params[param_key].n + '{';
-		var values = params[param_key].values;
-		for (var value_key in values) {
-		out = out + ',{ p:' + values[value_key].p + ', d:' + values[value_key].d + ', s:' + values[value_key].s + '}';
-		}
-		out = out + '}';
-		}
-		*/
 		myPersonTypesStore = new C.store.PersonTypesStore({});
 		myPersonTypesStore.load({
 			params: {
@@ -298,12 +284,6 @@ Ext.application({
 					case 'SimulationParamsCollection':
 					childNode.c.store = new C.store.SimulationParams({
 						storeId: childNode.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
-						navigationNode: childNode
-					});
-					break;
-					case 'PricingSchemesCollection':
-					childNode.c.store = new C.store.Pricing({
-						storeId: record.data.nodeType+'Store-scn_id-'+childNode.parentNode.get('nodeId'),
 						navigationNode: childNode
 					});
 					break;
@@ -724,6 +704,18 @@ Ext.application({
 						navigationNode: childNode
 					});
 					break;
+					case 'PricingSchemesCollection':
+					childNode.c.store = new C.store.Pricing({
+						storeId: record.data.nodeType+'Store-prj_id-'+childNode.parentNode.get('nodeId'),
+						navigationNode: childNode
+					});
+					break;
+					case 'CSNCollection':
+					childNode.c.store = new C.store.Csn({
+						storeId: childNode.data.nodeType+'Store-prj_id-'+childNode.parentNode.get('nodeId'),
+						navigationNode: childNode
+					});
+					break;
 					case 'RunsCollection':
 					childNode.c.store = new C.store.Runs({
 						storeId: childNode.data.nodeType+'Store-prj_id-'+childNode.parentNode.get('nodeId'),
@@ -816,6 +808,10 @@ Ext.application({
 			title : windowContent.header.title,
 			items : windowContent,
 			layout: 'fit',
+			width: 700,
+			height: 500,
+			maxWidth: 700,
+			maxHeight: 900,
 			tools: [
 			{
 				xtype: 'tool',
@@ -826,6 +822,7 @@ Ext.application({
 						var formWindow = this.getBubbleParent().getBubbleParent();
 						var formPanel = formWindow.query("form")[0];
 						var tabPanel = Ext.getCmp('MainTabPanel');
+						tabPanel.dockedItems.items[0].show();
 						tabPanel.add(formPanel);
 						tabPanel.setActiveTab(formPanel);
 						tabPanel.getActiveTab().header.show();
@@ -838,6 +835,7 @@ Ext.application({
 		}); 
 		formWindow.show();
 		if (windowContent.hidden) windowContent.show();
+		Ext.getCmp("MainTabPanel").dockedItems.items[0].hide();
 		windowContent.header.hide();
 	},
 
@@ -962,10 +960,78 @@ Ext.application({
 			case 'RunsCollection': params = {'prj_id' : parent_id}; break;
 			default: return false;
 		}
+		//check for damn pagination
+
+		//var expanded_names = [];
 		while (node.hasChildNodes()) {
+			/*if (node.childNodes[0].isExpanded()) {
+			expanded_names.push(node.childNodes[0].get("name"));
+			}*/
 			node.removeChild(node.childNodes[0]);
 		}
+		//store.expanded_names = expanded_names;
+
 		store.load({params: params});
+	},
+
+	getRecordByNode: function(node) {
+		if (node) {
+			return node.parentNode.get('page') ? node.parentNode.parentNode.c.store.getById(node.get('id')) :node.parentNode.c.store.getById(node.get('id'));	
+		}
+
+	},
+
+	getNodeFromTree: function(node_id) {
+		if ( Ext.getCmp('uiNavigationTreePanel').store.getById(node_id) )
+		return Ext.getCmp('uiNavigationTreePanel').store.getById(node_id);
+		else if ( Ext.getCmp('userLibTreePanel').store.getById(node_id) )
+		return Ext.getCmp('userLibTreePanel').store.getById(node_id);
+		else if ( Ext.getCmp('cassLibTreePanel').store.getById(node_id) )
+		return Ext.getCmp('cassLibTreePanel').store.getById(node_id);
+		else return false;
+	},
+
+	getCsnForm: function(record) {
+		var myFormCmp = new C.view.CsnClusterForm({});
+
+		var myForm = myFormCmp.getForm();
+
+		var html;
+
+		myForm.loadRecord(record);
+
+
+		if (!record.get("img_path")) 
+		html = "<div id='no_graph_data' class='gridbg'><h1>No graph data available</h1></div>";
+		else	
+		html = "<img src=" + record.get("img_path") + " width='700' height='400' alt='graph data'/>";
+
+		myFormCmp.down("#image_container").html = html;
+
+		//get csnclusters
+		Ext.Ajax.request({
+			url: '/cassandra/api/csnclusters',
+			method: 'GET',
+			params: {'graph_id' : record.get('_id') },
+			scope: this,
+			success: function(response, opts) {
+				var response_obj =  Ext.JSON.decode(response.responseText);
+				if (response_obj.data.length > 0) {
+					myForm.setValues(response_obj.data[0]);
+					//myForm.applyToFields({disabled:true});
+				}
+
+				var successMsg =response_obj.message;
+				Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
+			},
+			failure: function(response, opts) {
+				var response_obj = Ext.JSON.decode(response.responseText);
+				Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
+			}
+		});
+
+
+		return myFormCmp;
 	}
 
 });
