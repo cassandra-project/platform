@@ -77,6 +77,7 @@ Ext.define('C.store.Projects', {
 					draggable: false
 				});
 				record.node = node;
+
 			});
 		}else{
 			console.info('Store is not bound to a navigation node. Nothing to render there.');

@@ -34,6 +34,7 @@ Ext.define('C.view.CassLibTreePanel', {
 				loadingText: 'loading...',
 				plugins: [
 					Ext.create('Ext.tree.plugin.TreeViewDragDrop', {
+						containerScroll: true,
 						ddGroup: 'ddGlobal',
 						enableDrop: false
 					})
@@ -129,11 +130,11 @@ Ext.define('C.view.CassLibTreePanel', {
 									storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
 									navigationNode: record
 								});
-								record.c.store.proxy.extraParams = {'scn_id': record.parentNode.get('nodeId')};
-								record.c.store.load({/*
+								//record.c.store.proxy.extraParams = {'scn_id': record.parentNode.get('nodeId')};
+								record.c.store.load({
 									params: {
 										scn_id: record.parentNode.get('nodeId')
-									}*/
+									}
 								});
 							}
 							else if (!record.hasChildNodes()) {
@@ -157,7 +158,6 @@ Ext.define('C.view.CassLibTreePanel', {
 								});
 							}
 							break;
-
 
 							case 'PersonsCollection':
 							//record.removeAll();
