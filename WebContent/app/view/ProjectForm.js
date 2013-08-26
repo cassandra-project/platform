@@ -98,22 +98,33 @@ Ext.define('C.view.ProjectForm', {
 
 	onTextfieldChange: function(field, newValue, oldValue, eOpts) {
 		this.setTitle(newValue);
-		this.form.getRecord().node.set({'name':newValue});
+		var node = C.app.getNodeFromTree(this.form.getRecord().internalId);
+		node.set({'name':newValue});
 	},
 
 	onButtonClick2: function(button, e, eOpts) {
 		var myForm = this.getForm();
-		var record = myForm.getRecord();
 
-		myForm.updateRecord();
+		var node = C.app.getNodeFromTree(myForm.getRecord().internalId);
+		var record = C.app.getRecordByNode(node);
+		var values = myForm.getValues();
 
-		this.dirtyForm = false;
+		if (myForm.isValid()) {
+			myForm.updateRecord(record);
 
-		//clear dirty record
-		record.node.commit();
+			this.dirtyForm = false;
+
+			//clear dirty record
+			record.node.commit();
+		}
+
 
 		if (record.isNew)
 		record.isNew = false;
+
+
+
+
 	},
 
 	onToolClick1: function(tool, e, eOpts) {

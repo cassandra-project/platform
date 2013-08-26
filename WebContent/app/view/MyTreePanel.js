@@ -36,6 +36,7 @@ Ext.define('C.view.MyTreePanel', {
 				loadingText: 'loading...',
 				plugins: [
 					Ext.create('Ext.tree.plugin.TreeViewDragDrop', {
+						containerScroll: true,
 						ddGroup: 'ddGlobal'
 					})
 				],
@@ -81,7 +82,6 @@ Ext.define('C.view.MyTreePanel', {
 			record.paginationNode.expand();
 			record = record.node;
 		}
-		var nodeType = record.get('nodeType');
 		// Node from tree || Node from grid.
 		if (record.parentNode.get('nodeType') == overModel.get('nodeType')){
 			// record can be a lot of things, navigation record, grid row.
@@ -98,7 +98,7 @@ Ext.define('C.view.MyTreePanel', {
 				case 'Scenario': parent_idKey = 'project_id'; break;
 				case 'SimulationParam': parent_idKey = 'scn_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
-				case 'Pricing': parent_idKey = 'scn_id'; break;
+				case 'Pricing': parent_idKey = 'prj_id'; break;
 				case 'Demographic': parent_idKey = 'scn_id'; break;
 				case 'Person': parent_idKey = 'inst_id'; break;
 				case 'Appliance': parent_idKey = 'inst_id'; break;
@@ -197,8 +197,7 @@ Ext.define('C.view.MyTreePanel', {
 		node.isExpandable = function(){
 			return !this.isLeaf() && (this.get('expandable') || this.hasChildNodes());
 		};
-
-		/*if(node.data.fakeChildren===true){
+		/*
 		node.appendChild({
 		name: 'dummy',
 		nodeType: 'Dummy',
@@ -243,6 +242,28 @@ Ext.define('C.view.MyTreePanel', {
 						fakeChildren: true,
 						draggable: false,
 						icon: 'resources/icons/scenarios.png',
+						iconCls: 'treeIcon'
+					});
+					record.appendChild({
+						name: 'Pricing Schemes',
+						nodeType: 'PricingSchemesCollection',
+						expanded: false,
+						leaf: false,
+						expandable: true,
+						fakeChildren: true,
+						draggable: false,
+						icon: 'resources/icons/pricing.png',
+						iconCls: 'treeIcon'
+					});
+					record.appendChild({
+						name: 'CSNs',
+						nodeType: 'CsnCollection',
+						expanded: false,
+						leaf: false,
+						expandable: true,
+						fakeChildren: true,
+						draggable: false,
+						icon: 'resources/icons/csn.png',
 						iconCls: 'treeIcon'
 					});
 					if(!C.dbname)
@@ -298,6 +319,21 @@ Ext.define('C.view.MyTreePanel', {
 					});
 					//Ext.getCmp('MainTabPanel').add(new C.view.ScenariosGrid({store: record.c.store}));
 					break;
+					case 'CsnCollection':
+					//record.removeAll();
+					console.info('Creating store for csn.');
+					record.c.store = new C.store.Csn({
+						storeId: record.data.nodeType+'Store-prj_id-'+record.parentNode.get('nodeId'),
+						navigationNode: record
+
+					});
+					//record.c.store.proxy.extraParams = {'prj_id': record.parentNode.get('nodeId')};
+					record.c.store.load({
+						params: {
+							prj_id: record.parentNode.get('nodeId')
+						}
+					});
+					break;
 					case 'Scenario':
 					//record.removeAll();
 					console.info('Creating dummy nodes for scenario.');
@@ -321,17 +357,6 @@ Ext.define('C.view.MyTreePanel', {
 						fakeChildren: true,
 						draggable: false,
 						icon: 'resources/icons/sim_params.png',
-						iconCls: 'treeIcon'
-					});
-					record.appendChild({
-						name: 'Pricing Schemes',
-						nodeType: 'PricingSchemesCollection',
-						expanded: false,
-						leaf: false,
-						expandable: true,
-						fakeChildren: true,
-						draggable: false,
-						icon: 'resources/icons/pricing.png',
 						iconCls: 'treeIcon'
 					});
 					var index = Ext.getStore(record.get('nodeStoreId')).findExact('_id', record.get('id'));
@@ -403,12 +428,12 @@ Ext.define('C.view.MyTreePanel', {
 					//record.removeAll();
 					console.info('Creating store for pricing schemes.');
 					record.c.store = new C.store.Pricing({
-						storeId: record.data.nodeType+'Store-scn_id-'+record.parentNode.get('nodeId'),
+						storeId: record.data.nodeType+'Store-prj_id-'+record.parentNode.get('nodeId'),
 						navigationNode: record
 					});
 					record.c.store.load({
 						params: {
-							scn_id: record.parentNode.get('nodeId')
+							prj_id: record.parentNode.get('nodeId')
 						}
 					});
 					break;

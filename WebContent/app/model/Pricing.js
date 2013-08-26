@@ -24,7 +24,7 @@ Ext.define('C.model.Pricing', {
 			persist: false
 		},
 		{
-			name: 'scn_id'
+			name: 'prj_id'
 		},
 		{
 			name: 'name',

@@ -148,14 +148,17 @@ Ext.define('C.view.ScenarioForm', {
 
 	onTextfieldChange1: function(field, newValue, oldValue, eOpts) {
 		this.setTitle(newValue);
-		this.form.getRecord().node.set({'name':newValue});
+		var node = C.app.getNodeFromTree(this.form.getRecord().internalId);
+		node.set({'name':newValue});
 	},
 
 	onButtonClick2: function(button, e, eOpts) {
 		var myForm = this.getForm();
-		var record = myForm.getRecord();
+		var node = C.app.getNodeFromTree(myForm.getRecord().internalId);
+		var record = C.app.getRecordByNode(node);
+		var values = myForm.getValues();
 
-		myForm.updateRecord();
+		myForm.updateRecord(record);
 
 		if (record.isNew) {
 			record.isNew = false;
@@ -172,7 +175,7 @@ Ext.define('C.view.ScenarioForm', {
 				});
 
 
-				var childNode = record.node.childNodes[2];
+				var childNode = record.node.findChild('name', 'Demographics');
 				if(!childNode.c){
 					console.info('Creating structure for node '+childNode.data.name+'.', childNode);
 					childNode.c = {
@@ -196,7 +199,7 @@ Ext.define('C.view.ScenarioForm', {
 			else if (record.node.childNodes.length == 3) {
 				var demoNode = record.node.childNodes[2];
 				record.node.removeChild(demoNode);
-				var demoGrid = this.getComponent('dataContainer').query('grid')[2];
+				var demoGrid = this.down('#dataContainer').query('grid')[2];
 				this.down('#dataContainer').remove(demoGrid);
 			}
 			myForm.findField('setup').readOnly = true;
