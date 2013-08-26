@@ -32,8 +32,8 @@ public class CSNClusters {
 	public Response getClusters(@QueryParam("run_id") String run_id,@QueryParam("graph_id") String graph_id){
 		if(graph_id != null) {
 			String r = PrettyJSONPrinter.prettyPrint(
-					new MongoDBQueries().getEntity((HttpHeaders)null, MongoGraphs.COL_CSN_CLUSTERS,"graph_id",graph_id,
-							"CSN clusters retrieved successfully",new String[]{"_id","method","graph_id","n"}));
+					new MongoDBQueries().getEntity((HttpHeaders)null, MongoGraphs.COL_CSN_CLUSTERS,"graph_id",graph_id,null,"{\"_id\":-1}",1,0,
+							"CSN clusters retrieved successfully",false,new String[]{"_id","method","graph_id","n"}));
 			return Utils.returnResponse(r);
 		}
 		String run_idK = null;
