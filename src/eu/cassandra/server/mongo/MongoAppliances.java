@@ -131,7 +131,6 @@ public class MongoAppliances {
 		if(Utils.failed(response)) return response;
 		DBObject jsonResponse = (DBObject) JSON.parse(response);
 		DBObject data = (DBObject) jsonResponse.get("data");
-		System.out.println(response);
 		String objID = new String();
 		if(ary) {
 			objID = (String)((DBObject)((BasicDBList)data).get(0)).get("_id");
@@ -168,7 +167,7 @@ public class MongoAppliances {
 	 */
 	public String updateAppliance(String id,String jsonToUpdate) {
 		MongoDBQueries q = new MongoDBQueries();
-		String returnMsg = q.updateDocument("_id", id,jsonToUpdate,
+		String returnMsg = q.updateDocument("_id", id, jsonToUpdate,
 				COL_APPLIANCES, "Appliance updated successfully",
 				MongoInstallations.COL_INSTALLATIONS ,"inst_id",JSONValidator.APPLIANCE_SCHEMA).toString();
 		if(Utils.failed(returnMsg)) {
