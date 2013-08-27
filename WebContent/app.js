@@ -1032,7 +1032,7 @@ Ext.application({
 		switch (name) {
 			case "maxPower": return "max Power (W)";
 			case "avgPower": return "average Power (W)";
-			case "energy": return "energy (J)";
+			case "energy": return "energy (KWh)";
 			case "cost": return "cost (EUR)";
 			default: return name;
 		}
