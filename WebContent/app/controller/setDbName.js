@@ -52,23 +52,24 @@ Ext.define('C.controller.setDbName', {
 
 		Ext.util.Observable.observe(Ext.data.AbstractStore);
 
-		/*Ext.data.AbstractStore.on('write', function(store, operation, options) {
-		var response =  Ext.JSON.decode(operation.response.responseText);
+		Ext.data.AbstractStore.on('write', function(store, operation, options) {
+			if (Ext.getDom("warnings"))
+			Ext.getDom("warnings").parentElement.remove();
 
-		if (response.warnings) {
-		var warnings_html = "<ul id ='warnings'>";
-		Ext.each(response.warnings, function(warning) {
-		warnings_html += "<li>" + warning + "</li>";
+			var response =  Ext.JSON.decode(operation.response.responseText);
+			if (response.warnings) {
+				var warnings_html = "<ul id ='warnings'>";
+				Ext.each(response.warnings, function(warning) {
+					warnings_html += "<li>" + warning + "</li>";
+				});
+				warnings_html += "</ul>";
+
+				Ext.getCmp("MainTabPanel").getActiveTab().insert(0, { html: warnings_html });
+			}
+
+			var successMsg = response.message;
+			Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
 		});
-		warnings_html += "</ul>";
-		if (Ext.getDom("warnings"))
-		Ext.getDom("warnings").parentElement.remove();
-		Ext.getCmp("MainTabPanel").getActiveTab().insert(0, { html: warnings_html });
-		}
-
-		var successMsg = response.message;
-		Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
-		});*/
 
 
 		Ext.data.AbstractStore.on('add', function(store, records, index, options) {
