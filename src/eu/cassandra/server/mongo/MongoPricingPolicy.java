@@ -42,20 +42,19 @@ public class MongoPricingPolicy {
 	}
 
 	/**
-	 * curl -i http://localhost:8080/cassandra/api/demog?scn_id=4ff1d9d4e4b0ddb832a310bc
 	 * 
 	 * @param scn_id
 	 * @return
 	 */
-	public String getPricingPolicies(HttpHeaders httpHeaders,String scn_id, boolean count) {
-		if(scn_id == null) {
+	public String getPricingPolicies(HttpHeaders httpHeaders,String prj_id, boolean count) {
+		if(prj_id == null) {
 			return new JSONtoReturn().createJSONError(
-					"Only the pricing policies of a particular Scenario can be retrieved", 
+					"Only the pricing policies of a particular Project can be retrieved", 
 					new RestQueryParamMissingException("scn_id QueryParam is missing")).toString();
 		}
 		else {
 			return new MongoDBQueries().getEntity(httpHeaders, COL_PRICING, REF_PROJECT, 
-					scn_id, "Pricing policies retrieved successfully",count).toString();
+					prj_id, "Pricing policies retrieved successfully",count).toString();
 		}
 	}
 
@@ -67,7 +66,7 @@ public class MongoPricingPolicy {
 	 */
 	public String createPricingPolicy(String dataToInsert) {
 		return new MongoDBQueries().insertData(COL_PRICING, dataToInsert,
-				"Pricing policy created successfully", MongoScenarios.COL_SCENARIOS ,
+				"Pricing policy created successfully", MongoProjects.COL_PROJECTS,
 				REF_PROJECT, JSONValidator.PRICING_SCHEMA).toString();
 	}
 
@@ -91,7 +90,8 @@ public class MongoPricingPolicy {
 	public String updatePricingPolicy(String id,String jsonToUpdate) {
 		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_PRICING, "Pricing policy updated successfully",
-				MongoScenarios.COL_SCENARIOS , REF_PROJECT,JSONValidator.PRICING_SCHEMA).toString();
+				MongoProjects.COL_PROJECTS, REF_PROJECT,JSONValidator.PRICING_SCHEMA).toString();
 	}
+	
 }
 
