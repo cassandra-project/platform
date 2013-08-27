@@ -223,7 +223,6 @@ Ext.define('C.view.ApplianceForm', {
 	},
 
 	onButtonClick2: function(button, e, eOpts) {
-
 		var myForm = this.getForm();
 		var node = C.app.getNodeFromTree(myForm.getRecord().internalId);
 		var record = C.app.getRecordByNode(node);
@@ -282,7 +281,6 @@ Ext.define('C.view.ApplianceForm', {
 				consmod_record.set({pmodel: pmodel, qmodel: qmodel, 'name': name, 'description': description});
 				if (consmod_record.isNew)
 				consmod_record.isNew = false;
-				myConsModChartStore.removeAll();
 				myConsModChartStore.load();
 			}
 			else {
