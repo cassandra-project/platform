@@ -950,7 +950,7 @@ Ext.application({
 			case 'ProjectsCollection': params = {};break;
 			case 'ScenariosCollection': params = {'prj_id' : parent_id};break;
 			case 'InstallationsCollection': params = {'scn_id' : parent_id}; break;
-			case 'PricingSchemesCollection': params = {'scn_id' : parent_id}; break;
+			case 'PricingSchemesCollection': params = {'prj_id' : parent_id}; break;
 			case 'DemographicsCollection': params = {'scn_id' : parent_id}; break;
 			case 'SimulationParamsCollection': params = {'scn_id' : parent_id}; break;
 			case 'PersonsCollection': params = {'inst_id' : parent_id}; break;
@@ -960,23 +960,17 @@ Ext.application({
 			case 'RunsCollection': params = {'prj_id' : parent_id}; break;
 			default: return false;
 		}
-		//check for damn pagination
 
-		//var expanded_names = [];
 		while (node.hasChildNodes()) {
-			/*if (node.childNodes[0].isExpanded()) {
-			expanded_names.push(node.childNodes[0].get("name"));
-			}*/
 			node.removeChild(node.childNodes[0]);
 		}
-		//store.expanded_names = expanded_names;
 
 		store.load({params: params});
 	},
 
 	getRecordByNode: function(node) {
 		if (node) {
-			return node.parentNode.get('page') ? node.parentNode.parentNode.c.store.getById(node.get('id')) :node.parentNode.c.store.getById(node.get('id'));	
+			return node.get('nodeType') == 'RunGraph' ? node : node.parentNode.get('page') ? node.parentNode.parentNode.c.store.getById(node.get('id')) :node.parentNode.c.store.getById(node.get('id'));	
 		}
 
 	},
@@ -1032,6 +1026,16 @@ Ext.application({
 
 
 		return myFormCmp;
+	},
+
+	getHeaderFromName: function(name) {
+		switch (name) {
+			case "maxPower": return "max Power (W)";
+			case "avgPower": return "average Power (W)";
+			case "energy": return "energy (J)";
+			case "cost": return "cost (EUR)";
+			default: return name;
+		}
 	}
 
 });

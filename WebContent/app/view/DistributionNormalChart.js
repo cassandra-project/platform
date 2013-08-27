@@ -62,15 +62,15 @@ Ext.define('C.view.DistributionNormalChart', {
 				{
 					type: 'line',
 					highlight: {
-						size: 7,
-						radius: 7
+						size: 4,
+						radius: 1
 					},
 					tips: {
 						trackMouse: true,
-						width: 160,
+						width: 180,
 						height: 60,
 						renderer: function(storeItem, item) {
-							this.setTitle( 'Probability : ' + storeItem.get('y') +'x 10<span class="sup">-2</span>' + '<br />' +  'time : ' 
+							this.setTitle( 'Probability : ' + storeItem.get('y').toFixed(4) +' x 10<span class="sup">-2</span>' + '<br />' +  'time : ' 
 										  + storeItem.get('x') + ' min');
 						}
 					},
@@ -83,7 +83,7 @@ Ext.define('C.view.DistributionNormalChart', {
 						radius: 4,
 						'stroke-width': 0
 					},
-					selectionTolerance: 1,
+					selectionTolerance: 3,
 					showMarkers: false,
 					smooth: 3
 				}

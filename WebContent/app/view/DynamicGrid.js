@@ -520,7 +520,6 @@ Ext.define('C.view.DynamicGrid', {
 					grid.width = 800;
 					grid.closable = false;
 					grid.setTitle("KPIs");
-					grid.query("tool")[0].hide();
 					chartWindow.insert(1, grid);
 				}
 			});
@@ -672,8 +671,11 @@ Ext.define('C.view.DynamicGrid', {
 			component.margin = '0 0 10px 0';
 			component.tools[0].hidden = true;
 		}
-		if (component.store.model.getName() == "C.model.Kpi")
-		component.down('toolbar').hide();
+		if (component.store.model.getName() == "C.model.Kpi") {
+			component.down('toolbar').hide();
+			//hide refresh tool
+			component.tools[1].hidden = true;
+		}
 	},
 
 	onGridpanelAfterRender: function(component, eOpts) {
