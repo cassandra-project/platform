@@ -757,7 +757,7 @@ return "<input type='checkbox'" + (f.value ? "checked='checked'" : "") + ">";
 }*/
 else {
 			cols.push({
-	header: f.name,
+	header: C.app.getHeaderFromName(f.name),
 	dataIndex: f.name,
 	hidden: (f.type.type == 'auto') ? true : false
 			});

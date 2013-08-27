@@ -53,7 +53,7 @@ Ext.define('C.view.ResultsLineChart', {
 							'stroke-width': 0.5
 						}
 					},
-					title: 'Watt',
+					title: 'Power',
 					position: 'left'
 				}
 			],
@@ -70,7 +70,7 @@ Ext.define('C.view.ResultsLineChart', {
 						height: 60,
 						renderer: function(storeItem, item) {
 							var jData = storeItem.store.proxy.reader.jsonData;
-								this.setTitle( jData.yAxisLabel + ': ' + storeItem.get('y') + '<br />' + jData.xAxisLabel + ': ' + storeItem.get('x'));
+								this.setTitle( jData.yAxisLabel + ': ' + storeItem.get('y') + ' Watt <br />' + jData.xAxisLabel + ': ' + storeItem.get('x'));
 						}
 					},
 					xField: 'x',
