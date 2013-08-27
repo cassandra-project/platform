@@ -176,6 +176,6 @@ public class MongoAppliances {
 					COL_APPLIANCES, "Appliance updated successfully",
 					"users" ,"inst_id",JSONValidator.APPLIANCE_SCHEMA).toString();
 		}
-		return withAddedWarnings(returnMsg, false);
+		return withAddedWarnings(returnMsg, true);
 	}
 }

@@ -57,7 +57,8 @@ public class Appliance {
 	 */
 	@PUT
 	public Response updateAppliance(@PathParam("app_id") String app_id, String message) {
-		return  Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoAppliances().updateAppliance(app_id,message)));
+		String ret_msg = new MongoAppliances().updateAppliance(app_id,message);
+		return  Utils.returnResponse(PrettyJSONPrinter.prettyPrint(ret_msg));
 	}
 	
 	/**
