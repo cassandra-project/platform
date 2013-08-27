@@ -25,13 +25,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import eu.cassandra.sim.entities.installations.GeoLocation;
-
 public class IServletContextListener implements ServletContextListener {
 	
 	static Logger logger = Logger.getLogger(IServletContextListener.class);
 	
 	public static File schemas;
+	public static File graphs;
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
@@ -42,6 +41,7 @@ public class IServletContextListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent arg0) {
 		String path = arg0.getServletContext().getRealPath("resources/jsonSchema/");
 		schemas = new File(path);
+		graphs = new File(arg0.getServletContext().getRealPath("resources/graphs/"));
 		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
 		DailyRollingFileAppender drfa = new DailyRollingFileAppender();
 		try {

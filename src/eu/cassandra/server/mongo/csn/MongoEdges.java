@@ -1,6 +1,23 @@
+/*   
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package eu.cassandra.server.mongo.csn;
 
 import java.util.Vector;
+
+import org.bson.types.ObjectId;
 
 
 import com.mongodb.BasicDBObject;
@@ -31,12 +48,12 @@ public class MongoEdges {
 
 	public final static String MinActivePowerPerHour = "MinActivePowerPerHour";
 	public final static String MinReactivePowerPerHour = "MinReactivePowerPerHour";
-	
+
 	public final static String hoursP = "hoursP";
 	public final static String hoursQ = "hoursQ";
 	public final static String hoursE = "hoursE";
-	
-	
+
+
 
 	/**
 	 * 
@@ -46,24 +63,26 @@ public class MongoEdges {
 	 * @param minWeight
 	 * @param httpHeaders
 	 */
-	public int createEdges(Vector<DBObject> nodes, String graph_id, String graphType, Double minWeight, String dbName) {
-		int edgeCounter = 0;
+	public Vector<DBObject> createEdges(Vector<DBObject> nodes, String graph_id, String graphType, Double minWeight, String dbName) {
+		Vector<DBObject> edges = new Vector<DBObject>();
 		for(int i=0;i<nodes.size()-1;i++) {
 			for(int j=i+1;j<nodes.size();j++) {
 				DBObject edge = createEdge(graphType, minWeight, nodes.get(i),nodes.get(j),dbName);
 				if(edge != null) {
-					edgeCounter++;
+					ObjectId id = new ObjectId();
+					edge.put("_id", id);
 					edge.put("graph_id", graph_id);
 					edge.put("node_id1", nodes.get(i).get("_id").toString());
 					edge.put("node_id2", nodes.get(j).get("_id").toString());
 					edge.put("inst_id1", nodes.get(i).get("inst_id").toString());
 					edge.put("inst_id2", nodes.get(j).get("inst_id").toString());
 					edge.put("run_id", dbName);
+					edges.add(edge);
 					DBConn.getConn().getCollection(MongoGraphs.COL_CSN_EDGES).insert(edge);
 				}
 			}
 		}
-		return edgeCounter;
+		return edges;
 	}
 
 	private DBObject createEdge(String graphType, Double minWeight, DBObject inst1, DBObject inst2, String dbName) {
@@ -103,7 +122,7 @@ public class MongoEdges {
 				createEdge = true;
 			}
 		}
-		
+
 		//All other 
 		else {
 			edge = decideIfToCreateEdge(inst1, inst2, graphType, minWeight);
@@ -204,24 +223,24 @@ public class MongoEdges {
 	}
 
 
-//	/**
-//	 * 
-//	 * @param v1
-//	 * @param v2
-//	 * @param minWeight
-//	 * @param instObjectKey
-//	 * @return
-//	 */
-//	private DBObject createEdge(Double v1, Double v2, Double minWeight, String instObjectKey) {
-//		DBObject edge = null;
-//		double dif = Math.abs(v1-v2);
-//		if( dif < minWeight) {
-//			edge = new BasicDBObject("type",instObjectKey);
-//			edge.put("minWeight", minWeight);
-//			edge.put("weight", dif);
-//		}
-//		return edge;
-//	}
+	//	/**
+	//	 * 
+	//	 * @param v1
+	//	 * @param v2
+	//	 * @param minWeight
+	//	 * @param instObjectKey
+	//	 * @return
+	//	 */
+	//	private DBObject createEdge(Double v1, Double v2, Double minWeight, String instObjectKey) {
+	//		DBObject edge = null;
+	//		double dif = Math.abs(v1-v2);
+	//		if( dif < minWeight) {
+	//			edge = new BasicDBObject("type",instObjectKey);
+	//			edge.put("minWeight", minWeight);
+	//			edge.put("weight", dif);
+	//		}
+	//		return edge;
+	//	}
 
 
 	/**
@@ -244,20 +263,20 @@ public class MongoEdges {
 	}
 
 
-//	private double getSum(DBObject inst, HttpHeaders httpHeaders) {
-//		double value = 0.0;
-//		DBCursor results = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).getCollection(
-//				MongoResults.COL_INSTRESULTS_HOURLY_EN).find(new BasicDBObject("inst_id",inst.get("_id").toString()));
-//		while(results.hasNext()) {
-//			DBObject obj = results.next();
-//			if(obj.containsField("p")) {
-//				String v = obj.get("p").toString();
-//				value += Double.parseDouble(v);
-//			}
-//		}
-//		results.close();
-//		return value;
-//	}
+	//	private double getSum(DBObject inst, HttpHeaders httpHeaders) {
+	//		double value = 0.0;
+	//		DBCursor results = DBConn.getConn(MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders)).getCollection(
+	//				MongoResults.COL_INSTRESULTS_HOURLY_EN).find(new BasicDBObject("inst_id",inst.get("_id").toString()));
+	//		while(results.hasNext()) {
+	//			DBObject obj = results.next();
+	//			if(obj.containsField("p")) {
+	//				String v = obj.get("p").toString();
+	//				value += Double.parseDouble(v);
+	//			}
+	//		}
+	//		results.close();
+	//		return value;
+	//	}
 
 
 	//	/**
