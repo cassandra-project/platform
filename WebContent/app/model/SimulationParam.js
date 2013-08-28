@@ -51,6 +51,10 @@ Ext.define('C.model.SimulationParam', {
 			type: 'int'
 		},
 		{
+			name: 'base_prc_id',
+			type: 'string'
+		},
+		{
 			name: 'prc_id',
 			type: 'string'
 		}

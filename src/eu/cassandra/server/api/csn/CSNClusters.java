@@ -18,6 +18,7 @@ package eu.cassandra.server.api.csn;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -25,8 +26,16 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
 import eu.cassandra.server.mongo.csn.MongoCluster;
 import eu.cassandra.server.mongo.csn.MongoGraphs;
+import eu.cassandra.server.mongo.util.DBConn;
+import eu.cassandra.server.mongo.util.JSONValidator;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.utilities.Utils;
@@ -58,5 +67,22 @@ public class CSNClusters {
 				new MongoDBQueries().getEntity((HttpHeaders)null, MongoGraphs.COL_CSN_CLUSTERS,run_idK,run_id,
 						"CSN clusters retrieved successfully"));//,new String[]{"_id","method","graph_id","n"}
 		return Utils.returnResponse(r);
+	}
+	
+	
+	@PUT
+	public Response updateClusterWithPricingIDs(String message){
+		JSONtoReturn jSON2Rrn = new JSONtoReturn();
+		DBObject obj = null;
+		try {
+			obj = (DBObject)JSON.parse(message);
+			new JSONValidator().isValid(message, JSONValidator.CLUSTER_SCHEMA);
+			obj.put("_id", new ObjectId(obj.get("_id").toString()));
+			DBConn.getConn().getCollection(MongoGraphs.COL_CSN_CLUSTERS).save(obj);
+		}catch(Exception e) {
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError("Update failed",e)));
+		}
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSON(obj,"Updated Successfully")));
+
 	}
 }

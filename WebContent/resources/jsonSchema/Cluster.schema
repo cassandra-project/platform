@@ -1,0 +1,48 @@
+{
+    "name": "Cluster",
+    "type": "object",
+    "description": "Contains the clusters and pricing scheme of a clustering (only for update)",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "The MongoDB ObjectId",
+            "optional": false
+        },  
+        "clustermethod": {
+            "type": "string",
+            "description": "clustermethod",
+            "optional": false
+        },       
+        "graph_id": {
+            "type": "string",
+            "description": "graph_id",
+            "optional": false
+        },     
+        "run_id": {
+            "type": "string",
+            "description": "run_id",
+            "optional": false
+        },    
+        "name": {
+            "type": "string",
+            "description": "name",
+            "optional": true
+        },      
+        "clusterbasedon": {
+            "type": "string",
+            "description": "clusterbasedon",
+            "optional": false
+        }, 
+        "n": {
+            "type": "integer",
+            "description": "The total number of clusters",
+            "optional": false
+        },                                         
+        "clusters": {
+            "type": "array",
+            "description": "Information about the clusters (pricing scheme and installation of each cluster)",
+            "optional": false
+        }
+     },
+    "additionalProperties" : false
+}

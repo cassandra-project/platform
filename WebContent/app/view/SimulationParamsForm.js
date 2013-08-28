@@ -106,6 +106,14 @@ Ext.define('C.view.SimulationParamsForm', {
 								},
 								{
 									xtype: 'textfield',
+									hidden: true,
+									itemId: 'base_prc_id',
+									width: 246,
+									fieldLabel: 'Pricing Scheme',
+									name: 'base_prc_id'
+								},
+								{
+									xtype: 'textfield',
 									cls: 'dropTarget',
 									width: 246,
 									fieldLabel: 'Pricing Scheme',
@@ -117,6 +125,23 @@ Ext.define('C.view.SimulationParamsForm', {
 										},
 										beforerender: {
 											fn: me.onTextfieldBeforeRender1,
+											scope: me
+										}
+									}
+								},
+								{
+									xtype: 'textfield',
+									cls: 'dropTarget',
+									width: 246,
+									fieldLabel: 'Baseline Pricing Scheme',
+									name: 'base_prc_name',
+									listeners: {
+										render: {
+											fn: me.onTextfieldRender111,
+											scope: me
+										},
+										beforerender: {
+											fn: me.onTextfieldBeforeRender11,
 											scope: me
 										}
 									}
@@ -201,6 +226,35 @@ Ext.define('C.view.SimulationParamsForm', {
 		component.url = 'https://github.com/cassandra-project/platform/wiki/Simulation-parameters-form';
 	},
 
+	onTextfieldRender111: function(component, eOpts) {
+		var myForm = this.getForm();
+		if (myForm.findField("base_prc_id").getValue()) {
+			var base_prc_id = myForm.findField("base_prc_id").getValue();
+			Ext.Ajax.request({
+				url: '/cassandra/api/prc/' + base_prc_id,
+				method: 'GET',
+				scope: this,
+				success: function(response, eOpts) {	
+					response = JSON.parse(response.responseText);
+					myForm.setValues({base_prc_name: response.data[0].name});
+				}
+			});
+		}
+		new Ext.dd.DropTarget(this.body.dom.getElementsByClassName('dropTarget')[1],{
+			ddGroup:'ddGlobal',
+			notifyDrop: function(dds,e,data) {	
+				if (dds.dragData.records[0].get('nodeType') != 'Pricing' )
+				return false;
+				myForm.setValues({ base_prc_id: dds.dragData.records[0].get('id'), base_prc_name: dds.dragData.records[0].get('name')});
+			return true; }
+		});
+	},
+
+	onTextfieldBeforeRender11: function(component, eOpts) {
+		component.helpText = 'Baseline Pricing Scheme: the baseline pricing scheme under which the energy consumption of the installations will be billed.</br>You can add a Pricing Scheme by selecting it from the Projects Tree and dropping it here';
+		component.url = 'https://github.com/cassandra-project/platform/wiki/Simulation-parameters-form';
+	},
+
 	onButtonClick2: function(button, e, eOpts) {
 		var myForm = this.getForm();
 		var node = C.app.getNodeFromTree(myForm.getRecord().internalId);
@@ -236,7 +290,8 @@ Ext.define('C.view.SimulationParamsForm', {
 				'mcruns':values.mcruns,
 				'calendar': calendar, 
 				'numberOfDays': duration,
-				'prc_id': values.prc_id
+				'prc_id': values.prc_id,
+				'base_prc_id': values.base_prc_id
 			});
 
 			this.dirtyForm = false;
