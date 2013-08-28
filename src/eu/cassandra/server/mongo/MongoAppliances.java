@@ -16,9 +16,11 @@
  */
 package eu.cassandra.server.mongo;
 
+import java.util.List;
 import java.util.Vector;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
@@ -68,6 +70,47 @@ public class MongoAppliances {
 					"Only the Appliances of a particular Installation can be retrieved", 
 					new RestQueryParamMissingException("inst_id QueryParam is missing")).toString();
 		}
+	}
+	
+	// For search
+	public Response getAppliances(HttpHeaders httpHeaders, String scn_id, 
+			String filters, String sort, int limit, int skip, boolean count, 
+			boolean pertype) {
+		// Search for the installations based on the scenario
+		String installations = 
+				(new MongoInstallations())
+				.getInstallations(httpHeaders,scn_id,null,null,0,0,false,false);
+		DBObject jsonResponse = (DBObject) JSON.parse(installations);
+		BasicDBList list = (BasicDBList)jsonResponse.get("data");
+		// Retrieve the ids
+		BasicDBList appsList = new BasicDBList();
+		int totalCount = 0;
+		for(Object o : list) {
+			DBObject dbo = (DBObject)o;
+			String inst_id = (String)dbo.get("_id");
+			// For each one gather the data and load a DBCursor
+			String apps = new MongoDBQueries().getEntity(httpHeaders,
+					COL_APPLIANCES, "inst_id", inst_id, filters, sort, 0, 0, "Appliances retrieved successfully",count).toString();
+			String countResponse = new MongoDBQueries().getEntity(httpHeaders,
+					COL_APPLIANCES, "inst_id", inst_id, null, null, 0, 0, "Appliances retrieved successfully", true).toString();
+			DBObject response = (DBObject) JSON.parse(countResponse);
+			BasicDBList alist = (BasicDBList)response.get("data");
+			DBObject object = (DBObject)alist.get(0);
+			Integer aint = (Integer)object.get("count");
+			totalCount += aint.intValue();
+			jsonResponse = (DBObject) JSON.parse(apps);
+			BasicDBList appsInstList = (BasicDBList)jsonResponse.get("data");
+			appsList.addAll(appsInstList);
+		}
+		// Use limit and skip for creating a sublist => return it
+		Vector<DBObject> vec = new Vector<DBObject>();
+		for(Object o : appsList) {
+			DBObject dbo = (DBObject)o;
+			vec.add(dbo);
+		}
+		JSONtoReturn jSON2Rrn = new JSONtoReturn();
+		String page = jSON2Rrn.createJSON(vec, "Appliances retrieved successfully").toString();
+		return Utils.returnResponseWithAppend(page, "total_size", new Integer(totalCount));
 	}
 
 	/**

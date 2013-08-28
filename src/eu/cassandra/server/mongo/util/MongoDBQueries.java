@@ -308,7 +308,7 @@ public class MongoDBQueries {
 			else if(qKey != null && qValue != null) {
 				try{
 					if(filters != null) {
-						System.out.println(PrettyJSONPrinter.prettyPrint(filters));
+						System.out.println(PrettyJSONPrinter.prettyPrint(filters)); 
 						query = (DBObject)JSON.parse(filters);
 					}
 					else
