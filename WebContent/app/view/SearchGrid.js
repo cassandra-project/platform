@@ -149,8 +149,8 @@ Ext.define('C.view.SearchGrid', {
 											};
 											if (values.name) 
 											params.name = values.name;
-											if (values.desc) 
-											params.desc = values.desc;
+											if (values.description) 
+											params.description = values.description;
 											if (values.type) 
 											params.type = values.type;
 
