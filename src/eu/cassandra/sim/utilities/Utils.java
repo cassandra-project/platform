@@ -44,6 +44,7 @@ import eu.cassandra.sim.math.Gaussian;
 import eu.cassandra.sim.math.GaussianMixtureModels;
 
 import eu.cassandra.server.mongo.util.DBConn;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 import org.apache.commons.codec.binary.Base64;
@@ -262,6 +263,13 @@ public class Utils {
 	  } else {
 		  return Response.status(Response.Status.BAD_REQUEST).entity(json).build();
 	  }
+  }
+  
+  public static Response returnBadRequest(String msg) {
+	  JSONtoReturn jsonMsg = new JSONtoReturn();
+	  String json = PrettyJSONPrinter.prettyPrint(jsonMsg.createJSONError(msg, new Exception(msg)));
+	  Response r = Response.status(Response.Status.BAD_REQUEST).entity(json).build();
+	  return r; 
   }
   
   public static Response returnResponseWithAppend(String json, String key, Integer value) {
