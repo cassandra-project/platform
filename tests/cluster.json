@@ -1,0 +1,26 @@
+{
+    "_id" : "521dc209e4b0390939cd7e07",
+    "clustermethod" : "kmeans",
+    "graph_id" : "5200dd72e4b00ecc4cce457d",
+    "run_id" : "f",
+    "name" : "ClusterParameters",
+    "clusterbasedon" : "hoursE",
+    "n" : 2,
+    "clusters" : [
+        {
+            "name" : "cluster0",
+            "pricing_id" : "3333",
+            "installations" : [
+                "5200dd72e4b00ecc4cce457e",
+                "5200dd72e4b00ecc4cce457f"
+            ]
+        },
+        {
+            "name" : "cluster1",
+            "pricing_id" : "4444",
+            "installations" : [
+                "5200dd72e4b00ecc4cce4580"
+            ]
+        }
+    ]
+}
