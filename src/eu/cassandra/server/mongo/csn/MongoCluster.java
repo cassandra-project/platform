@@ -317,12 +317,19 @@ public class MongoCluster {
 		clusterObject.put("run_id", run_id);
 		clusterObject.put("name", name);
 		clusterObject.put("clusterbasedon", clusterbasedon);
-		
+		Vector<DBObject> allClusters = new Vector<DBObject>();
 		try {
 			clusterObject.put("n", clusters.keySet().size());
 			for(int j=0;j<clusters.keySet().size();j++) {
-				clusterObject.put("cluster_" + j, clusters.get(j));
+				DBObject cl = new BasicDBObject();
+				cl.put("name", "cluster" + j);
+				cl.put("pricing_id", "");
+				cl.put("installations", clusters.get(j));
+				
+				allClusters.add(cl);
+				//clusterObject.put("cluster_" + j, clusters.get(j));
 			}
+			clusterObject.put("clusters",allClusters);
 			DBConn.getConn().getCollection(MongoGraphs.COL_CSN_CLUSTERS).insert(clusterObject);
 
 			//Inverse (node to cluster) 
