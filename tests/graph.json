@@ -1,9 +1,7 @@
 {
-        "prj_id" : "51b4be46712e87092cbe7f27",
-        "run_id" : "f",
-        "graphType" : "MinReactivePowerPerHour",
-        "minWeight" : 1.1,
-        "noedges" : false
+"graphType": "InstallationType",
+"minWeight": 1,
+"noedges": false,
+"prj_id": "521c4ce03aef584fcf66aa7c",
+"run_id": "521c54073aef584fcf66d90f"
 }
- 
- 
