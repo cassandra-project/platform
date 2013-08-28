@@ -181,11 +181,11 @@ public class ConsumptionModel extends Entity {
 
 	public void status() {
 		
-		System.out.println("Outer N:" + outerN);
-		System.out.println("Total Duration:" + totalDuration);
-		System.out.println("Number of Patterns:" + patternN);
-		System.out.println("Pattern Times: " + Arrays.toString(n) );
-		System.out.println("Pattern Durations: " + Arrays.toString(patternDuration) );
+		//System.out.println("Outer N:" + outerN);
+		//System.out.println("Total Duration:" + totalDuration);
+		//System.out.println("Number of Patterns:" + patternN);
+		//System.out.println("Pattern Times: " + Arrays.toString(n) );
+		//System.out.println("Pattern Durations: " + Arrays.toString(patternDuration) );
 		
 	}
 	

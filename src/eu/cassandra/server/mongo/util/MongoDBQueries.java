@@ -514,7 +514,6 @@ public class MongoDBQueries {
 		try {
 			if(dbName == null)
 				dbName = getDbNameFromHTTPHeader(httpHeaders);
-
 			DBCursor cursorDoc = null;
 			if(count) {
 				BasicDBObject dbObject = new BasicDBObject(); 
@@ -766,7 +765,6 @@ public class MongoDBQueries {
 				jsonToUpdate = dbObject.toString();
 			}
 			new JSONValidator().isValid(jsonToUpdate, schemaType,true);
-
 			if(intDocKey != null && refKeyName != null && dbObject.containsField(refKeyName) ) {
 				ensureThatRefKeysMatch(dbObject, collection, refKeyName, intDocKey, qValue);
 			}
@@ -794,8 +792,8 @@ public class MongoDBQueries {
 		} catch(Exception e) {
 			return jSON2Rrn.createJSONError("Update Failed for " + jsonToUpdate,e);
 		}
-		return getEntity(null,collection,qKey, qValue,successMsg,
-				false,keysUpdated.toArray(new String[keysUpdated.size()]));
+		return getEntity(null,collection, qKey, qValue,successMsg,
+				false, keysUpdated.toArray(new String[keysUpdated.size()]));
 	}
 
 	/**

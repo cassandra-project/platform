@@ -82,7 +82,7 @@ public class MongoActivities {
 		if(Utils.failed(response)) return response;
 		DBObject jsonResponse = (DBObject) JSON.parse(response);
 		DBObject data = (DBObject) jsonResponse.get("data");
-		String objID =  (String)data.get("_id");
+		String objID =  new String();
 		if(ary) {
 			objID = (String)((DBObject)((BasicDBList)data).get(0)).get("_id");
 		} else {
