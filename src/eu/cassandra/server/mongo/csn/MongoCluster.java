@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.server.mongo.csn;
 
 import java.util.Calendar;
@@ -40,6 +40,7 @@ import com.mongodb.util.JSON;
 
 import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
+import eu.cassandra.server.api.csn.SaveGraphImg;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
@@ -311,21 +312,49 @@ public class MongoCluster {
 	private DBObject saveClusters(String graph_id, String run_id, String method, HashMap<Integer,Vector<String>> clusters, List<CEdge> edgesRemoved, String name, String clusterbasedon) {
 		JSONtoReturn jSON2Rrn = new JSONtoReturn();
 		DBObject clusterObject = new BasicDBObject("clustermethod",method);
-		ObjectId objectId = new ObjectId();
-		clusterObject.put("_id", objectId);
-		clusterObject.put("graph_id", graph_id);
-		clusterObject.put("run_id", run_id);
-		clusterObject.put("name", name);
-		clusterObject.put("clusterbasedon", clusterbasedon);
-		Vector<DBObject> allClusters = new Vector<DBObject>();
 		try {
+			ObjectId objectId = new ObjectId();
+			clusterObject.put("_id", objectId);
+			clusterObject.put("graph_id", graph_id);
+			clusterObject.put("run_id", run_id);
+			clusterObject.put("name", name);
+			clusterObject.put("clusterbasedon", clusterbasedon);
+
+			Vector<DBObject> nodes = new Vector<DBObject>();
+			HashMap<String,String> map = new HashMap<String, String>();
+			for(Vector<String> cluster : clusters.values()) {
+				for(int i=0;i<cluster.size();i++) {
+					String id = cluster.get(i);
+					DBObject node = new BasicDBObject("_id",new ObjectId());
+					map.put(id, node.get("_id").toString());
+					nodes.add(node);
+				}
+			}
+			Vector<DBObject> edges = new Vector<DBObject>();
+			for(Vector<String> cluster : clusters.values()) {
+				for(int i=0;i<cluster.size();i++) {
+					for(int j=i+1;j<cluster.size();j++) {
+						String id = cluster.get(i);
+						String id2 = cluster.get(j);
+						DBObject edge = new BasicDBObject("_id",new ObjectId());
+						edge.put("node_id2", map.get(id2) );
+						edge.put("node_id1", map.get(id));
+						edges.add(edge);
+					}
+				}
+			}
+			String img = new SaveGraphImg().saveImg(nodes, edges);
+			clusterObject.put("img", img);
+
+			Vector<DBObject> allClusters = new Vector<DBObject>();
+
 			clusterObject.put("n", clusters.keySet().size());
 			for(int j=0;j<clusters.keySet().size();j++) {
 				DBObject cl = new BasicDBObject();
 				cl.put("name", "cluster" + j);
 				cl.put("pricing_id", "");
 				cl.put("installations", clusters.get(j));
-				
+
 				allClusters.add(cl);
 				//clusterObject.put("cluster_" + j, clusters.get(j));
 			}

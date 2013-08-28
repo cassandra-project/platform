@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-*/
+ */
 package eu.cassandra.server.api.csn;
 
 import java.awt.Color;
@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -44,13 +45,14 @@ public class SaveGraphImg {
 
 		AggregateLayout<String,String> aggrLayout = new AggregateLayout<String,String>(new FRLayout<String,String>(SparseMultigraph.<String,String>getFactory().create()));
 		Graph<String, String> graph = aggrLayout.getGraph();
+		HashMap<String,String> n = new HashMap<String,String>();
 		for(DBObject node : nodes) {
-			graph.addVertex(node.get("_id").toString());
+			n.put(node.get("_id").toString(), node.get("_id").toString());
+			graph.addVertex(n.get(node.get("_id").toString() ) );
 		}
 		for(DBObject edge : edges) {
-			graph.addEdge(edge.get("_id").toString() , edge.get("node_id1").toString()  ,edge.get("node_id2").toString());
+			graph.addEdge(edge.get("_id").toString() ,n.get(edge.get("node_id1").toString())  ,n.get(edge.get("node_id2").toString()) );
 		}
-
 		VisualizationViewer<String,String> vv = new VisualizationViewer<String,String>(aggrLayout);
 		VisualizationImageServer<String,String> vis = new VisualizationImageServer<String,String>(vv.getGraphLayout(),
 				vv.getGraphLayout().getSize());
