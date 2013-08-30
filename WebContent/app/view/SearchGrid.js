@@ -16,6 +16,7 @@
 Ext.define('C.view.SearchGrid', {
 	extend: 'Ext.grid.Panel',
 
+	autoScroll: true,
 	closable: true,
 	title: 'Browse Collections',
 	columnLines: false,
@@ -50,6 +51,7 @@ Ext.define('C.view.SearchGrid', {
 									cls: 'dropTarget',
 									fieldLabel: 'Replacement',
 									name: 'repl_with_name',
+									allowBlank: false,
 									listeners: {
 										render: {
 											fn: me.onTextfieldRender,
@@ -65,6 +67,36 @@ Ext.define('C.view.SearchGrid', {
 								},
 								{
 									xtype: 'button',
+									handler: function(button, event) {
+										debugger;
+										var myForm = button.up('form').getForm();
+										var replacement_id = myForm.getValues().repl_with_id;
+
+										var replaced_records = button.up('grid').getView().getSelectionModel().getSelection();
+
+										if (!replacement_id || replaced_records.length === 0)
+										return false;
+
+										var replaced_ids = replaced_records.map(function(rec){return rec.get("_id");});
+
+										Ext.Ajax.request({
+											url: '/cassandra/api/replace',
+											jsonData: {"replaced_ids" : replaced_ids, "replacement_id" : replacement_id},
+											method: 'POST',
+											scope: this,
+											success: function(response, opts) {
+												var response_obj = Ext.JSON.decode(response.responseText);
+
+												var successMsg = response_obj.message;
+												Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
+
+											},
+											failure: function(response, opts) {
+												var response_obj = Ext.JSON.decode(response.responseText);
+												Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
+											}
+										});
+									},
 									width: 100,
 									text: 'Replace'
 								}

@@ -20,15 +20,21 @@ Ext.define('C.view.PricingForm', {
 	layout: {
 		type: 'auto'
 	},
-	bodyPadding: '10px',
+	bodyPadding: 20,
 
 	initComponent: function() {
 		var me = this;
 
 		Ext.applyIf(me, {
+			defaults: {
+				width: 700
+			},
 			items: [
 				{
 					xtype: 'fieldset',
+					frame: false,
+					padding: 10,
+					width: 300,
 					title: 'Properties',
 					items: [
 						{
@@ -91,6 +97,7 @@ Ext.define('C.view.PricingForm', {
 				{
 					xtype: 'fieldset',
 					itemId: 'ScalarEnergyPricing',
+					padding: 20,
 					layout: {
 						type: 'auto'
 					},
@@ -98,8 +105,10 @@ Ext.define('C.view.PricingForm', {
 					items: [
 						{
 							xtype: 'gridpanel',
+							maxHeight: 400,
+							autoScroll: true,
 							title: 'Levels',
-							forceFit: false,
+							forceFit: true,
 							store: 'LevelsStore',
 							viewConfig: {
 								minHeight: 70
@@ -173,11 +182,15 @@ Ext.define('C.view.PricingForm', {
 					xtype: 'fieldset',
 					hidden: true,
 					itemId: 'ScalarEnergyPricingTimeZones',
+					padding: 20,
 					title: 'Extra Parameters',
 					items: [
 						{
 							xtype: 'gridpanel',
+							maxHeight: 400,
+							autoScroll: true,
 							title: 'Levels',
+							forceFit: true,
 							store: 'LevelsStore',
 							viewConfig: {
 								minHeight: 70
@@ -247,7 +260,11 @@ Ext.define('C.view.PricingForm', {
 						},
 						{
 							xtype: 'gridpanel',
+							margin: '20 0 0 0',
+							maxHeight: 400,
+							autoScroll: true,
 							title: 'Offpeak',
+							forceFit: true,
 							store: 'OffpickStore',
 							viewConfig: {
 								minHeight: 70
@@ -311,8 +328,12 @@ Ext.define('C.view.PricingForm', {
 					xtype: 'fieldset',
 					hidden: true,
 					itemId: 'EnergyPowerPricing',
+					defaults: {
+						margin: '0 20 0 0'
+					},
 					layout: {
 						align: 'stretch',
+						padding: 20,
 						type: 'hbox'
 					},
 					title: 'Extra Parameters',
@@ -344,8 +365,12 @@ Ext.define('C.view.PricingForm', {
 					xtype: 'fieldset',
 					hidden: true,
 					itemId: 'AllInclusivePricing',
+					defaults: {
+						margin: '0 20 0 0'
+					},
 					layout: {
 						align: 'stretch',
+						padding: 20,
 						type: 'hbox'
 					},
 					title: 'Extra Parameters',
@@ -377,6 +402,7 @@ Ext.define('C.view.PricingForm', {
 				{
 					xtype: 'fieldset',
 					itemId: 'TOUPricing',
+					padding: 20,
 					layout: {
 						type: 'auto'
 					},
@@ -393,7 +419,10 @@ Ext.define('C.view.PricingForm', {
 						{
 							xtype: 'gridpanel',
 							margin: '10 0 0 0',
+							maxHeight: 400,
+							autoScroll: true,
 							title: 'Timezones',
+							forceFit: true,
 							store: 'TimezonesStore',
 							viewConfig: {
 								minHeight: 70

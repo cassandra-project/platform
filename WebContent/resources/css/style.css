@@ -59,6 +59,10 @@ background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
 	top: auto !important;
 }
 
+.x-fieldset-header-text, .x-form-item-label {
+	color: #157fcc !important;
+}
+
 
 /*.x-tab-bar-default .x-tabbar-scroll-left, .x-tab-bar-default .x-tabbar-scroll-right {
 	width: 31px;
@@ -202,8 +206,10 @@ background-color: transparent !important;
 }
 
 #no_graph_data {
-	width: 700px;
-	text-align: center;
 	padding: 150px 0;
-	color: #157fcc;
+}
+
+.light_gey {
+	font-weight: bold;
+	color: #535151;
 }
