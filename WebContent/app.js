@@ -43,7 +43,8 @@ Ext.application({
 		'Kpi',
 		'Pricing',
 		'Search',
-		'Csn'
+		'Csn',
+		'Cluster'
 	],
 	stores: [
 		'Projects',
@@ -85,7 +86,8 @@ Ext.application({
 		'Csn',
 		'CsnGraphTypeStore',
 		'ClusterBasedonStore',
-		'ClusterMethodStore'
+		'ClusterMethodStore',
+		'ClustersStore'
 	],
 	views: [
 		'MyViewport',
@@ -209,6 +211,7 @@ Ext.application({
 		//debugger;
 		var tabPanel = Ext.getCmp('MainTabPanel');
 		cmpToAdd.closable = true;
+		cmpToAdd.on('beforeclose', function(tab, opts){Ext.getCmp('MainTabPanel').dockedItems.items[0].hide();});
 		cmpToAdd.corresponding_node = record;
 		cmpToAdd.corresponding_parent = record.parentNode;
 
@@ -710,7 +713,7 @@ Ext.application({
 						navigationNode: childNode
 					});
 					break;
-					case 'CSNCollection':
+					case 'CsnCollection':
 					childNode.c.store = new C.store.Csn({
 						storeId: childNode.data.nodeType+'Store-prj_id-'+childNode.parentNode.get('nodeId'),
 						navigationNode: childNode
@@ -995,12 +998,7 @@ Ext.application({
 		myForm.loadRecord(record);
 
 
-		if (!record.get("img_path")) 
-		html = "<div id='no_graph_data' class='gridbg'><h1>No graph data available</h1></div>";
-		else	
-		html = "<img src=" + record.get("img_path") + " width='700' height='400' alt='graph data'/>";
-
-		myFormCmp.down("#image_container").html = html;
+		myFormCmp.setImageContainerHtml(record.get("img"), "Csn");
 
 		//get csnclusters
 		Ext.Ajax.request({
@@ -1011,8 +1009,21 @@ Ext.application({
 			success: function(response, opts) {
 				var response_obj =  Ext.JSON.decode(response.responseText);
 				if (response_obj.data.length > 0) {
-					myForm.setValues(response_obj.data[0]);
-					//myForm.applyToFields({disabled:true});
+					var data_obj = response_obj.data[0];
+
+					myForm.setValues(data_obj);
+					debugger;
+					myFormCmp.clusterRecord = data_obj;
+					delete myFormCmp.clusterRecord.img;
+
+					//check if clusters array has data
+					if (data_obj.clusters.length > 0) {
+						//if so populate clusters grid
+						myFormCmp.down("#clusters_grid").store.loadData(data_obj.clusters);
+						//show pricing container
+						myFormCmp.down("#clusterPricingContainer").show();
+						//myForm.applyToFields({disabled:true});
+					}
 				}
 
 				var successMsg =response_obj.message;
