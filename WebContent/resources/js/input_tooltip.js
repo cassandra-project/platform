@@ -9,9 +9,10 @@ Ext.override(Ext.form.Field, {
 					style: 'margin-bottom: 0px; margin-left: 5px; padding: 0px; cursor: pointer',
 					onClick: "openLink('"+this.url+"')"
 					
-				});	                	
+				});
+				
 				Ext.QuickTips.register({
-					target:  helpImage,
+					target:  helpImage.id,
 					title: '',
 					text: this.helpText,
 					enabled: true
