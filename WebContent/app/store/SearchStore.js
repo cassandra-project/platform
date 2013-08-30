@@ -32,6 +32,8 @@ Ext.define('C.store.SearchStore', {
 			clearOnPageLoad: false,
 			proxy: {
 				type: 'rest',
+				limitParam: '',
+				pageParam: '',
 				startParam: '',
 				url: '/cassandra/api/search',
 				reader: {

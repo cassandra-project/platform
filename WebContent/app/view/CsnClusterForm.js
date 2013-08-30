@@ -74,7 +74,12 @@ Ext.define('C.view.CsnClusterForm', {
 				},
 				{
 					xtype: 'container',
-					itemId: 'image_container'
+					itemId: 'image_container',
+					style: {
+						'text-align': 'center',
+						color: '#157fcc'
+					},
+					width: 700
 				},
 				{
 					xtype: 'fieldcontainer',
@@ -145,17 +150,29 @@ Ext.define('C.view.CsnClusterForm', {
 										'n': values.n
 									};
 
+									if (myFormCmp.clusterRecord) {
+										clusterRecord._id = myFormCmp.clusterRecord._id;
+										clusterRecord.run_id = myFormCmp.clusterRecord.run_id;
+										clusterRecord.clusters = myFormCmp.clusterRecord.clusters;
+									}
+
 									Ext.Ajax.request({
 										url: '/cassandra/api/csnclusters',
 										jsonData: clusterRecord,
-										method: 'POST',
+										method: myFormCmp.clusterRecord ? 'PUT': 'POST',
 										scope: this,
 										success: function(response, opts) {
 											var response_obj = Ext.JSON.decode(response.responseText);
-
+											var data_obj = response_obj.data[0];
 											var successMsg = response_obj.message;
+
 											Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
-											debugger;
+
+											myFormCmp.clusterRecord = data_obj;
+											delete myFormCmp.clusterRecord.img;
+
+											myFormCmp.down("#clusters_grid").store.loadData(data_obj.clusters);
+											myFormCmp.down("#clusterPricingContainer").show();
 										},
 										failure: function(response, opts) {
 											var response_obj = Ext.JSON.decode(response.responseText);
@@ -171,11 +188,137 @@ Ext.define('C.view.CsnClusterForm', {
 							text: 'Create clusters'
 						}
 					]
+				},
+				{
+					xtype: 'fieldcontainer',
+					itemId: 'clusterPricingContainer',
+					margin: '20 0 0 0',
+					width: 100,
+					fieldLabel: 'Clusters - Pricing Scheme Correlation',
+					items: [
+						me.processClusters_grid({
+							xtype: 'gridpanel',
+							itemId: 'clusters_grid',
+							maxHeight: 400,
+							width: 700,
+							title: 'Clusters',
+							forceFit: true,
+							store: 'ClustersStore',
+							viewConfig: me.processMyGridView9({
+
+							}),
+							columns: [
+								{
+									xtype: 'gridcolumn',
+									dataIndex: 'name',
+									text: 'Name'
+								},
+								me.processPricing({
+									xtype: 'gridcolumn',
+									dataIndex: 'pricing_id',
+									text: 'Pricing'
+								}),
+								me.processBaselinepricing({
+									xtype: 'gridcolumn',
+									dataIndex: 'base_prc_id',
+									text: 'Baseline pricing'
+								})
+							]
+						}),
+						{
+							xtype: 'button',
+							handler: function(button, event) {
+								var myFormCmp = button.up('form');
+								var clusterStore = myFormCmp.down("#clusters_grid").store;
+								var clusterRecord = myFormCmp.clusterRecord;
+								var clusters = clusterRecord.clusters;
+
+								Ext.each(clusters, function(cluster){
+									var cluster_grid_record = clusterStore.getById(cluster.name);
+									if (!cluster_grid_record)
+									return;
+									cluster.pricing_id = cluster_grid_record.get("pricing_id");
+									cluster.base_prc_id = cluster_grid_record.get("base_prc_id");
+
+								});
+
+								Ext.Ajax.request({
+									url: '/cassandra/api/csnclusters',
+									jsonData: clusterRecord,
+									method: 'PUT',
+									scope: this,
+									success: function(response, opts) {
+										var response_obj = Ext.JSON.decode(response.responseText);
+
+										var successMsg = response_obj.message;
+										Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
+										myFormCmp.clusterRecord = response_obj.data[0];
+									},
+									failure: function(response, opts) {
+										var response_obj = Ext.JSON.decode(response.responseText);
+										Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
+									}
+								});
+							},
+							margin: '20 0 20 0',
+							width: 150,
+							text: 'Add pricing schemes'
+						}
+					]
 				}
 			]
 		});
 
 		me.callParent(arguments);
+	},
+
+	processMyGridView9: function(config) {
+		config.plugins =  
+		{
+			ptype: 'treetocelldragdrop',
+
+			// Will only allow drops of the same type.
+			//in order for this to work
+			enforceType: true,
+
+			nodeTypeField: 'nodeType',
+
+			//needed since row expander plugin is used
+			addToColumnIndex: -1
+
+		};
+
+		return config;
+	},
+
+	processPricing: function(config) {
+		config.columnType = 'Pricing';
+		return config;
+	},
+
+	processBaselinepricing: function(config) {
+		config.columnType = 'Pricing';
+		return config;
+	},
+
+	processClusters_grid: function(config) {
+		config.plugins = [{
+			ptype: 'rowexpander',
+			rowBodyTpl : new Ext.XTemplate(
+			'<h2>Installations:</h2> {installations_}'
+			)
+		}];
+		return config;
+	},
+
+	setImageContainerHtml: function(img, graph_desc) {
+		html = "<h1>" + graph_desc + " Graph" + "</h1>";
+		if (!img) 
+		html += "<div id='no_graph_data' class='gridbg'><h1>No " + graph_desc + " Graph Gata Available</h1></div>";
+		else	
+		html += "<img src=" + img + " width='700' height='400' alt='graph data'/>";
+
+		this.down("#image_container").update(html);
 	}
 
 });

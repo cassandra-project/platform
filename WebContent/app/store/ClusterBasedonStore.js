@@ -21,7 +21,7 @@ Ext.define('C.store.ClusterBasedonStore', {
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
 			autoLoad: false,
-			storeId: 'MyStore',
+			storeId: 'ClusterBasedonStore',
 			data: [
 				{
 					basedonName: 'Transformer ID',

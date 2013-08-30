@@ -22,7 +22,24 @@ Ext.define('C.store.SeasonsStore', {
 		me.callParent([Ext.apply({
 			autoLoad: false,
 			storeId: 'SeasonsStore',
-			data: '[{season:\'Autumn\', seasonDate: },{season:\'Winter\', seasonDate:}, \r\n {season:\'Spring\', seasonDate:}, {season:\'Summer\', seasonDate:}]',
+			data: [
+				{
+					season: 'Autumn',
+					seasonDate: ''
+				},
+				{
+					season: 'Winter',
+					seasonDate: ''
+				},
+				{
+					season: 'Spring',
+					seasonDate: ''
+				},
+				{
+					season: 'Summer',
+					seasonDate: ''
+				}
+			],
 			fields: [
 				{
 					name: 'season',
