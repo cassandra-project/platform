@@ -333,7 +333,7 @@ Ext.define('C.view.SimulationParamsForm', {
 				runsNode.c.store.on('add', function(store, record, operation, eOpts ) {
 					C.app.openTab(runsNode);
 				});
-				runsNode.c.store.add(new C.model.Csn({smp_id : smp_node.get('id')}));
+				runsNode.c.store.add(new C.model.Run({smp_id : smp_node.get('id')}));
 			}
 
 
