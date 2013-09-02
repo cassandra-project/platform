@@ -168,10 +168,35 @@ Ext.define('C.view.CsnClusterForm', {
 
 											Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
 
+											//add image if exists
+											myFormCmp.setImageContainerHtml(data_obj.img, "Csn Clusters");
+
+											if (!myFormCmp.clusterRecord) {
+												var clusterGrid = new C.view.ClustersGrid({ 
+													plugins: [{
+														ptype: 'rowexpander',
+														rowBodyTpl : new Ext.XTemplate('<h2>Installations:</h2> {installations_}')
+													}], 
+													store: new C.store.ClustersStore({storeId : 'clusterStore_' + data_obj._id})
+												});
+												//add grid to form
+												myFormCmp.down("#clusterPricingContainer").insert(0, clusterGrid);
+												//check if clusters array has data
+											}
+											//save current record in form and delete img from record since it is not included in the schema
 											myFormCmp.clusterRecord = data_obj;
 											delete myFormCmp.clusterRecord.img;
 
-											myFormCmp.down("#clusters_grid").store.loadData(data_obj.clusters);
+											if (data_obj.clusters.length > 0) {
+												//if so populate clusters grid
+												myFormCmp.down('grid').store.loadData(data_obj.clusters);
+											}
+											else {
+												//else load empty array
+												myFormCmp.down('grid').store.loadData([]);
+											}
+
+											//show clusters grid 
 											myFormCmp.down("#clusterPricingContainer").show();
 										},
 										failure: function(response, opts) {
@@ -191,45 +216,17 @@ Ext.define('C.view.CsnClusterForm', {
 				},
 				{
 					xtype: 'fieldcontainer',
+					hidden: true,
 					itemId: 'clusterPricingContainer',
 					margin: '20 0 0 0',
 					width: 100,
 					fieldLabel: 'Clusters - Pricing Scheme Correlation',
 					items: [
-						me.processClusters_grid({
-							xtype: 'gridpanel',
-							itemId: 'clusters_grid',
-							maxHeight: 400,
-							width: 700,
-							title: 'Clusters',
-							forceFit: true,
-							store: 'ClustersStore',
-							viewConfig: me.processMyGridView9({
-
-							}),
-							columns: [
-								{
-									xtype: 'gridcolumn',
-									dataIndex: 'name',
-									text: 'Name'
-								},
-								me.processPricing({
-									xtype: 'gridcolumn',
-									dataIndex: 'pricing_id',
-									text: 'Pricing'
-								}),
-								me.processBaselinepricing({
-									xtype: 'gridcolumn',
-									dataIndex: 'base_prc_id',
-									text: 'Baseline pricing'
-								})
-							]
-						}),
 						{
 							xtype: 'button',
 							handler: function(button, event) {
 								var myFormCmp = button.up('form');
-								var clusterStore = myFormCmp.down("#clusters_grid").store;
+								var clusterStore = myFormCmp.down('grid').store;
 								var clusterRecord = myFormCmp.clusterRecord;
 								var clusters = clusterRecord.clusters;
 
@@ -272,49 +269,10 @@ Ext.define('C.view.CsnClusterForm', {
 		me.callParent(arguments);
 	},
 
-	processMyGridView9: function(config) {
-		config.plugins =  
-		{
-			ptype: 'treetocelldragdrop',
-
-			// Will only allow drops of the same type.
-			//in order for this to work
-			enforceType: true,
-
-			nodeTypeField: 'nodeType',
-
-			//needed since row expander plugin is used
-			addToColumnIndex: -1
-
-		};
-
-		return config;
-	},
-
-	processPricing: function(config) {
-		config.columnType = 'Pricing';
-		return config;
-	},
-
-	processBaselinepricing: function(config) {
-		config.columnType = 'Pricing';
-		return config;
-	},
-
-	processClusters_grid: function(config) {
-		config.plugins = [{
-			ptype: 'rowexpander',
-			rowBodyTpl : new Ext.XTemplate(
-			'<h2>Installations:</h2> {installations_}'
-			)
-		}];
-		return config;
-	},
-
 	setImageContainerHtml: function(img, graph_desc) {
 		html = "<h1>" + graph_desc + " Graph" + "</h1>";
 		if (!img) 
-		html += "<div id='no_graph_data' class='gridbg'><h1>No " + graph_desc + " Graph Gata Available</h1></div>";
+		html += "<div id='no_graph_data' class='gridbg'><h1>No " + graph_desc + " Graph Data Available</h1></div>";
 		else	
 		html += "<img src=" + img + " width='700' height='400' alt='graph data'/>";
 
