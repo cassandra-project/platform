@@ -128,7 +128,8 @@ Ext.define('C.view.CsnClusterForm', {
 							fieldLabel: 'n (number of clusters) <span style=color:red>*</span>',
 							name: 'n',
 							allowBlank: false,
-							allowDecimals: false
+							allowDecimals: false,
+							minValue: 0
 						},
 						{
 							xtype: 'button',
@@ -163,7 +164,7 @@ Ext.define('C.view.CsnClusterForm', {
 										scope: this,
 										success: function(response, opts) {
 											var response_obj = Ext.JSON.decode(response.responseText);
-											var data_obj = response_obj.data[0];
+											var data_obj = myFormCmp.clusterRecord ? response_obj.data[0] : response_obj.data;
 											var successMsg = response_obj.message;
 
 											Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
