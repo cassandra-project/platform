@@ -25,7 +25,7 @@ Ext.define('C.store.ClustersStore', {
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
 			model: 'C.model.Cluster',
-			storeId: 'ClustersStore'
+			storeId: 'clustersStore'
 		}, cfg)]);
 	}
 });
