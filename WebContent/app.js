@@ -120,7 +120,11 @@ Ext.application({
 		'FileUploadForm',
 		'SearchGrid',
 		'CsnForm',
-		'CsnClusterForm'
+		'CsnClusterForm',
+		'ClustersGrid',
+		'LevelsGrid',
+		'OffpickGrid',
+		'TimezonesGrid'
 	],
 	autoCreateViewport: true,
 	controllers: [
@@ -866,18 +870,31 @@ Ext.application({
 		var myForm = myFormCmp.getForm();
 		var values = myForm.getValues();
 
+		var levelsGrid = new C.view.LevelsGrid({store: new C.store.LevelsStore({storeId : 'levelsStore_'+record.get('_id')}) });
+		myFormCmp.down("#ScalarEnergyPricing").add(levelsGrid);
+
+		var levelsGrid2 = new C.view.LevelsGrid({store: new C.store.LevelsStore({storeId : 'levelsStore2_'+record.get('_id')}) });
+		myFormCmp.down("#ScalarEnergyPricingTimeZones").add(levelsGrid2);
+
+
+		var offpickGrid = new C.view.OffpickGrid({store: new C.store.OffpickStore({storeId : 'offpickStore_'+record.get('_id')}) });
+		myFormCmp.down("#ScalarEnergyPricingTimeZones").add(offpickGrid);
+
+		var timezonesGrid = new C.view.TimezonesGrid({store: new C.store.TimezonesStore({storeId : 'timezonesStore_'+record.get('_id')}) });
+		myFormCmp.down("#TOUPricing").add(timezonesGrid);
+
 		myFormCmp.getComponent(record.get('type')).show();
 
 		switch (record.get('type')) {
 			case 'ScalarEnergyPricing':
-			myFormCmp.query('grid')[0].store.loadData(record.get('levels'));
+			levelsGrid.store.loadData(record.get('levels'));
 			break;
 			case 'ScalarEnergyPricingTimeZones':
-			myFormCmp.query('grid')[1].store.loadData(record.get('levels'));
-			myFormCmp.query('grid')[2].store.loadData(record.get('offpeak'));
+			levelsGrid.store.loadData(record.get('levels'));
+			offpickGrid.store.loadData(record.get('offpeak'));
 			break;
 			case 'TOUPricing':
-			myFormCmp.query('grid')[3].store.loadData(record.get('timezones'));
+			timezonesGrid.store.loadData(record.get('timezones'));
 			break;
 		}
 
@@ -1010,22 +1027,38 @@ Ext.application({
 				var response_obj =  Ext.JSON.decode(response.responseText);
 				if (response_obj.data.length > 0) {
 					var data_obj = response_obj.data[0];
-
+					//populate form
 					myForm.setValues(data_obj);
-					debugger;
-					myFormCmp.clusterRecord = data_obj;
-					delete myFormCmp.clusterRecord.img;
+					//add image if exists
+					myFormCmp.setImageContainerHtml(data_obj.img, "Csn Clusters");
 
+					//save current record to use in future requests
+					myFormCmp.clusterRecord = data_obj;
+					//delete img from record since it is not included in the schema
+					delete myFormCmp.clusterRecord.img;
+					//create clusters grid
+					var clusterGrid = new C.view.ClustersGrid({ 
+						plugins: [{
+							ptype: 'rowexpander',
+							rowBodyTpl : new Ext.XTemplate('<h2>Installations:</h2> {installations_}')
+						}], 
+						store: new C.store.ClustersStore({storeId : 'clusterStore_' + data_obj._id})
+					});
+					//add grid to form
+					myFormCmp.down("#clusterPricingContainer").insert(0, clusterGrid);
 					//check if clusters array has data
 					if (data_obj.clusters.length > 0) {
 						//if so populate clusters grid
-						myFormCmp.down("#clusters_grid").store.loadData(data_obj.clusters);
-						//show pricing container
-						myFormCmp.down("#clusterPricingContainer").show();
-						//myForm.applyToFields({disabled:true});
+						clusterGrid.store.loadData(data_obj.clusters);
 					}
+					else {
+						//else load empty array
+						clusterGrid.store.loadData([]);
+					}
+					//show pricing container
+					myFormCmp.down("#clusterPricingContainer").show();
+					//myForm.applyToFields({disabled:true});
 				}
-
 				var successMsg =response_obj.message;
 				Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
 			},

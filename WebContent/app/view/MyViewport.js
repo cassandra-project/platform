@@ -111,8 +111,23 @@ Ext.define('C.view.MyViewport', {
 				{
 					xtype: 'toolbar',
 					region: 'south',
-					height: 16,
-					id: 'bottom_toolbar'
+					height: 25,
+					id: 'bottom_toolbar',
+					style: {
+						'font-size': '12px',
+						'text-align': 'center',
+						color: '#5a5a5a'
+					},
+					layout: {
+						pack: 'center',
+						type: 'hbox'
+					},
+					items: [
+						{
+							xtype: 'tbtext',
+							text: 'CASSANDRA is financed by the Seventh Framework Research Programme of the European Commission (FP7).'
+						}
+					]
 				}
 			],
 			listeners: {

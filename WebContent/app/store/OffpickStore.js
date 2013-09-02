@@ -20,7 +20,6 @@ Ext.define('C.store.OffpickStore', {
 		var me = this;
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
-			autoLoad: true,
 			storeId: 'MyStore10',
 			fields: [
 				{
