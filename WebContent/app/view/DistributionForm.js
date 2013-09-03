@@ -137,7 +137,6 @@ Ext.define('C.view.DistributionForm', {
 			this.down('#params').setValue('[]');
 			this.down('#params').hide();
 			if (this.query('chart')[1]) {
-				this.query('chart')[0].store.removeAll();
 				this.query('chart')[1].show();
 				this.query('chart')[0].hide();
 			}
@@ -147,7 +146,6 @@ Ext.define('C.view.DistributionForm', {
 			this.down('#val').setValue('[]');
 			this.down('#val').hide();
 			if (this.query('chart')[1] ) {
-				this.query('chart')[0].store.removeAll();
 				this.query('chart')[1].hide();
 				this.query('chart')[0].show();
 			}
