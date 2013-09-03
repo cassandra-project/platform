@@ -68,6 +68,22 @@ public class Utils {
 		}
 	}
 	
+	public static float getFloat(Object o) {
+		if(o == null) {
+			return 0.0f;
+		} else {
+			return Float.parseFloat(o.toString());
+		}
+	}
+	
+	public static int getInt(Object o) {
+		if(o == null) {
+			return 0;
+		} else {
+			return (int)Math.round(getFloat(o));
+		}
+	}
+	
 	public static String stackTraceToString(StackTraceElement[] s) {
 		String returnMessage = new String();
 		for(int i = 0; i < s.length; i++) {
