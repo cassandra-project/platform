@@ -433,7 +433,7 @@ public class Simulation implements Runnable {
   		DBObject demog = (DBObject)jsonScenario.get("demog");
   		BasicDBList generators = (BasicDBList) demog.get("generators");
   		// Initialize simulation variables
-  		int numOfInstallations = ((Integer)demog.get("numberOfEntities")).intValue();
+  		int numOfInstallations = Utils.getInt(demog.get("numberOfEntities"));
   		//System.out.println(numOfInstallations+"");
   		queue = new PriorityBlockingQueue<Event>(2 * numOfInstallations);
   		for (int i = 1; i <= numOfInstallations; i++) {
@@ -447,7 +447,7 @@ public class Simulation implements Runnable {
 	    	inst.setParentId(scenario_id);
 	    	String inst_id = addEntity(inst);
 	    	inst.setId(inst_id);
-	    	int appcount = ((Integer)instDoc.get("appcount")).intValue();
+	    	int appcount = Utils.getInt(instDoc.get("appcount"));
 	    	// Create the appliances
 	    	HashMap<String,Appliance> existing = new HashMap<String,Appliance>();
 	    	for (int j = 1; j <= appcount; j++) {
@@ -456,14 +456,8 @@ public class Simulation implements Runnable {
 	    		String appname = (String)applianceDoc.get("name");
 		    	String appdescription = (String)applianceDoc.get("description");
 		    	String apptype = (String)applianceDoc.get("type");
-		    	double standy = 0.0;
-		    	try {
-		    		standy = (double)((Integer)applianceDoc.get("standy_consumption")).intValue();
-		    	} catch(ClassCastException cce) { }
-		    	try {
-		    		standy = ((Double)applianceDoc.get("standy_consumption")).doubleValue();
-		    	} catch(ClassCastException cce) { }
-		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
+		    	double standy = Utils.getDouble(applianceDoc.get("standy_consumption"));
+		    	boolean base = Utils.getBoolean(applianceDoc.get("base"));
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
 		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
 		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
@@ -484,7 +478,7 @@ public class Simulation implements Runnable {
 	    	for(int k = 0; k < generators.size(); k++) {
     			DBObject generator = (DBObject)generators.get(k);
     			String entityId = (String)generator.get("entity_id");
-    			double prob = ((Double)generator.get("probability")).doubleValue();
+    			double prob = Utils.getDouble(generator.get("probability"));
     			gens.put(entityId, new Double(prob));
 	    	}
 	    	
@@ -507,7 +501,7 @@ public class Simulation implements Runnable {
 	    		}
 	    	}
 
-	    	int personcount = ((Integer)instDoc.get("personcount")).intValue();
+	    	int personcount = Utils.getInt(instDoc.get("personcount"));
 	    	// Create the appliances
 	    	HashMap<String,Person> existingPersons = new HashMap<String,Person>();
 	    	for (int j = 1; j <= personcount; j++) {
@@ -521,13 +515,13 @@ public class Simulation implements Runnable {
 		    	        		  personName, 
 		    	        		  personDescription,
 		    	                  personType, inst).build();
-		    	int actcount = ((Integer)personDoc.get("activitycount")).intValue();
+		    	int actcount = Utils.getInt(personDoc.get("activitycount"));
 		    	//System.out.println("Act-Count: " + actcount);
 		    	for (int k = 1; k <= actcount; k++) {
 		    		DBObject activityDoc = (DBObject)personDoc.get("activity"+k);
 		    		String activityName = (String)activityDoc.get("name");
 		    		String activityType = (String)activityDoc.get("type");
-		    		int actmodcount = ((Integer)activityDoc.get("actmodcount")).intValue();
+		    		int actmodcount = Utils.getInt(activityDoc.get("actmodcount"));
 		    		Activity act = new Activity.Builder(activityName, "", 
 		    				activityType, simulationWorld).build();
 		    		ProbabilityDistribution startDist;
@@ -574,7 +568,7 @@ public class Simulation implements Runnable {
 	    		DBObject generator = (DBObject)generators.get(k);
 	    		String entityId = (String)generator.get("entity_id");
 	    		if(existingPersons.containsKey(entityId)) {
-	    			double prob = ((Double)generator.get("probability")).doubleValue();
+	    			double prob = Utils.getDouble(generator.get("probability"));
 	    			sum += prob;
 	    			if(roulette < sum) {
 	    				Person selectedPerson = existingPersons.get(entityId);

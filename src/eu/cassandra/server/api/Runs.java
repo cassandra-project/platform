@@ -222,34 +222,34 @@ public class Runs {
 
 							// Duration distribution
 							String dur_id = activityModel.get("duration").toString();
-							checkForNull(dur_id, "Activity Model with name \"" + activityModel.get("name") + "\" does not have a duration distribution.");
+							checkForNull(dur_id, "Activity Model with name '" + activityModel.get("name") + "' does not have a duration distribution.");
 							query = new BasicDBObject();
 							query.put("_id", new ObjectId(dur_id));
 							DBObject durDist = 
 									DBConn.getConn().getCollection(MongoDistributions.COL_DISTRIBUTIONS).findOne(query);
-							checkForNull(durDist, "Duration distribution of \"" + activityModel.get("name") + "\" not found in the DB.");
+							checkForNull(durDist, "Duration distribution of '" + activityModel.get("name") + "' not found in the DB.");
 							if(!isDynamic) db.getCollection(MongoDistributions.COL_DISTRIBUTIONS).insert(durDist);
 							activityModel.put("duration", durDist);
 							
 							// Start time distribution
 							String start_id = activityModel.get("startTime").toString();
-							checkForNull(start_id, "Activity Model with name \"" + activityModel.get("name") + "\" does not have a start time distribution.");
+							checkForNull(start_id, "Activity Model with name '" + activityModel.get("name") + "' does not have a start time distribution.");
 							query = new BasicDBObject();
 							query.put("_id", new ObjectId(start_id));
 							DBObject startDist = 
 									DBConn.getConn().getCollection(MongoDistributions.COL_DISTRIBUTIONS).findOne(query);
-							checkForNull(startDist, "Start distribution of \"" + activityModel.get("name") + "\" not found in the DB.");
+							checkForNull(startDist, "Start distribution of '" + activityModel.get("name") + "' not found in the DB.");
 							if(!isDynamic) db.getCollection(MongoDistributions.COL_DISTRIBUTIONS).insert(startDist);
 							activityModel.put("start", startDist);
 							
 							// Repetitions distribution
 							String rep_id = activityModel.get("repeatsNrOfTime").toString();
-							checkForNull(rep_id, "Activity Model with name \"" + activityModel.get("name") + "\" does not have a number of times distribution.");
+							checkForNull(rep_id, "Activity Model with name '" + activityModel.get("name") + "' does not have a number of times distribution.");
 							query = new BasicDBObject();
 							query.put("_id", new ObjectId(rep_id));
 							DBObject repDist = 
 									DBConn.getConn().getCollection(MongoDistributions.COL_DISTRIBUTIONS).findOne(query);
-							checkForNull(repDist, "Number of times distribution of \"" + activityModel.get("name") + "\" not found in the DB.");
+							checkForNull(repDist, "Number of times distribution of '" + activityModel.get("name") + "' not found in the DB.");
 							if(!isDynamic) db.getCollection(MongoDistributions.COL_DISTRIBUTIONS).insert(repDist);
 							activityModel.put("repetitions", repDist);
 							activity.put("actmod"+countActMod, activityModel);
@@ -277,7 +277,7 @@ public class Runs {
 					query.put("app_id", app_id);
 					DBObject consModel = 
 							DBConn.getConn().getCollection(MongoConsumptionModels.COL_CONSMODELS).findOne(query);
-					checkForNull(consModel, "Consumption model of appliance \"" + appliance.get("name") + "\" not found in the DB.");
+					checkForNull(consModel, "Consumption model of appliance '" + appliance.get("name") + "' not found in the DB.");
 					if(!isDynamic) db.getCollection(MongoConsumptionModels.COL_CONSMODELS).insert(consModel);
 					appliance.put("consmod", consModel);
 					obj.put("app"+countApps, appliance);
@@ -338,6 +338,12 @@ public class Runs {
 		run.put("prj_id", prj_id);
 		run.put("percentage", 0);
 		return run;
+	}
+	
+	public static void main(String[] args) {
+		String message = "message";
+		String returnMsg = "{ \"success\": false, \"message\": \"Sim creation failed\", \"errors\": { \"generalException\": \"" + message + "\" } }";
+		System.out.println(returnMsg);
 	}
 
 }

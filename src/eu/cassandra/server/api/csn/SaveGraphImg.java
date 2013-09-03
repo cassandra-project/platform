@@ -67,6 +67,6 @@ public class SaveGraphImg {
 		String fileName =  Calendar.getInstance().getTimeInMillis() + ".png";
 		File outputfile = new File(IServletContextListener.graphs.getAbsolutePath()  + "/" +fileName);
 		ImageIO.write(image, "png", outputfile);
-		return fileName;
+		return "/resources/graphs/" + fileName;
 	}
 }

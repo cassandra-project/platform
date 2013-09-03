@@ -19,6 +19,8 @@ import java.util.Vector;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import org.bson.types.ObjectId;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -75,6 +77,9 @@ public class MongoGraphs {
 				}
 
 				String img = new SaveGraphImg().saveImg(nodes,edges);
+				DBObject d = DBConn.getConn().getCollection(COL_GRAPHS).findOne(new BasicDBObject("_id",new ObjectId(graph_id)));
+				d.put("img", img);
+				DBConn.getConn().getCollection(COL_GRAPHS).save(d);
 				((DBObject)answer.get("data")).put("img", img);
 
 				return answer.toString();
