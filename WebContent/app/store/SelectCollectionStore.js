@@ -21,7 +21,7 @@ Ext.define('C.store.SelectCollectionStore', {
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
 			autoLoad: false,
-			storeId: 'MyStore',
+			storeId: 'SelectCollectionStore',
 			data: [
 				{
 					collectionName: 'Installations',
