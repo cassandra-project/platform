@@ -308,7 +308,7 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onButtonBeforeRender: function(component, eOpts) {
-		if (this.store.model.getName() == "C.model.Run")
+		if (this.store.model.getName() == "C.model.Run" || this.store.model.getName() == "C.model.Csn")
 		component.hide();
 	},
 

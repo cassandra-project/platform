@@ -29,7 +29,7 @@ background-image: -moz-linear-gradient(top, #8FC33A, #739B2E);
 background-image: -o-linear-gradient(top, #8FC33A, #739B2E);
 background-image: -ms-linear-gradient(top, #8FC33A, #739B2E);
 background-image: linear-gradient(top, #8FC33A, #739B2E);*/
-background: #739B2E url(../icons/bottom_pattern.png) repeat-x;	
+background-color: #739B2E;	
 border-bottom: 1px solid #567422;
 }
 
