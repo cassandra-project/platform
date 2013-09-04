@@ -74,7 +74,6 @@ Ext.define('C.view.SimulationParamsForm', {
 									name: 'mcruns',
 									value: 1,
 									allowDecimals: false,
-									maxValue: 100,
 									minValue: 1
 								},
 								{
