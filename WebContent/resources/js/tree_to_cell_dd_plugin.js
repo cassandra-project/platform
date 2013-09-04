@@ -17,36 +17,47 @@
  *          }
  *      }
  */
-Ext.define('Ext.ux.CellDragDrop', {
+Ext.define('Ext.ux.TreeToCellDragDrop', {
     extend: 'Ext.AbstractPlugin',
-    alias: 'plugin.celldragdrop',
+    alias: 'plugin.treetocelldragdrop',
 
     uses: ['Ext.view.DragZone'],
+	
+	/**
+     * @cfg {String} dropField
+     * Set to the field to be copied from node
+     *
+     * Defaults to `id`.
+     */
+    dropField: 'id',
+	
+	/**
+     * @cfg {String} nodeTypeField
+     * If enforceType is true the value of this field will be used to compare against column.columnType
+     * and if not equal drop operation will fail
+	 
+     * Defaults to ``.
+     */
+    nodeTypeField: '',
+	
+	/**
+     * @cfg {number} addToColumnIndex
+     * Increase or decrease columnIndex value (needed most offen when plugins like row expander are used)
+	 
+     * Defaults to 0.
+     */
+    addToColumnIndex: 0,
+	
 
     /**
      * @cfg {Boolean} enforceType
      * Set to `true` to only allow drops of the same type.
+	 * note: nodeType and columnType must be set
      *
      * Defaults to `false`.
      */
     enforceType: false,
 
-    /**
-     * @cfg {Boolean} applyEmptyText
-     * If `true`, then use the value of {@link #emptyText} to replace the drag record's value after a node drop.
-     * Note that, if dropped on a cell of a different type, it will convert the default text according to its own conversion rules.
-     *
-     * Defaults to `false`.
-     */
-    applyEmptyText: false,
-
-    /**
-     * @cfg {Boolean} emptyText
-     * If {@link #applyEmptyText} is `true`, then this value as the drag record's value after a node drop.
-     *
-     * Defaults to an empty string.
-     */
-    emptyText: '',
 
     /**
      * @cfg {Boolean} dropBackgroundColor
@@ -64,25 +75,13 @@ Ext.define('Ext.ux.CellDragDrop', {
      */
     noDropBackgroundColor: 'red',
 
-    //<locale>
-    /**
-     * @cfg {String} dragText
-     * The text to show while dragging.
-     *
-     * Two placeholders can be used in the text:
-     *
-     * - `{0}` The number of selected items.
-     * - `{1}` 's' when more than 1 items (only useful for English).
-     */
-    dragText: '{0} selected row{1}',
-    //</locale>
 
     /**
      * @cfg {String} ddGroup
      * A named drag drop group to which this object belongs. If a group is specified, then both the DragZones and
      * DropZone used by this plugin will only interact with other drag drop objects in the same group.
      */
-    ddGroup: "GridDD",
+    ddGroup: "ddGlobal",
 
     /**
      * @cfg {Boolean} enableDrop
@@ -90,11 +89,6 @@ Ext.define('Ext.ux.CellDragDrop', {
      */
     enableDrop: true,
 
-    /**
-     * @cfg {Boolean} enableDrag
-     * Set to `false` to disallow dragging items from the View.
-     */
-    enableDrag: true,
 
     /**
      * @cfg {Object/Boolean} containerScroll
@@ -144,62 +138,7 @@ Ext.define('Ext.ux.CellDragDrop', {
     onViewRender: function (view) {
         var me = this,
             scrollEl;
-
-        if (me.enableDrag) {
-            if (me.containerScroll) {
-                scrollEl = view.getEl();
-            }
-
-            me.dragZone = new Ext.view.DragZone({
-                view: view,
-                ddGroup: me.dragGroup || me.ddGroup,
-                dragText: me.dragText,
-                containerScroll: me.containerScroll,
-                scrollEl: scrollEl,
-                getDragData: function (e) {
-                    var view = this.view,
-                        item = e.getTarget(view.getItemSelector()),
-                        record = view.getRecord(item),
-                        clickedEl = e.getTarget(view.getCellSelector()),
-                        dragEl;
-
-                    if (item) {
-                        dragEl = document.createElement('div');
-                        dragEl.className = 'x-form-text';
-                        dragEl.appendChild(document.createTextNode(clickedEl.textContent || clickedEl.innerText));
-
-                        return {
-                            event: new Ext.EventObjectImpl(e),
-                            ddel: dragEl,
-                            item: e.target,
-                            columnName: view.getGridColumns()[clickedEl.cellIndex].dataIndex,
-							columnType: view.getGridColumns()[clickedEl.cellIndex].columnType,
-                            record: record
-                        };
-                    }
-                },
-
-                onInitDrag: function (x, y) {
-                    var self = this,
-                        data = self.dragData,
-                        view = self.view,
-                        selectionModel = view.getSelectionModel(),
-                        record = data.record,
-                        el = data.ddel;
-
-                    // Update the selection to match what would have been selected if the user had
-                    // done a full click on the target node rather than starting a drag from it.
-                    if (!selectionModel.isSelected(record)) {
-                        selectionModel.select(record, true);
-                    }
-
-                    self.ddel.update(el.textContent || el.innerText);
-                    self.proxy.update(self.ddel.dom);
-                    self.onStartDrag(x, y);
-                    return true;
-                }
-            });
-        }
+		
 
         if (me.enableDrop) {
             me.dropZone = new Ext.dd.DropZone(view.el, {
@@ -216,7 +155,7 @@ Ext.define('Ext.ux.CellDragDrop', {
                     // Ascertain whether the mousemove is within a grid cell.
                     if (cell) {
                         row = v.findItemByChild(cell);
-                        columnIndex = cell.cellIndex;
+                        columnIndex = cell.cellIndex + me.addToColumnIndex;
 
                         if (row && Ext.isDefined(columnIndex)) {
                             return {
@@ -232,8 +171,8 @@ Ext.define('Ext.ux.CellDragDrop', {
                 // On Node enter, see if it is valid for us to drop the field on that type of column.
                 onNodeEnter: function (target, dd, e, dragData) {
                     var self = this,
-                        destType = target.columnType ? target.columnType.toUpperCase() : '',
-                        sourceType = dragData.columnType ? dragData.columnType.toUpperCase() : '';
+						destType = target.columnType ? target.columnType.toUpperCase() : '',
+						sourceType = dragData.records[0].get(me.nodeTypeField) ? dragData.records[0].get(me.nodeTypeField).toUpperCase() : '';
 
                     delete self.dropOK;
 
@@ -241,9 +180,10 @@ Ext.define('Ext.ux.CellDragDrop', {
                     if (!target || target.node === dragData.item.parentNode) {
                         return;
                     }
-	
-					if (target.record.fields.get(target.columnName).type.type.toUpperCase() !== dragData.record.fields.get(dragData.columnName).type.type.toUpperCase())
+					
+					if (typeof(dragData.records[0].get(me.dropField)).toUpperCase() !== target.record.fields.get(target.columnName).type.type.toUpperCase()) {
 						self.dropOK = false;
+					}
 
                     // Check whether the data type of the column being dropped on accepts the
                     // dragged field type. If so, set dropOK flag, and highlight the target node.
@@ -295,10 +235,7 @@ Ext.define('Ext.ux.CellDragDrop', {
                 // Process the drop event if we have previously ascertained that a drop is OK.
                 onNodeDrop: function (target, dd, e, dragData) {
                     if (this.dropOK) {
-                        target.record.set(target.columnName, dragData.record.get(dragData.columnName));
-                        if (me.applyEmptyText) {
-                            dragData.record.set(dragData.columnName, me.emptyText);
-                        }
+							target.record.set(target.columnName, dragData.records[0].get(me.dropField));
                         return true;
                     }
                 },
