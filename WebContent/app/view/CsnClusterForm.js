@@ -275,7 +275,7 @@ Ext.define('C.view.CsnClusterForm', {
 		if (!img) 
 		html += "<div id='no_graph_data' class='gridbg'><h1>No " + graph_desc + " Graph Data Available</h1></div>";
 		else	
-		html += "<img src=" + img + " width='700' height='400' alt='graph data'/>";
+		html += "<img src=/cassandra" + img + " width='600' height='600' alt='graph data'/>";
 
 		this.down("#image_container").update(html);
 	}
