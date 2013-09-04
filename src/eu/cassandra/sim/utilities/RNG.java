@@ -73,6 +73,10 @@ public class RNG {
 		return random.nextDouble();
 	}
 	
+	public static float nextFloat() {
+		return random.nextFloat();
+	}
+	
 	public static double nextDoublePlusMinus() {
 		return 2 * random.nextDouble() - 1;
 	}

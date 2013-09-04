@@ -254,26 +254,29 @@ public class Gaussian implements ProbabilityDistribution
     System.out.println(g.getPrecomputedBin());
     System.out.println(g.getPrecomputedBin());
     System.out.println("Testing start time.");
-    g = new Gaussian(620, 200);
-    g.precompute(0, 1440, 1440);
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println("Testing duration.");
+    g = new Gaussian(69.735983, 1);
+    g.precompute(0, 1439, 1440);
+    for(int i = 0; i < 1440; i++) {
+    	System.out.println(i + " " + g.getPrecomputedProbability(i));
+    }
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println("Testing duration.");
     g = new Gaussian(240, 90);
     g.precompute(1, 1440, 1440);
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
-    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
+//    System.out.println(g.getPrecomputedBin());
   }
 
 }
