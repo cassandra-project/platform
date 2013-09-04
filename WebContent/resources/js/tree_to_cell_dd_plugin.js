@@ -170,14 +170,22 @@ Ext.define('Ext.ux.TreeToCellDragDrop', {
 
                 // On Node enter, see if it is valid for us to drop the field on that type of column.
                 onNodeEnter: function (target, dd, e, dragData) {
-                    var self = this,
+                   
+					//return if no drag data available
+					if (!dragData || dragData.records.length === 0)
+						return;
+					//return if dropField doesn't exist
+					if (!dragData.records[0].get(me.dropField))
+						return;
+					
+					var self = this,
 						destType = target.columnType ? target.columnType.toUpperCase() : '',
 						sourceType = dragData.records[0].get(me.nodeTypeField) ? dragData.records[0].get(me.nodeTypeField).toUpperCase() : '';
 
                     delete self.dropOK;
 
                     // Return if no target node or if over the same cell as the source of the drag.
-                    if (!target || target.node === dragData.item.parentNode) {
+                    if (!target) {
                         return;
                     }
 					

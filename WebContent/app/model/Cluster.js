@@ -37,10 +37,10 @@ Ext.define('C.model.Cluster', {
 						success: function(response, opts) {
 							var response_obj = Ext.JSON.decode(response.responseText);
 							var inst_obj = response_obj.data[0];
-							var inst_template = '<span class= "light_gey"> Id: </span>' + inst_obj._id + '</br>'+
+							var inst_template = inst_obj ? '<span class= "light_gey"> Id: </span>' + inst_obj._id + '</br>'+
 							'<span class= "light_gey">Name: </span>' + inst_obj.name + '</br>'+
 							'<span class= "light_gey">Description: </span>' + inst_obj.description + '</br>'+
-							'<span class= "light_gey">Type: </span>' + inst_obj.type + '</br></br>';
+							'<span class= "light_gey">Type: </span>' + inst_obj.type + '</br></br>' : response_obj.message;
 							rec.set("installations_", rec.get("installations_") + inst_template);
 						}
 					});
