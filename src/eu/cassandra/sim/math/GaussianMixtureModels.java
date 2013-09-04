@@ -115,7 +115,7 @@ public class GaussianMixtureModels implements ProbabilityDistribution
     for (int i = 0; i < nBins; i++) {
 
       for (int j = 0; j < gaussians.length; j++) {
-        histogram[i] += pi[j] * gaussians[j].getPrecomputedProbability(i);
+        histogram[i] += pi[j] * gaussians[j].getHistogram()[i];
       }
       
     }
@@ -254,8 +254,9 @@ public class GaussianMixtureModels implements ProbabilityDistribution
     System.out.println("======Test 2======");
 
     double[] pi2 = {0.5, 0.5};
-    double[] means2 = {69.735983, 750.690455};
-    double[] sigmas2 = {1, 1};
+    double[] means2 = {1382.81587, 444.884615};
+    double[] sigmas2 = {7.46468, 66.580967};
+    
     
     GaussianMixtureModels g2 = new GaussianMixtureModels(pi2.length, pi2, means2, sigmas2);
     g2.precompute(0, 1439, 1440);

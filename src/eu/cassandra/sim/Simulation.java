@@ -117,7 +117,7 @@ public class Simulation implements Runnable {
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
-  			double mcrunsRatio = 1.0/mcruns;
+  			double mcrunsRatio = 1.0/(double)mcruns;
   			for(int i = 0; i < mcruns; i++) {
   				tick = 0;
   				double avgPPowerPerHour = 0;
@@ -132,7 +132,6 @@ public class Simulation implements Runnable {
   	  			double billingCycleEnergy = 0;
   	  			double billingCycleEnergyOffpeak = 0;
   	  			double billingCycleDays = 0;
-  	  			
   	  			while (tick < endTick) {
   	  				// If it is the beginning of the day create the events
   	  				if (tick % Constants.MIN_IN_DAY == 0) {
@@ -174,6 +173,7 @@ public class Simulation implements Runnable {
 		  				installation.nextStep(tick);
 		  				double p = installation.getCurrentPowerP();
 		  				double q = installation.getCurrentPowerQ();
+//		  				if(p> 0.001) System.out.println(p);
 		  				installation.updateMaxPower(p);
 		  				installation.updateAvgPower(p/endTick);
 		  				if(pricing.isOffpeak(tick)) {
@@ -274,6 +274,7 @@ public class Simulation implements Runnable {
   	  					avgPower * mcrunsRatio, 
   	  					energy * mcrunsRatio, 
   	  					cost * mcrunsRatio);
+  	  			setup();
   			}
   			// Obsolete normalization code (to be removed) now it is done on the fly
 //  			for(int i = 0; i < endTick; i++) {
