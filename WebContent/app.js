@@ -44,7 +44,9 @@ Ext.application({
 		'Pricing',
 		'Search',
 		'Csn',
-		'Cluster'
+		'Cluster',
+		'ThermalModule',
+		'LightingModule'
 	],
 	stores: [
 		'Projects',
@@ -87,7 +89,10 @@ Ext.application({
 		'CsnGraphTypeStore',
 		'ClusterBasedonStore',
 		'ClusterMethodStore',
-		'ClustersStore'
+		'ClustersStore',
+		'ThermalFeaturesStore',
+		'ThermalModuleStore',
+		'LightingModuleStore'
 	],
 	views: [
 		'MyViewport',
@@ -124,7 +129,9 @@ Ext.application({
 		'ClustersGrid',
 		'LevelsGrid',
 		'OffpickGrid',
-		'TimezonesGrid'
+		'TimezonesGrid',
+		'LightningModuleForm',
+		'ThermalModuleForm'
 	],
 	autoCreateViewport: true,
 	controllers: [
@@ -139,16 +146,18 @@ Ext.application({
 
 		Ext.getCmp('uiNavigationTreePanel').getSelectionModel().select(record);
 
-		var cmpToAdd;
+		var cmpToAdd, tree_root;
 
 		if (record.get('nodeType').search('Collection') > 0 ) {
 			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(record.c.store);
 			cmpToAdd = grid;
+			tree_root = record.store.tree.getRootNode();
 		}
 		else {
 
 			var myForm;
 			var cur_record = C.app.getRecordByNode(record);
+			tree_root = record.store.treeStore.tree.getRootNode();
 			switch(record.get('nodeType')) {
 				case 'Project': 
 				myForm = C.app.getProjectForm(cur_record);
@@ -203,13 +212,11 @@ Ext.application({
 			}
 
 			cmpToAdd = myForm;
-			//cmpToAdd.dirtyForm = true;
-			try {
-				if (record.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
-					cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
-				}
-			}
-			catch (e){}
+		}
+
+		//disable form and grid buttons if this is a library record
+		if (tree_root.get('nodeType') == 'CassLibrary') {
+			cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
 		}
 
 		//debugger;
@@ -441,6 +448,26 @@ Ext.application({
 		var myForm = myFormCmp.getForm();
 
 		myForm.loadRecord(record);
+
+		//check if thermal module or lighting module exist and update form layout
+		if (record.get('thermalModule_id')) {
+			myFormCmp.down('#add_thermal').hide();
+			myFormCmp.down('#update_thermal').show();
+			myFormCmp.down('#delete_thermal').show();
+
+			var thermalModuleStore = new C.store.ThermalModuleStore({storeId: 'thermalModuleStore_inst_id' + record.get('_id')});
+			//thermalModuleStore.getProxy().url += '/' + record.get('thermalModule_id');
+		}
+
+		//check if thermal module or lighting module exist and update form layout
+		if (record.get('lightingModule_id')) {
+			myFormCmp.down('#add_lighting').hide();
+			myFormCmp.down('#update_lighting').show();
+			myFormCmp.down('#delete_lighting').show();
+
+			var lightingModuleStore = new C.store.LightingModuleStore({storeId: 'lightingModuleStore_inst_id' + record.get('_id')});
+			//thermalModuleStore.getProxy().url += '/' + record.get('lightingModule_id');
+		}
 
 		Ext.each (record.node.childNodes, function(childNode, index) {
 			if(!childNode.c){
@@ -907,13 +934,13 @@ Ext.application({
 
 		var createBtn = function(n){
 			return Ext.create('Ext.Button', {
-				id: 'bb' + n.id,
+				id: n.get('root') ? 'bbroot': 'bb' + n.id,
 				text: n.get('name') + '<span class="rsaquo">  &rsaquo; </span>',
 				cls : n.get('clickable') ? 'breadcrumb_btn' : 'breadcrumb_btn not_clickable',
 				overCls : n.get('clickable') ? 'breadcrumb_btn_over' : 'not_clickable',
 				pressedCls :  n.get('clickable') ? 'breadcrumb_btn_over' : 'not_clickable',
 				handler: function () {
-					if ( !node.get('clickable') )
+					if ( !n.get('clickable') ) 
 					return false;
 					C.app.openTab(n);	
 				}
@@ -926,20 +953,22 @@ Ext.application({
 		}
 
 		//add root node
-		breadcrumb.unshift(
+		breadcrumb.unshift(createBtn(node));
+		/*breadcrumb.unshift(
 		Ext.create('Ext.Button', {
-			id: 'bbroot',
-			text: node.get('name') + '<span class="rsaquo">  &rsaquo; </span>',
-			cls :   'breadcrumb_btn',
-			overCls : 'breadcrumb_btn_over',
-			pressedCls : 'breadcrumb_btn_over',
-			handler: function () {
-				C.app.openTab(node);	
-			}
+		id: 'bbroot',
+		text: node.get('name') + '<span class="rsaquo">  &rsaquo; </span>',
+		cls :   'breadcrumb_btn',
+		overCls : 'breadcrumb_btn_over',
+		pressedCls : 'breadcrumb_btn_over',
+		handler: function () {
+		if (node.get('nodeType') == 'Projects')
+		C.app.openTab(node);	
+		}
 		})
 		);
-
-		console.info(breadcrumb);
+		*/
+		//console.info(breadcrumb);
 		return breadcrumb;
 
 
@@ -1076,6 +1105,7 @@ Ext.application({
 		switch (name) {
 			case "maxPower": return "max Power (W)";
 			case "avgPower": return "average Power (W)";
+			case "avgPeak": return "average Peak (W)";
 			case "energy": return "energy (KWh)";
 			case "cost": return "cost (EUR)";
 			default: return name;

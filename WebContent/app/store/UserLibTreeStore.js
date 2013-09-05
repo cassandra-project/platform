@@ -22,7 +22,7 @@ Ext.define('C.store.UserLibTreeStore', {
 		me.callParent([Ext.apply({
 			autoLoad: false,
 			storeId: 'MyJsonTreeStore1',
-			root: {id:'root', name:'User Library',nodeType:'UserLibrary',expanded:false,leaf:false,children:[]},
+			root: {id:'root', name:'User Library',nodeType:'UserLibrary',expanded:false,leaf:false,children:[], clickable: false},
 			proxy: {
 				type: 'memory'
 			},

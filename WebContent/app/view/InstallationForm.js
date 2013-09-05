@@ -120,6 +120,97 @@ Ext.define('C.view.InstallationForm', {
 						}
 					}
 				}
+			],
+			dockedItems: [
+				{
+					xtype: 'toolbar',
+					dock: 'top',
+					items: [
+						{
+							xtype: 'button',
+							handler: function(button, event) {
+								var formWindow = new Ext.Window({
+									items  : new C.view.ThermalModuleForm({operation: 'create','inst_form_id': button.up('form').id}),
+									title  : 'Add Thermal Modeling'
+								}); 
+								formWindow.show();
+							},
+							cls: 'add_thermal',
+							itemId: 'add_thermal',
+							text: 'Add thermal modeling'
+						},
+						{
+							xtype: 'button',
+							handler: function(button, event) {
+								return false;
+								var myFormCmp = button.up('form'),
+									myForm = myFormCmp.getForm(),
+									record = myFormCmp.getRecord();
+
+								var thermalModuleForm = new C.view.ThermalModuleForm({operation: 'update'});
+								var thermalModuleStore = Ext.getStore('thermalModuleStore_inst_id' + record.get('_id'));
+								//thermalModuleStore.getProxy().url += '/' +  button.up('form').getRecord().get('thermalModule_id');
+
+								thermalModuleForm.loadRecord(thermalModuleStore.getRange()[0]);
+
+
+								var formWindow = new Ext.Window({
+									items  :  thermalModuleForm,
+									title  : 'Add Thermal Modeling'
+								}); 
+								formWindow.show();
+							},
+							cls: 'thermal_added',
+							hidden: true,
+							itemId: 'update_thermal',
+							text: 'Update thermal modeling'
+						},
+						{
+							xtype: 'button',
+							handler: function(button, event) {
+								return false;
+								var myFormCmp = button.up('form'),
+									myForm = myFormCmp.getForm(),
+									record = myFormCmp.getRecord();
+
+								var thermalModuleStore = Ext.getStore('thermalModuleStore_inst_id' + record.get('_id'));
+								thermalModuleStore.removeAll();
+								record.set('thermalModule_id', '');
+
+								myFormCmp.down('#delete_thermal').hide();
+								myFormCmp.down('#update_thermal').hide();
+								myFormCmp.down('#add_thermal').show();
+							},
+							cls: 'thermal_added',
+							hidden: true,
+							itemId: 'delete_thermal',
+							text: 'Delete thermal modeling'
+						},
+						{
+							xtype: 'tbseparator'
+						},
+						{
+							xtype: 'button',
+							cls: 'add_lighting',
+							itemId: 'add_lighting',
+							text: 'Add lighting modeling'
+						},
+						{
+							xtype: 'button',
+							cls: 'lighting_added',
+							hidden: true,
+							itemId: 'update_lighting',
+							text: 'Update lighting modeling'
+						},
+						{
+							xtype: 'button',
+							cls: 'lighting_added',
+							hidden: true,
+							itemId: 'delete_lighting',
+							text: 'Delete lighting modeling'
+						}
+					]
+				}
 			]
 		});
 
