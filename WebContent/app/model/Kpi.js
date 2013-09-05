@@ -42,7 +42,7 @@ Ext.define('C.model.Kpi', {
 			convert: function(v, rec) {
 				return Ext.util.Format.number(v, '000,000.00');
 			},
-			name: 'avgPick',
+			name: 'avgPeak',
 			type: 'float'
 		},
 		{
