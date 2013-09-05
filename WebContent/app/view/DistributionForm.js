@@ -256,15 +256,6 @@ Ext.define('C.view.DistributionForm', {
 
 		}
 
-		/*this.remove(myDistrChart);
-		myDistrChartStore.removeAll();
-
-		if (distr_type == "repeatsNrOfTime" ) 
-		myDistrChart = new C.view.DistributionHistogramChart({store: myDistrChartStore});
-		else {
-		myDistrChart = new C.view.DistributionNormalChart({store: myDistrChartStore});
-		myDistrChart2 = new C.view.DistributionHistogramChart({store: myDistrChartStore});
-		this.insert(2, myDistrChart2);*/
 		if (this.query('chart')[1]) {
 			if ( values.distrType == "Histogram" && valuesDistr.length <= 100) {
 				this.query('chart')[0].hide();
@@ -276,7 +267,6 @@ Ext.define('C.view.DistributionForm', {
 			}
 		}
 
-		/*this.insert(2, myDistrChart);*/
 
 		distr_store.on(
 		'update', 
