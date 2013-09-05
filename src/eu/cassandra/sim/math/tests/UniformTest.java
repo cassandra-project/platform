@@ -31,16 +31,6 @@ import eu.cassandra.sim.utilities.RNG;
 
 public class UniformTest {
 
-	@Test
-	public void testgetDescription() {
-		Uniform tester=new Uniform();
-		assertTrue("Result", "Uniform probability density function"==tester.getDescription());
-	}
-		@Test
-		public void testGetNumberOfParameters() {
-			Uniform tester=new Uniform();
-			assertEquals("Result", 2, tester.getNumberOfParameters());
-		}
 		@Test
 		public void testGetParameter() {
 			Uniform tester=new Uniform(1,10);

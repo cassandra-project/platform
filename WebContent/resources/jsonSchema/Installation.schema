@@ -11,12 +11,12 @@
         "thermalModule_id": {
             "type": "string",
             "description": "The id of the thermal module for this Installation",
-            "optional": false
+            "optional": true
         },
         "lightingModule_id": {
             "type": "string",
             "description": "The id of the lighting module for this Installation",
-            "optional": false
+            "optional": true
         },
         "name": {
             "type": "string",

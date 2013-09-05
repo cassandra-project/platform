@@ -99,13 +99,18 @@ public class MongoResults {
 		boolean first = false;
 		DBObject query = new BasicDBObject();
 		String collection;
+		String tick_collection;
 		String id;
+		DBObject order = new BasicDBObject();
+		order.put("p", -1);
 		if(inst_id.equalsIgnoreCase(AGGR)) {
 			id = AGGR;
 			collection = COL_AGGRKPIS;
+			tick_collection = COL_AGGRRESULTS;
 		} else {
 			id = inst_id;
 			collection = COL_INSTKPIS;
+			tick_collection = COL_INSTRESULTS;
 		}
 		query.put("inst_id", id);
 		DBObject data = DBConn.getConn(dbname).getCollection(collection).findOne(query);
@@ -123,7 +128,18 @@ public class MongoResults {
 			newEnergy += ((Double)data.get("energy")).doubleValue();
 			newCost += ((Double)data.get("cost")).doubleValue();
 		}
-		data.put("maxPower",newMaxPower);
+		DBObject maxavg = null;
+		if(inst_id.equalsIgnoreCase(AGGR)) {
+			maxavg = DBConn.getConn(dbname).getCollection(tick_collection).find().sort(order).limit(1).next();
+		} else {
+			DBObject query2 = new BasicDBObject();
+			query2.put("inst_id", inst_id);
+			maxavg = DBConn.getConn(dbname).getCollection(tick_collection).find(query2).sort(order).limit(1).next();
+		}
+		double maxavgValue = newAvgPower;
+		if(maxavg != null) maxavgValue = ((Double)maxavg.get("p")).doubleValue();
+		data.put("avgPeak",newMaxPower);
+		data.put("maxPower",maxavgValue);
 		data.put("avgPower",newAvgPower);
 		data.put("energy",newEnergy);
 		data.put("cost",newCost);
