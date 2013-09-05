@@ -307,10 +307,12 @@ public class Activity extends Entity {
 						int appStartTime = startTime;
 						String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
 						Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
+//						System.out.println((tick + appStartTime) + " " + Event.SWITCH_ON + " " + a.getName());
 						queue.offer(eOn);
 						Event eOff =
 								new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
 						queue.offer(eOff);
+//						System.out.println((tick + appStartTime + appDuration) + " " + Event.SWITCH_ON + " " + a.getName());
 					}
 				}
 				numOfTimes--;

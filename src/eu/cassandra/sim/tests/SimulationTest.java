@@ -63,7 +63,7 @@ public class SimulationTest {
 		
 		when(sim.getCurrentTick ()).thenReturn(0);
 		when(sim.getSimulationWorld ()).thenReturn(simulationWorld);
-		sim.setup();
+		sim.setup(true);
 		sim.run();
 		
 		 assertEquals(7, sim.getEndTick());
