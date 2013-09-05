@@ -584,10 +584,12 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onGridpanelItemDblClick: function(dataview, record, item, index, e, eOpts) {
-		if (!record.node && record.paginationNode)
-		record.paginationNode.expand();
-		if (record.node)
-		C.app.openTab(record.node);
+		if (!record.node && record.paginationNode) {
+			record.paginationNode.expand();
+		}
+		if (record.node ) {
+			C.app.openTab(record.node);
+		}
 	},
 
 	onToolClick1: function(tool, e, eOpts) {
