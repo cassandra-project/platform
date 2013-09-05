@@ -42,6 +42,13 @@ Ext.define('C.model.Kpi', {
 			convert: function(v, rec) {
 				return Ext.util.Format.number(v, '000,000.00');
 			},
+			name: 'avgPick',
+			type: 'float'
+		},
+		{
+			convert: function(v, rec) {
+				return Ext.util.Format.number(v, '000,000.00');
+			},
 			name: 'avgPower',
 			type: 'float'
 		},

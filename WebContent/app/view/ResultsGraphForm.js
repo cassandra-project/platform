@@ -197,7 +197,6 @@ Ext.define('C.view.ResultsGraphForm', {
 		Ext.MessageBox.alert('Warning', 'Too many plot data! Chart may not be loaded properly!'); 
 
 
-		myResultsStore.removeAll();
 		myResultsStore.load( {params: formValues});
 		//record.save();
 		//TODO better impementation. Ignore all empty fields
