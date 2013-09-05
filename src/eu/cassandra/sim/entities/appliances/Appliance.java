@@ -158,8 +158,8 @@ public class Appliance extends Entity {
 				power = ((Tripplet)cm.getPattern(index1).get(index2)).v; 
 			}
 		} else {
-//			power = standByConsumption;
-			power = 0;
+			power = standByConsumption;
+//			power = 0;
 		}
 		return power;
 		} catch(Exception e) {
