@@ -601,13 +601,15 @@ public class MongoDBQueries {
 						findOne(new BasicDBObject("repeatsNrOfTime._id",new ObjectId(id))) != null) {
 					type = MongoActivityModels.REF_DISTR_REPEATS;
 				}
-				values = new GUIDistribution(type,dBObject).getValues();
+				values = new GUIDistribution(type, dBObject).getValues();
 			}
 			if(values == null && dBObject.containsField("values")) {
 				BasicDBList t = (BasicDBList)dBObject.get("values");
 				values = Utils.dblist2doubleArr(t); 
 			}
 			if(values != null) {
+				int exp = Utils.checkExp(values);
+				Utils.upscale(values, exp);
 				BasicDBList list = new BasicDBList();
 				for(int i=0;i<values.length;i++) {
 					BasicDBObject dbObj = new BasicDBObject("x",i);
@@ -615,6 +617,7 @@ public class MongoDBQueries {
 					list.add(dbObj);
 				}
 				dBObject.put("values", list);
+				dBObject.put("exp", exp);
 			}
 		}
 		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS)  ) {

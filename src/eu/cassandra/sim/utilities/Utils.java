@@ -109,6 +109,51 @@ public class Utils {
 		data.put(field, value);
 		return data.toString();
 	}
+	
+	public static void upscale(double[] values, int exp) {
+		for(int i = 0; i < values.length; i++) {
+			values[i] = values[i] * Math.pow(10, exp * -1);
+		}
+	}
+	
+	public static int checkExp(double[] values) {
+		int count_1 = 0;
+		int count_2 = 0;
+		int count_3 = 0;
+		int count_4 = 0;
+		int count_5 = 0;
+		int count_6 = 0;
+		int zeros = 0;
+		for(int i = 0; i < values.length; i++) {
+			if(values[i] < 0.0000000000001) zeros++;
+			if(values[i] <= 1 && values[i] > 0) count_1++;
+			if(values[i] <= 0.1 && values[i] > 0) count_2++;
+			if(values[i] <= 0.01 && values[i] > 0) count_3++;
+			if(values[i] <= 0.001 && values[i] > 0) count_4++;
+			if(values[i] <= 0.0001 && values[i] > 0) count_5++;
+			if(values[i] <= 0.00001 && values[i] > 0) count_6++;
+		}
+		double perc_1 = (double) count_1 / (double)(values.length-zeros);
+		double perc_2 = (double) count_2 / (double)(values.length-zeros);
+		double perc_3 = (double) count_3 / (double)(values.length-zeros);
+		double perc_4 = (double) count_4 / (double)(values.length-zeros);
+		double perc_5 = (double) count_5 / (double)(values.length-zeros);
+		double perc_6 = (double) count_6 / (double)(values.length-zeros);
+		if(perc_6 > 0.5) {
+			return -5;
+		} else if(perc_5 > 0.5) {
+			return -4;
+		} else if(perc_4 > 0.5) {
+			return -3;
+		} else if(perc_3 > 0.5) {
+			return -2;
+		} else if(perc_2 > 0.5) {
+			return -1;
+		} else if(perc_1 > 0.5) {
+			return 0;
+		}
+		return 0;
+	}
 
   public static double[] dblist2doubleArr (BasicDBList list)
   {
@@ -363,12 +408,13 @@ public class Utils {
    */
   public static void main (String[] args) throws UnknownHostException, MongoException, NoSuchAlgorithmException
   {
+	  System.out.println((0.9 * Math.pow(10.0, -1 * -1)) + " ");
     //System.out.println(hashcode((new Long(System.currentTimeMillis()).toString())));
-	  Mongo m = new Mongo("localhost");
-	  DB db = m.getDB("test");
-	  System.out.println(authenticate("a3lyY2hhOmxhbGExMjM=", db));
-	  System.out.println(MD5HashGenerator.generateMd5Hash("demo", "511cf876bf13fde604000000"));
-	  System.out.println(MD5HashGenerator.generateMd5Hash("demo", "512df4d4bd32fc4c0c000000"));
+	  //Mongo m = new Mongo("localhost");
+	  //DB db = m.getDB("test");
+	  //System.out.println(authenticate("a3lyY2hhOmxhbGExMjM=", db));
+	  //System.out.println(MD5HashGenerator.generateMd5Hash("demo", "511cf876bf13fde604000000"));
+	  //System.out.println(MD5HashGenerator.generateMd5Hash("demo", "512df4d4bd32fc4c0c000000"));
 
           // Test for probability distribution
 /*          Gaussian probDist1 = new Gaussian(800, 200);
