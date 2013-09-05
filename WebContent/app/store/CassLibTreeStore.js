@@ -22,7 +22,7 @@ Ext.define('C.store.CassLibTreeStore', {
 		me.callParent([Ext.apply({
 			autoLoad: false,
 			storeId: 'MyJsonTreeStore2',
-			root: {id:'root', name:'Cassandra Library',nodeType:'CassLibrary',expanded:false,leaf:false,children:[]},
+			root: {id:'root', name:'Cassandra Library',nodeType:'CassLibrary',expanded:false,leaf:false,children:[], clickable: false},
 			proxy: {
 				type: 'memory'
 			},
