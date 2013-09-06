@@ -384,7 +384,7 @@ Ext.application({
 							val: JSON.stringify(distr_record.get('values'))
 						});
 
-						if (!onlyHisto && distr_record.get('distrType') == 'Histogram') {
+						if (!onlyHisto && distr_record.get('distrType') == 'Histogram' && distr_record.get('values').length <= 100) {
 							myCurrentCmp.query('chart')[0].hide();
 							myCurrentCmp.query('chart')[1].show();
 						}
