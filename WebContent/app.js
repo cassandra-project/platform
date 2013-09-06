@@ -212,7 +212,7 @@ Ext.application({
 			cmpToAdd = myForm;
 		}
 
-		//disable form and grid buttons if this is a library record
+		//disable form and grid buttons if this is a library record, try catch blocks added as some nodes present tricky behavior
 		try {
 			rootNode = record.store.getRootNode();
 		}
