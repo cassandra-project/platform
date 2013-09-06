@@ -146,18 +146,16 @@ Ext.application({
 
 		Ext.getCmp('uiNavigationTreePanel').getSelectionModel().select(record);
 
-		var cmpToAdd, tree_root;
+		var cmpToAdd, rootNode;
 
 		if (record.get('nodeType').search('Collection') > 0 ) {
 			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(record.c.store);
 			cmpToAdd = grid;
-			tree_root = record.store.tree.getRootNode();
 		}
 		else {
 
 			var myForm;
 			var cur_record = C.app.getRecordByNode(record);
-			tree_root = record.store.treeStore.tree.getRootNode();
 			switch(record.get('nodeType')) {
 				case 'Project': 
 				myForm = C.app.getProjectForm(cur_record);
@@ -215,7 +213,13 @@ Ext.application({
 		}
 
 		//disable form and grid buttons if this is a library record
-		if (tree_root.get('nodeType') == 'CassLibrary') {
+		try {
+			rootNode = record.store.getRootNode();
+		}
+		catch(e) {
+			rootNode = record.store.treeStore.getRootNode();
+		}
+		if (rootNode.get('nodeType') == 'CassLibrary') {
 			cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
 		}
 
@@ -358,7 +362,7 @@ Ext.application({
 			storeId: 'DistributionsStore-actmod_id-'+record.node.get('nodeId'),
 			listeners:{
 				'load': 
-				function(store,records,options){console.info(record);
+				function(store,records,options){
 					Ext.each(records, function(distr_record, index){
 						var myCurrentCmp;
 						if ( distr_record.get('_id') == record.get('duration')) {
@@ -379,33 +383,40 @@ Ext.application({
 							params: JSON.stringify(distr_record.get('parameters')),
 							val: JSON.stringify(distr_record.get('values'))
 						});
-						/*if (!onlyHisto && distr_record.get('distrType') == 'Histogram') {
-						myCurrentCmp.query('chart')[0].hide();
+
+						if (!onlyHisto && distr_record.get('distrType') == 'Histogram') {
+							myCurrentCmp.query('chart')[0].hide();
+							myCurrentCmp.query('chart')[1].show();
 						}
-						else
-						myCurrentCmp.query('chart')[1].hide();
-						*/
+
 						myCurrentCmp.query('chart')[0].store.proxy.url += '/' + distr_record.get('_id');
-						myCurrentCmp.query('chart')[0].store.load();
+						myCurrentCmp.query('chart')[0].store.on('load', function(store){
 
-					});			
+							var exp = store.proxy.reader.rawData.data[0].exp;
+							var html = (exp < 0) ? ' x 10<span class="sup">' + exp + '</span>'  : ' ';
+							myCurrentCmp.down('#expLabel').update(html);
+
+						}, null, { single : true });
+							myCurrentCmp.query('chart')[0].store.load();
+							//debugger;
+						});			
+					}
+				}	
+			});
+
+			distr_store.load({
+				params: {
+					actmod_id: record.node.get('nodeId')
 				}
-			}	
-		});
+			});
 
-		distr_store.load({
-			params: {
-				actmod_id: record.node.get('nodeId')
-			}
-		});
-
-		record.c = {store: distr_store};
-		propertiesCmp.items.items[0].getComponent('appliancesFieldset').insert(1,grid);
-		myFormCmp.getComponent('properties_and_appliances').add(propertiesCmp);
-		myFormCmp.getComponent('distributionsFieldSet').add(myDurationCmp);	
-		myFormCmp.getComponent('distributionsFieldSet').add(myStartCmp);
-		myFormCmp.getComponent('distributionsFieldSet').add(myRepeatsCmp);
-		return myFormCmp;
+			record.c = {store: distr_store};
+			propertiesCmp.items.items[0].getComponent('appliancesFieldset').insert(1,grid);
+			myFormCmp.getComponent('properties_and_appliances').add(propertiesCmp);
+			myFormCmp.getComponent('distributionsFieldSet').add(myDurationCmp);	
+			myFormCmp.getComponent('distributionsFieldSet').add(myStartCmp);
+			myFormCmp.getComponent('distributionsFieldSet').add(myRepeatsCmp);
+			return myFormCmp;
 	},
 
 	flotDataFromExtStore: function(store, xField, yField,appendId) {
@@ -678,16 +689,26 @@ Ext.application({
 
 		var myChartLabel = new Ext.form.Label({
 			style: 'font-size:10px;',
-			text:''
+			text:'',
+			itemId: 'chartLabel'
 		});
 
 		myChartLabel.html = '<b>Probability </b> Vs <br /><b>'+ distrGraphStore.xAxisTitle +'</b>';
+
+		var myExpLabel = new Ext.form.Label({
+			style: 'font-size: 12px; margin-top: 10px; display: block; font-weight: bold; min-height: 12px',
+			text:'',
+			itemId: 'expLabel',
+			html: ' '
+		});
+
 		var myClickLabel = new Ext.form.Label({
 			style: 'font-size:10px; font-style:italic;',
 			text: 'Click on the chart to enlarge'
 		});
 
 		distrCmp.add(myChartLabel);
+		distrCmp.add(myExpLabel);
 		distrCmp.add(myResultsChart);
 		if (distr_type !== 'repeatsNrOfTime')
 		distrCmp.add(myResultsChart2);
