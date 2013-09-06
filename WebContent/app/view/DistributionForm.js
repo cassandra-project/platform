@@ -136,20 +136,20 @@ Ext.define('C.view.DistributionForm', {
 			this.down('#val').show();
 			this.down('#params').setValue('[]');
 			this.down('#params').hide();
-			if (this.query('chart')[1]) {
-				this.query('chart')[1].show();
-				this.query('chart')[0].hide();
-			}
+			/*if (this.query('chart')[1]) {
+			this.query('chart')[1].show();
+			this.query('chart')[0].hide();
+			}*/
 		}
 		else {
 			this.down('#params').show();
 			this.down('#val').setValue('[]');
 			this.down('#val').hide();
-			if (this.query('chart')[1] ) {
-				this.query('chart')[1].hide();
-				this.query('chart')[0].show();
-			}
-		}
+			/*if (this.query('chart')[1] ) {
+			this.query('chart')[1].hide();
+			this.query('chart')[0].show();
+			}*/
+		} 
 
 	},
 
@@ -180,6 +180,7 @@ Ext.define('C.view.DistributionForm', {
 	},
 
 	onButtonClick2: function(button, e, eOpts) {
+		var myFormCmp = this;
 		var myForm = this.getForm();
 		var record =myForm.getRecord();
 		var values = myForm.getValues();
@@ -275,8 +276,13 @@ Ext.define('C.view.DistributionForm', {
 				actmod_record.set(distr_type,record.get('_id') );
 				myForm.loadRecord(record);
 				myDistrChartStore.proxy.url += '/' + record.get('_id');
-			}
 
+			}
+			myDistrChartStore.on('load', function(store){
+				var exp = store.proxy.reader.rawData.data[0].exp;
+				var html = (exp < 0) ? ' x 10<span class="sup">' + exp + '</span>'  : ' ';
+				myFormCmp.down('#expLabel').update(html);
+			});
 			myDistrChartStore.load();
 		}, 
 		null, 

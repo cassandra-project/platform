@@ -28,6 +28,7 @@ Ext.define('C.store.DistributionValues', {
 			proxy: {
 				type: 'rest',
 				limitParam: '',
+				pageParam: '',
 				startParam: '',
 				url: '/cassandra/api/distr',
 				reader: {
@@ -59,22 +60,23 @@ Ext.define('C.store.DistributionValues', {
 
 	onJsonstoreLoad: function(store, records, successful, eOpts) {
 		console.info(store, records);
+		var params, raw_data;
 		if (successful) {
 			if (store.distr_type == 'repeatsNrOfTime')
 			store.loadData(records.slice(0, 5));
 			else if ( store.proxy.reader.rawData ) {
-				var raw_data = store.proxy.reader.rawData.data[0];
-				if (raw_data.distrType !== 'Histogram' ) {
-					Ext.each(records, function(record){
-						record.set('y', 100*record.get('y'));
-					});
-				}
+				raw_data = store.proxy.reader.rawData.data[0];
+				/*if (raw_data.distrType !== 'Histogram' ) {
+				Ext.each(records, function(record){
+				record.set('y', 100*record.get('y'));
+				});
+				}*/
 				if (raw_data.distrType == 'Normal Distribution' ) {
-					var params = raw_data.parameters[0];
+					params = raw_data.parameters[0];
 					store.loadData(records.slice(Math.max(0, params.mean - 8 * params.std), Math.min(1440, params.mean + 8 * params.std)+1));
 				}
 				else if (raw_data.distrType == 'Gaussian Mixture Models') {
-					var params = raw_data.parameters;
+					params = raw_data.parameters;
 					var low_i = [];
 					var high_i = [];
 					Ext.each(params, function(param){

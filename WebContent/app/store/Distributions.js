@@ -33,6 +33,7 @@ Ext.define('C.store.Distributions', {
 			proxy: {
 				type: 'rest',
 				limitParam: '',
+				pageParam: '',
 				startParam: '',
 				url: '/cassandra/api/distr',
 				reader: {

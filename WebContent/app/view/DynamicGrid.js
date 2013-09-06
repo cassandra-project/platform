@@ -380,11 +380,11 @@ Ext.define('C.view.DynamicGrid', {
 
 		var chartWindow = new Ext.Window({
 			title  : 'Compare runs and KPIs',
-			width : 850,
+			width : 870,
 			height : 650,
 			bodyPadding: 20,
-			autoScroll : true,
 			style: 'text-align: center',
+			autoScroll : true,
 			items: [{
 				xtype: 'label',
 				html: '<h1>Total Consumption Active Power</h1>'
@@ -426,11 +426,18 @@ Ext.define('C.view.DynamicGrid', {
 
 			tempStore.on('load',function(store, records){
 				var run_id = store.proxy.headers.dbname;
+				var sel_name;
+				selections.some(function(c){
+					if (c.get('_id') == run_id) {
+						sel_name = c.get('name');
+						return true;
+					}
+				});
 				var xAxisLabel = store.proxy.reader.jsonData.xAxisLabel;
 				var yAxisLabel = store.proxy.reader.jsonData.xAxisLabel;
 
 				series.push({
-					title: 'Run with id: ' + run_id  + ' (Aggr unit: ' + store.proxy.reader.jsonData.aggregationUnit + ' min.)',
+					title: sel_name  + ' (Aggr. unit: ' + store.proxy.reader.jsonData.aggregationUnit + ' min.)',
 					type: 'line',
 					highlight: {
 						size: 4,
@@ -441,7 +448,7 @@ Ext.define('C.view.DynamicGrid', {
 						width: 180,
 						height: 70,
 						renderer: function(storeItem, item) {
-							this.setTitle('Run with id : ' + run_id + '</br>' + yAxisLabel + ': ' + storeItem.get('y'+run_id) + ' Watt <br />' + xAxisLabel + ': ' + storeItem.get('x'));
+							this.setTitle(sel_name + '</br>' + yAxisLabel + ': ' + storeItem.get('y'+run_id) + ' Watt <br />' + xAxisLabel + ': ' + storeItem.get('x'));
 						}
 					},
 					xField: 'x',
@@ -479,10 +486,14 @@ Ext.define('C.view.DynamicGrid', {
 					var myResultsChart = Ext.create('Ext.chart.Chart', {
 						renderTo: Ext.getBody(),
 						title: 'Total Consumption Active Power',
-						width: 790, 
+						width: 800, 
 						height: 600, 
 						legend: {
-							position: 'bottom'
+							position: 'float',
+							x: 65,
+							y: 0,
+							boxFill: 'none',
+							boxStroke: 'none'
 						},
 						store: mystore,
 						axes: [
@@ -534,8 +545,10 @@ Ext.define('C.view.DynamicGrid', {
 					myKpiStore.loadRecords(recordArray);
 					var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(myKpiStore);
 					grid.closable = false;
+					grid.style = {margin: 'auto'};
 					grid.setTitle("KPIs");
 					chartWindow.insert(0,grid);
+
 				}
 			});
 			kpiStore.load();
