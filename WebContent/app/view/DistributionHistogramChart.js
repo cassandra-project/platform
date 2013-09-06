@@ -17,7 +17,7 @@ Ext.define('C.view.DistributionHistogramChart', {
 	extend: 'Ext.chart.Chart',
 
 	height: 260,
-	margin: '5 0 10 -10',
+	margin: '0 0 10 -10',
 	style: 'background:#fff',
 	width: 260,
 	shadow: false,
@@ -98,6 +98,12 @@ Ext.define('C.view.DistributionHistogramChart', {
 	onChartRender: function(component, eOpts) {
 		if (this.getBubbleParent().componentCls != 'x-window') {
 			this.on('click', function() {
+				var myExpLabel = new Ext.form.Label({
+					style: 'font-size: 12px; display: block; font-weight: bold; position: absolute; top: 20px; left: 10px',
+					text:'',
+					itemId: 'expLabel',
+					html: this.store.proxy.reader.rawData ? 'x10 <span class="sup">' + this.store.proxy.reader.rawData.data[0].exp + '</span>' : ''
+				});
 				var bigMe = new C.view.DistributionHistogramChart({ 
 					store: this.store,
 					width: 680,
@@ -109,7 +115,7 @@ Ext.define('C.view.DistributionHistogramChart', {
 				bigMe.width = 680;
 				bigMe.height = 400;
 				var chartWindow = new Ext.Window({
-					items  : bigMe,
+					items  : [myExpLabel, bigMe],
 					title  : 'Distribution Chart'
 				}); 
 				chartWindow.show();

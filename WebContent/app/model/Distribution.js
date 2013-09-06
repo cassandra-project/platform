@@ -47,6 +47,11 @@ Ext.define('C.model.Distribution', {
 		},
 		{
 			name: 'parameters'
+		},
+		{
+			name: 'exp',
+			persist: false,
+			type: 'int'
 		}
 	]
 });
