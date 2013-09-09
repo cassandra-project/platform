@@ -274,7 +274,7 @@ public class Simulation implements Runnable {
   	  					avgPower * mcrunsRatio, 
   	  					energy * mcrunsRatio, 
   	  					cost * mcrunsRatio);
-  	  			setup();
+  	  			if(i+1 != mcruns) setup(true);
   			}
   			// Obsolete normalization code (to be removed) now it is done on the fly
 //  			for(int i = 0; i < endTick; i++) {
@@ -303,7 +303,7 @@ public class Simulation implements Runnable {
   		}
   	}
 
-  	public void setup() throws Exception {
+  	public void setup(boolean jump) throws Exception {
   		installations = new Vector<Installation>();
   		/* TODO  Change the Simulation Calendar initialization */
   		simulationWorld = new SimulationParams();
@@ -326,7 +326,7 @@ public class Simulation implements Runnable {
   		if(setup.equalsIgnoreCase("static")) {
   			staticSetup(jsonScenario);
   		} else if(setup.equalsIgnoreCase("dynamic")) {
-  			dynamicSetup(jsonScenario);
+  			dynamicSetup(jsonScenario, jump);
   		} else {
   			throw new Exception("Problem with setup property!!!");
   		}
@@ -421,14 +421,14 @@ public class Simulation implements Runnable {
 	    }
   }
   	
-  	private String addEntity(Entity e) {
+  	private String addEntity(Entity e, boolean jump) {
   		BasicDBObject obj = e.toDBObject();
-  		DBConn.getConn(dbname).getCollection(e.getCollection()).insert(obj);
+  		if(!jump) DBConn.getConn(dbname).getCollection(e.getCollection()).insert(obj);
   		ObjectId objId = (ObjectId)obj.get("_id");
   		return objId.toString();
   	}
 
-  	public void dynamicSetup(DBObject jsonScenario) throws Exception {
+  	public void dynamicSetup(DBObject jsonScenario, boolean jump) throws Exception {
   		DBObject scenario = (DBObject)jsonScenario.get("scenario");
   		String scenario_id =  ((ObjectId)scenario.get("_id")).toString();
   		DBObject demog = (DBObject)jsonScenario.get("demog");
@@ -446,7 +446,7 @@ public class Simulation implements Runnable {
 	    	Installation inst = new Installation.Builder(
 	    			id, name, description, type).build();
 	    	inst.setParentId(scenario_id);
-	    	String inst_id = addEntity(inst);
+	    	String inst_id = addEntity(inst, jump);
 	    	inst.setId(inst_id);
 	    	int appcount = Utils.getInt(instDoc.get("appcount"));
 	    	// Create the appliances
@@ -491,12 +491,12 @@ public class Simulation implements Runnable {
 	    			if(RNG.nextDouble() < probValue) {
     					Appliance selectedApp = existing.get(key);
     					selectedApp.setParentId(inst.getId());
-    			    	String app_id = addEntity(selectedApp);
+    			    	String app_id = addEntity(selectedApp, jump);
     			    	selectedApp.setId(app_id);
     			    	inst.addAppliance(selectedApp);
     			    	ConsumptionModel cm = selectedApp.getPConsumptionModel();
     			    	cm.setParentId(app_id);
-    			    	String cm_id = addEntity(cm);
+    			    	String cm_id = addEntity(cm, jump);
     			    	cm.setId(cm_id);
     				}
 	    		}
@@ -574,13 +574,13 @@ public class Simulation implements Runnable {
 	    			if(roulette < sum) {
 	    				Person selectedPerson = existingPersons.get(entityId);
 	    				selectedPerson.setParentId(inst.getId());
-    			    	String person_id = addEntity(selectedPerson);
+    			    	String person_id = addEntity(selectedPerson, jump);
     			    	selectedPerson.setId(person_id);
 	    				inst.addPerson(selectedPerson);
 	    				Vector<Activity> activities = selectedPerson.getActivities();
 	    				for(Activity a : activities) {
 	    					a.setParentId(person_id);
-	    					String act_id = addEntity(a);
+	    					String act_id = addEntity(a, jump);
 	    					a.setId(act_id);
 	    					Vector<DBObject> models = a.getModels();
 	    					Vector<DBObject> starts = a.getStarts();
@@ -589,18 +589,18 @@ public class Simulation implements Runnable {
 	    					for(int l = 0; l < models.size();  l++ ) {
 	    						DBObject m = models.get(l);
 	    						m.put("act_id", act_id);
-	    						DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(m);
+	    						if(!jump)DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(m);
 	    				  		ObjectId objId = (ObjectId)m.get("_id");
 	    				  		String actmod_id = objId.toString();
 	    				  		DBObject s = starts.get(l);
 	    				  		s.put("actmod_id", actmod_id);
-	    				  		DBConn.getConn(dbname).getCollection(MongoDistributions.COL_DISTRIBUTIONS).insert(s);
+	    				  		if(!jump)DBConn.getConn(dbname).getCollection(MongoDistributions.COL_DISTRIBUTIONS).insert(s);
 	    				  		DBObject d = durations.get(l);
 	    				  		d.put("actmod_id", actmod_id);
-	    				  		DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(d);
+	    				  		if(!jump)DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(d);
 	    				  		DBObject t = times.get(l);
 	    				  		t.put("actmod_id", actmod_id);
-	    				  		DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(t);
+	    				  		if(!jump)DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(t);
 	    					}
 	    				}
 	    				break;

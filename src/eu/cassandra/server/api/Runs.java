@@ -287,7 +287,7 @@ public class Runs {
 			}
 			scenario.put("instcount", new Integer(countInst));
 			Simulation sim = new Simulation(scenario.toString(), dbname);
-			sim.setup();
+			sim.setup(false);
 			// Scenario building finished
 			DBObject run = buildRunObj(objid, name, prj_id);
 			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
