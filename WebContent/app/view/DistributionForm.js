@@ -257,17 +257,6 @@ Ext.define('C.view.DistributionForm', {
 
 		}
 
-		if (this.query('chart')[1]) {
-			if ( values.distrType == "Histogram" && valuesDistr.length <= 100) {
-				this.query('chart')[0].hide();
-				this.query('chart')[1].show();
-			}
-			else {
-				this.query('chart')[0].show();
-				this.query('chart')[1].hide();
-			}
-		}
-
 
 		distr_store.on(
 		'update', 
@@ -282,6 +271,17 @@ Ext.define('C.view.DistributionForm', {
 				var exp = store.proxy.reader.rawData.data[0].exp;
 				var html = (exp < 0) ? ' x 10<span class="sup">' + exp + '</span>'  : ' ';
 				myFormCmp.down('#expLabel').update(html);
+
+				if (myFormCmp.query('chart')[1]) {
+					if (record.get('distrType') == "Histogram") {
+						myFormCmp.query('chart')[0].hide();
+						myFormCmp.query('chart')[1].show();
+					}
+					else {
+						myFormCmp.query('chart')[1].hide();
+						myFormCmp.query('chart')[0].show();
+					}
+				}
 			});
 			myDistrChartStore.load();
 		}, 
