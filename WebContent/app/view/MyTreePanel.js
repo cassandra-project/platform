@@ -16,7 +16,6 @@
 Ext.define('C.view.MyTreePanel', {
 	extend: 'Ext.tree.Panel',
 
-	autoScroll: true,
 	collapseDirection: 'left',
 	store: 'NavigationTreeStore',
 	displayField: 'name',
