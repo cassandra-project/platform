@@ -19,7 +19,7 @@ Ext.define('C.view.DynamicGrid', {
 	minHeight: 250,
 	autoScroll: true,
 	title: 'My Grid Panel',
-	columnLines: false,
+	columnLines: true,
 	forceFit: true,
 	store: 'Scenarios',
 
