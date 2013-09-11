@@ -31,6 +31,7 @@ Ext.define('C.view.CassLibTreePanel', {
 				height: 91,
 				margin: '5px 0 0 0',
 				width: 200,
+				loadMask: true,
 				loadingText: 'loading...',
 				plugins: [
 					Ext.create('Ext.tree.plugin.TreeViewDragDrop', {

@@ -21,6 +21,10 @@ Ext.define('C.controller.setDbName', {
 		//set max loaded records limit
 		C.limit = 200;
 
+		//prevent pop up windows move out of browser area
+		Ext.override(Ext.Window, {
+			constrainHeader: true
+		});
 
 		Ext.QuickTips.init();
 		// invalid markers to sides
