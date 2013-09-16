@@ -73,7 +73,7 @@ Ext.define('C.store.Appliances', {
 					nodeStoreId: store.storeId,
 					leaf:  true,
 					expandable:  false,
-					draggable: true
+					allowDrop: false
 				});
 				record.node = node;
 			});
@@ -95,7 +95,7 @@ Ext.define('C.store.Appliances', {
 					expanded: false,
 					leaf: true,
 					expandable: false,
-					draggable: true
+					allowDrop: false
 				});
 				record.node = node;
 				C.app.createForm(record.node);

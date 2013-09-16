@@ -153,7 +153,7 @@ Ext.define('C.view.CassLibTreePanel', {
 										leaf: false,
 										expandable:   true,
 										fakeChildren: true,
-										draggable: false
+										allowDrop: false
 									});
 									store_record.node = node;
 								});
@@ -198,7 +198,7 @@ Ext.define('C.view.CassLibTreePanel', {
 								leaf: false,
 								expandable: true,
 								fakeChildren: true,
-								draggable: false,
+								allowDrag: false,
 								icon: 'resources/icons/activities.png',
 								iconCls: 'treeIcon'
 							});
@@ -227,7 +227,7 @@ Ext.define('C.view.CassLibTreePanel', {
 								leaf: false,
 								expandable: true,
 								fakeChildren: true,
-								draggable: false,
+								allowDrag: false,
 								icon: 'resources/icons/activity_models.png',
 								iconCls: 'treeIcon'
 							});
@@ -255,7 +255,7 @@ Ext.define('C.view.CassLibTreePanel', {
 								leaf: false,
 								expandable: true,
 								fakeChildren: true,
-								draggable: false,
+								allowDrag: false,
 								icon: 'resources/icons/persons.png',
 								iconCls: 'treeIcon'
 							});
@@ -266,7 +266,7 @@ Ext.define('C.view.CassLibTreePanel', {
 								leaf: false,
 								expandable: true,
 								fakeChildren: true,
-								draggable: false,
+								allowDrag: false,
 								icon: 'resources/icons/appliances.png',
 								iconCls: 'treeIcon'
 							});
@@ -300,7 +300,7 @@ Ext.define('C.view.CassLibTreePanel', {
 			leaf: false,
 			expandable: true,
 			fakeChildren: true,
-			draggable: false,
+			allowDrag: false,
 			icon: 'resources/icons/installations.png',
 			iconCls: 'treeIcon'
 		});
@@ -311,7 +311,7 @@ Ext.define('C.view.CassLibTreePanel', {
 			leaf: false,
 			expandable: true,
 			fakeChildren: true,
-			draggable: false,
+			allowDrag: false,
 			icon: 'resources/icons/persons.png',
 			iconCls: 'treeIcon'
 		});
@@ -322,7 +322,7 @@ Ext.define('C.view.CassLibTreePanel', {
 			leaf: false,
 			expandable: true,
 			fakeChildren: true,
-			draggable: false,
+			allowDrag: false,
 			icon: 'resources/icons/activity_models.png',
 			iconCls: 'treeIcon'
 		});
@@ -333,7 +333,7 @@ Ext.define('C.view.CassLibTreePanel', {
 			leaf: false,
 			expandable: true,
 			fakeChildren: true,
-			draggable: false,
+			allowDrag: false,
 			icon: 'resources/icons/appliances.png',
 			iconCls: 'treeIcon'
 		});

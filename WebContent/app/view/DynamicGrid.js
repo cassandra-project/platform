@@ -196,26 +196,32 @@ Ext.define('C.view.DynamicGrid', {
 		Returning 0 To this event signals that the data transfer operation should not take place, but that
 		the gesture was valid, and that the repair operation should not take place.
 		*/
-		if (!overModel)
-		return false;
-		var record = (data.records[0].node) ? data.records[0].node : data.records[0];
+		var record;
 
-		//make sure overModel.node is rendered
-		if (!overModel.node)
-		overModel.paginationNode.expand();
+		// record can be a lot of things, navigation record, grid row.
+		if  (data.records[0].paginationNode || data.records[0].node) {
+			record = data.records[0];
+			if (!record.node) {
+				record.paginationNode.expand();
+			}
+			node = record.node;
+		}
+		else {
+			node = data.records[0];
+			record = C.app.getRecordByNode(node);
+		}
 
 		//if record belongs to Cassandra Library return false
-		debugger;
-		if (overModel.node.getOwnerTree().getRootNode().get('id') == C.lib_id)
-		return false;
+		if (C.app.belongsToCassLib(this.store.navigationNode.store)) {
+			return false;
+		}
 
-		if('C.model.'+record.get('nodeType')==this.store.model.modelName){
+
+		if('C.model.'+node.get('nodeType') == this.store.model.modelName){
 			dropHandlers.cancelDrop();
-			var index = Ext.getStore(record.get('nodeStoreId')).findExact('_id',record.get('id'));
-			var node = Ext.getStore(record.get('nodeStoreId')).getAt(index);
 			var parent_id = (this.store.navigationNode.get('nodeType') == 'ProjectsCollection')?'':this.store.navigationNode.parentNode.get('id');
 			parent_idKey = '';
-			switch(record.get('nodeType')){
+			switch(node.get('nodeType')){
 				case 'Scenario': parent_idKey = 'project_id'; break;
 				case 'SimulationParam': parent_idKey = 'scn_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
@@ -228,11 +234,11 @@ Ext.define('C.view.DynamicGrid', {
 				default: return false;
 			}
 
-			if ( !Ext.EventObject.shiftKey && record.get('nodeType') !== 'Pricing' && record.get('nodeType') !== 'Demographic' && record.get('nodeType') !== 'SimulationParam'){
+			if ( !Ext.EventObject.shiftKey && node.get('nodeType') !== 'Pricing' && node.get('nodeType') !== 'Demographic' && node.get('nodeType') !== 'SimulationParam'){
 				data.copy = true;
 				var targetID = '';
 				var meID = '';
-				switch(record.get('nodeType')){
+				switch(node.get('nodeType')){
 					case 'Scenario': targetID = 'toPrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
@@ -244,7 +250,7 @@ Ext.define('C.view.DynamicGrid', {
 				}
 
 				Ext.Ajax.request({
-					url: '/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+parent_id,
+					url: '/cassandra/api/copy?'+meID+'='+record.get('_id')+'&'+targetID+'='+parent_id,
 					method: 'POST',
 					scope: this,
 					success: function(response, eOpts) {	
@@ -262,7 +268,7 @@ Ext.define('C.view.DynamicGrid', {
 
 				//Ext.sliding_box.msg('Drag and Drop info', 'By holding <b>Shift</b> key pressed while copying a node </br> all its childred will be copied as well');
 
-				var dataToAdd = JSON.parse(JSON.stringify(node.data));
+				var dataToAdd = JSON.parse(JSON.stringify(record.data));
 				delete dataToAdd._id;
 				dataToAdd[parent_idKey] = parent_id;
 				this.store.add(dataToAdd);
