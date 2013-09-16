@@ -75,7 +75,7 @@ Ext.define('C.store.Csn', {
 					leaf: true,
 					expandable: false,
 					fakeChildren: false,
-					draggable: true
+					allowDrop: false
 				});
 				record.node = node;
 			});
@@ -99,7 +99,7 @@ Ext.define('C.store.Csn', {
 					leaf: true,
 					expandable: false,
 					fakeChildren: false,
-					draggable: false
+					allowDrop: false
 				});
 				record.node = node;
 				C.app.createForm(record.node);

@@ -22,7 +22,7 @@ Ext.define('C.store.NavigationTreeStore', {
 		me.callParent([Ext.apply({
 			autoLoad: false,
 			storeId: 'NavigationTreeStore',
-			root: {id:'root',name:'Projects',nodeType:'ProjectsCollection',expanded:true,leaf:false,children:[]},
+			root: {id:'root',name:'Projects',nodeType:'ProjectsCollection',expanded:true,leaf:false,children:[], allowDrag: false, allowDrop: false },
 			proxy: {
 				type: 'memory'
 			},

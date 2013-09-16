@@ -213,13 +213,8 @@ Ext.application({
 		}
 
 		//disable form and grid buttons if this is a library record, try catch blocks added as some nodes present tricky behavior
-		try {
-			rootNode = record.store.getRootNode();
-		}
-		catch(e) {
-			rootNode = record.store.treeStore.getRootNode();
-		}
-		if (rootNode.get('nodeType') == 'CassLibrary') {
+
+		if (C.app.belongsToCassLib(record.store)) {
 			cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
 		}
 
@@ -1131,6 +1126,19 @@ Ext.application({
 			case "cost": return "cost (EUR)";
 			default: return name;
 		}
+	},
+
+	belongsToCassLib: function(store) {
+		try {
+			rootNode = store.getRootNode();
+		}
+		catch(e) {
+			rootNode = store.treeStore.getRootNode();
+		}
+		if (rootNode.get('nodeType') == 'CassLibrary') {
+			return true;
+		}
+		return false;
 	}
 
 });
