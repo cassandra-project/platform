@@ -72,7 +72,7 @@ Ext.define('C.store.Runs', {
 					nodeId: record.data._id,
 					nodeStoreId: store.storeId,
 					leaf: true,
-					draggable: false
+					allowDrag: false
 					//icon: 'http://weblogtoolscollection.com/pluginblog/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.gif'
 				});
 				record.node = node;
@@ -96,7 +96,7 @@ Ext.define('C.store.Runs', {
 					nodeId: record.get('_id'),
 					nodeStoreId: store.storeId,
 					leaf: true,
-					draggable: false
+					allowDrag: false
 				});
 				record.node = node;
 			}

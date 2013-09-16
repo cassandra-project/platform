@@ -78,27 +78,28 @@ Ext.define('C.store.Installations', {
 					leaf: false,
 					expandable:   true,
 					fakeChildren: true,
-					draggable: false
+					allowDrop: false
 				});
 				record.node = node;
 			});
 			else {
+				debugger;
 				var pages = Math.ceil(store.totalCount / C.limit);
 				var counter = 1;
 				//TODO find a solution for expandable last node instead of this crappy hack
 				while ( counter <= (pages + 1) ) {
 					var node = store.navigationNode.appendChild({
-						id: "pagination_" + counter + "_" + store.navigationNode.get("id"),
+						id: "pagination_" + counter + "_" + store.navigationNode.get("parentId"),
 						name: 'Installations (page '+ counter + ')',
 						nodeType: 'InstallationsCollection',
 						leaf: false,
 						expandable:   true,
 						fakeChildren: true,
-						draggable: false,
+						allowDrop: false,
+						allowDrag: false,
 						page: counter,
 						clickable: false
 					});
-					node.id = node.get('id');
 
 					counter++;
 				}
@@ -132,7 +133,7 @@ Ext.define('C.store.Installations', {
 					leaf: false,
 					expandable:  true,
 					fakeChildren: true,
-					draggable: false
+					allowDrop: false
 				});
 
 				record.node = node;
@@ -146,15 +147,14 @@ Ext.define('C.store.Installations', {
 	onJsonstoreRemove: function(store, record, index, isMove, eOpts) {
 		if (record.paginationNode) {
 			record.paginationNode.removeChild(record.node);
-			if (!record.paginationNode.hasChildNodes())
-			record.paginationNode.remove();
-			if (store.navigationNode.childNodes.length == 1) {
-				var lasting_node = store.navigationNode.childNodes[0];
-				store.navigationNode.appendChild(lasting_node.childNodes);
+			//remove pagination node if all it's childnodes are removed except if it's the last one
+			if (!record.paginationNode.hasChildNodes() && store.navigationNode.childNodes.length > 1) {
+				record.paginationNode.remove();
 			}
 		}
-		else if (record.node)
-		store.navigationNode.removeChild(record.node);
+		else if (record.node) {
+			store.navigationNode.removeChild(record.node);
+		}
 	}
 
 });

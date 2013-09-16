@@ -72,7 +72,7 @@ Ext.define('C.store.ActivityModels', {
 					nodeId: record.data._id,
 					nodeStoreId: store.storeId,
 					leaf: true,
-					draggable: true
+					allowDrop: false
 				});
 				record.node = node;
 			});
@@ -93,7 +93,7 @@ Ext.define('C.store.ActivityModels', {
 					nodeId: record.get('_id'),
 					nodeStoreId: store.storeId,
 					leaf: true,
-					draggable: true
+					allowDrop: false
 				});
 				record.node = node;
 				C.app.createForm(record.node);

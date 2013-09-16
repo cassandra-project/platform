@@ -71,25 +71,35 @@ Ext.define('C.view.UserLibTreePanel', {
 
 	onTreedragdroppluginBeforeDrop: function(node, data, overModel, dropPosition, dropHandlers, eOpts) {
 		console.info('Before node drop.', this, node, data, overModel, dropPosition, dropHandlers, eOpts);
+		var record;
+
 		if (overModel.get('page')) { //if dummy pagination node then return false
 			return false;
 		}
-		var record = (data.records[0].node) ? data.records[0].node : data.records[0];
-		if  (record.paginationNode) {
-			record.paginationNode.expand();
-			record = record.node;
+
+		// record can be a lot of things, navigation record, grid row.
+		if  (data.records[0].paginationNode || data.records[0].node) {
+			record = data.records[0];
+			if (!record.node) {
+				record.paginationNode.expand();
+			}
+			node = record.node;
+		}
+		else {
+			node = data.records[0];
+			record = C.app.getRecordByNode(node);
 		}
 
+
 		// Node from tree || Node from grid.
-		if ( record.parentNode.get('nodeType') == overModel.get('nodeType') ){
-			// record can be a lot of things, navigation record, grid row.
-			// Get the actuall data from its store to skip unwanted behaviour.
+		if (node.parentNode.get('nodeType') == overModel.get('nodeType')){
 			dropHandlers.cancelDrop();
-			var index = Ext.getStore(record.get('nodeStoreId')).findExact('_id', record.get('id'));
-			var node = Ext.getStore(record.get('nodeStoreId')).getAt(index);
+			// TODO Epic SWITCH-CASE statement goes here to get the *_id key for the parent.
+			// ex. scenario_id in the Installation case.
+			// TODO Move this epic thigie to each model as config?
 
 			parent_idKey = '';
-			switch(record.get('nodeType')){
+			switch(node.get('nodeType')){
 				case 'Scenario': parent_idKey = 'project_id'; break;
 				case 'SimulationParam': parent_idKey = 'scn_id'; break;
 				case 'Installation': parent_idKey = 'scenario_id'; break;
@@ -102,12 +112,11 @@ Ext.define('C.view.UserLibTreePanel', {
 				default: return false;
 			}
 
-
-			if ( !Ext.EventObject.shiftKey && record.get('nodeType') !== 'Pricing' && record.get('nodeType') !== 'Demographic' && record.get('nodeType') !== 'SimulationParam' ){
+			if ( !Ext.EventObject.shiftKey && node.get('nodeType') !== 'Pricing' && node.get('nodeType') !== 'Demographic' && node.get('nodeType') !== 'SimulationParam'){
 				data.copy = true;
 				var targetID = '';
 				var meID = '';
-				switch(record.get('nodeType')){
+				switch(node.get('nodeType')){
 					case 'Scenario': targetID = 'toPrjID'; meID = 'scnID'; parent_idKey = 'prj_id'; break;
 					case 'Installation': targetID = 'toScnID'; meID = 'instID'; parent_idKey = 'scn_id'; break;
 					case 'Person': targetID = 'toInstID'; meID = 'persID'; break;
@@ -119,7 +128,7 @@ Ext.define('C.view.UserLibTreePanel', {
 				}
 
 				Ext.Ajax.request({
-					url: '/cassandra/api/copy?'+meID+'='+node.get('_id')+'&'+targetID+'='+overModel.get('parentId'),
+					url: '/cassandra/api/copy?'+meID+'='+record.get('_id')+'&'+targetID+'='+overModel.get('parentId'),
 					method: 'POST',
 					scope: this,
 					success: function(response, eOpts) {	
@@ -127,20 +136,24 @@ Ext.define('C.view.UserLibTreePanel', {
 						var params = {};
 						params[parent_idKey] = overModel.get('parentId');
 						overModel.removeAll();
-						try {
-							overModel.c.store.load( {params : params });
+						overModel.expand();
+						/*try {
+						overModel.c.store.load( {params : params });
 						}
 						catch (e) {
-							overModel.expand();
-							overModel.c.store.load( {params : params });
-						}
+						overModel.expand();
+						overModel.c.store.load( {params : params });
+						}*/
 						Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 					}
 				});
 
 			} 
 			else {
-				var recordRawData = JSON.parse(JSON.stringify(node.data));
+
+				//Ext.sliding_box.msg('Drag and Drop info', 'By holding <b>Shift</b> key pressed while copying a node </br> all its childred will be copied as well');
+
+				var recordRawData = JSON.parse(JSON.stringify(record.data));
 				delete recordRawData._id;
 				recordRawData[parent_idKey] = overModel.get('parentId'); 
 				try {
@@ -150,13 +163,11 @@ Ext.define('C.view.UserLibTreePanel', {
 					overModel.expand();
 					overModel.c.store.add(recordRawData);
 				}
-
 			}
 			return 0;
 		}
 
 		return false;
-
 
 
 
@@ -237,7 +248,7 @@ Ext.define('C.view.UserLibTreePanel', {
 								leaf: false,
 								expandable:   true,
 								fakeChildren: true,
-								draggable: false
+								allowDrop: false
 							});
 							store_record.node = node;
 						});
@@ -281,7 +292,7 @@ Ext.define('C.view.UserLibTreePanel', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false,
+						allowDrag: false,
 						icon: 'resources/icons/activities.png',
 						iconCls: 'treeIcon'
 					});
@@ -310,7 +321,7 @@ Ext.define('C.view.UserLibTreePanel', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false,
+						allowDrag: false,
 						icon: 'resources/icons/activity_models.png',
 						iconCls: 'treeIcon'
 					});
@@ -338,7 +349,7 @@ Ext.define('C.view.UserLibTreePanel', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false,
+						allowDrag: false,
 						icon: 'resources/icons/persons.png',
 						iconCls: 'treeIcon'
 					});
@@ -349,7 +360,7 @@ Ext.define('C.view.UserLibTreePanel', {
 						leaf: false,
 						expandable: true,
 						fakeChildren: true,
-						draggable: false,
+						allowDrag: false,
 						icon: 'resources/icons/appliances.png',
 						iconCls: 'treeIcon'
 					});
@@ -376,7 +387,7 @@ Ext.define('C.view.UserLibTreePanel', {
 			leaf: false,
 			expandable: true,
 			fakeChildren: true,
-			draggable: false,
+			allowDrag: false,
 			icon: 'resources/icons/installations.png',
 			iconCls: 'treeIcon'
 		});
@@ -387,7 +398,7 @@ Ext.define('C.view.UserLibTreePanel', {
 			leaf: false,
 			expandable: true,
 			fakeChildren: true,
-			draggable: false,
+			allowDrag: false,
 			icon: 'resources/icons/persons.png',
 			iconCls: 'treeIcon'
 		});
@@ -398,7 +409,7 @@ Ext.define('C.view.UserLibTreePanel', {
 			leaf: false,
 			expandable: true,
 			fakeChildren: true,
-			draggable: false,
+			allowDrag: false,
 			icon: 'resources/icons/activity_models.png',
 			iconCls: 'treeIcon'
 		});
@@ -409,7 +420,7 @@ Ext.define('C.view.UserLibTreePanel', {
 			leaf: false,
 			expandable: true,
 			fakeChildren: true,
-			draggable: false,
+			allowDrag: false,
 			icon: 'resources/icons/appliances.png',
 			iconCls: 'treeIcon'
 		});

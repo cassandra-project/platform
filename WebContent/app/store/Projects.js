@@ -74,7 +74,8 @@ Ext.define('C.store.Projects', {
 					leaf: false,
 					expandable: true,
 					fakeChildren: true,
-					draggable: false
+					allowDrag: false,
+					allowDrop: false
 				});
 				record.node = node;
 
@@ -105,7 +106,8 @@ Ext.define('C.store.Projects', {
 					leaf: false,
 					expandable: true,
 					fakeChildren: true,
-					draggable: false
+					allowDrag: false,
+					allowDrop: false
 				});
 				record.node = node;
 				C.app.createForm(record.node);
