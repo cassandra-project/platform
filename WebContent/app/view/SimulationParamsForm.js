@@ -96,6 +96,13 @@ Ext.define('C.view.SimulationParamsForm', {
 									name: 'description'
 								},
 								{
+									xtype: 'numberfield',
+									width: 246,
+									fieldLabel: 'CO2 factor per KWh',
+									name: 'co2',
+									minValue: 0
+								},
+								{
 									xtype: 'textfield',
 									hidden: true,
 									itemId: 'prc_id',
@@ -290,7 +297,8 @@ Ext.define('C.view.SimulationParamsForm', {
 				'calendar': calendar, 
 				'numberOfDays': duration,
 				'prc_id': values.prc_id,
-				'base_prc_id': values.base_prc_id
+				'base_prc_id': values.base_prc_id,
+				'co2': values.co2
 			});
 
 			this.dirtyForm = false;

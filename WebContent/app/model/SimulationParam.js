@@ -40,6 +40,10 @@ Ext.define('C.model.SimulationParam', {
 			type: 'string'
 		},
 		{
+			name: 'co2',
+			type: 'float'
+		},
+		{
 			name: 'scn_id'
 		},
 		{
