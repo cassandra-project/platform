@@ -1124,6 +1124,7 @@ Ext.application({
 			case "avgPeak": return "average Peak (W)";
 			case "energy": return "energy (KWh)";
 			case "cost": return "cost (EUR)";
+			case "co2": return "CO2 factor per KWh";
 			default: return name;
 		}
 	},

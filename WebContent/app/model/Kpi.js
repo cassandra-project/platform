@@ -65,6 +65,13 @@ Ext.define('C.model.Kpi', {
 			},
 			name: 'cost',
 			type: 'float'
+		},
+		{
+			convert: function(v, rec) {
+				return Ext.util.Format.number(v, '000,000.00');
+			},
+			name: 'co2',
+			type: 'float'
 		}
 	]
 });
