@@ -50,6 +50,7 @@ public class JSONValidator {
 	public static final int SIMPARAM_SCHEMA = 10;
 	public static final int PRICING_SCHEMA = 11;
 	public static final int GRAPH_SCHEMA = 12;
+	public static final int LIGHTING_SCHEMA = 13;
 
 	public static final int CLUSTER_SCHEMA = 100;
 	public static final int CLUSTER_PARAM_SCHEMA = 101;
@@ -92,6 +93,7 @@ public class JSONValidator {
 		break;
 		case CLUSTER_PARAM_SCHEMA: fileName += "ClusterParameters.schema";
 		break;
+		case LIGHTING_SCHEMA: fileName += "Lighting.schema";
 		}
 		return fileName;
 	}

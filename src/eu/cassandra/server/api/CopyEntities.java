@@ -141,6 +141,7 @@ public class CopyEntities {
 					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
 		}
 		}catch (Exception e){
+			e.printStackTrace();
 			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
 					new MongoInvalidObjectId("The ObjecID provided is probably invalid or not existing"))));
 		}

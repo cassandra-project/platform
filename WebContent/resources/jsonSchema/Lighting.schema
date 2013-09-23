@@ -1,0 +1,168 @@
+{
+    "name": "Lighting",
+    "type": "object",
+    "description": "Lighting module params",
+    "properties": {
+        "inst_id": {
+            "type": "string",
+            "description": "The ObjectId of the Person this Activity belongs",
+            "optional": false
+        },
+        "luminaireHeight": {
+            "type": "number",
+            "description": "The luminaire height in meters",
+            "optional": true
+        },
+        "workplaneHeight": {
+            "type": "number",
+            "description": "The workplane height (typical desk height 0.76 meters) in meters",
+            "optional": true
+        },
+        "ballastFactor": {
+            "type": "number",
+            "description": "Ballast factor",
+            "optional": true
+        },
+        "ballastLampPhotometerFactor": {
+            "type": "number",
+            "description": "Ballast lamp photometer factor",
+            "optional": true
+        },
+        "equipmentOperatingFactor": {
+            "type": "number",
+            "description": "Equipment Operating Factor",
+            "optional": true
+        },
+        "heatExtractionThermalFactor": {
+            "type": "number",
+            "description": "Heat extraction thermal factor",
+            "optional": true
+        },
+        "lampPositionFactor": {
+            "type": "number",
+            "description": "Lamp position factor",
+            "optional": true
+        },
+        "luminaireAmbientTemperatureFactor": {
+            "type": "number",
+            "description": "Luminaire ambient temperature factor",
+            "optional": true
+        },
+        "luminaireSurfaceDepreciationFactor": {
+            "type": "number",
+            "description": "Luminaire surface depreciation factor",
+            "optional": true
+        },
+        "voltageToLuminaireFactor": {
+            "type": "number",
+            "description": "Voltage to luminaire factor",
+            "optional": true
+        },
+        "lampBurnoutFactor": {
+            "type": "number",
+            "description": "lampBurnoutFactor",
+            "optional": true
+        },
+        "lampLumenDepreciationFactor": {
+            "type": "number",
+            "description": "Lamp lumen depreciation factor",
+            "optional": true
+        },
+        "luminaireDirtDepreciationFactor": {
+            "type": "number",
+            "description": "Luminaire dirt depreciation factor",
+            "optional": true
+        },
+        "roomSurfaceDirtDepreciationFactor": {
+            "type": "number",
+            "description": "Room surface dirt depreciation factor",
+            "optional": true
+        },
+        "initialLumenOutput": {
+            "type": "number",
+            "description": "Initial lumen output",
+            "optional": true
+        },
+        "numberOfLamps": {
+            "type": "number",
+            "description": "The number of Lamps in each luminaire",
+            "optional": true
+        },
+        "numberOfLuminaires": {
+            "type": "number",
+            "description": "The nuber of luminaires in the area",
+            "optional": true
+        },
+        "ceilingReflectanceValue": {
+            "type": "number",
+            "description": "The ceiling reflectance value",
+            "optional": true
+        },
+        "floorReflectanceValue": {
+            "type": "number",
+            "description": "The floor reflectance value",
+            "optional": true
+        },
+        "wallsReflectanceValue": {
+            "type": "number",
+            "description": "The walls reflectance value",
+            "optional": true
+        },
+        "floorReflectanceValue": {
+            "type": "number",
+            "description": "The floor reflectance value",
+            "optional": true
+        },
+        "ceilingHeight": {
+            "type": "number",
+            "description": "Ceiling height",
+            "optional": true
+        },
+        "roomLength": {
+            "type": "number",
+            "description": "The room length",
+            "optional": true
+        },
+        "roomWidth": {
+            "type": "number",
+            "description": "The room width",
+            "optional": true
+        },
+        "visualComfort": {
+            "type": "number",
+            "description": "The illuminance at the eye of the observer in Lux",
+            "optional": true
+        },
+        "steradian": {
+            "type": "number",
+            "description": "Steradian",
+            "optional": true
+        },
+        "backgroundLuminanceLevel": {
+            "type": "number",
+            "description": "The background's luminance level in lux",
+            "optional": true
+        },
+        "objectLuminanceLevel": {
+            "type": "number",
+            "description": "The object's luminance level in lux",
+            "optional": true
+        },
+        "positionIndex": {
+            "type": "number",
+            "description": "Position index (Guth's Index)",
+            "optional": true
+        },
+        "solidAngle": {
+            "type": "number",
+            "description": "The solid angle in steradian",
+            "optional": true
+        },
+        "minimumIlluminance": {
+            "type": "number",
+            "description": "The minimum illuminance in lux",
+            "optional": true
+        },
+    },
+    "additionalProperties" : false
+}

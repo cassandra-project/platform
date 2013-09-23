@@ -46,6 +46,12 @@ public class MongoPersons {
 		return new MongoDBQueries().getEntity(httpHeaders,COL_PERSONS,"_id", 
 				id, "Person retrieved successfully").toString();
 	}
+	
+	public static String getParentId(String id) {
+		BasicDBList list = ((BasicDBList)((DBObject)JSON.parse(new MongoActivities().getActivity(null, id))).get("data"));
+		if(list == null || list.isEmpty()) return null;
+		return (String)((DBObject)list.get(0)).get(REF_INSTALLATION);
+	}
 
 	/**
 	 * 

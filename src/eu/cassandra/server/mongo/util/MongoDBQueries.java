@@ -1292,7 +1292,7 @@ public class MongoDBQueries {
 			}
 			return jSON2Rrn.createJSONPlot(dbList, "Data for plot retrieved successfully", 
 					"Consumption " + (yMetric.equalsIgnoreCase(REACTIVE_POWER_Q)?"Reactive Power":"Active Power"), 
-					"Time" + aggrUnit, "Watt",defaultAggregationUnit,numberOfDays); 
+					"Time" + aggrUnit, yMetric.equalsIgnoreCase(REACTIVE_POWER_Q)?"VAr":"W",defaultAggregationUnit,numberOfDays); 
 
 		}catch(Exception e) {
 			e.printStackTrace();
