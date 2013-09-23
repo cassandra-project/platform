@@ -152,28 +152,43 @@ Ext.define('C.view.ActmodPropertiesForm', {
 		var record = C.app.getRecordByNode(node);
 		var values = myForm.getValues();
 
-		var gridData = this.query('grid')[0].store.data;
+		var gridStore = this.query('grid')[0].store;
+		var gridData = gridStore.data;
 
 		Ext.each(gridData.items, function(index){
 			gridIds.push(index.get('_id'));
 
 		});
-		record.set({
-			'name':values.name,
-			'type': values.type,
-			'description': values.description,
-			'day_type': values.day_type,
-			'shiftable': values.shiftable, 
-			'containsAppliances': gridIds
-		});
 
-		this.dirtyForm = false;
-		//clear dirty record
-		record.node.commit();
+		//reload appliances store on activity model store failure to update
+		record.store.proxy.on('exception', function(server, response,operation){
+			Ext.Ajax.request({
+				url: '/cassandra/api/app?actmod_id=' + record.data._id,
+				method: 'GET',
+				scope: this,
+				success: function(response, opts) {
+					var o = Ext.decode(response.responseText);
+					gridStore.loadData(o.data);
+				}
+			});
+		}, null, { single : true });
 
-		if (record.isNew)
-		record.isNew = false;
-		//record.save();
+			record.set({
+				'name':values.name,
+				'type': values.type,
+				'description': values.description,
+				'day_type': values.day_type,
+				'shiftable': values.shiftable, 
+				'containsAppliances': gridIds
+			});
+
+			this.dirtyForm = false;
+			//clear dirty record
+			record.node.commit();
+
+			if (record.isNew)
+			record.isNew = false;
+			//record.save();
 	}
 
 });
