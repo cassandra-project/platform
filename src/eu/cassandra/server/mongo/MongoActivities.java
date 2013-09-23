@@ -48,12 +48,9 @@ public class MongoActivities {
 	}
 	
 	public static String getParentId(String id) {
-		try {
-			return (String)((DBObject)((BasicDBList)((DBObject)JSON.parse(new MongoActivities().getActivity(null, id))).get("data")).get(0)).get(REF_PERSON);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		BasicDBList list = ((BasicDBList)((DBObject)JSON.parse(new MongoActivities().getActivity(null, id))).get("data"));
+		if(list == null || list.isEmpty()) return null;
+		return (String)((DBObject)list.get(0)).get(REF_PERSON);
 	}
 
 	/**

@@ -44,6 +44,7 @@ public class MongoActivityModels {
 	public static boolean checkAppliancesExists(BasicDBList apps, String act_id) {
 		boolean check = true;
 		String inst_id = MongoPersons.getParentId(MongoActivities.getParentId(act_id));
+		if(apps == null || apps.isEmpty()) return true;
 		for(Object o : apps) {
 			String app_id = (String)o;
 			String app_inst_id = MongoAppliances.getParentId(app_id);
@@ -92,7 +93,7 @@ public class MongoActivityModels {
 	
 	public String createActivityModel(String dataToInsert) {
 		String response = createActivityModelObj(dataToInsert).toString();
-		return withAddedWarnings(response, false);
+		return withAddedWarnings(response, false, true);
 	}
 	
 	public static DBObject createActivityModelObj(String dataToInsert) {
@@ -127,7 +128,7 @@ public class MongoActivityModels {
 		return returnObj;
 	}
 	
-	private String withAddedWarnings(String response, boolean ary) {
+	private String withAddedWarnings(String response, boolean ary, boolean appliances) {
 		if(Utils.failed(response)) return response;
 		DBObject jsonResponse = (DBObject) JSON.parse(response);
 		DBObject data = (DBObject) jsonResponse.get("data");
@@ -135,7 +136,7 @@ public class MongoActivityModels {
 			data = (DBObject)((BasicDBList)data).get(0);
 		}
 		BasicDBList list = new BasicDBList();
-		if(((BasicDBList)data.get("containsAppliances")) == null || ((BasicDBList)data.get("containsAppliances")).isEmpty()) {
+		if(appliances && (((BasicDBList)data.get("containsAppliances")) == null || ((BasicDBList)data.get("containsAppliances")).isEmpty())) {
 			String warning = "Add at least one appliance for this activity model.";
 			list.add(warning);
 		}
@@ -184,7 +185,7 @@ public class MongoActivityModels {
 		String act_id = (String)obj.get("act_id");
 		boolean  checkPass = checkAppliancesExists(apps, act_id);
 		String returnMsg = null;
-		System.out.println(checkPass);
+		boolean appliances = true;
 		if(checkPass) {
 			returnMsg = q.updateDocument("_id", id,jsonToUpdate,
 					COL_ACTMODELS, "Activity Model updated successfully",
@@ -195,12 +196,13 @@ public class MongoActivityModels {
 				returnMsg = q.updateDocument("_id", id,jsonToUpdate,
 						COL_ACTMODELS, "Activity Model updated successfully",
 						"users" ,"act_id",JSONValidator.ACTIVITYMODEL_SCHEMA).toString();
+				appliances = false;
 			}
 		} else {
 			returnMsg = new JSONtoReturn().createJSONError("Appliances do not exist " + 
 						"in the Installation or Activity Model defined inside in the user " +
 						"library should not contain appliances", "Activity model appliances error").toString();
 		}
-		return withAddedWarnings(returnMsg, true);
+		return withAddedWarnings(returnMsg, true, appliances);
 	}
 }
