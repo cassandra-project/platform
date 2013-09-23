@@ -48,6 +48,10 @@ public class MongoAppliances {
 		return new MongoDBQueries().getEntity(httpHeaders,COL_APPLIANCES,"_id", 
 				id, "Appliance retrieved successfully").toString();
 	}
+	
+	public static String getParentId(String id) {
+		return (String)((DBObject)((BasicDBList)((DBObject)JSON.parse(new MongoAppliances().getAppliance(null, id))).get("data")).get(0)).get(REF_INSTALLATION);
+	}
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/app?inst_id=4ff1d9d4e4b0ddb832a310bc

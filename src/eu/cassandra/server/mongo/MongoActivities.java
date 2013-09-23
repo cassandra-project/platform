@@ -46,6 +46,15 @@ public class MongoActivities {
 		return new MongoDBQueries().getEntity(httpHeaders,COL_ACTIVITIES,"_id", 
 				id, "Activity retrieved successfully", false).toString();
 	}
+	
+	public static String getParentId(String id) {
+		try {
+			return (String)((DBObject)((BasicDBList)((DBObject)JSON.parse(new MongoActivities().getActivity(null, id))).get("data")).get(0)).get(REF_PERSON);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	/**
 	 * curl -i http://localhost:8080/cassandra/api/act?pers_id=4ff154f8e4b0c855ac36d9ad
