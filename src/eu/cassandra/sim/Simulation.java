@@ -69,6 +69,8 @@ public class Simulation implements Runnable {
 	private int endTick;
 	
 	private int mcruns;
+	
+	private double co2;
   
 	private MongoResults m;
 
@@ -262,7 +264,8 @@ public class Simulation implements Runnable {
   	  						installation.getMaxPower() * mcrunsRatio, 
   	  						installation.getAvgPower() * mcrunsRatio, 
   	  						installation.getEnergy() * mcrunsRatio, 
-  	  						installation.getCost() * mcrunsRatio);
+  	  						installation.getCost() * mcrunsRatio,
+  	  						installation.getEnergy() * co2 * mcrunsRatio);
   	  			}
   	  			cost += pricing.calculateCost(energy, 
   	  					billingCycleEnergy,
@@ -273,7 +276,8 @@ public class Simulation implements Runnable {
   	  					maxPower * mcrunsRatio, 
   	  					avgPower * mcrunsRatio, 
   	  					energy * mcrunsRatio, 
-  	  					cost * mcrunsRatio);
+  	  					cost * mcrunsRatio,
+  	  					energy * co2 * mcrunsRatio);
   	  			if(i+1 != mcruns) setup(true);
   			}
   			// Obsolete normalization code (to be removed) now it is done on the fly
@@ -321,6 +325,7 @@ public class Simulation implements Runnable {
   		
   		endTick = Constants.MIN_IN_DAY * numOfDays;
   		mcruns = ((Integer)simParamsDoc.get("mcruns")).intValue();
+  		co2 = Utils.getDouble(simParamsDoc.get("co2"));
   		// Check type of setup
   		String setup = (String)scenarioDoc.get("setup"); 
   		if(setup.equalsIgnoreCase("static")) {

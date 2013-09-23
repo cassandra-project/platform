@@ -95,7 +95,7 @@ public class MongoResults {
 	 * @param avgPower
 	 * @param energy
 	 */
-	public void addKPIs(String inst_id, double maxPower, double avgPower, double energy, double cost) {
+	public void addKPIs(String inst_id, double maxPower, double avgPower, double energy, double cost, double co2) {
 		boolean first = false;
 		DBObject query = new BasicDBObject();
 		String collection;
@@ -118,6 +118,7 @@ public class MongoResults {
 		double newAvgPower = avgPower;
 		double newEnergy = energy;
 		double newCost = cost;
+		double newCo2 = co2;
 		if(data == null) {
 			data = new BasicDBObject();
 			first = true;
@@ -127,6 +128,7 @@ public class MongoResults {
 			newAvgPower += ((Double)data.get("avgPower")).doubleValue();
 			newEnergy += ((Double)data.get("energy")).doubleValue();
 			newCost += ((Double)data.get("cost")).doubleValue();
+			newCo2 += ((Double)data.get("co2")).doubleValue();
 		}
 		DBObject maxavg = null;
 		if(inst_id.equalsIgnoreCase(AGGR)) {
@@ -138,11 +140,12 @@ public class MongoResults {
 		}
 		double maxavgValue = newAvgPower;
 		if(maxavg != null) maxavgValue = ((Double)maxavg.get("p")).doubleValue();
-		data.put("avgPeak",newMaxPower);
-		data.put("maxPower",maxavgValue);
-		data.put("avgPower",newAvgPower);
-		data.put("energy",newEnergy);
-		data.put("cost",newCost);
+		data.put("avgPeak", newMaxPower);
+		data.put("maxPower", maxavgValue);
+		data.put("avgPower", newAvgPower);
+		data.put("energy", newEnergy);
+		data.put("cost", newCost);
+		data.put("co2", newCo2);
 		if(first) {
 			DBConn.getConn(dbname).getCollection(collection).insert(data);
 		} else {
