@@ -140,17 +140,17 @@
         },
         "backgroundLuminanceLevel": {
             "type": "number",
-            "description": "The background's luminance level in lux",
+            "description": "Background luminance level in lux",
             "optional": true
         },
         "objectLuminanceLevel": {
             "type": "number",
-            "description": "The object's luminance level in lux",
+            "description": "Object luminance level in lux",
             "optional": true
         },
         "positionIndex": {
             "type": "number",
-            "description": "Position index (Guth's Index)",
+            "description": "Position index (Guth Index)",
             "optional": true
         },
         "solidAngle": {
@@ -162,7 +162,7 @@
             "type": "number",
             "description": "The minimum illuminance in lux",
             "optional": true
-        },
+        }
     },
     "additionalProperties" : false
 }
