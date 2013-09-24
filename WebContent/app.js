@@ -130,7 +130,7 @@ Ext.application({
 		'LevelsGrid',
 		'OffpickGrid',
 		'TimezonesGrid',
-		'LightningModuleForm',
+		'LightingModuleForm',
 		'ThermalModuleForm'
 	],
 	autoCreateViewport: true,

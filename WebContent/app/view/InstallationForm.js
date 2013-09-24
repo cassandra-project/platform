@@ -191,12 +191,42 @@ Ext.define('C.view.InstallationForm', {
 						},
 						{
 							xtype: 'button',
+							handler: function(button, event) {
+								var formWindow = new Ext.Window({
+									items  : new C.view.LightingModuleForm({operation: 'create','inst_form_id': button.up('form').id}),
+									title  : 'Add Lighting Modeling',
+									height : 600,
+									overflowY: 'scroll'
+								}); 
+								formWindow.show();
+							},
 							cls: 'add_lighting',
 							itemId: 'add_lighting',
 							text: 'Add lighting modeling'
 						},
 						{
 							xtype: 'button',
+							handler: function(button, event) {
+								return false;
+								var myFormCmp = button.up('form'),
+									myForm = myFormCmp.getForm(),
+									record = myFormCmp.getRecord();
+
+								var lightingModuleForm = new C.view.LightingModuleForm({operation: 'update'});
+								var lightingModuleStore = Ext.getStore('lightingModuleStore_inst_id' + record.get('_id'));
+								//thermalModuleStore.getProxy().url += '/' +  button.up('form').getRecord().get('thermalModule_id');
+
+								lightingModuleForm.loadRecord(lightingModuleStore.getRange()[0]);
+
+
+								var formWindow = new Ext.Window({
+									items  :  lightingModuleForm,
+									title  : 'Add Lighting Modeling',
+									height : 600,
+									overflowY: 'scroll'
+								}); 
+								formWindow.show();
+							},
 							cls: 'lighting_added',
 							hidden: true,
 							itemId: 'update_lighting',
@@ -204,6 +234,20 @@ Ext.define('C.view.InstallationForm', {
 						},
 						{
 							xtype: 'button',
+							handler: function(button, event) {
+								return false;
+								var myFormCmp = button.up('form'),
+									myForm = myFormCmp.getForm(),
+									record = myFormCmp.getRecord();
+
+								var lightingModuleStore = Ext.getStore('lightingModuleStore_inst_id' + record.get('_id'));
+								lightingModuleStore.removeAll();
+								record.set('lightingModule_id', '');
+
+								myFormCmp.down('#delete_lighting').hide();
+								myFormCmp.down('#update_lighting').hide();
+								myFormCmp.down('#add_lighting').show();
+							},
 							cls: 'lighting_added',
 							hidden: true,
 							itemId: 'delete_lighting',
