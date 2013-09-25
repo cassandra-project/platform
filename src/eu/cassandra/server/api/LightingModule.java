@@ -19,7 +19,6 @@ package eu.cassandra.server.api;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -30,18 +29,27 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoLighting;
-import eu.cassandra.server.mongo.MongoPersons;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.utilities.Utils;
 
-@Path("lighting")
+@Path("lighting/{light_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class Lightings {
+public class LightingModule {
 	
-	@POST
-	public Response create(String message) {
-		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoLighting().create(message)));
+	@GET
+	public Response get(@PathParam("light_id") String light_id,
+			@Context HttpHeaders httpHeaders) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoLighting().get(httpHeaders,light_id)));
 	}
 
+	@PUT
+	public Response update(@PathParam("light_id") String light_id, String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoLighting().update(light_id,message)));
+	}
+
+	@DELETE
+	public Response delete(@PathParam("light_id") String light_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoLighting().delete(light_id)));
+	}
 }
