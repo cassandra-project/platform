@@ -26,6 +26,7 @@
                 "ScalarEnergyPricing",
                 "ScalarEnergyPricingTimeZones",
                 "EnergyPowerPricing",
+                "MaximumPowerPricing",
                 "AllInclusivePricing",
                 "TOUPricing"
             ]
@@ -48,6 +49,11 @@
         "contractedCapacity": {
             "type": "number",
             "description": "Contracted capacity",
+            "optional": true
+        },
+        "maximumPower": {
+            "type": "number",
+            "description": "Maximum capacity",
             "optional": true
         },
         "energyPrice": {
