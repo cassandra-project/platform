@@ -36,6 +36,10 @@ Ext.define('C.store.PricingTypeStore', {
 					pricingTypeTag: 'EnergyPowerPricing'
 				},
 				{
+					pricingTypeName: 'Maximum Power Pricing',
+					pricingTypeTag: 'MaximumPowerPricing'
+				},
+				{
 					pricingTypeName: 'All Inclusive Pricing',
 					pricingTypeTag: 'AllInclusivePricing'
 				},
