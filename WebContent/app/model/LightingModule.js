@@ -16,76 +16,118 @@
 Ext.define('C.model.LightingModule', {
 	extend: 'Ext.data.Model',
 
+	idProperty: '_id',
+
 	fields: [
 		{
-			name: '_id'
+			name: '_id',
+			persist: false
 		},
 		{
-			name: 'length',
+			name: 'inst_id'
+		},
+		{
+			name: 'luminaireHeight',
 			type: 'float'
 		},
 		{
-			name: 'width',
+			name: 'workplaneHeight',
 			type: 'float'
 		},
 		{
-			name: 'height',
+			name: 'ballastFactor',
 			type: 'float'
 		},
 		{
-			name: 'luminaires_no',
+			name: 'ballastLampPhotometerFactor',
+			type: 'float'
+		},
+		{
+			name: 'equipmentOperatingFactor',
+			type: 'float'
+		},
+		{
+			name: 'heatExtractionThermalFactor',
+			type: 'float'
+		},
+		{
+			name: 'lampPositionFactor',
+			type: 'float'
+		},
+		{
+			name: 'luminaireAmbientTemperatureFactor',
+			type: 'float'
+		},
+		{
+			name: 'luminaireSurfaceDepreciationFactor',
+			type: 'float'
+		},
+		{
+			name: 'voltageToLuminaireFactor',
+			type: 'float'
+		},
+		{
+			name: 'lampBurnoutFactor',
+			type: 'float'
+		},
+		{
+			name: 'lampLumenDepreciationFactor',
+			type: 'float'
+		},
+		{
+			name: 'luminaireDirtDepreciationFactor',
+			type: 'float'
+		},
+		{
+			name: 'roomSurfaceDirtDepreciationFactor',
+			type: 'float'
+		},
+		{
+			name: 'initialLumenOutput',
+			type: 'float'
+		},
+		{
+			name: 'numberOfLamps',
 			type: 'int'
 		},
 		{
-			name: 'lamps_no',
+			name: 'numberOfLuminaires',
 			type: 'int'
 		},
 		{
-			name: 'initial_lamp_lumen',
+			name: 'ceilingReflectanceValue',
 			type: 'float'
 		},
 		{
-			name: 'luminaire_height',
+			name: 'wallsReflectanceValue',
 			type: 'float'
 		},
 		{
-			name: 'workplane_height',
+			name: 'floorReflectanceValue',
 			type: 'float'
 		},
 		{
-			name: 'ceilings',
+			name: 'ceilingHeight',
 			type: 'float'
 		},
 		{
-			name: 'walls',
+			name: 'roomLength',
 			type: 'float'
 		},
 		{
-			name: 'floors',
+			name: 'roomWidth',
 			type: 'float'
 		},
 		{
-			name: 'recoverable_llf',
-			type: 'string'
-		},
-		{
-			name: 'non_recoverable_llf',
-			type: 'string'
-		},
-		{
-			name: 'object_luminance_lvl',
+			name: 'visualComfort',
 			type: 'float'
 		},
 		{
-			name: 'bg_luminance_lvl',
+			name: 'backgroundLuminanceLevel',
 			type: 'float'
 		},
 		{
-			name: 'bg_luminance_lvl',
-			type: 'float'
-		},
-		{
-			name: 'observed_illuminance',
+			name: 'objectLuminanceLevel',
 			type: 'float'
 		},
 		{
@@ -93,15 +135,15 @@ Ext.define('C.model.LightingModule', {
 			type: 'float'
 		},
 		{
-			name: 'solid_angle',
+			name: 'solidAngle',
 			type: 'float'
 		},
 		{
-			name: 'position_index',
+			name: 'positionIndex',
 			type: 'float'
 		},
 		{
-			name: 'min_illuminance',
+			name: 'minimumIlluminance',
 			type: 'float'
 		}
 	]

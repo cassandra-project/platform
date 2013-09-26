@@ -130,7 +130,7 @@ Ext.application({
 		'LevelsGrid',
 		'OffpickGrid',
 		'TimezonesGrid',
-		'LightningModuleForm',
+		'LightingModuleForm',
 		'ThermalModuleForm'
 	],
 	autoCreateViewport: true,
@@ -472,7 +472,7 @@ Ext.application({
 			myFormCmp.down('#delete_lighting').show();
 
 			var lightingModuleStore = new C.store.LightingModuleStore({storeId: 'lightingModuleStore_inst_id' + record.get('_id')});
-			//thermalModuleStore.getProxy().url += '/' + record.get('lightingModule_id');
+			//lightingModuleStore.getProxy().url += '/' + record.get('lightingModule_id');
 		}
 
 		Ext.each (record.node.childNodes, function(childNode, index) {
