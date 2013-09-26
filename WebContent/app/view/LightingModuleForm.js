@@ -413,7 +413,6 @@ Ext.define('C.view.LightingModuleForm', {
 								if (myForm.isValid()) {
 									var lightingStore = new C.store.LightingModuleStore({storeId: 'lightingModuleStore_inst_id' + inst_rec.get('_id')});
 									lightingStore.on('write', function (store, operation, eOpts) {
-										debugger;
 										var record = store.getRange()[0];
 										console.info('Record added', record);
 										button.hide();
@@ -425,8 +424,8 @@ Ext.define('C.view.LightingModuleForm', {
 										//get newly created record's id
 										var lighting_rec_id = record.get('_id');//JSON.parse(operation.response.responseText).data._id;
 
-										//save url/lighting_id as proxy url, since we wont be posting anymore
-										//store.getProxy().url += '/' + lighting_rec_id;
+										//save lighting_rec_id as store.rec_id
+										store.rec_id = lighting_rec_id;
 
 										//add thermalModule_id to installation record
 										inst_rec.set('lightingModule_id', lighting_rec_id);
