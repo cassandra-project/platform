@@ -68,9 +68,9 @@ Ext.define('C.view.SearchGrid', {
 								{
 									xtype: 'button',
 									handler: function(button, event) {
-										debugger;
 										var myForm = button.up('form').getForm();
 										var replacement_id = myForm.getValues().repl_with_id;
+										var entity_type = button.up('grid').down('form').getValues().collection;
 
 										var replaced_records = button.up('grid').getView().getSelectionModel().getSelection();
 
@@ -81,7 +81,7 @@ Ext.define('C.view.SearchGrid', {
 
 										Ext.Ajax.request({
 											url: '/cassandra/api/replace',
-											jsonData: {"replaced_ids" : replaced_ids, "replacement_id" : replacement_id},
+											jsonData: {"replaced_ids" : replaced_ids, "replacement_id" : replacement_id, "entity_type": entity_type},
 											method: 'POST',
 											scope: this,
 											success: function(response, opts) {
