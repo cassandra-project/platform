@@ -59,7 +59,7 @@ public class MongoLighting {
 		MongoDBQueries q = new MongoDBQueries();
 		DBObject returnObj = q.insertData(COL_LIGHTING ,dataToInsert,
 				"Lighting params created successfully", MongoInstallations.COL_INSTALLATIONS ,
-				"inst_id",JSONValidator.PERSON_SCHEMA );
+				"inst_id",JSONValidator.LIGHTING_SCHEMA );
 		return returnObj;
 	}
 

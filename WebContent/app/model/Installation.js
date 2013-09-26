@@ -60,7 +60,8 @@ Ext.define('C.model.Installation', {
 			type: 'float'
 		},
 		{
-			name: '_id'
+			name: '_id',
+			persist: false
 		},
 		{
 			mapping: 'appliances_counter',

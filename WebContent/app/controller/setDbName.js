@@ -57,8 +57,11 @@ Ext.define('C.controller.setDbName', {
 		Ext.util.Observable.observe(Ext.data.AbstractStore);
 
 		Ext.data.AbstractStore.on('write', function(store, operation, options) {
-			if (Ext.getDom("warnings"))
-			Ext.getDom("warnings").parentElement.remove();
+			if (Ext.getCmp("MainTabPanel").getActiveTab().corresponding_node.get('nodeId') == operation.records[0].get('_id')) {
+				if (Ext.getDom("warnings")) {
+					Ext.getDom("warnings").parentElement.remove();
+				}
+			}
 
 			var response =  Ext.JSON.decode(operation.response.responseText);
 			if (response.warnings) {
@@ -92,7 +95,7 @@ Ext.define('C.controller.setDbName', {
 			var msg = '';
 			try {
 				var response_obj = JSON.parse(response.responseText);
-				msg = JSON.stringify(response_obj.errors)
+				msg = JSON.stringify(response_obj.errors);
 			}
 			catch(e) {
 				msg = response.status + ' - ' + response.statusText;

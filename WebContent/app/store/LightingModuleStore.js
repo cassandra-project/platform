@@ -24,8 +24,20 @@ Ext.define('C.store.LightingModuleStore', {
 		var me = this;
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
+			autoSync: true,
 			model: 'C.model.LightingModule',
-			storeId: 'lightingModule'
+			storeId: 'lightingStore',
+			proxy: {
+				type: 'rest',
+				limitParam: '',
+				pageParam: '',
+				startParam: '',
+				url: '/cassandra/api/lighting',
+				reader: {
+					type: 'json',
+					root: 'data'
+				}
+			}
 		}, cfg)]);
 	}
 });
