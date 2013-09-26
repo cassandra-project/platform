@@ -16,6 +16,8 @@
 Ext.define('C.model.LightingModule', {
 	extend: 'Ext.data.Model',
 
+	idProperty: '_id',
+
 	fields: [
 		{
 			name: '_id',

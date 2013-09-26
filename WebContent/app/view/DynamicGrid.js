@@ -571,7 +571,7 @@ Ext.define('C.view.DynamicGrid', {
 	onButtonClick1111: function(button, e, eOpts) {
 
 		var formWindow = new Ext.Window({
-			items  : new C.view.FileUploadForm(),
+			items  : new C.view.FileUploadForm({'prj_id': button.up('grid').corresponding_node.parentNode.get('nodeId')}),
 			title  : 'Upload file'
 		}); 
 		formWindow.show();

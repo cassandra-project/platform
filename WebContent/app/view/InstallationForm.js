@@ -207,25 +207,28 @@ Ext.define('C.view.InstallationForm', {
 						{
 							xtype: 'button',
 							handler: function(button, event) {
-								return false;
 								var myFormCmp = button.up('form'),
 									myForm = myFormCmp.getForm(),
 									record = myFormCmp.getRecord();
 
-								var lightingModuleForm = new C.view.LightingModuleForm({operation: 'update'});
+								var lightingModuleForm = new C.view.LightingModuleForm({operation: 'update', 'inst_form_id':  button.up('form').id});
 								var lightingModuleStore = Ext.getStore('lightingModuleStore_inst_id' + record.get('_id'));
-								//thermalModuleStore.getProxy().url += '/' +  button.up('form').getRecord().get('thermalModule_id');
 
-								lightingModuleForm.loadRecord(lightingModuleStore.getRange()[0]);
+								lightingModuleStore.on('load', function(store, records) {
+									debugger;
+									lightingModuleForm.loadRecord(records[0]);
+								}, null, {single:true});
+
+									lightingModuleStore.load();
 
 
-								var formWindow = new Ext.Window({
-									items  :  lightingModuleForm,
-									title  : 'Add Lighting Modeling',
-									height : 600,
-									overflowY: 'scroll'
-								}); 
-								formWindow.show();
+									var formWindow = new Ext.Window({
+										items  :  lightingModuleForm,
+										title  : 'Add Lighting Modeling',
+										height : 600,
+										overflowY: 'scroll'
+									}); 
+									formWindow.show();
 							},
 							cls: 'lighting_added',
 							hidden: true,
@@ -235,7 +238,6 @@ Ext.define('C.view.InstallationForm', {
 						{
 							xtype: 'button',
 							handler: function(button, event) {
-								return false;
 								var myFormCmp = button.up('form'),
 									myForm = myFormCmp.getForm(),
 									record = myFormCmp.getRecord();

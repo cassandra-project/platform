@@ -17,7 +17,6 @@ Ext.define('C.view.LightingModuleForm', {
 	extend: 'Ext.form.Panel',
 
 	width: 685,
-	autoScroll: true,
 	layout: {
 		type: 'column'
 	},
@@ -307,13 +306,13 @@ Ext.define('C.view.LightingModuleForm', {
 								{
 									xtype: 'numberfield',
 									anchor: '100%',
-									fieldLabel: 'The object\'s luminance level in lux',
+									fieldLabel: 'Object luminance level in lux',
 									name: 'objectLuminanceLevel'
 								},
 								{
 									xtype: 'numberfield',
 									anchor: '100%',
-									fieldLabel: 'The background\'s luminance level in lux',
+									fieldLabel: 'Background luminance level in lux',
 									name: 'backgroundLuminanceLevel'
 								}
 							]
@@ -360,7 +359,7 @@ Ext.define('C.view.LightingModuleForm', {
 								{
 									xtype: 'numberfield',
 									anchor: '100%',
-									fieldLabel: 'Position index (Guth\'s Index)',
+									fieldLabel: 'Position index (Guth Index)',
 									name: 'positionIndex'
 								}
 							]
@@ -410,20 +409,28 @@ Ext.define('C.view.LightingModuleForm', {
 									installationForm = Ext.getCmp(myFormCmp.inst_form_id),
 									inst_rec = installationForm.getRecord();
 
-								debugger;
+
 								if (myForm.isValid()) {
 									var lightingStore = new C.store.LightingModuleStore({storeId: 'lightingModuleStore_inst_id' + inst_rec.get('_id')});
 									lightingStore.on('write', function (store, operation, eOpts) {
-										console.info('Record added', records[0]);
+										debugger;
+										var record = store.getRange()[0];
+										console.info('Record added', record);
 										button.hide();
 										myFormCmp.down('#update').show();
 										installationForm.down('#add_lighting').hide();
 										installationForm.down('#update_lighting').show();
 										installationForm.down('#delete_lighting').show();
 
+										//get newly created record's id
+										var lighting_rec_id = record.get('_id');//JSON.parse(operation.response.responseText).data._id;
+
+										//save url/lighting_id as proxy url, since we wont be posting anymore
+										//store.getProxy().url += '/' + lighting_rec_id;
+
 										//add thermalModule_id to installation record
-										inst_rec.set('lightingModule_id',records[0].get('_id'));
-										myForm.loadRecord(records[0]);
+										inst_rec.set('lightingModule_id', lighting_rec_id);
+										myForm.loadRecord(record);
 									}, null, {single: true});
 										console.info('Lighting store with id: '+ lightingStore.storeId + ' created');
 										lightingStore.insert(0, new C.model.LightingModule(values));
@@ -443,10 +450,12 @@ Ext.define('C.view.LightingModuleForm', {
 							handler: function(button, event) {
 								var myFormCmp = button.up('form'),
 									myForm = myFormCmp.getForm(),
-									values = myForm.values;
+									values = myForm.values,
+									record = myForm.getRecord();
 
-								if (myForm.isValid())
-								myForm.updateRecord();
+								if (myForm.isValid()) {
+									myForm.updateRecord();
+								}
 							},
 							hidden: true,
 							itemId: 'update',
