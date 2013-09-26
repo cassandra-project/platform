@@ -150,6 +150,43 @@ Ext.define('C.view.PricingForm', {
 				{
 					xtype: 'fieldset',
 					hidden: true,
+					itemId: 'MaximumPowerPricing',
+					defaults: {
+						margin: '0 20 0 0'
+					},
+					layout: {
+						align: 'stretch',
+						padding: 20,
+						type: 'hbox'
+					},
+					title: 'Extra Parameters',
+					items: [
+						{
+							xtype: 'numberfield',
+							width: 200,
+							fieldLabel: 'Maximum power',
+							labelWidth: 60,
+							name: 'maximumPower'
+						},
+						{
+							xtype: 'numberfield',
+							width: 200,
+							fieldLabel: 'Energy Price',
+							labelWidth: 60,
+							name: 'energyPrice2'
+						},
+						{
+							xtype: 'numberfield',
+							width: 200,
+							fieldLabel: 'Power Price',
+							labelWidth: 60,
+							name: 'powerPrice2'
+						}
+					]
+				},
+				{
+					xtype: 'fieldset',
+					hidden: true,
 					itemId: 'AllInclusivePricing',
 					defaults: {
 						margin: '0 20 0 0'
@@ -290,7 +327,6 @@ Ext.define('C.view.PricingForm', {
 			break;
 		}
 
-
 		record.set({
 			'name' : values.name,
 			'type' : values.type,
@@ -300,12 +336,13 @@ Ext.define('C.view.PricingForm', {
 			'offpeakPrice' : values.offpeakPrice,
 			'levels' : levels,
 			'offpeak' : offpeak,
-			'contractedCapacity' : (record.get('type') == 'EnergyPowerPricing') ? values.contractedCapacity : 0,
-			'energyPrice' : (record.get('type') == 'EnergyPowerPricing') ? values.energyPrice : 0,
-			'powerPrice' : (record.get('type') == 'EnergyPowerPricing') ? values.powerPrice : 0,
-			'contractedEnergy' : (record.get('type') == 'AllInclusivePricing') ? values.contractedEnergy : 0,
-			'fixedCost' : (record.get('type') == 'AllInclusivePricing') ? values.fixedCost : 0,
-			'additionalCost' : (record.get('type') == 'AllInclusivePricing') ? values.additionalCost : 0,
+			'contractedCapacity' : (values.type == 'EnergyPowerPricing') ? values.contractedCapacity : 0,
+			'energyPrice' : (values.type == 'EnergyPowerPricing') ? values.energyPrice : (values.type == 'MaximumPowerPricing') ? values.energyPrice2 : 0,
+			'powerPrice' : (values.type == 'EnergyPowerPricing')  ? values.powerPrice : (values.type == 'MaximumPowerPricing') ?  values.powerPrice2 : 0,
+			'contractedEnergy' : (values.type == 'AllInclusivePricing') ? values.contractedEnergy : 0,
+			'maximumPower' : (values.type == 'MaximumPowerPricing') ? values.maximumPower : 0,
+			'fixedCost' : (values.type == 'AllInclusivePricing') ? values.fixedCost : 0,
+			'additionalCost' : (values.type == 'AllInclusivePricing') ? values.additionalCost : 0,
 			'timezones': timezones
 		});
 
