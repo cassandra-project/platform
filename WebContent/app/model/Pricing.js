@@ -52,11 +52,27 @@ Ext.define('C.model.Pricing', {
 			type: 'float'
 		},
 		{
+			name: 'maximumPower',
+			type: 'float'
+		},
+		{
 			name: 'energyPrice',
 			type: 'float'
 		},
 		{
+			mapping: 'energyPrice',
+			name: 'energyPrice2',
+			persist: false,
+			type: 'float'
+		},
+		{
 			name: 'powerPrice',
+			type: 'float'
+		},
+		{
+			mapping: 'powerPrice',
+			name: 'powerPrice2',
+			persist: false,
 			type: 'float'
 		},
 		{
