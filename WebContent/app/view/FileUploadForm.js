@@ -30,6 +30,18 @@ Ext.define('C.view.FileUploadForm', {
 			},
 			items: [
 				{
+					xtype: 'hiddenfield',
+					anchor: '100%',
+					fieldLabel: 'Label',
+					name: 'prj_id',
+					listeners: {
+						render: {
+							fn: me.onHiddenfieldRender,
+							scope: me
+						}
+					}
+				},
+				{
 					xtype: 'filefield',
 					anchor: '100%',
 					formBind: false,
@@ -66,6 +78,11 @@ Ext.define('C.view.FileUploadForm', {
 		});
 
 		me.callParent(arguments);
+	},
+
+	onHiddenfieldRender: function(component, eOpts) {
+		var prj_id = component.up('form').prj_id;
+		component.setValue(prj_id);
 	}
 
 });
