@@ -245,6 +245,19 @@ Ext.define('C.view.CassLibTreePanel', {
 								}
 							});
 							break;
+							case 'PricingSchemesCollection':
+							//record.removeAll();
+							console.info('Creating store for pricing schemes.');
+							record.c.store = new C.store.Pricing({
+								storeId: record.data.nodeType+'Store-prj_id-'+record.parentNode.get('nodeId'),
+								navigationNode: record
+							});
+							record.c.store.load({
+								params: {
+									prj_id: record.parentNode.get('nodeId')
+								}
+							});
+							break;
 							case 'Installation':
 							//record.removeAll();
 							console.info('Creating dummy nodes for installation.');
@@ -335,6 +348,17 @@ Ext.define('C.view.CassLibTreePanel', {
 			fakeChildren: true,
 			allowDrag: false,
 			icon: 'resources/icons/appliances.png',
+			iconCls: 'treeIcon'
+		});
+		record.appendChild({
+			name: 'Pricing Schemes',
+			nodeType: 'PricingSchemesCollection',
+			expanded: false,
+			leaf: false,
+			expandable: true,
+			fakeChildren: true,
+			allowDrag: false,
+			icon: 'resources/icons/pricing.png',
 			iconCls: 'treeIcon'
 		});
 	}
