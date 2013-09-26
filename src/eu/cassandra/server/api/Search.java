@@ -73,9 +73,11 @@ public class Search {
 				DBObject object = (DBObject)list.get(0);
 				return Utils.returnResponseWithAppend(page, "total_size", (Integer)object.get("count"));
 			case "app":
+				// Check if User or Cassandra library...
 				return new MongoAppliances().
 				getAppliances(httpHeaders, scn_id, strFilter, null, 0, 0, false, false);
 			case "pers":
+				// Check if User or Cassandra library...
 				return new MongoPersons().
 						getPersons(httpHeaders, scn_id, strFilter, null, 0, 0, false, false);
 			default:
