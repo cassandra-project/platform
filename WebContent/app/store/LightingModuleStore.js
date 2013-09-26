@@ -37,26 +37,7 @@ Ext.define('C.store.LightingModuleStore', {
 					type: 'json',
 					root: 'data'
 				}
-			},
-			listeners: {
-				beforeload: {
-					fn: me.onJsonstoreBeforeLoad,
-					scope: me
-				},
-				load: {
-					fn: me.onJsonstoreLoad,
-					scope: me
-				}
 			}
 		}, cfg)]);
-	},
-
-	onJsonstoreBeforeLoad: function(store, operation, eOpts) {
-		store.getProxy().url = '/cassandra/api/lighting/' + store.rec_id;
-	},
-
-	onJsonstoreLoad: function(store, records, successful, eOpts) {
-		store.getProxy().url = '/cassandra/api/lighting';
 	}
-
 });

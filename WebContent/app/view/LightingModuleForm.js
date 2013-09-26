@@ -421,14 +421,9 @@ Ext.define('C.view.LightingModuleForm', {
 										installationForm.down('#update_lighting').show();
 										installationForm.down('#delete_lighting').show();
 
-										//get newly created record's id
-										var lighting_rec_id = record.get('_id');//JSON.parse(operation.response.responseText).data._id;
-
-										//save lighting_rec_id as store.rec_id
-										store.rec_id = lighting_rec_id;
-
 										//add thermalModule_id to installation record
-										inst_rec.set('lightingModule_id', lighting_rec_id);
+										inst_rec.set('lightingModule_id', record.get('_id'));
+
 										myForm.loadRecord(record);
 									}, null, {single: true});
 										console.info('Lighting store with id: '+ lightingStore.storeId + ' created');

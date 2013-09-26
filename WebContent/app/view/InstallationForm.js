@@ -218,8 +218,7 @@ Ext.define('C.view.InstallationForm', {
 									lightingModuleForm.loadRecord(records[0]);
 								}, null, {single:true});
 
-									lightingModuleStore.load();
-
+									lightingModuleStore.load({url:lightingModuleStore.proxy.url+'/'+record.get('lightingModule_id')});
 
 									var formWindow = new Ext.Window({
 										items  :  lightingModuleForm,
