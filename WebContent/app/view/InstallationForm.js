@@ -215,7 +215,6 @@ Ext.define('C.view.InstallationForm', {
 								var lightingModuleStore = Ext.getStore('lightingModuleStore_inst_id' + record.get('_id'));
 
 								lightingModuleStore.on('load', function(store, records) {
-									debugger;
 									lightingModuleForm.loadRecord(records[0]);
 								}, null, {single:true});
 
