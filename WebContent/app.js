@@ -471,7 +471,7 @@ Ext.application({
 			myFormCmp.down('#update_lighting').show();
 			myFormCmp.down('#delete_lighting').show();
 
-			var lightingModuleStore = new C.store.LightingModuleStore({storeId: 'lightingModuleStore_inst_id' + record.get('_id'), rec_id: record.get('lightingModule_id')});
+			var lightingModuleStore = new C.store.LightingModuleStore({storeId: 'lightingModuleStore_inst_id' + record.get('_id')});
 			//lightingModuleStore.getProxy().url += '/' + record.get('lightingModule_id');
 		}
 
