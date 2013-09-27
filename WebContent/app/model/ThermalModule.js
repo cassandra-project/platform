@@ -41,7 +41,14 @@ Ext.define('C.model.ThermalModule', {
 			type: 'date'
 		},
 		{
-			name: 'desired_temp_schedule'
+			convert: function(v, rec) {
+				switch (typeof(v)) { 
+					case 'string': return JSON.parse(v);
+					case 'object': return '[' + v + ']';
+				}
+			},
+			name: 'desired_temp_schedule',
+			type: 'string'
 		},
 		{
 			name: 'prc_id'

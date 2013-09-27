@@ -111,7 +111,7 @@ Ext.define('C.view.SearchGrid', {
 						{
 							xtype: 'form',
 							defaults: {
-								labelWidth: 75,
+								labelWidth: 85,
 								width: 250,
 								margin: '0 10px 10px 0'
 							},
@@ -138,6 +138,10 @@ Ext.define('C.view.SearchGrid', {
 									listeners: {
 										render: {
 											fn: me.onTextfieldRender11,
+											scope: me
+										},
+										beforerender: {
+											fn: me.onTextfieldBeforeRender,
 											scope: me
 										}
 									}
@@ -194,7 +198,7 @@ Ext.define('C.view.SearchGrid', {
 										}
 									},
 									width: 50,
-									text: 'Go'
+									text: 'Find'
 								}
 							]
 						}
@@ -275,16 +279,25 @@ Ext.define('C.view.SearchGrid', {
 		new Ext.dd.DropTarget(component.up('form').body.dom.getElementsByClassName('dropTarget')[0],{
 			ddGroup:'ddGlobal',
 			notifyDrop: function(dds,e,data) {	
-				if (dds.dragData.records[0].get('nodeType') != 'Scenario' )
+				var node_type = dds.dragData.records[0].get('nodeType');
+				if (node_type == 'Scenario' || node_type == 'UserLibrary' || node_type == 'CassLibrary') {
+					myForm.setValues({ scn_id: dds.dragData.records[0].get('id'), scn_name: dds.dragData.records[0].get('name')});
+					return true;
+				}
 				return false;
-				myForm.setValues({ scn_id: dds.dragData.records[0].get('id'), scn_name: dds.dragData.records[0].get('name')});
-			return true; }
+			}
 		});
 
 	},
 
+	onTextfieldBeforeRender: function(component, eOpts) {
+		component.helpText = "Specify the scenario you intend to search in by dropping it here from the Projects' Tree.</br> If you search for User or Cassandra Library components drop the corresponding library's root node here.";
+		component.url = '';
+	},
+
 	onCheckboxModelSelect: function(rowmodel, record, index, eOpts) {
 		var bottom_form = this.getDockedItems('toolbar[dock="bottom"]')[0].down('form');
+		debugger;
 		if (bottom_form.isHidden())
 		bottom_form.show();
 	}

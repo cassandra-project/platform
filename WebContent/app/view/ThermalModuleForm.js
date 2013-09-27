@@ -112,6 +112,7 @@ Ext.define('C.view.ThermalModuleForm', {
 					xtype: 'textareafield',
 					validator: function(value) {
 						try {
+							debugger;
 							JSON.parse(value);
 							return true;
 						}
@@ -124,13 +125,7 @@ Ext.define('C.view.ThermalModuleForm', {
 					labelStyle: 'text-align:right',
 					labelWidth: 200,
 					name: 'desired_temp_schedule',
-					allowBlank: false,
-					listeners: {
-						render: {
-							fn: me.onTextareafieldRender,
-							scope: me
-						}
-					}
+					allowBlank: false
 				},
 				{
 					xtype: 'textfield',
@@ -162,6 +157,7 @@ Ext.define('C.view.ThermalModuleForm', {
 				{
 					xtype: 'container',
 					dock: 'bottom',
+					itemId: 'buttonContainer',
 					margin: '10 0',
 					defaults: {
 						scale: 'medium',
@@ -183,9 +179,6 @@ Ext.define('C.view.ThermalModuleForm', {
 									inst_rec = installationForm.getRecord();
 
 								if (myForm.isValid()) {
-									//convert desired_temp_schedule to array from string
-									var submit_values = values;
-									submit_values.desired_temp_schedule = JSON.parse(values.desired_temp_schedule);
 
 									var thermalStore = new C.store.ThermalModuleStore({storeId: 'thermalModuleStore_inst_id' + inst_rec.get('_id')});
 									thermalStore.on('write', function (store, operation, eOpts) {
@@ -194,6 +187,7 @@ Ext.define('C.view.ThermalModuleForm', {
 										button.hide();
 										myFormCmp.down('#update').show();
 										installationForm.down('#add_thermal').hide();
+										installationForm.down('#view_thermal').show();
 										installationForm.down('#update_thermal').show();
 										installationForm.down('#delete_thermal').show();
 
@@ -201,9 +195,10 @@ Ext.define('C.view.ThermalModuleForm', {
 										inst_rec.set('thermalModule_id', record.get('_id'));
 
 										myForm.loadRecord(record);
+
 									}, null, {single: true});
 										console.info('Thermal store with id: '+ thermalStore.storeId + ' created');
-										thermalStore.insert(0, new C.model.ThermalModule(submit_values));
+										thermalStore.insert(0, new C.model.ThermalModule(values));
 									}
 							},
 							itemId: 'create',
@@ -224,11 +219,7 @@ Ext.define('C.view.ThermalModuleForm', {
 									values =  myForm.getFieldValues();
 
 								if (myForm.isValid()) {
-									//myForm.updateRecord();
-									var submit_values = values;
-									//convert desired_temp_schedule to array from string
-									submit_values.desired_temp_schedule = JSON.parse(values.desired_temp_schedule);
-									myForm.getRecord().set(submit_values);
+									myForm.updateRecord();
 								}
 							},
 							hidden: true,
@@ -263,10 +254,6 @@ Ext.define('C.view.ThermalModuleForm', {
 		var myFormCmp = component.up('form');
 		var inst_rec = Ext.getCmp(myFormCmp.inst_form_id).getRecord();
 		component.setValue(inst_rec.get('_id'));
-	},
-
-	onTextareafieldRender: function(component, eOpts) {
-		component.setValue('['+component.getValue()+']');
 	},
 
 	onTextfieldRender112: function(component, eOpts) {
