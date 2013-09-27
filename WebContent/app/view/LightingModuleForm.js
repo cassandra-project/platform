@@ -443,9 +443,7 @@ Ext.define('C.view.LightingModuleForm', {
 							xtype: 'button',
 							handler: function(button, event) {
 								var myFormCmp = button.up('form'),
-									myForm = myFormCmp.getForm(),
-									values = myForm.values,
-									record = myForm.getRecord();
+									myForm = myFormCmp.getForm();
 
 								if (myForm.isValid()) {
 									myForm.updateRecord();

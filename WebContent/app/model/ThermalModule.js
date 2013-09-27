@@ -16,41 +16,40 @@
 Ext.define('C.model.ThermalModule', {
 	extend: 'Ext.data.Model',
 
+	idProperty: '_id',
+
 	fields: [
 		{
-			name: '_id'
+			name: '_id',
+			persist: false
 		},
 		{
-			name: 'web_service_url',
+			name: 'inst_id'
+		},
+		{
+			name: 'type',
 			type: 'string'
 		},
 		{
-			name: 'features',
-			type: 'string'
-		},
-		{
+			dateFormat: 'g:i A',
 			name: 'opening_time',
-			type: 'string'
+			type: 'date'
 		},
 		{
+			dateFormat: 'g:i A',
 			name: 'closing_time',
+			type: 'date'
+		},
+		{
+			name: 'desired_temp_schedule'
+		},
+		{
+			name: 'prc_id'
+		},
+		{
+			name: 'prc_name',
+			persist: false,
 			type: 'string'
-		},
-		{
-			name: 'temperature_set_points',
-			type: 'string'
-		},
-		{
-			name: 'min_temp',
-			type: 'float'
-		},
-		{
-			name: 'max_temp',
-			type: 'float'
-		},
-		{
-			name: 'daily_energy_price',
-			type: 'float'
 		}
 	]
 });

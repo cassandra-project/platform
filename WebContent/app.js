@@ -91,8 +91,8 @@ Ext.application({
 		'ClusterMethodStore',
 		'ClustersStore',
 		'ThermalFeaturesStore',
-		'ThermalModuleStore',
-		'LightingModuleStore'
+		'LightingModuleStore',
+		'ThermalModuleStore'
 	],
 	views: [
 		'MyViewport',
