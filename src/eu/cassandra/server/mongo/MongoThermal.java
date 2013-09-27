@@ -59,7 +59,7 @@ public class MongoThermal {
 		MongoDBQueries q = new MongoDBQueries();
 		DBObject returnObj = q.insertData(COL_THERMAL ,dataToInsert,
 				"Thermal params created successfully", MongoInstallations.COL_INSTALLATIONS ,
-				"inst_id",JSONValidator.PERSON_SCHEMA );
+				"inst_id",JSONValidator.THERMAL_SCHEMA );
 		return returnObj;
 	}
 
