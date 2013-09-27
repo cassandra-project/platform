@@ -17,7 +17,7 @@ Ext.define('C.view.LoginForm', {
 	extend: 'Ext.form.Panel',
 
 	frame: true,
-	margin: '50 0 0 100',
+	style: 'margin: 50px auto;',
 	width: 300,
 	layout: {
 		align: 'center',
