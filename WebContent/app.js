@@ -215,7 +215,14 @@ Ext.application({
 		//disable form and grid buttons if this is a library record, try catch blocks added as some nodes present tricky behavior
 
 		if (C.app.belongsToCassLib(record.store)) {
-			cmpToAdd.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
+			cmpToAdd.query('.button').forEach(function(c){
+				if (c.xtype == 'tab' || (c.cls && c.cls.indexOf('always_active') >= 0)) {
+					return;
+				}
+				else {
+					c.setDisabled(true);
+				}
+			});
 		}
 
 		//debugger;
@@ -458,6 +465,7 @@ Ext.application({
 		//check if thermal module or lighting module exist and update form layout
 		if (record.get('thermalModule_id')) {
 			myFormCmp.down('#add_thermal').hide();
+			myFormCmp.down('#view_thermal').show();
 			myFormCmp.down('#update_thermal').show();
 			myFormCmp.down('#delete_thermal').show();
 
@@ -468,6 +476,7 @@ Ext.application({
 		//check if thermal module or lighting module exist and update form layout
 		if (record.get('lightingModule_id')) {
 			myFormCmp.down('#add_lighting').hide();
+			myFormCmp.down('#view_lighting').show();
 			myFormCmp.down('#update_lighting').show();
 			myFormCmp.down('#delete_lighting').show();
 

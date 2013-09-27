@@ -389,6 +389,7 @@ Ext.define('C.view.LightingModuleForm', {
 				{
 					xtype: 'container',
 					dock: 'bottom',
+					itemId: 'buttonContainer',
 					margin: '10 0',
 					defaults: {
 						scale: 'medium',
@@ -418,6 +419,7 @@ Ext.define('C.view.LightingModuleForm', {
 										button.hide();
 										myFormCmp.down('#update').show();
 										installationForm.down('#add_lighting').hide();
+										installationForm.down('#view_lighting').show();
 										installationForm.down('#update_lighting').show();
 										installationForm.down('#delete_lighting').show();
 

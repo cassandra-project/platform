@@ -137,7 +137,41 @@ Ext.define('C.view.InstallationForm', {
 							},
 							cls: 'add_thermal',
 							itemId: 'add_thermal',
+							icon: 'resources/icons/add.png',
 							text: 'Add thermal modeling'
+						},
+						{
+							xtype: 'button',
+							handler: function(button, event) {
+
+								var myFormCmp = button.up('form'),
+									myForm = myFormCmp.getForm(),
+									record = myFormCmp.getRecord();
+
+								var thermalModuleForm = new C.view.ThermalModuleForm({operation: 'update', 'inst_form_id':  button.up('form').id});
+								//read only fields disable buttons
+								thermalModuleForm.getForm().applyToFields({readOnly:true});
+								thermalModuleForm.down('#buttonContainer').hide();
+
+								var thermalModuleStore = Ext.getStore('thermalModuleStore_inst_id' + record.get('_id'));
+
+								var formWindow = new Ext.Window({
+									items  :  thermalModuleForm,
+									title  : 'View Thermal Modeling'
+								}); 
+
+								thermalModuleStore.on('load', function(store, records) {
+									thermalModuleForm.loadRecord(records[0]);
+									formWindow.show();
+								}, null, {single:true});
+
+									thermalModuleStore.load({url:thermalModuleStore.proxy.url+'/'+record.get('thermalModule_id')});
+							},
+							cls: 'thermal_view always_active',
+							hidden: true,
+							itemId: 'view_thermal',
+							icon: 'resources/icons/view.png',
+							text: 'View thermal modeling'
 						},
 						{
 							xtype: 'button',
@@ -165,6 +199,7 @@ Ext.define('C.view.InstallationForm', {
 							cls: 'thermal_added',
 							hidden: true,
 							itemId: 'update_thermal',
+							icon: 'resources/icons/edit.png',
 							text: 'Update thermal modeling'
 						},
 						{
@@ -178,6 +213,8 @@ Ext.define('C.view.InstallationForm', {
 								thermalModuleStore.removeAll();
 								record.set('thermalModule_id', '');
 
+
+								myFormCmp.down('#view_thermal').hide();
 								myFormCmp.down('#delete_thermal').hide();
 								myFormCmp.down('#update_thermal').hide();
 								myFormCmp.down('#add_thermal').show();
@@ -185,6 +222,7 @@ Ext.define('C.view.InstallationForm', {
 							cls: 'thermal_added',
 							hidden: true,
 							itemId: 'delete_thermal',
+							icon: 'resources/icons/delete.png',
 							text: 'Delete thermal modeling'
 						},
 						{
@@ -203,7 +241,42 @@ Ext.define('C.view.InstallationForm', {
 							},
 							cls: 'add_lighting',
 							itemId: 'add_lighting',
+							icon: 'resources/icons/add.png',
 							text: 'Add lighting modeling'
+						},
+						{
+							xtype: 'button',
+							handler: function(button, event) {
+								var myFormCmp = button.up('form'),
+									myForm = myFormCmp.getForm(),
+									record = myFormCmp.getRecord();
+
+								var lightingModuleForm = new C.view.LightingModuleForm({operation: 'update', 'inst_form_id':  button.up('form').id});
+								//read only fields hide buttons
+								lightingModuleForm.getForm().applyToFields({disabled:true});
+								lightingModuleForm.down('#buttonContainer').hide();
+
+								var lightingModuleStore = Ext.getStore('lightingModuleStore_inst_id' + record.get('_id'));
+
+								lightingModuleStore.on('load', function(store, records) {
+									lightingModuleForm.loadRecord(records[0]);
+								}, null, {single:true});
+
+									lightingModuleStore.load({url:lightingModuleStore.proxy.url+'/'+record.get('lightingModule_id')});
+
+									var formWindow = new Ext.Window({
+										items  :  lightingModuleForm,
+										title  : 'View Lighting Modeling',
+										height : 600,
+										overflowY: 'scroll'
+									}); 
+									formWindow.show();
+							},
+							cls: 'always_active',
+							hidden: true,
+							itemId: 'view_lighting',
+							icon: 'resources/icons/view.png',
+							text: 'View lighting modeling'
 						},
 						{
 							xtype: 'button',
@@ -232,6 +305,7 @@ Ext.define('C.view.InstallationForm', {
 							cls: 'lighting_added',
 							hidden: true,
 							itemId: 'update_lighting',
+							icon: 'resources/icons/edit.png',
 							text: 'Update lighting modeling'
 						},
 						{
@@ -245,6 +319,7 @@ Ext.define('C.view.InstallationForm', {
 								lightingModuleStore.removeAll();
 								record.set('lightingModule_id', '');
 
+								myFormCmp.down('#view_lighting').hide();
 								myFormCmp.down('#delete_lighting').hide();
 								myFormCmp.down('#update_lighting').hide();
 								myFormCmp.down('#add_lighting').show();
@@ -252,6 +327,7 @@ Ext.define('C.view.InstallationForm', {
 							cls: 'lighting_added',
 							hidden: true,
 							itemId: 'delete_lighting',
+							icon: 'resources/icons/delete.png',
 							text: 'Delete lighting modeling'
 						}
 					]
