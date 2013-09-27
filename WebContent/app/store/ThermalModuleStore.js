@@ -24,8 +24,20 @@ Ext.define('C.store.ThermalModuleStore', {
 		var me = this;
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
+			autoSync: true,
 			model: 'C.model.ThermalModule',
-			storeId: 'thermalModule'
+			storeId: 'thermalStore',
+			proxy: {
+				type: 'rest',
+				limitParam: '',
+				pageParam: '',
+				startParam: '',
+				url: '/cassandra/api/thermal',
+				reader: {
+					type: 'json',
+					root: 'data'
+				}
+			}
 		}, cfg)]);
 	}
 });

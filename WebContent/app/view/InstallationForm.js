@@ -142,23 +142,25 @@ Ext.define('C.view.InstallationForm', {
 						{
 							xtype: 'button',
 							handler: function(button, event) {
-								return false;
+
 								var myFormCmp = button.up('form'),
 									myForm = myFormCmp.getForm(),
 									record = myFormCmp.getRecord();
 
-								var thermalModuleForm = new C.view.ThermalModuleForm({operation: 'update'});
+								var thermalModuleForm = new C.view.ThermalModuleForm({operation: 'update', 'inst_form_id':  button.up('form').id});
 								var thermalModuleStore = Ext.getStore('thermalModuleStore_inst_id' + record.get('_id'));
-								//thermalModuleStore.getProxy().url += '/' +  button.up('form').getRecord().get('thermalModule_id');
-
-								thermalModuleForm.loadRecord(thermalModuleStore.getRange()[0]);
-
 
 								var formWindow = new Ext.Window({
 									items  :  thermalModuleForm,
 									title  : 'Add Thermal Modeling'
 								}); 
-								formWindow.show();
+
+								thermalModuleStore.on('load', function(store, records) {
+									thermalModuleForm.loadRecord(records[0]);
+									formWindow.show();
+								}, null, {single:true});
+
+									thermalModuleStore.load({url:thermalModuleStore.proxy.url+'/'+record.get('thermalModule_id')});
 							},
 							cls: 'thermal_added',
 							hidden: true,
@@ -168,7 +170,6 @@ Ext.define('C.view.InstallationForm', {
 						{
 							xtype: 'button',
 							handler: function(button, event) {
-								return false;
 								var myFormCmp = button.up('form'),
 									myForm = myFormCmp.getForm(),
 									record = myFormCmp.getRecord();

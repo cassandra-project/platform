@@ -16,11 +16,8 @@
 Ext.define('C.view.ThermalModuleForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 350,
+	height: 300,
 	width: 685,
-	layout: {
-		type: 'column'
-	},
 	bodyPadding: 10,
 
 	initComponent: function() {
@@ -42,21 +39,23 @@ Ext.define('C.view.ThermalModuleForm', {
 					},
 					items: [
 						{
-							xtype: 'textfield',
-							width: 500,
-							fieldLabel: 'Web Service Url <span style=color:red>*</span>',
-							labelStyle: 'text-align: right',
-							labelWidth: 200,
-							name: 'web_service_url',
-							allowBlank: false
+							xtype: 'hiddenfield',
+							fieldLabel: 'Label',
+							name: 'inst_id',
+							listeners: {
+								render: {
+									fn: me.onHiddenfieldRender1,
+									scope: me
+								}
+							}
 						},
 						{
 							xtype: 'combobox',
 							width: 500,
-							fieldLabel: 'Features <span style=color:red>*</span>',
+							fieldLabel: 'Type <span style=color:red>*</span>',
 							labelStyle: 'text-align: right',
 							labelWidth: 200,
-							name: 'features',
+							name: 'type',
 							allowBlank: false,
 							displayField: 'feature_name',
 							queryMode: 'local',
@@ -75,104 +74,88 @@ Ext.define('C.view.ThermalModuleForm', {
 						{
 							xtype: 'timefield',
 							validator: function(value) {
-								if (this.up('form').down('#closing_time').value !== '')
-								return (this.up('form').down('#closing_time').value < this.up('form').down('#opening_time').value) ?  "Opening time cannot be later than closing time" :  true;
+								if (this.up('form').down('#closing_time').value) {
+									var closing_time = Ext.Date.format(this.up('form').down('#closing_time').value, 'g:i A');
+									var opening_time = Ext.Date.format(this.up('form').down('#opening_time').value, 'g:i A');
+									return (closing_time < opening_time) ?  "Opening time cannot be later than closing time" :  true;
+								}
 								return true;
 							},
 							itemId: 'opening_time',
 							width: 230,
-							fieldLabel: 'Opening Time',
+							fieldLabel: 'Opening Time <span style=color:red>*</span>',
 							labelStyle: 'text-align: right',
-							name: 'opening_time'
+							name: 'opening_time',
+							allowBlank: false
 						},
 						{
 							xtype: 'timefield',
 							validator: function(value) {
-								if (this.up('form').down('#opening_time').value !== '')
-								return (this.up('form').down('#closing_time').value < this.up('form').down('#opening_time').value) ?  "Closing time cannot be sooner than opening time" :  true;
+								if (this.up('form').down('#opening_time').value) {
+									var closing_time = Ext.Date.format(this.up('form').down('#closing_time').value, 'g:i A');
+									var opening_time = Ext.Date.format(this.up('form').down('#opening_time').value, 'g:i A');
+									return (closing_time < opening_time) ?  "Closing time cannot be sooner than opening time" :  true;
+								}
 								return true;
 							},
 							itemId: 'closing_time',
 							margin: '0 0 0 30',
 							width: 230,
-							fieldLabel: 'Closing Time',
+							fieldLabel: 'Closing Time <span style=color:red>*</span>',
 							labelStyle: 'text-align:right',
-							name: 'closing_time'
+							name: 'closing_time',
+							allowBlank: false
 						}
 					]
 				},
 				{
-					xtype: 'fieldset',
-					hidden: true,
-					margin: '0 0 0 40',
-					padding: 10,
-					style: {
-						'text-align': 'left',
-						margin: 'auto'
-					},
-					defaults: {
-						labelWidth: 160
-					},
-					title: 'Form Alternative 1',
-					items: [
-						{
-							xtype: 'textareafield',
-							anchor: '100%',
-							fieldLabel: 'Temperature Set Points',
-							cols: 60
+					xtype: 'textareafield',
+					validator: function(value) {
+						try {
+							JSON.parse(value);
+							return true;
 						}
-					]
+						catch(e) {
+							return "Input must be an array of numbers";
+						}
+					},
+					width: 430,
+					fieldLabel: 'Desired temp schedule <span style=color:red>*</span>',
+					labelStyle: 'text-align:right',
+					labelWidth: 200,
+					name: 'desired_temp_schedule',
+					allowBlank: false,
+					listeners: {
+						render: {
+							fn: me.onTextareafieldRender,
+							scope: me
+						}
+					}
 				},
 				{
-					xtype: 'fieldset',
-					margin: '0 0 0 40',
-					padding: '10 75',
-					style: {
-						'text-align': 'left',
-						margin: 'auto'
-					},
-					defaults: {
-						labelWidth: 80,
-						'margin-right': '10px',
-						width: 200
-					},
-					layout: {
-						columns: 2,
-						type: 'table'
-					},
-					title: 'Form Alternative 2',
-					items: [
-						{
-							xtype: 'numberfield',
-							validator: function(value) {
-								return (this.up('form').down('#max_temp').value < this.up('form').down('#min_temp').value) ?  "Minimum temperature cannot be greater than maximum temperature" :  true;
-
-							},
-							itemId: 'min_temp',
-							margin: '5 0 0 0',
-							fieldLabel: 'Min. Temp',
-							name: 'min_temp'
+					xtype: 'textfield',
+					cls: 'dropTarget',
+					width: 430,
+					fieldLabel: 'Pricing Scheme <span style=color:red>*</span>',
+					labelAlign: 'right',
+					labelWidth: 200,
+					name: 'prc_name',
+					allowBlank: false,
+					listeners: {
+						render: {
+							fn: me.onTextfieldRender112,
+							scope: me
 						},
-						{
-							xtype: 'numberfield',
-							validator: function(value) {
-								return (this.up('form').down('#max_temp').value < this.up('form').down('#min_temp').value) ?  "Maximum temperature cannot be less than minimum temperature" :  true;
-
-							},
-							itemId: 'max_temp',
-							margin: '5 0 0 30',
-							fieldLabel: 'Max. Temp',
-							labelWidth: 80,
-							name: 'max_temp'
-						},
-						{
-							xtype: 'numberfield',
-							fieldLabel: 'Daily Energy Price',
-							labelWidth: 80,
-							name: 'daily_energy_prc',
-							minValue: 0
+						beforerender: {
+							fn: me.onTextfieldBeforeRender12,
+							scope: me
 						}
-					]
+					}
+				},
+				{
+					xtype: 'hiddenfield',
+					fieldLabel: 'Label',
+					name: 'prc_id'
 				}
 			],
 			dockedItems: [
@@ -193,18 +176,21 @@ Ext.define('C.view.ThermalModuleForm', {
 						{
 							xtype: 'button',
 							handler: function(button, event) {
-								return false;
 								var myFormCmp = button.up('form'),
 									myForm = myFormCmp.getForm(),
 									values = myForm.getFieldValues(),
 									installationForm = Ext.getCmp(myFormCmp.inst_form_id),
 									inst_rec = installationForm.getRecord();
 
-								debugger;
 								if (myForm.isValid()) {
+									//convert desired_temp_schedule to array from string
+									var submit_values = values;
+									submit_values.desired_temp_schedule = JSON.parse(values.desired_temp_schedule);
+
 									var thermalStore = new C.store.ThermalModuleStore({storeId: 'thermalModuleStore_inst_id' + inst_rec.get('_id')});
-									thermalStore.on('add', function (store, records, operation) {
-										console.info('Record added', records[0]);
+									thermalStore.on('write', function (store, operation, eOpts) {
+										var record = store.getRange()[0];
+										console.info('Record added', record);
 										button.hide();
 										myFormCmp.down('#update').show();
 										installationForm.down('#add_thermal').hide();
@@ -212,12 +198,13 @@ Ext.define('C.view.ThermalModuleForm', {
 										installationForm.down('#delete_thermal').show();
 
 										//add thermalModule_id to installation record
-										inst_rec.set('thermalModule_id',records[0].get('_id'));
-										myForm.loadRecord(records[0]);
-									});
-									console.info('Thermal store with id: '+ thermalStore.storeId + ' created');
-									thermalStore.insert(0, new C.model.ThermalModule(values));
-								}
+										inst_rec.set('thermalModule_id', record.get('_id'));
+
+										myForm.loadRecord(record);
+									}, null, {single: true});
+										console.info('Thermal store with id: '+ thermalStore.storeId + ' created');
+										thermalStore.insert(0, new C.model.ThermalModule(submit_values));
+									}
 							},
 							itemId: 'create',
 							scale: 'medium',
@@ -232,13 +219,17 @@ Ext.define('C.view.ThermalModuleForm', {
 						{
 							xtype: 'button',
 							handler: function(button, event) {
-								return false;
 								var myFormCmp = button.up('form'),
 									myForm = myFormCmp.getForm(),
-									values = myForm.values;
+									values =  myForm.getFieldValues();
 
-								if (myForm.isValid())
-								myForm.updateRecord();
+								if (myForm.isValid()) {
+									//myForm.updateRecord();
+									var submit_values = values;
+									//convert desired_temp_schedule to array from string
+									submit_values.desired_temp_schedule = JSON.parse(values.desired_temp_schedule);
+									myForm.getRecord().set(submit_values);
+								}
 							},
 							hidden: true,
 							itemId: 'update',
@@ -266,6 +257,45 @@ Ext.define('C.view.ThermalModuleForm', {
 		});
 
 		me.callParent(arguments);
+	},
+
+	onHiddenfieldRender1: function(component, eOpts) {
+		var myFormCmp = component.up('form');
+		var inst_rec = Ext.getCmp(myFormCmp.inst_form_id).getRecord();
+		component.setValue(inst_rec.get('_id'));
+	},
+
+	onTextareafieldRender: function(component, eOpts) {
+		component.setValue('['+component.getValue()+']');
+	},
+
+	onTextfieldRender112: function(component, eOpts) {
+		var myForm = this.getForm();
+		if (myForm.findField("prc_id").getValue()) {
+			var prc_id = myForm.findField("prc_id").getValue();
+			Ext.Ajax.request({
+				url: '/cassandra/api/prc/' + prc_id,
+				method: 'GET',
+				scope: this,
+				success: function(response, eOpts) {	
+					response = JSON.parse(response.responseText);
+					myForm.setValues({prc_name: response.data[0].name});
+				}
+			});
+		}
+		new Ext.dd.DropTarget(this.body.dom.getElementsByClassName('dropTarget')[0],{
+			ddGroup:'ddGlobal',
+			notifyDrop: function(dds,e,data) {	
+				if (dds.dragData.records[0].get('nodeType') != 'Pricing' )
+				return false;
+				myForm.setValues({ prc_id: dds.dragData.records[0].get('id'), prc_name: dds.dragData.records[0].get('name')});
+			return true; }
+		});
+	},
+
+	onTextfieldBeforeRender12: function(component, eOpts) {
+		component.helpText = 'Pricing Scheme: the pricing scheme under which the energy consumption of the installations will be billed.</br>You can add a Pricing Scheme by selecting it from the Projects Tree and dropping it here';
+		component.url = 'https://github.com/cassandra-project/platform/wiki/Simulation-parameters-form';
 	},
 
 	onCreateRender: function(component, eOpts) {
