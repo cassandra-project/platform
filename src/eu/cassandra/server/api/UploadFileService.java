@@ -43,11 +43,15 @@ import com.mongodb.Mongo;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
+import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.server.mongo.MongoRuns;
+import eu.cassandra.server.mongo.MongoScenarios;
+import eu.cassandra.server.mongo.MongoSimParam;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Constants;
  
 @Path("file")
 public class UploadFileService {
@@ -60,10 +64,12 @@ public class UploadFileService {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response uploadFile(
 			@FormDataParam("file") InputStream uploadedInputStream,
-			@FormDataParam("file") FormDataContentDisposition fileDetail) {
+			@FormDataParam("file") FormDataContentDisposition fileDetail,
+			@FormDataParam("prj_id") String prj_id) {
+		
 
 		String filename = fileDetail.getFileName();
-		String prj_id = new String(); //TODO
+		System.out.println("Project_id: " + prj_id);
 		String uploadedFileLocation = context.getRealPath("/resources") + 
 				"/" + filename;
 		
@@ -92,6 +98,23 @@ public class UploadFileService {
 			run.put("prj_id", prj_id);
 			run.put("percentage", 100);
 			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
+			
+			// Find the project
+			DBObject query = new BasicDBObject();
+			query.put("_id", new ObjectId(prj_id));
+			DBObject project = DBConn.getConn().getCollection(MongoProjects.COL_PROJECTS).findOne(query);
+			db.getCollection(MongoProjects.COL_PROJECTS).insert(project);
+			// Make a scenario
+			DBObject scenario = new BasicDBObject();
+			scenario.put("name", filename);
+			scenario.put("project_id", prj_id);
+			db.getCollection(MongoScenarios.COL_SCENARIOS).insert(scenario);
+			// Get the scenario id
+			query = new BasicDBObject();
+			query.put("project_id", prj_id);
+			DBObject insertedScenario = db.getCollection(MongoScenarios.COL_SCENARIOS).findOne(query);
+			ObjectId scnIdObj = (ObjectId)insertedScenario.get("_id");
+			String scnId = scnIdObj.toString();			
 			// TODO: Parse and calculate KPIs
 			File f = new File(uploadedFileLocation);
 			Scanner sc = new Scanner(f);
@@ -112,7 +135,7 @@ public class UploadFileService {
 				double powerSum = 0;
 				for(int i = 1; i < tokens.length; i++) {
 					double power = Double.parseDouble(tokens[i]);
-					energyInst[i-1] += power;
+					energyInst[i-1] += (power/1000.0) * Constants.MINUTE_HOUR_RATIO;
 					avgPowerInst[i-1] += power;
 					if(maxPowerInst[i-1] < power) {
 						maxPowerInst[i-1] = power; 
@@ -128,7 +151,7 @@ public class UploadFileService {
 						powerSum, 
 	  					0, 
 	  					MongoResults.COL_AGGRRESULTS);
-				energy += powerSum;
+				energy += (powerSum/1000.0) * Constants.MINUTE_HOUR_RATIO;
 				avgPower += powerSum;
 				if(maxPower < powerSum) {
 					maxPower = powerSum; 
@@ -152,6 +175,13 @@ public class UploadFileService {
 	  					0);
 		
 			String output = "File uploaded to : " + uploadedFileLocation;
+			// Make sim params
+			DBObject sim_params = new BasicDBObject();
+			sim_params.put("name", filename);
+			sim_params.put("scn_id", scnId);
+			sim_params.put("numberOfDays", (tick/1440));
+			sim_params.put("mcruns", 1);
+			db.getCollection(MongoSimParam.COL_SIMPARAM).insert(sim_params);
 			return Response.status(200).entity(output).build();
 		} catch(Exception exp) {
 			JSONtoReturn jsonMsg = new JSONtoReturn();
