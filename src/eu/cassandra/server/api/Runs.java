@@ -289,7 +289,7 @@ public class Runs {
 			Simulation sim = new Simulation(scenario.toString(), dbname);
 			sim.setup(false);
 			// Scenario building finished
-			DBObject run = buildRunObj(objid, name, prj_id);
+			DBObject run = buildRunObj(objid, name, prj_id, "sim");
 			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
 			String returnMsg = PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSON(run, "Sim creation successful"));
 			logger.info(returnMsg);
@@ -326,7 +326,7 @@ public class Runs {
 		return m.getDB(dbname);
 	}
 	
-	private static DBObject buildRunObj(ObjectId objid, String name, String prj_id) {
+	private static DBObject buildRunObj(ObjectId objid, String name, String prj_id, String type) {
 		DBObject run = new BasicDBObject();
 		Calendar calendar = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmm");
@@ -335,6 +335,7 @@ public class Runs {
 		run.put("name", runName);
 		run.put("started", System.currentTimeMillis());
 		run.put("ended", -1);
+		run.put("type", type);
 		run.put("prj_id", prj_id);
 		run.put("percentage", 0);
 		return run;

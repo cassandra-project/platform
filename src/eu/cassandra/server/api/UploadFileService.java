@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Scanner;
 
 import javax.servlet.ServletContext;
@@ -32,9 +34,20 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
+
+import eu.cassandra.server.mongo.MongoResults;
+import eu.cassandra.server.mongo.MongoRuns;
+import eu.cassandra.server.mongo.util.DBConn;
+import eu.cassandra.server.mongo.util.JSONtoReturn;
+import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
  
 @Path("file")
 public class UploadFileService {
@@ -48,18 +61,104 @@ public class UploadFileService {
 	public Response uploadFile(
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail) {
- 
+
+		String filename = fileDetail.getFileName();
+		String prj_id = new String(); //TODO
 		String uploadedFileLocation = context.getRealPath("/resources") + 
-				"/" + fileDetail.getFileName();
+				"/" + filename;
+		
 		
 		System.out.println(uploadedFileLocation);
  
-		// save it
-		writeToFile(uploadedInputStream, uploadedFileLocation);
- 
-		String output = "File uploaded to : " + uploadedFileLocation;
- 
-		return Response.status(200).entity(output).build();
+		try {
+			// Save it
+			writeToFile(uploadedInputStream, uploadedFileLocation);
+			// TODO: Create a Run and return the id in the response
+			ObjectId objid = ObjectId.get();
+			DBObject run = new BasicDBObject();
+			String dbname = objid.toString();
+			Mongo m = new Mongo("localhost");
+			DB db = m.getDB(dbname);
+			MongoResults mr = new MongoResults(dbname);
+			mr.createIndexes();
+			Calendar calendar = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmm");
+			String runName = "Run for " + filename + " on " + sdf.format(calendar.getTime());
+			run.put("_id", objid);
+			run.put("name", runName);
+			run.put("started", System.currentTimeMillis());
+			run.put("ended", System.currentTimeMillis());
+			run.put("type", "file");
+			run.put("prj_id", prj_id);
+			run.put("percentage", 100);
+			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
+			// TODO: Parse and calculate KPIs
+			File f = new File(uploadedFileLocation);
+			Scanner sc = new Scanner(f);
+			String header = sc.next();
+			String[] headerTokens = header.split(",");
+			int numOfInstallations = headerTokens.length - 1;
+			double maxPower = 0;
+			double[] maxPowerInst = new double[numOfInstallations];
+	  		double avgPower = 0;
+	  		double[] avgPowerInst = new double[numOfInstallations];
+	  		double energy = 0;
+	  		double[] energyInst = new double[numOfInstallations];
+	  		int tick = 0;
+			while(sc.hasNext()) {
+				tick++;
+				String line = sc.next();
+				String[] tokens = line.split(",");
+				double powerSum = 0;
+				for(int i = 1; i < tokens.length; i++) {
+					double power = Double.parseDouble(tokens[i]);
+					energyInst[i-1] += power;
+					avgPowerInst[i-1] += power;
+					if(maxPowerInst[i-1] < power) {
+						maxPowerInst[i-1] = power; 
+					}
+					powerSum += power;
+					mr.addTickResultForInstallation(tick, 
+	  						headerTokens[i], 
+	  						power, 
+	  						0, 
+	  						MongoResults.COL_INSTRESULTS);
+				}
+				mr.addAggregatedTickResult(tick, 
+						powerSum, 
+	  					0, 
+	  					MongoResults.COL_AGGRRESULTS);
+				energy += powerSum;
+				avgPower += powerSum;
+				if(maxPower < powerSum) {
+					maxPower = powerSum; 
+				}
+			}
+			
+			// TODO: Add ticks and KPIs in the db
+			for(int i = 0; i < numOfInstallations; i++) {
+				mr.addKPIs(headerTokens[i+1], 
+							maxPowerInst[i], 
+							avgPowerInst[i]/tick, 
+							energyInst[i], 
+							0,
+							0);
+			}
+			mr.addKPIs(MongoResults.AGGR, 
+	  					maxPower, 
+	  					avgPower/tick, 
+	  					energy, 
+	  					0,
+	  					0);
+		
+			String output = "File uploaded to : " + uploadedFileLocation;
+			return Response.status(200).entity(output).build();
+		} catch(Exception exp) {
+			JSONtoReturn jsonMsg = new JSONtoReturn();
+			String json = PrettyJSONPrinter.prettyPrint(jsonMsg.createJSONError("Error", exp));
+			Response r = Response.status(Response.Status.BAD_REQUEST).entity(json).build();
+			return r; 
+		}
  
 	}
  
