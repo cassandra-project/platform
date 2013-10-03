@@ -43,6 +43,14 @@ Ext.define('C.model.Person', {
 			name: 'activities',
 			persist: false,
 			type: 'int'
+		},
+		{
+			name: 'sensitivity',
+			type: 'float'
+		},
+		{
+			name: 'awareness',
+			type: 'float'
 		}
 	]
 });

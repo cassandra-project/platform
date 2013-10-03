@@ -16,7 +16,7 @@
 Ext.define('C.view.UserLibTreePanel', {
 	extend: 'Ext.tree.Panel',
 
-	collapseDirection: 'left',
+	collapsible: false,
 	store: 'UserLibTreeStore',
 	displayField: 'name',
 	folderSort: false,
