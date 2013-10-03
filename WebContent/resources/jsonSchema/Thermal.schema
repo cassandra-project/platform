@@ -21,6 +21,11 @@
                 "six_mpc_nodr"
             ]
         },
+        "web_service_url": {
+            "type": "string",
+            "description": "Web REST Server URL",
+            "optional": false
+        },
         "opening_time": {
             "type": "string",
             "description": "Opening time",

@@ -22,6 +22,16 @@
             "type": "string",
             "description": "Description of the person/agent",
             "optional": true
+        },
+        "sensitivity": {
+            "type": "number",
+            "description": "Sensitivity",
+            "optional": true
+        },
+        "awareness": {
+            "type": "number",
+            "description": "Awareness",
+            "optional": true
         }
     },
     "additionalProperties" : false

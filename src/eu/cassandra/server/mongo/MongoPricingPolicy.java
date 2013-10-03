@@ -19,10 +19,13 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.DBObject;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.sim.utilities.Utils;
 
 public class MongoPricingPolicy {
 
@@ -65,9 +68,26 @@ public class MongoPricingPolicy {
 	 * @return
 	 */
 	public String createPricingPolicy(String dataToInsert) {
-		return new MongoDBQueries().insertData(COL_PRICING, dataToInsert,
+		String response = createPricingObj(dataToInsert).toString();
+		return withAddedWarnings(response, false);
+	}
+	
+	public static DBObject createPricingObj(String dataToInsert) {
+		MongoDBQueries q = new MongoDBQueries();
+		DBObject returnObj = q.insertData(COL_PRICING, dataToInsert,
 				"Pricing policy created successfully", MongoProjects.COL_PROJECTS,
-				REF_PROJECT, JSONValidator.PRICING_SCHEMA).toString();
+				REF_PROJECT, JSONValidator.PRICING_SCHEMA);
+		if(Utils.failed(returnObj.toString())) {
+			// Perhaps should be added to the user library
+			returnObj = q.insertData(COL_PRICING, dataToInsert,
+					"Pricing policy created successfully", "users",
+					REF_PROJECT, JSONValidator.PRICING_SCHEMA);
+		}
+		return returnObj;
+	}
+	
+	private String withAddedWarnings(String response, boolean ary) {
+		return response;
 	}
 
 	/**
@@ -88,9 +108,16 @@ public class MongoPricingPolicy {
 	 * @return
 	 */
 	public String updatePricingPolicy(String id,String jsonToUpdate) {
-		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
+		MongoDBQueries q = new MongoDBQueries();
+		String returnMsg = q.updateDocument("_id", id,jsonToUpdate,
 				COL_PRICING, "Pricing policy updated successfully",
 				MongoProjects.COL_PROJECTS, REF_PROJECT,JSONValidator.PRICING_SCHEMA).toString();
+		if(Utils.failed(returnMsg)) {
+			returnMsg = q.updateDocument("_id", id,jsonToUpdate,
+					COL_PRICING, "Pricing policy updated successfully",
+					"users", REF_PROJECT, JSONValidator.PRICING_SCHEMA).toString();
+		}
+		return withAddedWarnings(returnMsg, true);
 	}
 	
 }
