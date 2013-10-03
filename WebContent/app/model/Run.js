@@ -50,6 +50,10 @@ Ext.define('C.model.Run', {
 		},
 		{
 			name: 'smp_id'
+		},
+		{
+			name: 'type',
+			type: 'string'
 		}
 	]
 });

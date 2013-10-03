@@ -1129,11 +1129,11 @@ Ext.application({
 	getHeaderFromName: function(name) {
 		switch (name) {
 			case "maxPower": return "max Power (W)";
-			case "avgPower": return "average Power (W)";
-			case "avgPeak": return "average Peak (W)";
+			case "avgPower": return "avg Power (W)";
+			case "avgPeak": return "avg Peak (W)";
 			case "energy": return "energy (KWh)";
 			case "cost": return "cost (EUR)";
-			case "co2": return "CO2 factor per KWh";
+			case "co2": return "CO2 (kg/kWh)";
 			default: return name;
 		}
 	},

@@ -50,6 +50,16 @@ Ext.define('C.view.ThermalModuleForm', {
 							}
 						},
 						{
+							xtype: 'textfield',
+							width: 500,
+							fieldLabel: 'Web REST Server URL <span style=color:red>*</span>',
+							labelStyle: 'text-align: right',
+							labelWidth: 200,
+							name: 'web_service_url',
+							allowBlank: false,
+							vtype: 'url'
+						},
+						{
 							xtype: 'combobox',
 							width: 500,
 							fieldLabel: 'Type <span style=color:red>*</span>',

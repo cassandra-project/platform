@@ -61,6 +61,26 @@ Ext.define('C.view.PersonForm', {
 									name: 'type'
 								},
 								{
+									xtype: 'slider',
+									anchor: '100%',
+									width: 378,
+									fieldLabel: 'Sensitivity',
+									name: 'sensitivity',
+									decimalPrecision: 1,
+									keyIncrement: 0.1,
+									maxValue: 1
+								},
+								{
+									xtype: 'slider',
+									anchor: '100%',
+									width: 378,
+									fieldLabel: 'Awareness',
+									name: 'awareness',
+									decimalPrecision: 1,
+									keyIncrement: 0.1,
+									maxValue: 1
+								},
+								{
 									xtype: 'textareafield',
 									width: 246,
 									fieldLabel: 'Description',

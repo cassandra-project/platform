@@ -27,6 +27,10 @@ Ext.define('C.model.ThermalModule', {
 			name: 'inst_id'
 		},
 		{
+			name: 'web_service_url',
+			type: 'string'
+		},
+		{
 			name: 'type',
 			type: 'string'
 		},
