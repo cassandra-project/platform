@@ -531,7 +531,6 @@ Ext.define('C.view.DynamicGrid', {
 						series: series
 
 					});
-
 					chartWindow.insert(3,myResultsChart);
 					chartWindow.setLoading(false);
 				}
@@ -548,8 +547,34 @@ Ext.define('C.view.DynamicGrid', {
 						model: 'C.model.Kpi'
 						//data: dataArray
 					});
-					myKpiStore.loadRecords(recordArray);
+					if (recordArray.length == 2) {
+						var getPercentialDif = function (a, b) {
+							if (a && b) {
+								try {
+
+									return (a == 0 || a === 0) ? '' : 100*((a-b)/a);
+
+								}
+								catch (e) {
+									return '';
+								}
+							}
+							return '';
+						};
+						var difRecord = new C.model.Kpi({
+							'name': 'Difference(%)',
+							'maxPower': getPercentialDif(recordArray[0].get('maxPower'), recordArray[1].get('maxPower')),
+							'avgPeak': getPercentialDif(recordArray[0].get('avgPeak'), recordArray[1].get('avgPeak')),
+							'avgPower': getPercentialDif(recordArray[0].get('avgPower'), recordArray[1].get('avgPower')),
+							'energy': getPercentialDif(recordArray[0].get('energy'), recordArray[1].get('energy')),
+							'cost': getPercentialDif(recordArray[0].get('cost'), recordArray[1].get('cost')),
+							'co2': getPercentialDif(recordArray[0].get('co2'), recordArray[1].get('co2'))
+						});
+						recordArray.push(difRecord);
+
+					}
 					var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(myKpiStore);
+					myKpiStore.loadRecords(recordArray);
 					grid.closable = false;
 					grid.style = {margin: 'auto'};
 					grid.setTitle("KPIs");
