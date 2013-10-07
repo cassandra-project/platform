@@ -297,7 +297,7 @@ public class Activity extends Entity {
 			 */
 			while (numOfTimes > 0) {
 				int duration = Math.max(durationProb.getPrecomputedBin(), 1);
-				int startTime = startProb.getPrecomputedBin();
+				int startTime = Math.min(Math.max(startProb.getPrecomputedBin(), 0), 1439);
 				// Select appliances to be switched on
 				for (int j = 0; j < vector.size(); j++) {
 					//if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
