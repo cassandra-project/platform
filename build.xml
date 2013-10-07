@@ -64,7 +64,7 @@
   		</javadoc>
 	</target>
 
-  	<target name="dist" depends="compile" description="generate the distribution (war file)" >
+  	<target name="dist" depends="compile, junit" description="generate the distribution (war file)" >
 		<war destfile="${dist}/cassandra.war" webxml="${webinf}/web.xml">
 			<fileset dir="WebContent" excludes="WEB-INF/"/>
 		  	<lib dir="${lib}"></lib>

@@ -48,7 +48,7 @@ public class MongoPersons {
 	}
 	
 	public static String getParentId(String id) {
-		BasicDBList list = ((BasicDBList)((DBObject)JSON.parse(new MongoActivities().getActivity(null, id))).get("data"));
+		BasicDBList list = ((BasicDBList)((DBObject)JSON.parse(new MongoPersons().getPerson(null, id))).get("data"));
 		if(list == null || list.isEmpty()) return null;
 		return (String)((DBObject)list.get(0)).get(REF_INSTALLATION);
 	}

@@ -44,7 +44,7 @@ public class MongoActivityModels {
 	public static boolean checkAppliancesExists(BasicDBList apps, String act_id) {
 		boolean check = true;
 		String inst_id = MongoPersons.getParentId(MongoActivities.getParentId(act_id));
-		if(apps == null || apps.isEmpty()) return true;
+		if(apps == null || apps.isEmpty() || apps.size() == 0) return true;
 		for(Object o : apps) {
 			String app_id = (String)o;
 			String app_inst_id = MongoAppliances.getParentId(app_id);
@@ -103,7 +103,6 @@ public class MongoActivityModels {
 		String act_id = (String)obj.get("act_id");
 		boolean  checkPass = checkAppliancesExists(apps, act_id);
 		DBObject returnObj = null;
-		System.out.println(checkPass);
 		if(checkPass) {
 			returnObj = q.insertData(COL_ACTMODELS ,dataToInsert,
 					"Activity Model created successfully", 
