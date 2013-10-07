@@ -562,7 +562,7 @@ Ext.define('C.view.DynamicGrid', {
 							return '';
 						};
 						var difRecord = new C.model.Kpi({
-							'name': 'Difference(%)',
+							'name': 'Difference (%)',
 							'maxPower': getPercentialDif(recordArray[0].get('maxPower'), recordArray[1].get('maxPower')),
 							'avgPeak': getPercentialDif(recordArray[0].get('avgPeak'), recordArray[1].get('avgPeak')),
 							'avgPower': getPercentialDif(recordArray[0].get('avgPower'), recordArray[1].get('avgPower')),

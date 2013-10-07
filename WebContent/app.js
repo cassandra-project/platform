@@ -592,6 +592,10 @@ Ext.application({
 
 		myForm.loadRecord(record);
 
+		var sensitivity_value = myForm.getFieldValues().sensitivity;
+		var awareness_value = myForm.getFieldValues().awareness;
+		myForm.setValues({ sensitivity_value: sensitivity_value, awareness_value: awareness_value });
+
 		var childNode = record.node.childNodes[0];
 		if (childNode) {
 			if(!childNode.c){
