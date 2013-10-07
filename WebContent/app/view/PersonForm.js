@@ -61,24 +61,75 @@ Ext.define('C.view.PersonForm', {
 									name: 'type'
 								},
 								{
-									xtype: 'slider',
-									anchor: '100%',
-									width: 378,
-									fieldLabel: 'Sensitivity',
-									name: 'sensitivity',
-									decimalPrecision: 1,
-									keyIncrement: 0.1,
-									maxValue: 1
+									xtype: 'container',
+									width: 300,
+									layout: {
+										align: 'stretch',
+										type: 'hbox'
+									},
+									items: [
+										{
+											xtype: 'slider',
+											flex: 8,
+											fieldLabel: 'Sensitivity',
+											name: 'sensitivity',
+											value: 0.6,
+											decimalPrecision: 1,
+											keyIncrement: 0.1,
+											maxValue: 1,
+											listeners: {
+												change: {
+													fn: me.onSliderChange,
+													scope: me
+												}
+											}
+										},
+										{
+											xtype: 'textfield',
+											flex: 1,
+											margin: '0 0 0 10',
+											fieldLabel: 'Label',
+											hideLabel: true,
+											name: 'sensitivity_value',
+											submitValue: false,
+											readOnly: true
+										}
+									]
 								},
 								{
-									xtype: 'slider',
-									anchor: '100%',
-									width: 378,
-									fieldLabel: 'Awareness',
-									name: 'awareness',
-									decimalPrecision: 1,
-									keyIncrement: 0.1,
-									maxValue: 1
+									xtype: 'container',
+									width: 300,
+									layout: {
+										align: 'stretch',
+										type: 'hbox'
+									},
+									items: [
+										{
+											xtype: 'slider',
+											flex: 8,
+											fieldLabel: 'Awareness',
+											name: 'awareness',
+											decimalPrecision: 1,
+											keyIncrement: 0.1,
+											maxValue: 1,
+											listeners: {
+												change: {
+													fn: me.onSliderChange1,
+													scope: me
+												}
+											}
+										},
+										{
+											xtype: 'textfield',
+											flex: 1,
+											margin: '0 0 0 10',
+											fieldLabel: 'Label',
+											hideLabel: true,
+											name: 'awareness_value',
+											submitValue: false,
+											readOnly: true
+										}
+									]
 								},
 								{
 									xtype: 'textareafield',
@@ -125,6 +176,14 @@ Ext.define('C.view.PersonForm', {
 		this.setTitle(newValue);
 		var node = C.app.getNodeFromTree(this.form.getRecord().internalId);
 		node.set({'name':newValue});
+	},
+
+	onSliderChange: function(slider, newValue, thumb, eOpts) {
+		this.getForm().setValues({sensitivity_value : newValue});
+	},
+
+	onSliderChange1: function(slider, newValue, thumb, eOpts) {
+		this.getForm().setValues({ awareness_value: newValue });
 	},
 
 	onButtonClick2: function(button, e, eOpts) {
