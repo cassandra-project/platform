@@ -43,23 +43,24 @@ import eu.cassandra.server.IServletContextListener;
 public class SaveGraphImg {
 	public String saveImg(Vector<DBObject> nodes, Vector<DBObject> edges) throws IOException {
 
-		AggregateLayout<String,String> aggrLayout = new AggregateLayout<String,String>(new FRLayout<String,String>(SparseMultigraph.<String,String>getFactory().create()));
-		Graph<String, String> graph = aggrLayout.getGraph();
-		HashMap<String,String> n = new HashMap<String,String>();
+		AggregateLayout<MyNode,String> aggrLayout = new AggregateLayout<MyNode,String>(new FRLayout<MyNode,String>(SparseMultigraph.<MyNode,String>getFactory().create()));
+		Graph<MyNode, String> graph = aggrLayout.getGraph();
+		HashMap<String,MyNode> n = new HashMap<String,MyNode>();
 		for(DBObject node : nodes) {
-			n.put(node.get("_id").toString(), node.get("_id").toString());
+			MyNode myNode = new MyNode(node.get("_id").toString(), (node.get("name")==null)?"":node.get("name").toString());
+			n.put(node.get("_id").toString(),myNode);
 			graph.addVertex(n.get(node.get("_id").toString() ) );
 		}
 		for(DBObject edge : edges) {
 			graph.addEdge(edge.get("_id").toString() ,n.get(edge.get("node_id1").toString())  ,n.get(edge.get("node_id2").toString()) );
 		}
-		VisualizationViewer<String,String> vv = new VisualizationViewer<String,String>(aggrLayout);
-		VisualizationImageServer<String,String> vis = new VisualizationImageServer<String,String>(vv.getGraphLayout(),
+		VisualizationViewer<MyNode,String> vv = new VisualizationViewer<MyNode,String>(aggrLayout);
+		VisualizationImageServer<MyNode,String> vis = new VisualizationImageServer<MyNode,String>(vv.getGraphLayout(),
 				vv.getGraphLayout().getSize());
 		vis.setBackground(Color.WHITE);
 		vis.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<String>());
-		vis.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<String, String>());
-		vis.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<String>());
+		vis.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<MyNode, String>());
+		vis.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<MyNode>());
 		vis.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
 		BufferedImage image = (BufferedImage) vis.getImage(new Point2D.Double(vv.getGraphLayout().getSize().getWidth() / 2,
 				vv.getGraphLayout().getSize().getHeight() / 2),
