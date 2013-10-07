@@ -150,10 +150,6 @@ Ext.define('C.view.ThermalModuleForm', {
 						render: {
 							fn: me.onTextfieldRender112,
 							scope: me
-						},
-						beforerender: {
-							fn: me.onTextfieldBeforeRender12,
-							scope: me
 						}
 					}
 				},
@@ -288,11 +284,6 @@ Ext.define('C.view.ThermalModuleForm', {
 				myForm.setValues({ prc_id: dds.dragData.records[0].get('id'), prc_name: dds.dragData.records[0].get('name')});
 			return true; }
 		});
-	},
-
-	onTextfieldBeforeRender12: function(component, eOpts) {
-		component.helpText = 'Pricing Scheme: the pricing scheme under which the energy consumption of the installations will be billed.</br>You can add a Pricing Scheme by selecting it from the Projects Tree and dropping it here';
-		component.url = 'https://github.com/cassandra-project/platform/wiki/Simulation-parameters-form';
 	},
 
 	onCreateRender: function(component, eOpts) {
