@@ -151,20 +151,20 @@ Ext.define('C.view.CsnClusterForm', {
 										'n': values.n
 									};
 
-									if (myFormCmp.clusterRecord) {
-										clusterRecord._id = myFormCmp.clusterRecord._id;
-										clusterRecord.run_id = myFormCmp.clusterRecord.run_id;
-										clusterRecord.clusters = myFormCmp.clusterRecord.clusters;
-									}
+									/*if (myFormCmp.clusterRecord) {
+									clusterRecord._id = myFormCmp.clusterRecord._id;
+									clusterRecord.run_id = myFormCmp.clusterRecord.run_id;
+									clusterRecord.clusters = myFormCmp.clusterRecord.clusters;
+									}*/
 
 									Ext.Ajax.request({
 										url: '/cassandra/api/csnclusters',
 										jsonData: clusterRecord,
-										method: myFormCmp.clusterRecord ? 'PUT': 'POST',
+										method: /*myFormCmp.clusterRecord ? 'PUT': */'POST',
 										scope: this,
 										success: function(response, opts) {
 											var response_obj = Ext.JSON.decode(response.responseText);
-											var data_obj = myFormCmp.clusterRecord ? response_obj.data[0] : response_obj.data;
+											var data_obj = /*myFormCmp.clusterRecord ? response_obj.data[0] : */response_obj.data;
 											var successMsg = response_obj.message;
 
 											Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
