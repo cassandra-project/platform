@@ -55,7 +55,12 @@ public class Search {
 		if(filter.keySet().size() > 0) {
 			strFilter = filter.toString();
 		}
-		
+		// scn_id is the scn_id or the user_id or the cassandra_user_id
+		// user_id - installation
+		// user_id - person
+		// user_id - appliance
+		boolean lib = false;
+		if(Utils.getUserWithId(scn_id) != null) lib = true;
 		// start searching
 		String page = new String();
 		if(collection == null) {
@@ -75,11 +80,11 @@ public class Search {
 			case "app":
 				// Check if User or Cassandra library...
 				return new MongoAppliances().
-				getAppliances(httpHeaders, scn_id, strFilter, null, 0, 0, false, false);
+				getAppliances(httpHeaders, scn_id, strFilter, null, 0, 0, false, false, lib);
 			case "pers":
 				// Check if User or Cassandra library...
 				return new MongoPersons().
-						getPersons(httpHeaders, scn_id, strFilter, null, 0, 0, false, false);
+						getPersons(httpHeaders, scn_id, strFilter, null, 0, 0, false, false, lib);
 			default:
 				return Utils.returnBadRequest("Invalid search request. No appropriate collection specified.");
 		}
