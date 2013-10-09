@@ -1050,7 +1050,9 @@ public class MongoDBQueries {
 				objRemoved = DBConn.getConn(dbName).getCollection(coll).findAndRemove(deleteQuery);
 			else {
 				objRemoved = DBConn.getConn().getCollection(coll).findAndRemove(deleteQuery);
+				System.out.println(objRemoved.toString());
 				objRemoved = cascadeDeletes(coll, id, objRemoved);
+				System.out.println(objRemoved.toString());
 			}
 		}catch(Exception e) {
 			return jSON2Rrn.createJSONError("remove db." + coll + " with id=" + id,e);
@@ -1149,6 +1151,7 @@ public class MongoDBQueries {
 		DBObject q = new BasicDBObject();
 		DBObject o = new BasicDBObject("$pull",new BasicDBObject(keyName,id));
 		int removed = DBConn.getConn().getCollection(coll).update(q, o, false, true).getN();
+		System.out.println(keyName + " " + removed);
 		objRemoved.put("cascadeDel_"+coll + "[" +keyName + "]", removed );
 		return objRemoved;
 	}

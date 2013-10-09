@@ -17,7 +17,6 @@
 package eu.cassandra.sim.utilities;
 
 import java.io.BufferedReader;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -42,13 +41,13 @@ import com.mongodb.util.JSON;
 import eu.cassandra.sim.math.ProbabilityDistribution;
 import eu.cassandra.sim.math.Gaussian;
 import eu.cassandra.sim.math.GaussianMixtureModels;
-
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.bson.types.ObjectId;
 
 public class Utils {
 	
@@ -207,6 +206,14 @@ public class Utils {
   public static DBObject getUser(String username, DB db) {
 	  DBObject query = new BasicDBObject();
 	  query.put("username", username);
+	  return db.getCollection("users").findOne(query);
+  }
+  
+  public static DBObject getUserWithId(String id) {
+	  DB db = DBConn.getConn();
+	  ObjectId objid = new ObjectId(id);
+	  DBObject query = new BasicDBObject();
+	  query.put("_id", objid);
 	  return db.getCollection("users").findOne(query);
   }
   

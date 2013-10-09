@@ -48,7 +48,7 @@ public class MongoPersons {
 	}
 	
 	public static String getParentId(String id) {
-		BasicDBList list = ((BasicDBList)((DBObject)JSON.parse(new MongoActivities().getActivity(null, id))).get("data"));
+		BasicDBList list = ((BasicDBList)((DBObject)JSON.parse(new MongoPersons().getPerson(null, id))).get("data"));
 		if(list == null || list.isEmpty()) return null;
 		return (String)((DBObject)list.get(0)).get(REF_INSTALLATION);
 	}
@@ -154,7 +154,7 @@ public class MongoPersons {
 	// For search
 		public Response getPersons(HttpHeaders httpHeaders, String scn_id, 
 				String filters, String sort, int limit, int skip, boolean count, 
-				boolean pertype) {
+				boolean pertype, boolean lib) {
 			// Search for the installations based on the scenario
 			String installations = 
 					(new MongoInstallations())
@@ -168,18 +168,11 @@ public class MongoPersons {
 				DBObject dbo = (DBObject)o;
 				String inst_id = (String)dbo.get("_id");
 				// For each one gather the data and load a DBCursor
-				String apps = new MongoDBQueries().getEntity(httpHeaders,
-						COL_PERSONS, "inst_id", inst_id, filters, sort, 0, 0, "Appliances retrieved successfully",count).toString();
-				String countResponse = new MongoDBQueries().getEntity(httpHeaders,
-						COL_PERSONS, "inst_id", inst_id, null, null, 0, 0, "Appliances retrieved successfully", true).toString();
-				DBObject response = (DBObject) JSON.parse(countResponse);
-				BasicDBList alist = (BasicDBList)response.get("data");
-				DBObject object = (DBObject)alist.get(0);
-				Integer aint = (Integer)object.get("count");
-				totalCount += aint.intValue();
-				jsonResponse = (DBObject) JSON.parse(apps);
-				BasicDBList appsInstList = (BasicDBList)jsonResponse.get("data");
-				appsList.addAll(appsInstList);
+				totalCount += addToList(inst_id, appsList, filters, sort, count, httpHeaders);
+			}
+			if(lib) {
+				// search also in the corresponding lib
+				totalCount += addToList(scn_id, appsList, filters, sort, count, httpHeaders);
 			}
 			// Use limit and skip for creating a sublist => return it
 			Vector<DBObject> vec = new Vector<DBObject>();
@@ -190,5 +183,21 @@ public class MongoPersons {
 			JSONtoReturn jSON2Rrn = new JSONtoReturn();
 			String page = jSON2Rrn.createJSON(vec, "Persons retrieved successfully").toString();
 			return Utils.returnResponseWithAppend(page, "total_size", new Integer(totalCount));
+		}
+		
+		private int addToList(String ref_id, BasicDBList list, String filters, String sort, boolean count, HttpHeaders httpHeaders) {
+			String apps = new MongoDBQueries().getEntity(httpHeaders,
+					COL_PERSONS, "inst_id", ref_id, filters, sort, 0, 0, "Appliances retrieved successfully",count).toString();
+			String countResponse = new MongoDBQueries().getEntity(httpHeaders,
+					COL_PERSONS, "inst_id", ref_id, null, null, 0, 0, "Appliances retrieved successfully", true).toString();
+			DBObject response = (DBObject) JSON.parse(countResponse);
+			BasicDBList alist = (BasicDBList)response.get("data");
+			DBObject object = (DBObject)alist.get(0);
+			Integer aint = (Integer)object.get("count");
+			
+			DBObject jsonResponse = (DBObject) JSON.parse(apps);
+			BasicDBList appsInstList = (BasicDBList)jsonResponse.get("data");
+			list.addAll(appsInstList);
+			return aint.intValue();
 		}
 }

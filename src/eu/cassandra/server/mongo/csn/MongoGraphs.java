@@ -58,13 +58,16 @@ public class MongoGraphs {
 				}
 				String run_id = ((DBObject)answer.get("data")).get("run_id").toString();
 				String graph_id = ((DBObject)(answer.get("data"))).get("_id").toString();
+				String name = "";
+				if(((DBObject)answer.get("data")).containsField("name"))
+					name = ((DBObject)(answer.get("data"))).get("name").toString();
 				String graphType = ((DBObject)(answer.get("data"))).get("graphType").toString();
 				String minWeight = ((DBObject)(answer.get("data"))).get("minWeight").toString();
 				Double minWeightD = null;
 				if(minWeight != null) 
 					minWeightD = Double.parseDouble(minWeight);
 
-				Vector<DBObject> nodes = new MongoNodes().createNodes(graph_id,run_id);
+				Vector<DBObject> nodes = new MongoNodes().createNodes(graph_id,run_id,name);
 				((DBObject)answer.get("data")).put("NumberOfNodes", nodes.size());
 
 				Vector<DBObject> edges = new Vector<DBObject>();

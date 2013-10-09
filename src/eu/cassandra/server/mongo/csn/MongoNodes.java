@@ -25,7 +25,7 @@ public class MongoNodes {
 	 * @param httpHeaders
 	 * @return
 	 */
-	public Vector<DBObject>  createNodes(String graph_id, String dbName) {
+	public Vector<DBObject>  createNodes(String graph_id, String dbName, String name) {
 		DecimalFormat decim = new DecimalFormat("#.##");
 
 		Vector<DBObject> nodes = new Vector<DBObject>();
@@ -214,6 +214,7 @@ public class MongoNodes {
 			installationNode.put(MongoEdges.MinReactivePowerPerHour, Double.parseDouble(decim.format(minReactivePowerPerHour)));
 
 			installationNode.put("nHours", hours);
+			installationNode.put("name", name);
 
 			
 			Vector<Double> hourVecP = new Vector<Double>();

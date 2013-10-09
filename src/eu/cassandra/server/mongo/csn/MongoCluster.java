@@ -169,6 +169,9 @@ public class MongoCluster {
 	private DBObject clusterKmeans(String message, String graph_id, String run_id, String clusterBasedOn, int numberOfClusters, String name, String clusterbasedon) {
 		try {
 			Instances instances = getInstances(clusterBasedOn, graph_id);
+			if(instances.numInstances() < 2) {
+				return new JSONtoReturn().createJSONError(message,new Exception("Number of CSN Nodes is < 2"));
+			}
 
 			SimpleKMeans kmeans = new SimpleKMeans();
 			kmeans.setSeed((int)Calendar.getInstance().getTimeInMillis());
@@ -207,6 +210,9 @@ public class MongoCluster {
 	public DBObject clusterHierarchical(String message, String graph_id, String run_id, String clusterBasedOn, int numberOfClusters, String name, String clusterbasedon) {
 		try {
 			Instances instances = getInstances(clusterBasedOn, graph_id);
+			if(instances.numInstances() < 2) {
+				return new JSONtoReturn().createJSONError(message,new Exception("Number of CSN Nodes is < 2"));
+			}
 
 			HierarchicalClusterer h = new HierarchicalClusterer();
 			h.setOptions(new String[] {"-L", "AVERAGE"});
