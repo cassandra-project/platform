@@ -184,6 +184,30 @@ public class PricingPolicy {
 		return cost;
 	}
 	
+	public double[] getTOUArray() {
+		if(type.equalsIgnoreCase("TOUPricing")) {
+			double[] arr = new double[Constants.MIN_IN_DAY];
+			for(int i = 0; i < arr.length; i++) {
+				Iterator<Period> iter = periods.iterator();
+				while(iter.hasNext()) {
+					Period p = iter.next();
+					if(p.getTo().equalsIgnoreCase("00:00")) p.setTo("24:00");
+					String[] fromTokens = p.getFrom().split(":");
+					String[] toTokens = p.getTo().split(":");
+					int from = Integer.parseInt(fromTokens[0]) * 60 + Integer.parseInt(fromTokens[1]);
+					int to = Integer.parseInt(toTokens[0]) * 60 + Integer.parseInt(toTokens[1]);
+					if(i >= from && i < to) {
+						arr[i] = p.getPrice();
+					}
+				}
+				break;
+			}
+			return arr;
+		} else {
+			return null;
+		}
+	}
+	
 	public double calculateCost(double toEnergy, double fromEnergy,
 			double toEnergyOffpeak, double fromEnergyOffpeak, int tick) {
 		double remainingEnergy = toEnergy - fromEnergy;

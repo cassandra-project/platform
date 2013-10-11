@@ -45,6 +45,11 @@ public class Uniform implements ProbabilityDistribution
     precomputed = false;
 
   }
+  
+  public String getType()
+  {
+    return "Uniform";
+  }
 
   public String getDescription ()
   {

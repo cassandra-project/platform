@@ -29,7 +29,9 @@ public interface ProbabilityDistribution
    * 
    * @return String with description of distribution.
    */
-  public String getDescription ();
+  public String getDescription();
+  
+  public String getType();
 
   /**
    * Return the number of parameters of this distribution.
@@ -147,4 +149,5 @@ public interface ProbabilityDistribution
    * 
    */
   public void status ();
+
 }

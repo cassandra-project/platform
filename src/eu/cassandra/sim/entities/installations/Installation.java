@@ -93,10 +93,11 @@ public class Installation extends Entity {
         locationInfo = builder.locationInfo;
 	}
     
-    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue) {
+    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue, 
+    		PricingPolicy pricing, PricingPolicy baseline) {
     	for(Person person : getPersons()) {
     		//System.out.println(person.getName());
-    		person.updateDailySchedule(tick, queue);
+    		person.updateDailySchedule(tick, queue, pricing, baseline);
 		}
     }
     

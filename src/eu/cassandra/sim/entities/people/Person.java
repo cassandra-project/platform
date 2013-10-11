@@ -22,6 +22,7 @@ import com.mongodb.BasicDBObject;
 
 import eu.cassandra.server.mongo.MongoPersons;
 import eu.cassandra.sim.Event;
+import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.installations.Installation;
 
@@ -29,6 +30,8 @@ public class Person extends Entity {
 
   private final Installation house;
   private Vector<Activity> activities;
+  private double awareness;
+  private double sensitivity;
 
   public static class Builder
   {
@@ -38,16 +41,21 @@ public class Person extends Entity {
     private final String description;
     private final String type;
     private final Installation house;
+    private final double awareness;
+    private final double sensitivity;
     // Optional parameters: not available
     private Vector<Activity> activities = new Vector<Activity>();
 
-    public Builder (String aid, String aname, String desc, String atype, Installation ahouse)
+    public Builder (String aid, String aname, String desc, String atype, Installation ahouse,
+    		double aawareness, double asensitivity)
     {
       id = aid;
       name = aname;
       description = desc;
       type = atype;
       house = ahouse;
+      awareness = aawareness;
+      sensitivity = asensitivity;
     }
 
     public Person build ()
@@ -62,6 +70,8 @@ public class Person extends Entity {
     name = builder.name;
     description = builder.description;
     type = builder.type;
+    awareness = builder.awareness;
+    sensitivity = builder.sensitivity;
 
     house = builder.house;
     activities = builder.activities;
@@ -72,10 +82,11 @@ public class Person extends Entity {
   		activities.add(a);
   	}
   
-    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue) {
+    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
+    		PricingPolicy pricing, PricingPolicy baseline) {
     	for(Activity activity: activities) {
     		//System.out.println(activity.getName());
-    		activity.updateDailySchedule(tick, queue);
+    		activity.updateDailySchedule(tick, queue, pricing, baseline, awareness, sensitivity);
     	}
     }
 
@@ -96,6 +107,8 @@ public class Person extends Entity {
   		obj.put("type", type);
   		obj.put("description", description);
   		obj.put("inst_id", parentId);
+  		obj.put("awareness", awareness);
+  		obj.put("sensitivity", sensitivity);
   		return obj;
 	}
 

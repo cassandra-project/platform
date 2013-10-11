@@ -152,6 +152,16 @@ public class Runs {
 				scenario.put("pricing", pricingPolicy);
 			}
 			
+			// Pricing Policy
+			String base_prc_id = (String)simParams.get("base_prc_id");
+			if(base_prc_id != null && base_prc_id.matches("[a-z0-9]{24}")) { // Optionally provided
+				query.put("_id", new ObjectId(base_prc_id));
+				DBObject basePricingPolicy = DBConn.getConn().getCollection(MongoPricingPolicy.COL_PRICING).findOne(query);
+				checkForNull(basePricingPolicy, "The provided Baseline Pricing Policy was not found in the DB.");
+				db.getCollection(MongoPricingPolicy.COL_PRICING).insert(basePricingPolicy);
+				scenario.put("baseline_pricing", basePricingPolicy);
+			}
+			
 			// Project
 			String prj_id = (String)scn.get("project_id");
 			checkForNull(prj_id, "Project id not found in posted Scenario.");
