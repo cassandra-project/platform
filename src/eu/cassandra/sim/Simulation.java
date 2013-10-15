@@ -299,6 +299,7 @@ public class Simulation implements Runnable {
 	  		logger.info("Time elapsed for Run " + dbname + ": " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
 	  		logger.info("Run " + dbname + " ended @ " + Calendar.getInstance().toString());
   		} catch(Exception e) {
+  			e.printStackTrace();
   			System.out.println(Utils.stackTraceToString(e.getStackTrace()));
   			// Change the run object in the db to reflect the exception
   			if(objRun != null) {
