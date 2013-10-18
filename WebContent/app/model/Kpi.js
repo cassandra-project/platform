@@ -33,42 +33,42 @@ Ext.define('C.model.Kpi', {
 		},
 		{
 			convert: function(v, rec) {
-				return Ext.util.Format.number(v, '000,000.00');
+				return Ext.util.Format.number(v, '000,000.00').replace(/,/g, '');
 			},
 			name: 'maxPower',
 			type: 'float'
 		},
 		{
 			convert: function(v, rec) {
-				return Ext.util.Format.number(v, '000,000.00');
+				return Ext.util.Format.number(v, '000,000.00').replace(/,/g, '');
 			},
 			name: 'avgPeak',
 			type: 'float'
 		},
 		{
 			convert: function(v, rec) {
-				return Ext.util.Format.number(v, '000,000.00');
+				return Ext.util.Format.number(v, '000,000.00').replace(/,/g, '');
 			},
 			name: 'avgPower',
 			type: 'float'
 		},
 		{
 			convert: function(v, rec) {
-				return Ext.util.Format.number(v, '000,000.00');
+				return Ext.util.Format.number(v, '000,000.00').replace(/,/g, '');
 			},
 			name: 'energy',
 			type: 'float'
 		},
 		{
 			convert: function(v, rec) {
-				return Ext.util.Format.number(v, '000,000.00');
+				return Ext.util.Format.number(v, '000,000.00').replace(/,/g, '');
 			},
 			name: 'cost',
 			type: 'float'
 		},
 		{
 			convert: function(v, rec) {
-				return Ext.util.Format.number(v, '000,000.00');
+				return Ext.util.Format.number(v, '000,000.00').replace(/,/g, '');
 			},
 			name: 'co2',
 			type: 'float'
