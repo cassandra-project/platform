@@ -48,6 +48,17 @@
             "description": "Number of Monte Carlo Runs",
             "optional": false
         }, 
+        "responseType": {
+            "type": "string",
+            "description": "Response types",
+            "optional": false,
+            "enum": [
+                "None",
+                "Optimal",
+                "Normal",
+                "Discrete"
+            ]
+        },
         "calendar": {
             "type": "object",
             "description": "Calendar",

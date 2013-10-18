@@ -78,6 +78,8 @@ public class Simulation implements Runnable {
 	
 	private PricingPolicy pricing;
 	
+	private PricingPolicy baseline_pricing;
+	
 	private String scenario;
 	
 	private String dbname;
@@ -140,7 +142,7 @@ public class Simulation implements Runnable {
 //  	  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
   	  					for (Installation installation: installations) {
 //  						System.out.println(installation.getName());
-  	  						installation.updateDailySchedule(tick, queue);
+  	  						installation.updateDailySchedule(tick, queue, pricing, baseline_pricing);
   	  					}
   	  					billingCycleDays++;
 //  					System.out.println("Daily queue size: " + queue.size() + "(" + 
@@ -297,6 +299,7 @@ public class Simulation implements Runnable {
 	  		logger.info("Time elapsed for Run " + dbname + ": " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
 	  		logger.info("Run " + dbname + " ended @ " + Calendar.getInstance().toString());
   		} catch(Exception e) {
+  			e.printStackTrace();
   			System.out.println(Utils.stackTraceToString(e.getStackTrace()));
   			// Change the run object in the db to reflect the exception
   			if(objRun != null) {
@@ -316,10 +319,16 @@ public class Simulation implements Runnable {
   		DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
   		DBObject pricingDoc = (DBObject) jsonScenario.get("pricing");
+  		DBObject basePricingDoc = (DBObject) jsonScenario.get("baseline_pricing");
   		if(pricingDoc != null) {
   			pricing = new PricingPolicy(pricingDoc);
   		} else {
   			pricing = new PricingPolicy();
+  		}
+  		if(basePricingDoc != null) {
+  			baseline_pricing = new PricingPolicy(basePricingDoc);
+  		} else {
+  			baseline_pricing = new PricingPolicy();
   		}
   		int numOfDays = ((Integer)simParamsDoc.get("numberOfDays")).intValue();
   		
@@ -381,11 +390,13 @@ public class Simulation implements Runnable {
     		String personName = (String)personDoc.get("name");
 	    	String personDescription = (String)personDoc.get("description");
 	    	String personType = (String)personDoc.get("type");
+	    	double awareness = Utils.getDouble(personDoc.get("awareness"));
+	    	double sensitivity = Utils.getDouble(personDoc.get("sensitivity"));
 	    	Person person = new Person.Builder(
 	    	        		  personid,
 	    	        		  personName, 
 	    	        		  personDescription,
-	    	                  personType, inst).build();
+	    	                  personType, inst, awareness, sensitivity).build();
 	    	inst.addPerson(person);
 	    	int actcount = ((Integer)personDoc.get("activitycount")).intValue();
 	    	for (int j = 1; j <= actcount; j++) {
@@ -398,11 +409,13 @@ public class Simulation implements Runnable {
 	    		ProbabilityDistribution startDist;
 	    		ProbabilityDistribution durDist;
 	    		ProbabilityDistribution timesDist;
+	    		Boolean isShiftable;
 	    		for (int k = 1; k <= actmodcount; k++) {
 	    			DBObject actmodDoc = (DBObject)activityDoc.get("actmod"+k);
 	    			String actmodName = (String)actmodDoc.get("name");
 	    			String actmodType = (String)actmodDoc.get("type");
 	    			String actmodDayType = (String)actmodDoc.get("day_type");
+	    			boolean shiftable = Utils.getBoolean(actmodDoc.get("shiftable"));
 	    			DBObject duration = (DBObject)actmodDoc.get("duration");
 	    			durDist = json2dist(duration);
 	    			DBObject start = (DBObject)actmodDoc.get("start");
@@ -412,6 +425,7 @@ public class Simulation implements Runnable {
 	    			act.addDuration(actmodDayType, durDist);
 	    			act.addStartTime(actmodDayType, startDist);
 	    			act.addTimes(actmodDayType, timesDist);
+	    			act.addShiftable(actmodDayType, shiftable);
 	    			// add appliances
 		    		BasicDBList containsAppliances = (BasicDBList)actmodDoc.get("containsAppliances");
 		    		for(int l = 0; l < containsAppliances.size(); l++) {
@@ -516,11 +530,13 @@ public class Simulation implements Runnable {
 	    		String personName = (String)personDoc.get("name");
 		    	String personDescription = (String)personDoc.get("description");
 		    	String personType = (String)personDoc.get("type");
+		    	double awareness = Utils.getDouble(personDoc.get("awareness"));
+		    	double sensitivity = Utils.getDouble(personDoc.get("sensitivity"));
 		    	Person person = new Person.Builder(
 		    	        		  personid,
 		    	        		  personName, 
 		    	        		  personDescription,
-		    	                  personType, inst).build();
+		    	                  personType, inst, awareness, sensitivity).build();
 		    	int actcount = Utils.getInt(personDoc.get("activitycount"));
 		    	//System.out.println("Act-Count: " + actcount);
 		    	for (int k = 1; k <= actcount; k++) {
@@ -539,6 +555,7 @@ public class Simulation implements Runnable {
 		    			String actmodName = (String)actmodDoc.get("name");
 		    			String actmodType = (String)actmodDoc.get("type");
 		    			String actmodDayType = (String)actmodDoc.get("day_type");
+		    			boolean shiftable = Utils.getBoolean(actmodDoc.get("shiftable"));
 		    			DBObject duration = (DBObject)actmodDoc.get("duration");
 		    			act.addDurations(duration);
 		    			durDist = json2dist(duration);
@@ -554,6 +571,7 @@ public class Simulation implements Runnable {
 		    			act.addDuration(actmodDayType, durDist);
 		    			act.addStartTime(actmodDayType, startDist);
 		    			act.addTimes(actmodDayType, timesDist);
+		    			act.addShiftable(actmodDayType, shiftable);
 		    			// add appliances
 			    		BasicDBList containsAppliances = (BasicDBList)actmodDoc.get("containsAppliances");
 			    		for(int m = 0; m < containsAppliances.size(); m++) {

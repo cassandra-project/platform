@@ -28,10 +28,12 @@ import com.mongodb.DBObject;
 
 import eu.cassandra.server.mongo.MongoActivities;
 import eu.cassandra.sim.Event;
+import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.SimulationParams;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.math.ProbabilityDistribution;
+import eu.cassandra.sim.math.response.Response;
 import eu.cassandra.sim.utilities.RNG;
 import eu.cassandra.sim.utilities.Utils;
 
@@ -47,6 +49,7 @@ public class Activity extends Entity {
 	private final HashMap<String, ProbabilityDistribution> nTimesGivenDay;
 	private final HashMap<String, ProbabilityDistribution> probStartTime;
 	private final HashMap<String, ProbabilityDistribution> probDuration;
+	private final HashMap<String, Boolean> shiftable;
 	private HashMap<String, Vector<Appliance>> appliances;
 	private HashMap<String, Vector<Double>> probApplianceUsed;
 	private SimulationParams simulationWorld;
@@ -64,6 +67,7 @@ public class Activity extends Entity {
 		private final HashMap<String, ProbabilityDistribution> nTimesGivenDay;
 		private final HashMap<String, ProbabilityDistribution> probStartTime;
 		private final HashMap<String, ProbabilityDistribution> probDuration;
+		private final HashMap<String, Boolean> shiftable;
 		// Optional parameters: not available
 		private HashMap<String, Vector<Appliance>> appliances;
 		private HashMap<String, Vector<Double>> probApplianceUsed;
@@ -82,6 +86,7 @@ public class Activity extends Entity {
 			nTimesGivenDay = new HashMap<String, ProbabilityDistribution>();
 			probStartTime = new HashMap<String, ProbabilityDistribution>();
 			probDuration = new HashMap<String, ProbabilityDistribution>();
+			shiftable = new HashMap<String, Boolean>();
 			activityModels = new Vector<DBObject>();
 			starts = new Vector<DBObject>();
 			durations = new Vector<DBObject>();
@@ -91,6 +96,11 @@ public class Activity extends Entity {
 		
 		public Builder startTime(String day, ProbabilityDistribution probDist) {
 			probStartTime.put(day, probDist);
+			return this;
+		}
+		
+		public Builder shiftable(String day, Boolean value) {
+			shiftable.put(day, value);
 			return this;
 		}
 		
@@ -117,6 +127,7 @@ public class Activity extends Entity {
 		nTimesGivenDay = builder.nTimesGivenDay;
 		probStartTime = builder.probStartTime;
 		probDuration = builder.probDuration;
+		shiftable = builder.shiftable;
 		probApplianceUsed = builder.probApplianceUsed;
 		simulationWorld = builder.simulationWorld;
 		starts = builder.starts;
@@ -181,6 +192,10 @@ public class Activity extends Entity {
 	public void addTimes(String day, ProbabilityDistribution probDist) {
 		nTimesGivenDay.put(day, probDist);
 	}
+	
+	public void addShiftable(String day, Boolean value) {
+		shiftable.put(day, new Boolean(value));
+	}
 
 	public String getName () {
 		return name;
@@ -211,14 +226,18 @@ public class Activity extends Entity {
 	}
 
 	public void
-		updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue) {
+		updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
+				PricingPolicy pricing, PricingPolicy baseline, double awareness,
+				double sensitivity) {
 		/*
 		 *  Decide on the number of times the activity is going to be activated
 		 *  during a day
 		 */
 		ProbabilityDistribution numOfTimesProb;
 		ProbabilityDistribution startProb;
+		ProbabilityDistribution responseStartProb;
 		ProbabilityDistribution durationProb;
+		Boolean isShiftable;
 		
 		Vector<Double> probVector;
 		Vector<Appliance> vector;
@@ -234,12 +253,14 @@ public class Activity extends Entity {
 		durationProb = probDuration.get(dateKey);
 		probVector = probApplianceUsed.get(dateKey);
 		vector = appliances.get(dateKey);
+		isShiftable = shiftable.get(dateKey);
 		// Then search for specific days
 		if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
 			numOfTimesProb = nTimesGivenDay.get(dayOfWeekKey);
 			startProb = probStartTime.get(dayOfWeekKey);
 			durationProb = probDuration.get(dayOfWeekKey);
 			probVector = probApplianceUsed.get(dayOfWeekKey);
+			isShiftable = shiftable.get(dayOfWeekKey);
 			vector = appliances.get(dayOfWeekKey);
 			// Then for weekdays and weekends
 			if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
@@ -248,12 +269,14 @@ public class Activity extends Entity {
 					startProb = probStartTime.get(WEEKENDS);
 					durationProb = probDuration.get(WEEKENDS);
 					probVector = probApplianceUsed.get(WEEKENDS);
+					isShiftable = shiftable.get(WEEKENDS);
 					vector = appliances.get(WEEKENDS);
 				} else {
 					numOfTimesProb = nTimesGivenDay.get(WEEKDAYS);
 					startProb = probStartTime.get(WEEKDAYS);
 					durationProb = probDuration.get(WEEKDAYS);
 					probVector = probApplianceUsed.get(WEEKDAYS);
+					isShiftable = shiftable.get(WEEKDAYS);
 					vector = appliances.get(WEEKDAYS);
 				}
 				// Backwards compatibility
@@ -263,12 +286,14 @@ public class Activity extends Entity {
 						startProb = probStartTime.get(NONWORKING);
 						durationProb = probDuration.get(NONWORKING);
 						probVector = probApplianceUsed.get(NONWORKING);
+						isShiftable = shiftable.get(NONWORKING);
 						vector = appliances.get(NONWORKING);
 					} else {
 						numOfTimesProb = nTimesGivenDay.get(WORKING);
 						startProb = probStartTime.get(WORKING);
 						durationProb = probDuration.get(WORKING);
 						probVector = probApplianceUsed.get(WORKING);
+						isShiftable = shiftable.get(WORKING);
 						vector = appliances.get(WORKING);
 					}
 					// Then for any
@@ -277,6 +302,7 @@ public class Activity extends Entity {
 						startProb = probStartTime.get(ANY);
 						durationProb = probDuration.get(ANY);
 						probVector = probApplianceUsed.get(ANY);
+						isShiftable = shiftable.get(ANY);
 						vector = appliances.get(ANY);
 					}
 				}				
@@ -292,12 +318,24 @@ public class Activity extends Entity {
 				logger.error(Utils.stackTraceToString(e.getStackTrace()));
 				e.printStackTrace();
 			}
+			
+			// Response
+			responseStartProb = startProb;
+			if(isShiftable.booleanValue()) {
+				System.out.println("isshiftable " + pricing.getType() + " " + baseline.getType());
+				if(pricing.getType().equalsIgnoreCase("TOUPricing") && 
+						baseline.getType().equalsIgnoreCase("TOUPricing")) {
+					System.out.println("responsive");
+					responseStartProb = Response.respond(startProb, pricing,
+							baseline, awareness, sensitivity);
+				}
+			}
 			/*
 			 * Decide the duration and start time for each activity activation
 			 */
 			while (numOfTimes > 0) {
 				int duration = Math.max(durationProb.getPrecomputedBin(), 1);
-				int startTime = Math.min(Math.max(startProb.getPrecomputedBin(), 0), 1439);
+				int startTime = Math.min(Math.max(responseStartProb.getPrecomputedBin(), 0), 1439);
 				// Select appliances to be switched on
 				for (int j = 0; j < vector.size(); j++) {
 					//if (RNG.nextDouble() < probVector.get(j).doubleValue()) {

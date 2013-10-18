@@ -98,10 +98,15 @@ public class Gaussian implements ProbabilityDistribution
     precomputed = false;
   }
 
-  public String getDescription ()
+  public String getDescription()
   {
     String description = "Gaussian probability density function";
     return description;
+  }
+  
+  public String getType()
+  {
+    return "Gaussian";
   }
 
   public int getNumberOfParameters ()

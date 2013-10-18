@@ -35,6 +35,11 @@ public class Histogram implements ProbabilityDistribution{
 		precomputed = false;
 	}
 	
+	public String getType()
+	  {
+	    return "Histogram";
+	  }
+	
 	/**
 	  * Constructor. Takes a set of values and put them in the histogram.
 	  */

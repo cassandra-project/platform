@@ -34,6 +34,11 @@ public class GaussianMixtureModels implements ProbabilityDistribution
   protected double precomputeFrom;
   protected double precomputeTo;
   protected double[] histogram;
+  
+  public String getType()
+  {
+    return "GMM";
+  }
 
   /**
    * Constructor. Sets the parameters of the standard normal
