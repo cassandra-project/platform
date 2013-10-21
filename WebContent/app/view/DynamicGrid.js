@@ -552,7 +552,7 @@ Ext.define('C.view.DynamicGrid', {
 							if (a && b) {
 								try {
 
-									return (a == 0 || a === 0) ? '' : 100*((a-b)/a);
+									return (a == 0 || a === 0) ? '' : 100*((b-a)/a);
 
 								}
 								catch (e) {
