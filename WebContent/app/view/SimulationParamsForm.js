@@ -39,11 +39,13 @@ Ext.define('C.view.SimulationParamsForm', {
 							xtype: 'fieldset',
 							padding: '10px',
 							width: 400,
+							defaults: {
+								labelWidth: 110
+							},
 							title: 'Properties',
 							items: [
 								{
 									xtype: 'textfield',
-									width: 246,
 									fieldLabel: 'Name',
 									name: 'name',
 									listeners: {
@@ -55,21 +57,18 @@ Ext.define('C.view.SimulationParamsForm', {
 								},
 								{
 									xtype: 'textfield',
-									width: 246,
 									fieldLabel: 'Location',
 									name: 'locationInfo'
 								},
 								{
 									xtype: 'numberfield',
 									hidden: true,
-									width: 246,
 									fieldLabel: 'Duration',
 									name: 'numberOfDays',
 									allowDecimals: false
 								},
 								{
 									xtype: 'numberfield',
-									width: 246,
 									fieldLabel: 'Monte Carlo Runs',
 									name: 'mcruns',
 									value: 1,
@@ -78,26 +77,32 @@ Ext.define('C.view.SimulationParamsForm', {
 								},
 								{
 									xtype: 'datefield',
-									width: 246,
 									fieldLabel: 'Date Started',
 									name: 'dateStarted',
 									allowBlank: false
 								},
 								{
 									xtype: 'datefield',
-									width: 246,
 									fieldLabel: 'Date Ends',
 									name: 'dateEnds'
 								},
 								{
+									xtype: 'combobox',
+									fieldLabel: 'Response Type <span style=color:red>*</span>',
+									name: 'responseType',
+									allowBlank: false,
+									displayField: 'responseType',
+									queryMode: 'local',
+									store: 'ResponseTypeStore',
+									valueField: 'responseType'
+								},
+								{
 									xtype: 'textareafield',
-									width: 246,
 									fieldLabel: 'Notes',
 									name: 'description'
 								},
 								{
 									xtype: 'numberfield',
-									width: 246,
 									fieldLabel: 'CO2 factor per KWh',
 									name: 'co2',
 									minValue: 0
@@ -106,7 +111,6 @@ Ext.define('C.view.SimulationParamsForm', {
 									xtype: 'textfield',
 									hidden: true,
 									itemId: 'prc_id',
-									width: 246,
 									fieldLabel: 'Pricing Scheme',
 									name: 'prc_id'
 								},
@@ -114,14 +118,12 @@ Ext.define('C.view.SimulationParamsForm', {
 									xtype: 'textfield',
 									hidden: true,
 									itemId: 'base_prc_id',
-									width: 246,
 									fieldLabel: 'Pricing Scheme',
 									name: 'base_prc_id'
 								},
 								{
 									xtype: 'textfield',
 									cls: 'dropTarget',
-									width: 246,
 									fieldLabel: 'Pricing Scheme',
 									name: 'prc_name',
 									listeners: {
@@ -138,7 +140,6 @@ Ext.define('C.view.SimulationParamsForm', {
 								{
 									xtype: 'textfield',
 									cls: 'dropTarget',
-									width: 246,
 									fieldLabel: 'Baseline Pricing Scheme',
 									name: 'base_prc_name',
 									listeners: {
@@ -298,7 +299,8 @@ Ext.define('C.view.SimulationParamsForm', {
 				'numberOfDays': duration,
 				'prc_id': values.prc_id,
 				'base_prc_id': values.base_prc_id,
-				'co2': values.co2
+				'co2': values.co2,
+				'responseType': values.responseType
 			});
 
 			this.dirtyForm = false;
