@@ -91,8 +91,9 @@ Ext.application({
 		'ClusterMethodStore',
 		'ClustersStore',
 		'ThermalFeaturesStore',
+		'ThermalModuleStore',
 		'LightingModuleStore',
-		'ThermalModuleStore'
+		'ResponseTypeStore'
 	],
 	views: [
 		'MyViewport',
@@ -130,8 +131,8 @@ Ext.application({
 		'LevelsGrid',
 		'OffpickGrid',
 		'TimezonesGrid',
-		'LightingModuleForm',
-		'ThermalModuleForm'
+		'ThermalModuleForm',
+		'LightingModuleForm'
 	],
 	autoCreateViewport: true,
 	controllers: [
@@ -333,7 +334,7 @@ Ext.application({
 	getActivityModelForm: function(record) {
 		var myFormCmp = new C.view.ActivityModelForm({});
 
-		var gridStore = new C.store.ActmodAppliances();
+		var gridStore = new C.store.ActmodAppStore();
 		var grid = new C.view.RelationsGrid({store:gridStore});
 
 		var propertiesCmp = new C.view.ActmodPropertiesForm({});
@@ -481,7 +482,7 @@ Ext.application({
 			myFormCmp.down('#delete_lighting').show();
 
 			var lightingModuleStore = new C.store.LightingModuleStore({storeId: 'lightingModuleStore_inst_id' + record.get('_id')});
-			//lightingModuleStore.getProxy().url += '/' + record.get('lightingModule_id');
+			//thermalModuleStore.getProxy().url += '/' + record.get('lightingModule_id');
 		}
 
 		Ext.each (record.node.childNodes, function(childNode, index) {
