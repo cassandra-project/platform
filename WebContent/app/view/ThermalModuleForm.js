@@ -16,7 +16,7 @@
 Ext.define('C.view.ThermalModuleForm', {
 	extend: 'Ext.form.Panel',
 
-	height: 300,
+	height: 280,
 	width: 685,
 	bodyPadding: 10,
 
@@ -136,27 +136,6 @@ Ext.define('C.view.ThermalModuleForm', {
 					labelWidth: 200,
 					name: 'desired_temp_schedule',
 					allowBlank: false
-				},
-				{
-					xtype: 'textfield',
-					cls: 'dropTarget',
-					width: 430,
-					fieldLabel: 'Pricing Scheme <span style=color:red>*</span>',
-					labelAlign: 'right',
-					labelWidth: 200,
-					name: 'prc_name',
-					allowBlank: false,
-					listeners: {
-						render: {
-							fn: me.onTextfieldRender112,
-							scope: me
-						}
-					}
-				},
-				{
-					xtype: 'hiddenfield',
-					fieldLabel: 'Label',
-					name: 'prc_id'
 				}
 			],
 			dockedItems: [
@@ -260,30 +239,6 @@ Ext.define('C.view.ThermalModuleForm', {
 		var myFormCmp = component.up('form');
 		var inst_rec = Ext.getCmp(myFormCmp.inst_form_id).getRecord();
 		component.setValue(inst_rec.get('_id'));
-	},
-
-	onTextfieldRender112: function(component, eOpts) {
-		var myForm = this.getForm();
-		if (myForm.findField("prc_id").getValue()) {
-			var prc_id = myForm.findField("prc_id").getValue();
-			Ext.Ajax.request({
-				url: '/cassandra/api/prc/' + prc_id,
-				method: 'GET',
-				scope: this,
-				success: function(response, eOpts) {	
-					response = JSON.parse(response.responseText);
-					myForm.setValues({prc_name: response.data[0].name});
-				}
-			});
-		}
-		new Ext.dd.DropTarget(this.body.dom.getElementsByClassName('dropTarget')[0],{
-			ddGroup:'ddGlobal',
-			notifyDrop: function(dds,e,data) {	
-				if (dds.dragData.records[0].get('nodeType') != 'Pricing' )
-				return false;
-				myForm.setValues({ prc_id: dds.dragData.records[0].get('id'), prc_name: dds.dragData.records[0].get('name')});
-			return true; }
-		});
 	},
 
 	onCreateRender: function(component, eOpts) {

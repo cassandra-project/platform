@@ -53,14 +53,6 @@ Ext.define('C.model.ThermalModule', {
 			},
 			name: 'desired_temp_schedule',
 			type: 'string'
-		},
-		{
-			name: 'prc_id'
-		},
-		{
-			name: 'prc_name',
-			persist: false,
-			type: 'string'
 		}
 	]
 });

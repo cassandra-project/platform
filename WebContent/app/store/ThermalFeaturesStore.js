@@ -36,6 +36,10 @@ Ext.define('C.store.ThermalFeaturesStore', {
 					feature_name: 'Six Volume / 5 PI/PID Controller / No DR'
 				},
 				{
+					feature_tag: 'six_onoff_nodr',
+					feature_name: 'Six Volume / ON/OFF / No DR'
+				},
+				{
 					feature_tag: 'single_mpc_nodr',
 					feature_name: 'Single Volume / MPC / No DR'
 				},
