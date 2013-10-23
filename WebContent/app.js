@@ -334,7 +334,7 @@ Ext.application({
 	getActivityModelForm: function(record) {
 		var myFormCmp = new C.view.ActivityModelForm({});
 
-		var gridStore = new C.store.ActmodAppStore();
+		var gridStore = new C.store.ActmodAppliances();
 		var grid = new C.view.RelationsGrid({store:gridStore});
 
 		var propertiesCmp = new C.view.ActmodPropertiesForm({});
