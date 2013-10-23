@@ -18,35 +18,27 @@ public class Response {
 	
 	public static ProbabilityDistribution respond(
 			ProbabilityDistribution pd, PricingPolicy policy, PricingPolicy baseline, 
-			double awareness, double sensitivity) {
+			double awareness, double sensitivity, String responseType) {
 		double[] previousHist = pd.getHistogram();
 		double[] newHist = new double[Constants.MIN_IN_DAY];
 		double[] policyArr = policy.getTOUArray();
 		double[] baseArr = baseline.getTOUArray();
-		switch(pd.getType()) {
-			case "Uniform":
+		switch(responseType) {
+			case "None":
 				return pd;
-			case "GMM":
+			case "Optimal":
+				newHist = shiftingOptimal(previousHist, baseArr, policyArr);
 				break;
-			case "Gaussian":
+			case "Normal":
+				newHist = shiftingNormal(previousHist, baseArr, policyArr);
 				break;
-			case "Histrogram":
+			case "Discrete":
+				newHist = shiftingDiscrete(previousHist, baseArr, policyArr);
 				break;
 			default:
 				return pd;
 		}
-		newHist = shiftingOptimal(previousHist, baseArr, policyArr);
-//		newHist = shiftingNormal(previousHist, baseArr, policyArr);
-//		newHist = shiftingDiscrete(previousHist, baseArr, policyArr);
 		ProbabilityDistribution retPd = new Histogram(newHist);
-//		for(int i = 0; i < policyArr.length; i++) {
-//			System.out.print(policyArr[i] + ",");
-//		}
-//		System.out.println("Start");
-//		for(int i = 0; i < previousHist.length; i++) {
-//			System.out.println(previousHist[i] + "," + retPd.getHistogram()[i]);
-//		}
-//		System.out.println("End");
 		return retPd;
 	}
 	

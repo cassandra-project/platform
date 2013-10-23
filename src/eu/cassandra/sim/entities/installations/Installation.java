@@ -95,9 +95,9 @@ public class Installation extends Entity {
 	}
     
     public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue, 
-    		PricingPolicy pricing, PricingPolicy baseline) {
+    		PricingPolicy pricing, PricingPolicy baseline, String responseType) {
     	for(Person person : getPersons()) {
-    		person.updateDailySchedule(tick, queue, pricing, baseline);
+    		person.updateDailySchedule(tick, queue, pricing, baseline, responseType);
 		}
     	if(tm != null) {
     		tm.nextStep();

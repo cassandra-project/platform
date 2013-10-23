@@ -82,9 +82,9 @@ public class Person extends Entity {
   	}
   
     public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
-    		PricingPolicy pricing, PricingPolicy baseline) {
+    		PricingPolicy pricing, PricingPolicy baseline, String responseType) {
     	for(Activity activity: activities) {
-    		activity.updateDailySchedule(tick, queue, pricing, baseline, awareness, sensitivity);
+    		activity.updateDailySchedule(tick, queue, pricing, baseline, awareness, sensitivity, responseType);
     	}
     }
 

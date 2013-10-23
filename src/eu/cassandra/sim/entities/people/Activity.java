@@ -228,7 +228,7 @@ public class Activity extends Entity {
 	public void
 		updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
 				PricingPolicy pricing, PricingPolicy baseline, double awareness,
-				double sensitivity) {
+				double sensitivity, String responseType) {
 		/*
 		 *  Decide on the number of times the activity is going to be activated
 		 *  during a day
@@ -324,7 +324,7 @@ public class Activity extends Entity {
 				if(pricing.getType().equalsIgnoreCase("TOUPricing") && 
 						baseline.getType().equalsIgnoreCase("TOUPricing")) {
 					responseStartProb = Response.respond(startProb, pricing,
-							baseline, awareness, sensitivity);
+							baseline, awareness, sensitivity, responseType);
 				}
 			}
 			

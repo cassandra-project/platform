@@ -1,7 +1,5 @@
 package eu.cassandra.sim.entities.external;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
 import javax.ws.rs.core.MediaType;
 
 import com.mongodb.BasicDBList;
@@ -13,7 +11,6 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.client.urlconnection.HTTPSProperties;
 
 import eu.cassandra.sim.utilities.Constants;
 
@@ -59,6 +56,31 @@ public class ThermalModule {
 			}
 			if(closingTime.contains("PM")) {
 				closingValue += 12.0;
+			}
+			uri = (String)obj.get("web_service_url");
+			String type = (String)obj.get("type");
+			switch(type) {
+				case "single_single_nodr":
+					features = "\"features\": \"HysteresisModel\",";
+					break;
+				case "six_single_nodr":
+					features = "\"features\": \"HysteresisModel\",";
+					break;
+				case "six_five_nodr":
+					features = "\"features\": \"SplitRange\",";
+					break;
+				case "six_onoff_nodr":
+					features = "\"features\": \"HysteresisModel\",";
+					break;
+				case "single_mpc_nodr":
+					features = "\"features\": \"HysteresisModel\",";
+					break;
+				case "six_mpc_nodr":
+					features = "\"features\": \"HysteresisModel\",";
+					break;
+				default:
+					features = "\"features\": \"HysteresisModel\",";
+					break;
 			}
 			desiredTempSchedule = "\"desired_temp_schedule\":" + obj.get("desired_temp_schedule").toString() + ",";
 			pricing = "\"pricing\":" + doubleToString(touPricing);
@@ -130,7 +152,7 @@ public class ThermalModule {
 	public static String getNextModelInitState(String response) {
 		DBObject o = (DBObject)JSON.parse(response);
 		DBObject model_final_state = (DBObject)o.get("model_final_state");
-		return "\"model_init_state\":" + model_final_state.toString();
+		return "\"model_init_state\":" + model_final_state.toString() + ",";
 	}
 	
 	public static double[] getPowerConsumption(String response) {
@@ -141,7 +163,6 @@ public class ThermalModule {
 			double power = ((Double)((DBObject)lo).get("P")).doubleValue();
 			int min = ((int)((Double)((DBObject)lo).get("time")).doubleValue())/60;
 			d[min-1] = power;
-			System.out.println(min + " " + power);
 		}
 		return d;
 	}

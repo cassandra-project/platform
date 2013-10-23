@@ -143,7 +143,7 @@ public class Simulation implements Runnable {
 //  	  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
   	  					for (Installation installation: installations) {
 //  						System.out.println(installation.getName());
-  	  						installation.updateDailySchedule(tick, queue, pricing, baseline_pricing);
+  	  						installation.updateDailySchedule(tick, queue, pricing, baseline_pricing, simulationWorld.getResponseType());
   	  						
   	  					}
   	  					billingCycleDays++;

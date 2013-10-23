@@ -38,6 +38,7 @@ public class SimulationParams
   private SimCalendar simCalendar;
   private String name;
   private String locationInfo;
+  private String responseType;
 
   public SimulationParams ()
   {
@@ -49,6 +50,8 @@ public class SimulationParams
   public SimulationParams (DBObject dbo) throws ParseException
   {
 
+	  responseType = dbo.get("responseType").toString();
+	  
     int day;
     int month;
     int year;
@@ -85,6 +88,11 @@ public class SimulationParams
     return name;
   }
 
+  public String getResponseType ()
+  {
+    return responseType;
+  }
+  
   public String getLocationInfo ()
   {
     return locationInfo;

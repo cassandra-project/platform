@@ -18,7 +18,6 @@
                 "six_five_nodr",
                 "six_onoff_nodr",
                 "single_mpc_nodr",
-                "single_single_nodr",
                 "six_mpc_nodr"
             ]
         },
@@ -44,11 +43,6 @@
                 "type": "number"
             },
             "uniqueItems": false,
-            "optional": false
-        },
-        "prc_id": {
-            "type": "string",
-            "description": "The ObjectId of a TOU Pricing scheme",
             "optional": false
         }
     },
