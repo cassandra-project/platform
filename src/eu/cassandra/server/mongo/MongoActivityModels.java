@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,15 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.sim.utilities.Utils;
 
 public class MongoActivityModels {
 
@@ -33,6 +38,21 @@ public class MongoActivityModels {
 	public final static String REF_DISTR_DURATION = "duration";
 	public final static String REF_DISTR_STARTTIME = "startTime";
 	public final static String REF_DISTR_REPEATS = "repeatsNrOfTime";
+	
+	
+	
+	public static boolean checkAppliancesExists(BasicDBList apps, String act_id) {
+		boolean check = true;
+		String inst_id = MongoPersons.getParentId(MongoActivities.getParentId(act_id));
+		if(apps == null || apps.isEmpty() || apps.size() == 0) return true;
+		for(Object o : apps) {
+			String app_id = (String)o;
+			String app_inst_id = MongoAppliances.getParentId(app_id);
+			if(inst_id.equalsIgnoreCase(app_inst_id)) check  = check && true;
+			else check = check && false;
+		}
+		return check;
+	}
 	
 
 	/**
@@ -70,18 +90,74 @@ public class MongoActivityModels {
 	 * @param dataToInsert
 	 * @return
 	 */
+	
 	public String createActivityModel(String dataToInsert) {
-		return new MongoDBQueries().insertData(COL_ACTMODELS ,dataToInsert,
-				"Activity Model created successfully", 
-				new String[] {MongoActivities.COL_ACTIVITIES, MongoDistributions.COL_DISTRIBUTIONS, 
-				MongoDistributions.COL_DISTRIBUTIONS, MongoDistributions.COL_DISTRIBUTIONS  },
-				new String[] {"act_id","duration","startTime","repeatsNrOfTime"},
-				new boolean[] {false,true,true,true},JSONValidator.ACTIVITYMODEL_SCHEMA
-				).toString();
-
-		//         : "4ff31bc9e4b0721a5785a1bc",
-		//         : "4ff31bc9e4b0721a5785a1bc",
-		//         : "4ff45dc1e4b00acd8d6457e3"
+		String response = createActivityModelObj(dataToInsert).toString();
+		return withAddedWarnings(response, false, true);
+	}
+	
+	public static DBObject createActivityModelObj(String dataToInsert) {
+		MongoDBQueries q = new MongoDBQueries();
+		DBObject obj = (DBObject) JSON.parse(dataToInsert);
+		BasicDBList apps = (BasicDBList)obj.get(REF_CONTAINSAPPLIANCES);
+		String act_id = (String)obj.get("act_id");
+		boolean  checkPass = checkAppliancesExists(apps, act_id);
+		DBObject returnObj = null;
+		if(checkPass) {
+			returnObj = q.insertData(COL_ACTMODELS ,dataToInsert,
+					"Activity Model created successfully", 
+					new String[] {MongoActivities.COL_ACTIVITIES, MongoDistributions.COL_DISTRIBUTIONS, 
+					MongoDistributions.COL_DISTRIBUTIONS, MongoDistributions.COL_DISTRIBUTIONS  },
+					new String[] {"act_id","duration","startTime","repeatsNrOfTime"},
+					new boolean[] {false,true,true,true},JSONValidator.ACTIVITYMODEL_SCHEMA
+					);
+			if(Utils.failed(returnObj.toString())) {
+				// Perhaps should be added to the user library
+				returnObj = q.insertData(COL_ACTMODELS ,dataToInsert,
+						"Activity Model created successfully", 
+						new String[] {"users"},
+						new String[] {"act_id"},
+						new boolean[] {false},JSONValidator.ACTIVITYMODEL_SCHEMA);
+			}
+		} else {
+			returnObj = new JSONtoReturn().createJSONError("Appliances do not exist " + 
+					"in the Installation or Activity Model defined inside in the user " +
+					"library should not contain appliances", "Activity model appliances error");
+		}
+		return returnObj;
+	}
+	
+	private String withAddedWarnings(String response, boolean ary, boolean appliances) {
+		if(Utils.failed(response)) return response;
+		DBObject jsonResponse = (DBObject) JSON.parse(response);
+		DBObject data = (DBObject) jsonResponse.get("data");
+		if(ary) {
+			data = (DBObject)((BasicDBList)data).get(0);
+		}
+		BasicDBList list = new BasicDBList();
+		if(appliances && (((BasicDBList)data.get("containsAppliances")) == null || ((BasicDBList)data.get("containsAppliances")).isEmpty())) {
+			String warning = "Add at least one appliance for this activity model.";
+			list.add(warning);
+		}
+		if((String)data.get("duration") == null || 
+				((String)data.get("duration") != null && ((String)data.get("duration")).isEmpty())) {
+			String warning = "Add a duration distribution for this activity model.";
+			list.add(warning);
+		}
+		if((String)data.get("startTime") == null || 
+				((String)data.get("startTime") != null && ((String)data.get("startTime")).isEmpty())) {
+			String warning = "Add a start time distribution for this activity model.";
+			list.add(warning);
+		}
+		if((String)data.get("repeatsNrOfTime") == null || 
+				((String)data.get("repeatsNrOfTime") != null && ((String)data.get("repeatsNrOfTime")).isEmpty())) {
+			String warning = "Add a number of times distribution for this activity model.";
+			list.add(warning);
+		}
+		if(!list.isEmpty()) {
+			jsonResponse.put("warnings", list);
+		}
+		return jsonResponse.toString();
 	}
 
 	/**
@@ -102,9 +178,30 @@ public class MongoActivityModels {
 	 * @return
 	 */
 	public String updateActivityModel(String id,String jsonToUpdate) {
-		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
-				COL_ACTMODELS, "Activity Model updated successfully",
-				MongoActivities.COL_ACTIVITIES ,"act_id",
-				JSONValidator.ACTIVITYMODEL_SCHEMA).toString();
+		MongoDBQueries q = new MongoDBQueries();
+		DBObject obj = (DBObject) JSON.parse(jsonToUpdate);
+		BasicDBList apps = (BasicDBList)obj.get(REF_CONTAINSAPPLIANCES);
+		String act_id = (String)obj.get("act_id");
+		boolean  checkPass = checkAppliancesExists(apps, act_id);
+		String returnMsg = null;
+		boolean appliances = true;
+		if(checkPass) {
+			returnMsg = q.updateDocument("_id", id,jsonToUpdate,
+					COL_ACTMODELS, "Activity Model updated successfully",
+					MongoActivities.COL_ACTIVITIES ,"act_id",
+					JSONValidator.ACTIVITYMODEL_SCHEMA).toString();
+			if(Utils.failed(returnMsg)) {
+				// Perhaps should be added to the user library
+				returnMsg = q.updateDocument("_id", id,jsonToUpdate,
+						COL_ACTMODELS, "Activity Model updated successfully",
+						"users" ,"act_id",JSONValidator.ACTIVITYMODEL_SCHEMA).toString();
+				appliances = false;
+			}
+		} else {
+			returnMsg = new JSONtoReturn().createJSONError("Appliances do not exist " + 
+						"in the Installation or Activity Model defined inside in the user " +
+						"library should not contain appliances", "Activity model appliances error").toString();
+		}
+		return withAddedWarnings(returnMsg, true, appliances);
 	}
 }

@@ -1,3 +1,19 @@
+/*   
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package eu.cassandra.sim.tests;
 
 import static org.junit.Assert.*;
@@ -33,10 +49,10 @@ public class SimulationTest {
 	public void SimulationTest() throws Exception {
 		RNG.init();
 		
-		Appliance app1=new Appliance.Builder("Appid1","App1", "App1Desc", "App1Type", inst1, new ConsumptionModel(scenario), 1f, true).build();
-		Appliance app2=new Appliance.Builder("Appid2","App2", "App2Desc", "App2Type", inst1, new ConsumptionModel(scenario), 1f, true).build();
-		Person person1=new Person.Builder("Personid1","Person1", "Person1Desc", "Person1Type", inst1).build();
-		Person person2=new Person.Builder("Personid2","App2", "App2Desc", "App2Type", inst1).build();
+		Appliance app1=new Appliance.Builder("Appid1","App1", "App1Desc", "App1Type", inst1, new ConsumptionModel(scenario, "p"), null, 1f, true).build();
+		Appliance app2=new Appliance.Builder("Appid2","App2", "App2Desc", "App2Type", inst1, new ConsumptionModel(scenario, "p"), null, 1f, true).build();
+		Person person1=new Person.Builder("Personid1","Person1", "Person1Desc", "Person1Type", inst1, 0, 0).build();
+		Person person2=new Person.Builder("Personid2","App2", "App2Desc", "App2Type", inst1, 0, 0).build();
 		p[0]=inst1;
 		p[1]=inst2;
 		
@@ -47,7 +63,7 @@ public class SimulationTest {
 		
 		when(sim.getCurrentTick ()).thenReturn(0);
 		when(sim.getSimulationWorld ()).thenReturn(simulationWorld);
-		sim.setup();
+		sim.setup(true);
 		sim.run();
 		
 		 assertEquals(7, sim.getEndTick());

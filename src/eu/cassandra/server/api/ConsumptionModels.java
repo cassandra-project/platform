@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoConsumptionModels;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("consmod")
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,8 +42,8 @@ public class ConsumptionModels {
 	 * @return
 	 */
 	@POST
-	public String createConsumptionModel(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().createConsumptionModel(message));
+	public Response createConsumptionModel(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().createConsumptionModel(message)));
 	}
 
 	/**
@@ -50,9 +52,9 @@ public class ConsumptionModels {
 	 * @return
 	 */
 	@GET
-	public String getConsumptionModels(@QueryParam("app_id") String app_id, @QueryParam("count") boolean count,
+	public Response getConsumptionModels(@QueryParam("app_id") String app_id, @QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().getConsumptionModels(httpHeaders,app_id,count));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoConsumptionModels().getConsumptionModels(httpHeaders,app_id,count)));
 	}
 
 

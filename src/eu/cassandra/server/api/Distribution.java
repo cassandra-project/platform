@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoDistributions;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("distr/{distr_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,9 +43,9 @@ public class Distribution {
 	 * @return
 	 */
 	@GET
-	public String getDistribution(@PathParam("distr_id") String distr_id,
+	public Response getDistribution(@PathParam("distr_id") String distr_id,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDistributions().getDistribution(httpHeaders,distr_id));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDistributions().getDistribution(httpHeaders,distr_id)));
 	}
 
 	/**
@@ -53,8 +55,8 @@ public class Distribution {
 	 * @return
 	 */
 	@PUT
-	public String updateDistribution(@PathParam("distr_id") String distr_id, String message) {
-		return  PrettyJSONPrinter.prettyPrint(new MongoDistributions().updateDistribution(distr_id,message));
+	public Response updateDistribution(@PathParam("distr_id") String distr_id, String message) {
+		return  Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDistributions().updateDistribution(distr_id,message)));
 	}
 
 	/**
@@ -63,7 +65,7 @@ public class Distribution {
 	 * @return
 	 */
 	@DELETE
-	public String deleteDistribution(@PathParam("distr_id") String distr_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDistributions().deleteDistribution(distr_id));
+	public Response deleteDistribution(@PathParam("distr_id") String distr_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDistributions().deleteDistribution(distr_id)));
 	}
 }

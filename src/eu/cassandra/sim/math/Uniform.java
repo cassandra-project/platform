@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -32,13 +32,6 @@ public class Uniform implements ProbabilityDistribution
   protected double precomputeTo;
   protected double[] histogram;
 
-  public Uniform ()
-  {
-    precomputeFrom = 0;
-    precomputeTo = 0;
-    precomputed = false;
-  }
-
   /**
    * @param start
    *          Starting value of the Uniform distribution.
@@ -51,6 +44,11 @@ public class Uniform implements ProbabilityDistribution
     precomputeTo = end;
     precomputed = false;
 
+  }
+  
+  public String getType()
+  {
+    return "Uniform";
   }
 
   public String getDescription ()
@@ -99,15 +97,9 @@ public class Uniform implements ProbabilityDistribution
     if (startValue > endValue) {
       System.out.println("Starting poing greater than ending point");
       return;
-    }
-    else if (startValue == endValue) {
+    } else {
 
-      histogram[(int) startValue] = 1.0;
-
-    }
-    else {
-
-      for (int i = (int) precomputeFrom; i < precomputeTo; i++) {
+      for (int i = 0; i < nBins; i++) {
 
         histogram[i] = 1.0 / (double) (precomputeTo - precomputeFrom + 1);
 
@@ -132,10 +124,11 @@ public class Uniform implements ProbabilityDistribution
   public double getPrecomputedProbability (double x)
   {
     if (!precomputed) {
-      return -1;
+    	return -1;
+    } else if (x > precomputeTo || x < precomputeFrom) {
+    	return -1;
     }
-
-    return histogram[(int) x];
+    return histogram[(int)(x - precomputeFrom)];
   }
 
   public int getPrecomputedBin ()
@@ -154,22 +147,14 @@ public class Uniform implements ProbabilityDistribution
       sum += histogram[i];
       // if(dice < sum) return (int)(precomputeFrom + i * div);
       if (dice < sum)
-        return i;
+        return i + (int)precomputeFrom;
     }
     return -1;
   }
   
   public void precompute (int endValue)
   {
-    if (endValue == 10) {
-      // TODO Throw an exception or whatever.
-      return;
-    }
-    int startValue = 0;
-    int nBins = endValue;
-    
-    precompute(startValue, endValue-10,nBins);
-    
+	  precompute(0, endValue, endValue + 1);
   }
   
   public double[] getHistogram ()
@@ -218,7 +203,7 @@ public class Uniform implements ProbabilityDistribution
     System.out.println("Testing Duration Uniform Distribution Creation.");
 
     start = 10;
-    end = 10;
+    end = 12;
 
     u = new Uniform(start, end);
     u.precompute(start, end, (int) end + 1);

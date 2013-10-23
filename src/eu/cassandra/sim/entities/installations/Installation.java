@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,23 +16,34 @@
 package eu.cassandra.sim.entities.installations;
 
 import java.util.Vector;
-
 import java.util.concurrent.PriorityBlockingQueue;
 
 import com.mongodb.BasicDBObject;
 
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.sim.Event;
+import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
+import eu.cassandra.sim.entities.external.ThermalModule;
 import eu.cassandra.sim.entities.people.Person;
+import eu.cassandra.sim.utilities.Constants;
 
 public class Installation extends Entity {
 	private Vector<Person> persons;
 	private Vector<Appliance> appliances;
 	private Vector<Installation> subInstallations;
 	private LocationInfo locationInfo;
-	private double currentPower;
+	private double currentPowerP;
+	private double currentPowerQ;
+	private double maxPower = 0;
+	private double avgPower = 0;
+	private double energy = 0;
+	private double previousEnergy = 0;
+	private double energyOffpeak = 0;
+	private double previousEnergyOffpeak = 0;
+	private double cost = 0;
+	private ThermalModule tm;
 	
 	public static class Builder {
     	// Required variables
@@ -45,7 +56,8 @@ public class Installation extends Entity {
         private Vector<Person> persons = new Vector<Person>();
         private Vector<Appliance> appliances = new Vector<Appliance>();
         private Vector<Installation> subInstallations;
-        private double currentPower = 0.0;
+        private double currentPowerP = 0.0;
+        private double currentPowerQ = 0.0;
         
         public Builder(String aid, String aname, String adescription, String atype) {
         	id = aid;
@@ -82,11 +94,52 @@ public class Installation extends Entity {
         locationInfo = builder.locationInfo;
 	}
     
-    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue) {
+    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue, 
+    		PricingPolicy pricing, PricingPolicy baseline, String responseType) {
     	for(Person person : getPersons()) {
-    		//System.out.println(person.getName());
-    		person.updateDailySchedule(tick, queue);
+    		person.updateDailySchedule(tick, queue, pricing, baseline, responseType);
 		}
+    	if(tm != null) {
+    		tm.nextStep();
+    	}
+    }
+    
+    public void updateMaxPower(double power) {
+    	if(power > maxPower) maxPower = power;
+    }
+    
+    public double getMaxPower() {
+    	return maxPower;
+    }
+    
+    public void updateAvgPower(double powerFraction) {
+    	avgPower += powerFraction;
+    }
+    
+    public double getAvgPower() {
+    	return avgPower;
+    }
+    
+    public void updateEnergy(double power) {
+    	energy += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
+    }
+    
+    public void updateEnergyOffpeak(double power) {
+    	energyOffpeak += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
+    }
+    
+    public void updateCost(PricingPolicy pp, int tick) {
+    	cost += pp.calculateCost(energy, previousEnergy, energyOffpeak, previousEnergyOffpeak, tick);
+    	previousEnergy = energy;
+    	previousEnergyOffpeak = energyOffpeak;
+    }
+    
+    public double getEnergy() {
+    	return energy;
+    }
+    
+    public double getCost() {
+    	return cost;
     }
 
 	public void nextStep(int tick) {
@@ -94,15 +147,25 @@ public class Installation extends Entity {
 	}
 
 	public void updateRegistry(int tick) {
-		float power = 0f;
+		float p = 0f;
+		float q = 0f;
 		for(Appliance appliance : getAppliances()) {
-			power += appliance.getPower(tick);
+			p += appliance.getPower(tick, "p");
+			q += appliance.getPower(tick, "q");
 		}
-		currentPower = power;
+		if(tm != null) {
+			p += tm.getPower(tick);
+		}
+		currentPowerP = p;
+		currentPowerQ = q;
 	}
 
-	public double getCurrentPower() {
-		return currentPower;
+	public double getCurrentPowerP() {
+		return currentPowerP;
+	}
+	
+	public double getCurrentPowerQ() {
+		return currentPowerQ;
 	}
     
     public Vector<Person> getPersons() {
@@ -111,6 +174,10 @@ public class Installation extends Entity {
 
     public void addPerson (Person person) {
     	persons.add(person);
+    }
+    
+    public void setThermalModule (ThermalModule atm) {
+    	tm = atm;
     }
 
     public Vector<Appliance> getAppliances () {

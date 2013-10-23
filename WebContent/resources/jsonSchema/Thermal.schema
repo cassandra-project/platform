@@ -1,0 +1,50 @@
+{
+    "name": "Thermal",
+    "type": "object",
+    "description": "Thermal module params",
+    "properties": {
+        "inst_id": {
+            "type": "string",
+            "description": "The ObjectId of the Installation this module belongs",
+            "optional": false
+        },
+        "type": {
+            "type": "string",
+            "description": "Thermal simulation types",
+            "optional": false,
+            "enum": [
+                "single_single_nodr",
+                "six_single_nodr",
+                "six_five_nodr",
+                "six_onoff_nodr",
+                "single_mpc_nodr",
+                "six_mpc_nodr"
+            ]
+        },
+        "web_service_url": {
+            "type": "string",
+            "description": "Web REST Server URL",
+            "optional": false
+        },
+        "opening_time": {
+            "type": "string",
+            "description": "Opening time",
+            "optional": false
+        },
+        "closing_time": {
+            "type": "string",
+            "description": "Closing time",
+            "optional": false
+        },
+        "desired_temp_schedule": {
+            "type": "array",
+            "description": "24 hour vector",
+            "items": {
+                "type": "number"
+            },
+            "uniqueItems": false,
+            "optional": false
+        }
+    },
+    "additionalProperties" : false
+}

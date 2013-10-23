@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,17 @@ package eu.cassandra.server.mongo;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.util.JSONValidator;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.MongoDBQueries;
+import eu.cassandra.sim.utilities.Utils;
 
 public class MongoActivities {
 
@@ -38,6 +45,12 @@ public class MongoActivities {
 	public String getActivity(HttpHeaders httpHeaders,String id) {
 		return new MongoDBQueries().getEntity(httpHeaders,COL_ACTIVITIES,"_id", 
 				id, "Activity retrieved successfully", false).toString();
+	}
+	
+	public static String getParentId(String id) {
+		BasicDBList list = ((BasicDBList)((DBObject)JSON.parse(new MongoActivities().getActivity(null, id))).get("data"));
+		if(list == null || list.isEmpty()) return null;
+		return (String)((DBObject)list.get(0)).get(REF_PERSON);
 	}
 
 	/**
@@ -65,9 +78,34 @@ public class MongoActivities {
 	 * @return
 	 */
 	public String createActivity(String dataToInsert) {
-		return new MongoDBQueries().insertData(COL_ACTIVITIES ,dataToInsert,
+		String response = new MongoDBQueries().insertData(COL_ACTIVITIES ,dataToInsert,
 				"Activity created successfully", MongoPersons.COL_PERSONS ,"pers_id",
 				JSONValidator.ACTIVITY_SCHEMA).toString();
+		return withAddedWarnings(response, false);
+	}
+	
+	private String withAddedWarnings(String response, boolean ary) {
+		if(Utils.failed(response)) return response;
+		DBObject jsonResponse = (DBObject) JSON.parse(response);
+		DBObject data = (DBObject) jsonResponse.get("data");
+		String objID =  new String();
+		if(ary) {
+			objID = (String)((DBObject)((BasicDBList)data).get(0)).get("_id");
+		} else {
+			objID = (String)data.get("_id");
+		}
+		BasicDBList list = new BasicDBList();
+		DBObject returnQuery = 
+				new MongoDBQueries().getEntity(MongoActivityModels.COL_ACTMODELS, "act_id", objID);
+		if(returnQuery == null) {
+			String warning = "Add at least one activity model for this activity.";
+			list.add(warning);
+		}
+		
+		if(!list.isEmpty()) {
+			jsonResponse.put("warnings", list);
+		}
+		return jsonResponse.toString();
 	}
 
 	/**
@@ -88,9 +126,10 @@ public class MongoActivities {
 	 * @return
 	 */
 	public String updateActivity(String id,String jsonToUpdate) {
-		return new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
+		String response = new MongoDBQueries().updateDocument("_id", id,jsonToUpdate,
 				COL_ACTIVITIES, "Activity updated successfully",
 				MongoPersons.COL_PERSONS ,"pers_id",JSONValidator.ACTIVITY_SCHEMA).toString();
+		return withAddedWarnings(response, true);
 	}
 
 }

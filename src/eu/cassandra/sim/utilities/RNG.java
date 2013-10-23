@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -71,6 +71,10 @@ public class RNG {
 	
 	public static double nextDouble() {
 		return random.nextDouble();
+	}
+	
+	public static float nextFloat() {
+		return random.nextFloat();
 	}
 	
 	public static double nextDoublePlusMinus() {

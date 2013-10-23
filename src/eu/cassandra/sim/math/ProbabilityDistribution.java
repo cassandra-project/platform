@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ public interface ProbabilityDistribution
    * 
    * @return String with description of distribution.
    */
-  public String getDescription ();
+  public String getDescription();
+  
+  public String getType();
 
   /**
    * Return the number of parameters of this distribution.
@@ -147,4 +149,5 @@ public interface ProbabilityDistribution
    * 
    */
   public void status ();
+
 }

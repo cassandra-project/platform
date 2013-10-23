@@ -1,0 +1,158 @@
+{
+    "name": "Pricing",
+    "type": "object",
+    "description": "Pricing schema",
+    "properties": {
+        "prj_id": {
+            "type": "string",
+            "description": "The ObjectId of the Project that the Pricing policy belongs to",
+            "optional": false
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of the pricing policy",
+            "optional": true
+        },
+        "description": {
+            "type": "string",
+            "description": "Description of the demographic data",
+            "optional": true
+        },
+        "type": {
+            "type": "string",
+            "description": "Pricing policy types",
+            "optional": false,
+            "enum": [
+                "ScalarEnergyPricing",
+                "ScalarEnergyPricingTimeZones",
+                "EnergyPowerPricing",
+                "MaximumPowerPricing",
+                "AllInclusivePricing",
+                "TOUPricing"
+            ]
+        },
+        "fixedCharge": {
+            "type": "number",
+            "description": "Fixed charge",
+            "optional": true
+        },
+        "billingCycle": {
+            "type": "integer",
+            "description": "Billing cycle",
+            "optional": true
+        },
+        "offpeakPrice": {
+            "type": "number",
+            "description": "Offpeak price",
+            "optional": true
+        },
+        "contractedCapacity": {
+            "type": "number",
+            "description": "Contracted capacity",
+            "optional": true
+        },
+        "maximumPower": {
+            "type": "number",
+            "description": "Maximum capacity",
+            "optional": true
+        },
+        "energyPrice": {
+            "type": "number",
+            "description": "Energy price",
+            "optional": true
+        },
+        "powerPrice": {
+            "type": "number",
+            "description": "Power price",
+            "optional": true
+        },
+        "fixedCost": {
+            "type": "number",
+            "description": "Fixed cost",
+            "optional": true
+        },
+        "contractedEnergy": {
+            "type": "number",
+            "description": "Contracted energy",
+            "optional": true
+        },
+        "additionalCost": {
+            "type": "number",
+            "description": "Additional cost",
+            "optional": true
+        },
+        "onekw24": {
+            "type": "number",
+            "description": "Cost of an appliance of 1kW turned on for 24 hours",
+            "optional": true
+        },  
+        "levels": {
+            "type": "array",
+            "description": "An array pricing levels",
+            "optional": true,
+            "items" : {
+                "type" : "object",
+                "description" : "Levels",
+                "properties" : {
+                    "order" : {
+                        "type": "integer",
+                        "description": "Ordering of the levels"
+                    },           
+                    "price" : {
+                        "type": "number",
+                        "description": "Level price"
+                    },
+                    "level" : {
+                        "type": "number",
+                        "description": "Power level",
+                        "optional" : true
+                    }
+                }
+            }
+        },
+        "timezones": {
+            "type": "array",
+            "description": "An array pricing levels",
+            "optional": true,
+            "items" : {
+                "type" : "object",
+                "description" : "Timezones",
+                "properties" : {
+                    "starttime" : {
+                        "type": "string",
+                        "description": "Start Time"
+                    },           
+                    "endtime" : {
+                        "type": "string",
+                        "description": "End Time"
+                    },
+                    "price" : {
+                        "type": "number",
+                        "description": "price",
+                        "optional" : true
+                    }
+                }
+            }
+        },
+        "offpeak": {
+            "type": "array",
+            "description": "An array time zones",
+            "optional": true,
+            "items" : {
+                "type" : "object",
+                "description" : "Time zones",
+                "properties" : {           
+                    "from" : {
+                        "type": "string",
+                        "description": "The probability of appearance for this appliance"
+                    },
+                    "to" : {
+                        "type": "string",
+                        "description": "The probability of appearance for this appliance"
+                    }
+                }
+            }
+        }
+    },
+    "additionalProperties" : false
+}

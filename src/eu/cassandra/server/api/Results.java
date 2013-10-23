@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,9 +24,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.util.MongoDBQueries;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("results")
 @Produces(MediaType.APPLICATION_JSON)
@@ -34,13 +36,13 @@ import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 public class Results {
 
 	@GET
-	public String getResults(
+	public Response getResults(
 			@QueryParam("inst_id") String inst_id,
 			@QueryParam("metric") String metric,
 			@QueryParam("aggr_unit") String aggr_unit,
 			@QueryParam("from") String from,
 			@QueryParam("to") String to,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoDBQueries().mongoResultQuery(httpHeaders,inst_id,metric,aggr_unit,from,to).toString());
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDBQueries().mongoResultQuery(httpHeaders,inst_id,metric,aggr_unit,from,to).toString()));
 	}
 }

@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -28,8 +28,13 @@ public class Constants {
 	
 	public final static int MIN_IN_DAY = 60 * 24;
 	
+	public final static double MINUTE_HOUR_RATIO = 1.0/60.0;
+	
 	public final static int MU = 0;
 	
 	public final static int SIGMA = 1;
+	
+	public final static String AUTHORIZATION_FAIL = 
+			"{ \"success\": false, \"message\": \"User authorization failed\", \"errors\": { \"exception\": \"User and or password do not match.\" }}";
 
 }

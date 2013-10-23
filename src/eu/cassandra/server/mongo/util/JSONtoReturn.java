@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -157,7 +157,7 @@ public class JSONtoReturn {
 			String title, String xAxisLabel, String yAxisLabel, 
 			int defaultAggrUnit,Integer numberOfDays) {
 		DBObject successMessage = new BasicDBObject();
-		successMessage.put("successv", true);
+		successMessage.put("success", true);
 		successMessage.put("message", descr);
 		successMessage.put("title", title);
 		successMessage.put("xAxisLabel", xAxisLabel);
@@ -166,7 +166,7 @@ public class JSONtoReturn {
 		successMessage.put("numberOfDays", numberOfDays);
 		successMessage.put("size", dbObjects.size());
 		successMessage.put("data", dbObjects);
-		System.out.println(PrettyJSONPrinter.prettyPrint(successMessage));
+		//System.out.println(PrettyJSONPrinter.prettyPrint(successMessage));
 		return successMessage;
 	}
 

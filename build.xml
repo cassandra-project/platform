@@ -1,4 +1,4 @@
-<project name="Cassandra" default="dist" basedir=".">
+<project name="cassandra" default="dist" basedir=".">
 	<description>Cassandra platform build file</description>
 	
   	<!-- set global properties for this build -->
@@ -11,14 +11,12 @@
   	<property name="webinf"  location="WebContent/WEB-INF"/>
 	<property name="build.compiler" value="modern"/>
 	
-	
-	
 	<path id="classpath">
 		<fileset dir="${lib}">
 				<include name="**/*.jar"/>
  	 	</fileset>
 	</path>
-	<path id="application" location="${jar.dir}/${ant.project.name}.jar"/> <!--added-->
+	<path id="application" location="${build}/${ant.project.name}.jar"/>
 
   	<target name="init" depends="clean">
     	<!-- Create the time stamp -->
@@ -31,13 +29,27 @@
   	</target>
 
   	<target name="compile" depends="init" description="compile the source">
-		<javac source="7" target="7" destdir="${build.bin}" deprecation="on">
+		<javac includeantruntime="false" source="7" target="7" destdir="${build.bin}" deprecation="on">
 			<src path="${src}"/>
 			<classpath refid="classpath"/>
+			<classpath refid="application"/>
 		</javac>
 		<!-- Package the application into a JAR -->
-    	<jar jarfile="${build}/cassandra.jar" basedir="${build.bin}" />
+    	<jar jarfile="${build}/${ant.project.name}.jar" basedir="${build.bin}" />
   	</target>
+  	
+  	<target name="junit" depends="compile">
+  	     <echo message="${ant.project.name}"/>
+  	     <junit printsummary="yes">
+  	         <classpath>
+  	             <path refid="classpath"/>
+  	             <path refid="application"/>
+  	         </classpath>
+  	         <batchtest fork="yes">
+                 <fileset dir="${src}" includes="**/*Test.java"/>
+             </batchtest>
+         </junit>
+    </target>
 
 	<!-- Generate the API documentation-->
 	<target name="javadoc" depends="compile">
@@ -52,7 +64,7 @@
   		</javadoc>
 	</target>
 
-  	<target name="dist" depends="compile" description="generate the distribution (war file)" >
+  	<target name="dist" depends="compile, junit" description="generate the distribution (war file)" >
 		<war destfile="${dist}/cassandra.war" webxml="${webinf}/web.xml">
 			<fileset dir="WebContent" excludes="WEB-INF/"/>
 		  	<lib dir="${lib}"></lib>
@@ -65,55 +77,5 @@
     	<delete dir="${build}"/>
     	<delete dir="${dist}"/>
   	</target>
-	
-	
-	
-	
-	<target name="run" depends="compile">
-	        <java fork="true" classname="${main-class}">
-	            <classpath>
-	                <path refid="classpath"/>
-	                <path id="application" location="${jar.dir}/${ant.project.name}.jar"/>
-	            </classpath>
-	        </java>
-	    </target>
-	    
-	    <target name="junit" depends="compile">
-	        <junit printsummary="yes">
-	            <classpath>
-	                <path refid="classpath"/>
-	                <path refid="application"/>
-	            </classpath>
-	            
-	            <batchtest fork="yes">
-	                <fileset dir="${src}" includes="*Test.java"/>
-	            </batchtest>
-	        </junit>
-	    </target>
-	
-	<!-- 	  <property name="report.dir"  value="${build.dir}/junitreport"/>
-
- <target name="junit" depends="compile">
-	        <mkdir dir="${report.dir}"/>
-	        <junit printsummary="yes">
-	            <classpath>
-	                <path refid="classpath"/>
-	                <path refid="application"/>
-	            </classpath>
-	            
-	            <formatter type="xml"/>
-	            
-	            <batchtest fork="yes" todir="${report.dir}">
-	                <fileset dir="${src}" includes="*Test.java"/>
-	            </batchtest>
-	        </junit>
-	    </target>
-	    
-	    <target name="junitreport">
-	        <junitreport todir="${report.dir}">
-	            <fileset dir="${report.dir}" includes="TEST-*.xml"/>
-	            <report todir="${report.dir}"/>
-	        </junitreport>
-	    </target>-->
-	
+  	
 </project>

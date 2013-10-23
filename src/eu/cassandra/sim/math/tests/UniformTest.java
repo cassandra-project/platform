@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -31,16 +31,6 @@ import eu.cassandra.sim.utilities.RNG;
 
 public class UniformTest {
 
-	@Test
-	public void testgetDescription() {
-		Uniform tester=new Uniform();
-		assertTrue("Result", "Uniform probability density function"==tester.getDescription());
-	}
-		@Test
-		public void testGetNumberOfParameters() {
-			Uniform tester=new Uniform();
-			assertEquals("Result", 2, tester.getNumberOfParameters());
-		}
 		@Test
 		public void testGetParameter() {
 			Uniform tester=new Uniform(1,10);

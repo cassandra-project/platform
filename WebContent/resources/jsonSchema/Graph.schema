@@ -1,0 +1,52 @@
+{
+    "name": "Graph",
+    "type": "object",
+    "description": "Setting to create a graph",
+    "properties": {
+        "prj_id" : {
+            "type": "string",
+            "optional": true
+        },
+        "run_id" : {
+            "type": "string",
+            "optional": false
+        },
+        "graphType": {
+            "type": "string",
+            "description": "The Scenario this Installation belongs to",
+            "enum": [
+                "InstallationType",
+                "PersonType",
+                "TransformerID",
+                "TopologicalDistance",
+                "Location",
+                "SocialDistance",
+                
+                "TotalEnergyConsumption",
+                "MaxHourlyEnergyConsumption",
+                "MinHourlyEnergyConsumption",
+                
+                "AverageActivePowerPerHour",
+                "AverageReactivePowerPerHour",
+                
+                "MaxActivePowerPerHour",
+                "MaxReactivePowerPerHour",
+                
+                "MinActivePowerPerHour",
+                "MinReactivePowerPerHour"
+            ],
+            "optional": false
+        },
+        "minWeight": {
+            "type": "number",
+            "description": "Min weight threshold",
+            "optional": false
+        },        
+        "noedges": {
+            "type": "boolean",
+            "description": "If true then don't create edges",
+            "optional": true
+        }
+    },
+    "additionalProperties" : true
+}

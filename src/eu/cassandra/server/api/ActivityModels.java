@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoActivityModels;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("actmod")
 @Produces(MediaType.APPLICATION_JSON)
@@ -38,8 +40,8 @@ public class ActivityModels {
 	 * Create a ActivityModel
 	 */
 	@POST
-	public String createActivityModel(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivityModels().createActivityModel(message));
+	public Response createActivityModel(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoActivityModels().createActivityModel(message)));
 	}
 
 	/**
@@ -48,9 +50,9 @@ public class ActivityModels {
 	 * @return
 	 */
 	@GET
-	public String getActivityModels(@QueryParam("act_id") String act_id, @QueryParam("count") boolean count,
+	public Response getActivityModels(@QueryParam("act_id") String act_id, @QueryParam("count") boolean count,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoActivityModels().getActivityModels(httpHeaders,act_id,count));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoActivityModels().getActivityModels(httpHeaders,act_id,count)));
 	}
 
 

@@ -2,8 +2,5 @@
         "name" : "ApplianceName",
         "type" : "fridge",
         "description": "I am an appliance",
-        "energy_class": "A",
-        "standy_consumption": 1.23,
-        "controllable": true,
-        "shiftable": false
+        "inst_id" : "51dbe285e4b067cc7a3696e3"
 }

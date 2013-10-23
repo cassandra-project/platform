@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("inst")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,7 +47,7 @@ public class Installations {
 	 * @return
 	 */
 	@GET
-	public String getInstallations(
+	public Response getInstallations(
 			@QueryParam("scn_id") String scn_id,
 			@QueryParam("filter") String filters,
 			@QueryParam("sort") String sort,
@@ -50,8 +56,14 @@ public class Installations {
 			@QueryParam("count") boolean count,
 			@QueryParam("pertype") boolean pertype,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().
-				getInstallations(httpHeaders,scn_id,filters,sort, limit,skip,count,pertype));
+		String page = new MongoInstallations().
+				getInstallations(httpHeaders,scn_id,filters,sort,limit,skip,count,pertype);
+		String countResponse = 
+				(new MongoInstallations()).getInstallations(httpHeaders,scn_id,null,null,0,0,true,false);
+		DBObject jsonResponse = (DBObject) JSON.parse(countResponse);
+		BasicDBList list = (BasicDBList)jsonResponse.get("data");
+		DBObject object = (DBObject)list.get(0);
+		return Utils.returnResponseWithAppend(page, "total_size", (Integer)object.get("count"));
 	}
 
 	/**
@@ -59,8 +71,8 @@ public class Installations {
 	 * Create a installation
 	 */
 	@POST
-	public String createInstallation(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoInstallations().createInstallation(message));
+	public Response createInstallation(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoInstallations().createInstallation(message)));
 	}
 
 }

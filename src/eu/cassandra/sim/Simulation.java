@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,14 +15,12 @@
 */
 package eu.cassandra.sim;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
-
-import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -30,24 +28,23 @@ import org.bson.types.ObjectId;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 
 import eu.cassandra.server.mongo.MongoActivityModels;
 import eu.cassandra.server.mongo.MongoDistributions;
-import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.server.mongo.MongoRuns;
 import eu.cassandra.server.mongo.util.DBConn;
-import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel;
+import eu.cassandra.sim.entities.external.ThermalModule;
 import eu.cassandra.sim.entities.installations.Installation;
 import eu.cassandra.sim.entities.people.Activity;
 import eu.cassandra.sim.entities.people.Person;
 import eu.cassandra.sim.math.Gaussian;
 import eu.cassandra.sim.math.GaussianMixtureModels;
+import eu.cassandra.sim.math.Histogram;
 import eu.cassandra.sim.math.ProbabilityDistribution;
 import eu.cassandra.sim.math.Uniform;
 import eu.cassandra.sim.utilities.Constants;
@@ -61,6 +58,7 @@ import eu.cassandra.sim.utilities.Utils;
  * 
  */
 public class Simulation implements Runnable {
+	
 	static Logger logger = Logger.getLogger(Simulation.class);
 
 	private Vector<Installation> installations;
@@ -72,10 +70,16 @@ public class Simulation implements Runnable {
 	private int endTick;
 	
 	private int mcruns;
+	
+	private double co2;
   
 	private MongoResults m;
 
 	private SimulationParams simulationWorld;
+	
+	private PricingPolicy pricing;
+	
+	private PricingPolicy baseline_pricing;
 	
 	private String scenario;
 	
@@ -99,9 +103,9 @@ public class Simulation implements Runnable {
   
 	public Simulation(String ascenario, String adbname) {
 		scenario = ascenario;
-		System.out.println(PrettyJSONPrinter.prettyPrint(ascenario));
 		dbname = adbname;
 		m = new MongoResults(dbname);
+		m.createIndexes();
   		RNG.init();
 	}
   
@@ -110,24 +114,39 @@ public class Simulation implements Runnable {
   	}
 
   	public void run () {
+  		DBObject query = new BasicDBObject();
+		query.put("_id", new ObjectId(dbname));
+		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   		try {
+  			System.out.println("Run " + dbname + " started @ " + Calendar.getInstance().getTimeInMillis());
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
-  			DBObject query = new BasicDBObject();
-  			query.put("_id", new ObjectId(dbname));
-  			DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
+  			double mcrunsRatio = 1.0/(double)mcruns;
   			for(int i = 0; i < mcruns; i++) {
   				tick = 0;
+  				double avgPPowerPerHour = 0;
+  				double avgQPowerPerHour = 0;
+  				double[] avgPPowerPerHourPerInst = new double[installations.size()];
+  				double[] avgQPowerPerHourPerInst = new double[installations.size()];
+  	  			double maxPower = 0;
+  	  			double avgPower = 0;
+  	  			double energy = 0;
+  	  			double energyOffpeak = 0;
+  	  			double cost = 0;
+  	  			double billingCycleEnergy = 0;
+  	  			double billingCycleEnergyOffpeak = 0;
+  	  			double billingCycleDays = 0;
   	  			while (tick < endTick) {
-//  				System.out.println(tick);
   	  				// If it is the beginning of the day create the events
   	  				if (tick % Constants.MIN_IN_DAY == 0) {
 //  	  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
   	  					for (Installation installation: installations) {
 //  						System.out.println(installation.getName());
-  	  						installation.updateDailySchedule(tick, queue);
+  	  						installation.updateDailySchedule(tick, queue, pricing, baseline_pricing, simulationWorld.getResponseType());
+  	  						
   	  					}
+  	  					billingCycleDays++;
 //  					System.out.println("Daily queue size: " + queue.size() + "(" + 
 //  					simulationWorld.getSimCalendar().isWeekend(tick) + ")");
   	  				}
@@ -140,7 +159,7 @@ public class Simulation implements Runnable {
   	  							try {
   	  								//m.addOpenTick(e.getAppliance().getId(), tick);
   	  							} catch (Exception exc) {
-  	  								exc.printStackTrace();
+  	  								throw exc;
   	  							}
   	  						} else if(e.getAction() == Event.SWITCH_OFF){
   	  							//m.addCloseTick(e.getAppliance().getId(), tick);
@@ -153,69 +172,184 @@ public class Simulation implements Runnable {
 					 *  Calculate the total power for this simulation step for all the
 					 *  installations.
 					 */
-					float sumPower = 0;
+					float sumP = 0;
+					float sumQ = 0;
+					int counter = 0;
 		  			for(Installation installation: installations) {
 		  				installation.nextStep(tick);
-		  				double power = installation.getCurrentPower();
-		  				m.addTickResultForInstallation(tick, installation.getId(), power, 0);
-		  				sumPower += power;
+		  				double p = installation.getCurrentPowerP();
+		  				double q = installation.getCurrentPowerQ();
+//		  				if(p> 0.001) System.out.println(p);
+		  				installation.updateMaxPower(p);
+		  				installation.updateAvgPower(p/endTick);
+		  				if(pricing.isOffpeak(tick)) {
+		  					installation.updateEnergyOffpeak(p);
+		  				} else {
+		  					installation.updateEnergy(p);
+		  				}
+		  				m.addTickResultForInstallation(tick, 
+		  						installation.getId(), 
+		  						p * mcrunsRatio, 
+		  						q * mcrunsRatio, 
+		  						MongoResults.COL_INSTRESULTS);
+		  				sumP += p;
+		  				sumQ += q;
+		  				avgPPowerPerHour += p;
+		  				avgQPowerPerHour += q;
+		  				avgPPowerPerHourPerInst[counter] += p;
+		  				avgQPowerPerHourPerInst[counter] += q;
 		//  				String name = installation.getName();
 		//  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  				+ "Power: " + power);
 		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  		  				+ "Power: " + power);
+		  				if(billingCycleDays % pricing.getBillingCycle() == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
+		  					installation.updateCost(pricing, tick);
+		  				}
+		  				counter++;
 		  			}
-		  			m.addAggregatedTickResult(tick, sumPower, 0);
+		  			if(sumP > maxPower) maxPower = sumP;
+		  			avgPower += sumP/endTick;
+		  			if(pricing.isOffpeak(tick)) {
+		  				energyOffpeak += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
+		  			} else {
+		  				energy += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
+		  			}
+		  			if(billingCycleDays % pricing.getBillingCycle() == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
+		  				cost += pricing.calculateCost(energy, 
+		  						billingCycleEnergy, 
+		  						energyOffpeak,
+		  						billingCycleEnergyOffpeak,
+		  						tick);
+		  				billingCycleEnergy = energy;
+		  				billingCycleEnergyOffpeak = energyOffpeak;
+		  			}
+		  			m.addAggregatedTickResult(tick, 
+		  					sumP * mcrunsRatio, 
+		  					sumQ * mcrunsRatio, 
+		  					MongoResults.COL_AGGRRESULTS);
 		  			tick++;
+		  			if(tick % Constants.MIN_IN_HOUR == 0) {
+		  				m.addAggregatedTickResult((tick/Constants.MIN_IN_HOUR), 
+		  						(avgPPowerPerHour/Constants.MIN_IN_HOUR) * mcrunsRatio, 
+		  						(avgQPowerPerHour/Constants.MIN_IN_HOUR) * mcrunsRatio, 
+		  						MongoResults.COL_AGGRRESULTS_HOURLY);
+		  				m.addAggregatedTickResult((tick/Constants.MIN_IN_HOUR), 
+		  						(avgPPowerPerHour) * mcrunsRatio, 
+		  						(avgQPowerPerHour) * mcrunsRatio, 
+		  						MongoResults.COL_AGGRRESULTS_HOURLY_EN);
+		  				avgPPowerPerHour = 0;
+		  				avgQPowerPerHour = 0;
+		  				counter = 0;
+			  			for(Installation installation: installations) {
+			  				m.addTickResultForInstallation((tick/Constants.MIN_IN_HOUR), 
+			  						installation.getId(),
+			  						(avgPPowerPerHourPerInst[counter]/Constants.MIN_IN_HOUR) * mcrunsRatio, 
+			  						(avgQPowerPerHourPerInst[counter]/Constants.MIN_IN_HOUR) * mcrunsRatio, 
+			  						MongoResults.COL_INSTRESULTS_HOURLY);
+			  				m.addTickResultForInstallation((tick/Constants.MIN_IN_HOUR), 
+			  						installation.getId(),
+			  						(avgPPowerPerHourPerInst[counter]) * mcrunsRatio, 
+			  						(avgQPowerPerHourPerInst[counter]) * mcrunsRatio, 
+			  						MongoResults.COL_INSTRESULTS_HOURLY_EN);
+			  				avgPPowerPerHourPerInst[counter] = 0;
+			  				avgQPowerPerHourPerInst[counter] = 0;
+			  				counter++;
+			  			}
+		  			}
 		  			mccount++;
-		  			// System.out.println(tick + " " + endTick);
 		  			percentage = (int)(mccount * 100.0 / (mcruns * endTick));
 		  			objRun.put("percentage", percentage);
 		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   	  			}
+  	  			for(Installation installation: installations) {
+  	  				installation.updateCost(pricing, tick); // update the rest of the energy
+  	  				m.addKPIs(installation.getId(), 
+  	  						installation.getMaxPower() * mcrunsRatio, 
+  	  						installation.getAvgPower() * mcrunsRatio, 
+  	  						installation.getEnergy() * mcrunsRatio, 
+  	  						installation.getCost() * mcrunsRatio,
+  	  						installation.getEnergy() * co2 * mcrunsRatio);
+  	  			}
+  	  			cost += pricing.calculateCost(energy, 
+  	  					billingCycleEnergy,
+  						energyOffpeak,
+  						billingCycleEnergyOffpeak,
+  						tick);
+  	  			m.addKPIs(MongoResults.AGGR, 
+  	  					maxPower * mcrunsRatio, 
+  	  					avgPower * mcrunsRatio, 
+  	  					energy * mcrunsRatio, 
+  	  					cost * mcrunsRatio,
+  	  					energy * co2 * mcrunsRatio);
+  	  			if(i+1 != mcruns) setup(true);
   			}
-  			for(int i = 0; i < endTick; i++) {
-  				for(Installation installation: installations) {
-  					m.normalize(i,installation.getId(), mcruns);
-  				}
-  				m.normalize(i, mcruns);
-  			}
+  			// Obsolete normalization code (to be removed) now it is done on the fly
+//  			for(int i = 0; i < endTick; i++) {
+//  				for(Installation installation: installations) {
+//  					m.normalize(i,installation.getId(), mcruns, MongoResults.COL_INSTRESULTS);
+//  					System.out.println(installation.getId());
+//  					m.normalize(i,installation.getId(), mcruns, MongoResults.COL_INSTRESULTS_HOURLY);
+//  					System.out.println(installation.getId());
+//  				}
+//  				m.normalize(i, mcruns, MongoResults.COL_AGGRRESULTS);
+//  				m.normalize(i, mcruns, MongoResults.COL_AGGRRESULTS_HOURLY);
+//  			}
 	  		long endTime = System.currentTimeMillis();
 	  		objRun.put("ended", endTime);
 	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
-	  		System.out.println("Time elapsed: " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
-  		} catch(Exception e) {e.printStackTrace();}
+	  		logger.info("Time elapsed for Run " + dbname + ": " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
+	  		logger.info("Run " + dbname + " ended @ " + Calendar.getInstance().toString());
+  		} catch(Exception e) {
+  			e.printStackTrace();
+  			System.out.println(Utils.stackTraceToString(e.getStackTrace()));
+  			// Change the run object in the db to reflect the exception
+  			if(objRun != null) {
+  				objRun.put("percentage", -1);
+  				objRun.put("state", e.getMessage());
+  				DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
+  			}
+  		}
   	}
 
-  	public void setup() throws Exception {
-  		logger.info("Simulation setup started.");
+  	public void setup(boolean jump) throws Exception {
   		installations = new Vector<Installation>();
-    
   		/* TODO  Change the Simulation Calendar initialization */
-  		simulationWorld = new SimulationParams();
-    
+  		logger.info("Simulation setup started: " + dbname);
   		DBObject jsonScenario = (DBObject) JSON.parse(scenario);
   		DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
-    
+  		simulationWorld = new SimulationParams(simParamsDoc);
+  		DBObject pricingDoc = (DBObject) jsonScenario.get("pricing");
+  		DBObject basePricingDoc = (DBObject) jsonScenario.get("baseline_pricing");
+  		if(pricingDoc != null) {
+  			pricing = new PricingPolicy(pricingDoc);
+  		} else {
+  			pricing = new PricingPolicy();
+  		}
+  		if(basePricingDoc != null) {
+  			baseline_pricing = new PricingPolicy(basePricingDoc);
+  		} else {
+  			baseline_pricing = new PricingPolicy();
+  		}
   		int numOfDays = ((Integer)simParamsDoc.get("numberOfDays")).intValue();
   		
   		endTick = Constants.MIN_IN_DAY * numOfDays;
   		mcruns = ((Integer)simParamsDoc.get("mcruns")).intValue();
-
+  		co2 = Utils.getDouble(simParamsDoc.get("co2"));
   		// Check type of setup
   		String setup = (String)scenarioDoc.get("setup"); 
   		if(setup.equalsIgnoreCase("static")) {
   			staticSetup(jsonScenario);
   		} else if(setup.equalsIgnoreCase("dynamic")) {
-  			dynamicSetup(jsonScenario);
+  			dynamicSetup(jsonScenario, jump);
   		} else {
-  			throw new Exception("Problem with setup property");
+  			throw new Exception("Problem with setup property!!!");
   		}
-  		logger.info("Simulation setup finished.");
+  		logger.info("Simulation setup finished: " + dbname);
   	}
 
-  	public void staticSetup (DBObject jsonScenario) {
+  	public void staticSetup (DBObject jsonScenario) throws Exception {
 	    int numOfInstallations = ((Integer)jsonScenario.get("instcount")).intValue();
 	    queue = new PriorityBlockingQueue<Event>(2 * numOfInstallations);
 	    for (int i = 1; i <= numOfInstallations; i++) {
@@ -226,6 +360,13 @@ public class Simulation implements Runnable {
 	    	String type = (String)instDoc.get("type");
 	    	Installation inst = new Installation.Builder(
 	    			id, name, description, type).build();
+	    	// Thermal module if exists
+	    	DBObject thermalDoc = (DBObject)instDoc.get("thermal");
+	    	if(thermalDoc != null && pricing.getType().equalsIgnoreCase("TOUPricing")) {
+	    		ThermalModule tm = new ThermalModule(thermalDoc, pricing.getTOUArray());
+	    		inst.setThermalModule(tm);
+	    	}
+	    	
 	    	int appcount = ((Integer)instDoc.get("appcount")).intValue();
 	    	// Create the appliances
 	    	HashMap<String,Appliance> existing = new HashMap<String,Appliance>();
@@ -235,17 +376,19 @@ public class Simulation implements Runnable {
 	    		String appname = (String)applianceDoc.get("name");
 		    	String appdescription = (String)applianceDoc.get("description");
 		    	String apptype = (String)applianceDoc.get("type");
-		    	double standy = Double.parseDouble(applianceDoc.get("standy_consumption").toString());
-		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
+		    	double standy = Utils.getDouble(applianceDoc.get("standy_consumption"));
+		    	boolean base = Utils.getBoolean(applianceDoc.get("base"));
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
-		    	ConsumptionModel consmod = new ConsumptionModel(consModDoc.get("model").toString());
+		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
+		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
 	    		Appliance app = new Appliance.Builder(
 	    				appid,
 	    				appname,
 	    				appdescription,
 	    				apptype, 
 	    				inst,
-	    				consmod,
+	    				pconsmod,
+	    				qconsmod,
 	    				standy,
 	            		base).build();
 	    		existing.put(appid, app);
@@ -256,20 +399,20 @@ public class Simulation implements Runnable {
     		String personName = (String)personDoc.get("name");
 	    	String personDescription = (String)personDoc.get("description");
 	    	String personType = (String)personDoc.get("type");
+	    	double awareness = Utils.getDouble(personDoc.get("awareness"));
+	    	double sensitivity = Utils.getDouble(personDoc.get("sensitivity"));
 	    	Person person = new Person.Builder(
 	    	        		  personid,
 	    	        		  personName, 
 	    	        		  personDescription,
-	    	                  personType, inst).build();
+	    	                  personType, inst, awareness, sensitivity).build();
 	    	inst.addPerson(person);
 	    	int actcount = ((Integer)personDoc.get("activitycount")).intValue();
-	    	//System.out.println("Act-Count: " + actcount);
 	    	for (int j = 1; j <= actcount; j++) {
 	    		DBObject activityDoc = (DBObject)personDoc.get("activity"+j);
 	    		String activityName = (String)activityDoc.get("name");
 	    		String activityType = (String)activityDoc.get("type");
 	    		int actmodcount = ((Integer)activityDoc.get("actmodcount")).intValue();
-	    		//System.out.println("Act-Mod-Count: " + actmodcount);
 	    		Activity act = new Activity.Builder(activityName, "", 
 	    				activityType, simulationWorld).build();
 	    		ProbabilityDistribution startDist;
@@ -280,18 +423,17 @@ public class Simulation implements Runnable {
 	    			String actmodName = (String)actmodDoc.get("name");
 	    			String actmodType = (String)actmodDoc.get("type");
 	    			String actmodDayType = (String)actmodDoc.get("day_type");
+	    			boolean shiftable = Utils.getBoolean(actmodDoc.get("shiftable"));
 	    			DBObject duration = (DBObject)actmodDoc.get("duration");
 	    			durDist = json2dist(duration);
-	    			//System.out.println(durDist.getPrecomputedBin());
 	    			DBObject start = (DBObject)actmodDoc.get("start");
 	    			startDist = json2dist(start);
-	    			//System.out.println(startDist.getPrecomputedBin());
 	    			DBObject rep = (DBObject)actmodDoc.get("repetitions");
 	    			timesDist = json2dist(rep);
-	    			//System.out.println(timesDist.getPrecomputedBin());
 	    			act.addDuration(actmodDayType, durDist);
 	    			act.addStartTime(actmodDayType, startDist);
 	    			act.addTimes(actmodDayType, timesDist);
+	    			act.addShiftable(actmodDayType, shiftable);
 	    			// add appliances
 		    		BasicDBList containsAppliances = (BasicDBList)actmodDoc.get("containsAppliances");
 		    		for(int l = 0; l < containsAppliances.size(); l++) {
@@ -306,20 +448,20 @@ public class Simulation implements Runnable {
 	    }
   }
   	
-  	private String addEntity(Entity e) {
+  	private String addEntity(Entity e, boolean jump) {
   		BasicDBObject obj = e.toDBObject();
-  		DBConn.getConn(dbname).getCollection(e.getCollection()).insert(obj);
+  		if(!jump) DBConn.getConn(dbname).getCollection(e.getCollection()).insert(obj);
   		ObjectId objId = (ObjectId)obj.get("_id");
   		return objId.toString();
   	}
 
-  	public void dynamicSetup(DBObject jsonScenario) {
+  	public void dynamicSetup(DBObject jsonScenario, boolean jump) throws Exception {
   		DBObject scenario = (DBObject)jsonScenario.get("scenario");
   		String scenario_id =  ((ObjectId)scenario.get("_id")).toString();
   		DBObject demog = (DBObject)jsonScenario.get("demog");
   		BasicDBList generators = (BasicDBList) demog.get("generators");
   		// Initialize simulation variables
-  		int numOfInstallations = ((Integer)demog.get("numberOfEntities")).intValue();
+  		int numOfInstallations = Utils.getInt(demog.get("numberOfEntities"));
   		//System.out.println(numOfInstallations+"");
   		queue = new PriorityBlockingQueue<Event>(2 * numOfInstallations);
   		for (int i = 1; i <= numOfInstallations; i++) {
@@ -331,9 +473,9 @@ public class Simulation implements Runnable {
 	    	Installation inst = new Installation.Builder(
 	    			id, name, description, type).build();
 	    	inst.setParentId(scenario_id);
-	    	String inst_id = addEntity(inst);
+	    	String inst_id = addEntity(inst, jump);
 	    	inst.setId(inst_id);
-	    	int appcount = ((Integer)instDoc.get("appcount")).intValue();
+	    	int appcount = Utils.getInt(instDoc.get("appcount"));
 	    	// Create the appliances
 	    	HashMap<String,Appliance> existing = new HashMap<String,Appliance>();
 	    	for (int j = 1; j <= appcount; j++) {
@@ -342,24 +484,19 @@ public class Simulation implements Runnable {
 	    		String appname = (String)applianceDoc.get("name");
 		    	String appdescription = (String)applianceDoc.get("description");
 		    	String apptype = (String)applianceDoc.get("type");
-		    	double standy = 0.0;
-		    	try {
-		    		standy = (double)((Integer)applianceDoc.get("standy_consumption")).intValue();
-		    	} catch(ClassCastException cce) { }
-		    	try {
-		    		standy = ((Double)applianceDoc.get("standy_consumption")).doubleValue();
-		    	} catch(ClassCastException cce) { }
-		    	boolean base = ((Boolean)applianceDoc.get("base")).booleanValue();
+		    	double standy = Utils.getDouble(applianceDoc.get("standy_consumption"));
+		    	boolean base = Utils.getBoolean(applianceDoc.get("base"));
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
-		    	ConsumptionModel consmod = new ConsumptionModel(consModDoc.get("model").toString());
-		    	
+		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
+		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
 	    		Appliance app = new Appliance.Builder(
 	    				appid,
 	    				appname,
 	    				appdescription,
 	    				apptype, 
 	    				inst,
-	    				consmod,
+	    				pconsmod,
+	    				qconsmod,
 	    				standy,
 	            		base).build();
 	    		existing.put(appid, app);
@@ -369,7 +506,7 @@ public class Simulation implements Runnable {
 	    	for(int k = 0; k < generators.size(); k++) {
     			DBObject generator = (DBObject)generators.get(k);
     			String entityId = (String)generator.get("entity_id");
-    			double prob = ((Double)generator.get("probability")).doubleValue();
+    			double prob = Utils.getDouble(generator.get("probability"));
     			gens.put(entityId, new Double(prob));
 	    	}
 	    	
@@ -381,18 +518,18 @@ public class Simulation implements Runnable {
 	    			if(RNG.nextDouble() < probValue) {
     					Appliance selectedApp = existing.get(key);
     					selectedApp.setParentId(inst.getId());
-    			    	String app_id = addEntity(selectedApp);
+    			    	String app_id = addEntity(selectedApp, jump);
     			    	selectedApp.setId(app_id);
     			    	inst.addAppliance(selectedApp);
-    			    	ConsumptionModel cm = selectedApp.getConsumptionModel();
+    			    	ConsumptionModel cm = selectedApp.getPConsumptionModel();
     			    	cm.setParentId(app_id);
-    			    	String cm_id = addEntity(cm);
+    			    	String cm_id = addEntity(cm, jump);
     			    	cm.setId(cm_id);
     				}
 	    		}
 	    	}
 
-	    	int personcount = ((Integer)instDoc.get("personcount")).intValue();
+	    	int personcount = Utils.getInt(instDoc.get("personcount"));
 	    	// Create the appliances
 	    	HashMap<String,Person> existingPersons = new HashMap<String,Person>();
 	    	for (int j = 1; j <= personcount; j++) {
@@ -401,18 +538,20 @@ public class Simulation implements Runnable {
 	    		String personName = (String)personDoc.get("name");
 		    	String personDescription = (String)personDoc.get("description");
 		    	String personType = (String)personDoc.get("type");
+		    	double awareness = Utils.getDouble(personDoc.get("awareness"));
+		    	double sensitivity = Utils.getDouble(personDoc.get("sensitivity"));
 		    	Person person = new Person.Builder(
 		    	        		  personid,
 		    	        		  personName, 
 		    	        		  personDescription,
-		    	                  personType, inst).build();
-		    	int actcount = ((Integer)personDoc.get("activitycount")).intValue();
+		    	                  personType, inst, awareness, sensitivity).build();
+		    	int actcount = Utils.getInt(personDoc.get("activitycount"));
 		    	//System.out.println("Act-Count: " + actcount);
 		    	for (int k = 1; k <= actcount; k++) {
 		    		DBObject activityDoc = (DBObject)personDoc.get("activity"+k);
 		    		String activityName = (String)activityDoc.get("name");
 		    		String activityType = (String)activityDoc.get("type");
-		    		int actmodcount = ((Integer)activityDoc.get("actmodcount")).intValue();
+		    		int actmodcount = Utils.getInt(activityDoc.get("actmodcount"));
 		    		Activity act = new Activity.Builder(activityName, "", 
 		    				activityType, simulationWorld).build();
 		    		ProbabilityDistribution startDist;
@@ -424,6 +563,7 @@ public class Simulation implements Runnable {
 		    			String actmodName = (String)actmodDoc.get("name");
 		    			String actmodType = (String)actmodDoc.get("type");
 		    			String actmodDayType = (String)actmodDoc.get("day_type");
+		    			boolean shiftable = Utils.getBoolean(actmodDoc.get("shiftable"));
 		    			DBObject duration = (DBObject)actmodDoc.get("duration");
 		    			act.addDurations(duration);
 		    			durDist = json2dist(duration);
@@ -439,12 +579,12 @@ public class Simulation implements Runnable {
 		    			act.addDuration(actmodDayType, durDist);
 		    			act.addStartTime(actmodDayType, startDist);
 		    			act.addTimes(actmodDayType, timesDist);
+		    			act.addShiftable(actmodDayType, shiftable);
 		    			// add appliances
 			    		BasicDBList containsAppliances = (BasicDBList)actmodDoc.get("containsAppliances");
 			    		for(int m = 0; m < containsAppliances.size(); m++) {
 			    			String containAppId = (String)containsAppliances.get(m);
 			    			Appliance app  = existing.get(containAppId);
-			    			System.out.println("Add - " + app.getName() + " " + actmodDayType);
 			    			//act.addAppliance(actmodDayType,app,1.0/containsAppliances.size());
 			    			act.addAppliance(actmodDayType,app,1.0);
 			    		}
@@ -460,18 +600,18 @@ public class Simulation implements Runnable {
 	    		DBObject generator = (DBObject)generators.get(k);
 	    		String entityId = (String)generator.get("entity_id");
 	    		if(existingPersons.containsKey(entityId)) {
-	    			double prob = ((Double)generator.get("probability")).doubleValue();
+	    			double prob = Utils.getDouble(generator.get("probability"));
 	    			sum += prob;
 	    			if(roulette < sum) {
 	    				Person selectedPerson = existingPersons.get(entityId);
 	    				selectedPerson.setParentId(inst.getId());
-    			    	String person_id = addEntity(selectedPerson);
+    			    	String person_id = addEntity(selectedPerson, jump);
     			    	selectedPerson.setId(person_id);
 	    				inst.addPerson(selectedPerson);
 	    				Vector<Activity> activities = selectedPerson.getActivities();
 	    				for(Activity a : activities) {
 	    					a.setParentId(person_id);
-	    					String act_id = addEntity(a);
+	    					String act_id = addEntity(a, jump);
 	    					a.setId(act_id);
 	    					Vector<DBObject> models = a.getModels();
 	    					Vector<DBObject> starts = a.getStarts();
@@ -480,18 +620,18 @@ public class Simulation implements Runnable {
 	    					for(int l = 0; l < models.size();  l++ ) {
 	    						DBObject m = models.get(l);
 	    						m.put("act_id", act_id);
-	    						DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(m);
+	    						if(!jump)DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(m);
 	    				  		ObjectId objId = (ObjectId)m.get("_id");
 	    				  		String actmod_id = objId.toString();
 	    				  		DBObject s = starts.get(l);
 	    				  		s.put("actmod_id", actmod_id);
-	    				  		DBConn.getConn(dbname).getCollection(MongoDistributions.COL_DISTRIBUTIONS).insert(s);
+	    				  		if(!jump)DBConn.getConn(dbname).getCollection(MongoDistributions.COL_DISTRIBUTIONS).insert(s);
 	    				  		DBObject d = durations.get(l);
 	    				  		d.put("actmod_id", actmod_id);
-	    				  		DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(d);
+	    				  		if(!jump)DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(d);
 	    				  		DBObject t = times.get(l);
 	    				  		t.put("actmod_id", actmod_id);
-	    				  		DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(t);
+	    				  		if(!jump)DBConn.getConn(dbname).getCollection(MongoActivityModels.COL_ACTMODELS).insert(t);
 	    					}
 	    				}
 	    				break;
@@ -504,55 +644,52 @@ public class Simulation implements Runnable {
   		
   	}
   
-	public static ProbabilityDistribution json2dist(DBObject distribution) {
+	public static ProbabilityDistribution json2dist(DBObject distribution) throws Exception {
   		String distType = (String)distribution.get("distrType");
   		switch (distType) {
   		case ("Normal Distribution"):
   			BasicDBList normalList = (BasicDBList)distribution.get("parameters");
   			DBObject normalDoc = (DBObject)normalList.get(0);
   			double mean = Double.parseDouble(normalDoc.get("mean").toString());
-  			double std = 0.0;
-  			try {
-  				std = ((Double)normalDoc.get("std")).doubleValue();
-  			} catch(ClassCastException cce) {}
-  			try {
-  				std = (double)((Integer)normalDoc.get("std")).intValue();
-  			} catch(ClassCastException cce) {}
-  			System.out.println(std);
+  			double std = Double.parseDouble(normalDoc.get("std").toString());
   			Gaussian normal = new Gaussian(mean, std);
   			normal.precompute(0, 1439, 1440);
-  			//System.out.println("A");
   			return normal;
         case ("Uniform Distribution"):
    			BasicDBList unifList = (BasicDBList)distribution.get("parameters");
    			DBObject unifDoc = (DBObject)unifList.get(0);
-   			double from = ((Double)unifDoc.get("from")).doubleValue();
-   			double to = ((Double)unifDoc.get("to")).doubleValue();
+   			double from = Double.parseDouble(unifDoc.get("start").toString()); 
+   			double to = Double.parseDouble(unifDoc.get("end").toString()); 
    			Uniform uniform = new Uniform(from, to);
    			uniform.precompute(from, to, (int) to + 1);
-   			//System.out.println("B");
    			return uniform;
    		case ("Gaussian Mixture Models"):
-        	 BasicDBList mixList = (BasicDBList)distribution.get("parameters");
+        	BasicDBList mixList = (BasicDBList)distribution.get("parameters");
    			int length = mixList.size();
    			double[] w = new double[length];
          	double[] means = new double[length];
          	double[] stds = new double[length];
          	for(int i = 0; i < mixList.size(); i++) {
          		DBObject tuple = (DBObject)mixList.get(i);
-         		w[i] = ((Double)tuple.get("w")).doubleValue();
-         		means[i] = ((Double)tuple.get("mean")).doubleValue();
-         		stds[i] = ((Double)tuple.get("std")).doubleValue();
+         		w[i] = Double.parseDouble(tuple.get("w").toString()); 
+         		means[i] = Double.parseDouble(tuple.get("mean").toString()); 
+         		stds[i] = Double.parseDouble(tuple.get("std").toString()); 
     		} 
          	GaussianMixtureModels gmm = new GaussianMixtureModels(length, w, means, stds);
-         	//System.out.println("C");
          	gmm.precompute(0, 1439, 1440);
          	return gmm;
+   		case ("Histogram"):
+   			BasicDBList hList = (BasicDBList)distribution.get("values");
+   			int l = hList.size();
+			double[] v = new double[l];
+			for(int i = 0; i < l; i++) {
+				v[i] = Double.parseDouble(hList.get(i).toString());
+			}
+			Histogram h = new Histogram(v);
+   			return h;
         default:
-        	System.out.println("Non existing start time distribution type");
+        	throw new Exception("Non existing distribution type. Problem in setting up the simulation.");
         }
-  		System.out.println("NULLLLLLLL");
-  		return null;
   	}
 
 }

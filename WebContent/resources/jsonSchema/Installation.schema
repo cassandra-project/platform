@@ -8,6 +8,16 @@
             "description": "The Scenario this Installation belongs to",
             "optional": false
         },
+        "thermalModule_id": {
+            "type": "string",
+            "description": "The id of the thermal module for this Installation",
+            "optional": true
+        },
+        "lightingModule_id": {
+            "type": "string",
+            "description": "The id of the lighting module for this Installation",
+            "optional": true
+        },
         "name": {
             "type": "string",
             "description": "Name of the installation",
@@ -17,7 +27,12 @@
             "type": "string",
             "description": "Type of the installation",
             "optional": true
-        },                
+        },
+        "trans_id": {
+            "type": "string",
+            "description": "Transformer ID the installation belongs to",
+            "optional": true
+        },                     
         "description": {
             "type": "string",
             "description": "Description of the installation",

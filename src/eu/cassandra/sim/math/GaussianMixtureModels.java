@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -34,6 +34,11 @@ public class GaussianMixtureModels implements ProbabilityDistribution
   protected double precomputeFrom;
   protected double precomputeTo;
   protected double[] histogram;
+  
+  public String getType()
+  {
+    return "GMM";
+  }
 
   /**
    * Constructor. Sets the parameters of the standard normal
@@ -58,8 +63,9 @@ public class GaussianMixtureModels implements ProbabilityDistribution
   public GaussianMixtureModels (int n, double[] pi, double[] mu, double[] s)
   {
     gaussians = new Gaussian[n];
+    this.pi = new double[n];
     for (int i = 0; i < n; i++) {
-      this.pi = pi;
+      this.pi[i] = pi[i];
       gaussians[i] = new Gaussian(mu[i], s[i]);
     }
     precomputed = false;
@@ -114,9 +120,9 @@ public class GaussianMixtureModels implements ProbabilityDistribution
     for (int i = 0; i < nBins; i++) {
 
       for (int j = 0; j < gaussians.length; j++) {
-        histogram[i] += pi[j] * gaussians[j].getPrecomputedProbability(i);
+        histogram[i] += pi[j] * gaussians[j].getHistogram()[i];
       }
-
+      
     }
 
     precomputed = true;
@@ -167,8 +173,9 @@ public class GaussianMixtureModels implements ProbabilityDistribution
     for (int i = 0; i < numberOfBins; i++) {
       sum += histogram[i];
       // if(dice < sum) return (int)(precomputeFrom + i * div);
-      if (dice < sum)
+      if (dice < sum) {
         return i;
+      }
     }
     return -1;
   }
@@ -248,7 +255,30 @@ public class GaussianMixtureModels implements ProbabilityDistribution
       System.out.println("Random Bin: " + temp + " Possibility Value: "
                          + g.getPrecomputedProbability(temp));
     }
+    
+    System.out.println("======Test 2======");
 
+    double[] pi2 = {0.5, 0.5};
+    double[] means2 = {1382.81587, 444.884615};
+    double[] sigmas2 = {7.46468, 66.580967};
+    
+    
+    GaussianMixtureModels g2 = new GaussianMixtureModels(pi2.length, pi2, means2, sigmas2);
+    g2.precompute(0, 1439, 1440);
+    g2.status();
+    RNG.init();
+    for (int i = 0; i < 10; i++) {
+    	int temp = g2.getPrecomputedBin();
+    	System.out.println(temp + " " + g2.getPrecomputedProbability(temp));
+    }
+    double[] h = g2.getHistogram();
+    double sum = 0;
+    for (int i = 0; i < h.length; i++) {
+    	//System.out.println(i + " " + h[i]);
+    	sum += h[i];
+    }
+    System.out.println("Sum: " + sum);
+    
   }
 
   public double getParameter (int index)

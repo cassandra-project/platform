@@ -1,4 +1,4 @@
-#MainTabPanel-body,  .gridbg{
+/*#MainTabPanel-body, */ .gridbg, #center_panel-body{
 /*background-color: #E4EAED !important;
 background-image: -webkit-gradient(linear, 50% 0%, 50% 1, color-stop(100%, #F3F6F7), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 0% 50%, 1 50%, color-stop(100%, #F3F6F7), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 50% 0%, 50% 1, color-stop(100%, rgba(255, 255, 255, 0.3)), color-stop(100%, rgba(243, 246, 247, 0))), -webkit-gradient(linear, 0% 50%, 1 50%, color-stop(100%, rgba(255, 255, 255, 0.3)), color-stop(100%, rgba(243, 246, 247, 0)));
 background-image: -webkit-linear-gradient(top, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(left, #F3F6F7 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px), -webkit-linear-gradient(left, rgba(255, 255, 255, 0.3) 1px, rgba(243, 246, 247, 0) 1px);
@@ -29,7 +29,7 @@ background-image: -moz-linear-gradient(top, #8FC33A, #739B2E);
 background-image: -o-linear-gradient(top, #8FC33A, #739B2E);
 background-image: -ms-linear-gradient(top, #8FC33A, #739B2E);
 background-image: linear-gradient(top, #8FC33A, #739B2E);*/
-background: #739B2E url(../icons/bottom_pattern.png) repeat-x;	
+background-color: #739B2E;	
 border-bottom: 1px solid #567422;
 }
 
@@ -59,6 +59,17 @@ background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
 	top: auto !important;
 }
 
+.x-fieldset-header-text, .x-form-item-label {
+	color: #157fcc !important;
+}
+
+
+/*.x-tab-bar-default .x-tabbar-scroll-left, .x-tab-bar-default .x-tabbar-scroll-right {
+	width: 31px;
+	height: 40px
+}*/
+
+
 /*changed in neptune css
 .x-tab-icon-text-left .x-tab-inner {
 	padding-left: 27px;
@@ -73,10 +84,10 @@ background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
 background-image: url(../icons/header_pattern.png);	
 }
 
-.x-tab-close-btn, .x-tab-active .x-tab-close-btn::after {
+/*.x-tab-close-btn, .x-tab-active .x-tab-close-btn::after {
 background-image: none;
 background-color: #252925 !important;
-}
+}*/
 
 .x-tab {
 background-image:none;
@@ -91,11 +102,114 @@ background-image: url(../icons/grid_pattern.png);
 .x-tab-top-active {
 background-image: none;
 background-color: #F39926 !important;
+color: #fff !impotrant;
 }
 
 #logo-text {
 color: #104b9b !important;
-font-size: 23px; 
+font-size: 20px; 
 letter-spacing: 1px; 
-font-family: "century gothic", Arial, Verdana, sans-serif;}
+font-family: "century gothic", Arial, Verdana, sans-serif;
+}
+
+.treeIcon {
+width: 16px;
+}
+
+.number_field {/*margin-top: 10px*/}
+
+
+.remove_tabs .x-tool-img {
+background-image: url(../icons/close_tabs.png);
+background-color: transparent !important;
+}
+
+.search .x-tool-img {
+background-image: url(../icons/search.png);
+background-color: transparent !important;
+}
+
+.refresh_progress,  .refresh_progress_disabled{
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	background-position : 5px 5px;
+	background-repeat: no-repeat;
+}
+
+.refresh_progress {
+	background-image : url(../icons/refresh.png);
+}
+
+.refresh_progress_disabled {
+	background-image : url(../icons/refresh_disabled.png);
+	pointer-events: none;
+	cursor: default;
+}
+
+.sup {
+  position: relative;
+  bottom: 1ex; 
+  font-size: 80%;
+}
+
+.info {
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+	background: url(../icons/information.png) no-repeat 0 0;
+}
+
+.breadcrumb_btn {
+	border-width: 1px;
+	background: none;
+	padding: 0;
+	border: none;
+}
+
+.x-breadcrumb_btn_over {
+	text-decoration: underline;
+	color: #136cb4 !important;
+}
+
+.not_clickable {
+	pointer-events: none;
+	cursor: default;
+	color: #dcdcdc !important;
+}
+
+.rsaquo {
+	font-size: 17px;
+	padding: 0 5px;
+	display: inline-block;
+	height: 16px;
+	vertical-align: middle;
+	margin-bottom: 6px;
+}
+
+.small_text {
+	font-size:11px; 
+	font-style:italic;
+	text-align: center;
+}
+
+#warnings {
+	padding: 10px;
+	border-radius: 5px;
+	background-color: #ffa100;
+}
+
+#warnings li {
+	list-style-type: none;
+	background: url(../icons/warning.png) no-repeat 0 1px;
+	padding-left: 20px
+}
+
+#no_graph_data {
+	padding: 150px 0;
+}
+
+.light_gey {
+	font-weight: bold;
+	color: #535151;
 }

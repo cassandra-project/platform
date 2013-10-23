@@ -8,6 +8,16 @@
             "description": "The ObjectId of the Scenario these Simulation Parameters belong ",
             "optional": false
         },
+        "prc_id": {
+            "type": "string",
+            "description": "The ObjectId of the Pricing scheme to run the scenario",
+            "optional": true
+        },
+        "base_prc_id": {
+            "type": "string",
+            "description": "The ObjectId of the Baseline Pricing scheme to run the scenario",
+            "optional": true
+        },
         "name": {
             "type": "string",
             "description": "Name of the Simulation Parameters",
@@ -23,6 +33,11 @@
             "description": "The number of days that the simulation will run",
             "optional": true
         },
+        "co2": {
+            "type": "number",
+            "description": "CO2 emissions factor per KWh",
+            "optional": true
+        },
         "locationInfo": {
             "type": "string",
             "description": "Information about the location",
@@ -33,6 +48,17 @@
             "description": "Number of Monte Carlo Runs",
             "optional": false
         }, 
+        "responseType": {
+            "type": "string",
+            "description": "Response types",
+            "optional": true,
+            "enum": [
+                "None",
+                "Optimal",
+                "Normal",
+                "Discrete"
+            ]
+        },
         "calendar": {
             "type": "object",
             "description": "Calendar",

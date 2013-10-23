@@ -23,7 +23,7 @@
             "description": "Description of the consumption model",
             "optional": true
         },
-        "model" : {
+        "pmodel" : {
             "type": "object",
             "description": "Parameters of the consumption model",
             "optional": true,
@@ -63,12 +63,12 @@
                                     "d" : {
                                      "optional" : true,
                                         "type" : "integer",
-                                        "description" : "power"
+                                        "description" : "duration"
                                     },
                                     "s" : {
                                      "optional" : true,
                                         "type" : "number",
-                                        "description" : "power"
+                                        "description" : "slope"
                                     }                                                                     
                                 } 
                             }
@@ -79,13 +79,61 @@
             }
         }
     },
-    "values": {
-        "type": "array",
-        "description": "Values of the distribution",
-        "items": {
-        "type": "number"
-        },
-        "optional" : true
+    "qmodel" : {
+            "type": "object",
+            "description": "Parameters of the consumption model",
+            "optional": true,
+            "properties" : {
+                "n" : {
+                 "optional" : true,
+                    "type" : "integer",
+                    "description" : "Number of iterations"
+                },
+                "params" : {
+                    "optional" : true,
+                    "type" : "array",
+                    "description" : "",
+                    "items" : {
+                    "type" : "object",
+                    "description" : "",
+                    "properties" : {
+                        "n" : {
+                         "optional" : true,
+                            "type" : "integer",
+                            "description" : "Number of iterations"
+                        },
+                        "values" : {
+                         "optional" : true,
+                            "type" : "array",
+                            "description" : "",
+                            "items" : {
+                             "optional" : true,
+                                "type" : "object",
+                                "description" : "",
+                                "properties" : {
+                                    "q" : {
+                                     "optional" : true,
+                                        "type" : "number",
+                                        "description" : "q"
+                                    },
+                                    "d" : {
+                                     "optional" : true,
+                                        "type" : "integer",
+                                        "description" : "duration"
+                                    },
+                                    "s" : {
+                                     "optional" : true,
+                                        "type" : "number",
+                                        "description" : "slope"
+                                    }                                                                     
+                                } 
+                            }
+                        }
+                    }
+                    }
+                }
+            }
+        }
     },
     "additionalProperties" : false
 }

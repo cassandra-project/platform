@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import eu.cassandra.server.api.exceptions.BadParameterException;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel;
 import eu.cassandra.sim.entities.installations.Installation;
@@ -37,98 +38,98 @@ import eu.cassandra.sim.utilities.Constants;
 public class ApplianceTest {
 
 	@Test
-	public void testgetId() {
+	public void testgetId() throws BadParameterException {
 		
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		RNG.init();
 		String id = "111";
-		Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", null, new ConsumptionModel(s), 1f, true).build();
+		Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", null, new ConsumptionModel(s, "p"), null, 1f, true).build();
 		assertEquals("111",tester.getId());
 		
 	}
 	
 	@Test
-	public void testgetName() {
+	public void testgetName() throws BadParameterException {
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		RNG.init();
 		String id = "111";
-		Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", null, new ConsumptionModel(s), 1f, true).build();
+		Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", null, new ConsumptionModel(s, "p"), null, 1f, true).build();
 		assertTrue("Result1", "TestApp"==tester.getName());
 		
 	}
 	
 @Test
-	public void testgetInstallation() {
+	public void testgetInstallation() throws BadParameterException {
 		String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		RNG.init();
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 1f, true).build();
+		Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 1f, true).build();
 		assertTrue("Result2", inst==tester.getInstallation());
 		
 	}
 	
 @Test
-	public void testgetisInUse() {
+	public void testgetisInUse() throws BadParameterException {
 	String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 	RNG.init();
 	String id = "111";
 	String InstId="222";
 	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 1f, true).build();
+	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 1f, true).build();
 	assertTrue("Result3", true==tester.isInUse());
 		
 	}
 	
 @Test
-	public void testgetOnTick() {
+	public void testgetOnTick() throws BadParameterException {
 	String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 	RNG.init();
 	String id = "111";
 	String InstId="222";
 	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, true).build();
+	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
 	tester.turnOn((long)1, "TestApp");
 	assertTrue("Result4", 1==tester.getOnTick());
 		
 	}
 	
 @Test
-	public void testgetWho() {
+	public void testgetWho() throws BadParameterException {
 	String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 	RNG.init();
 	String id = "111";
 	String InstId="222";
 	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 1f, true).build();
+	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 1f, true).build();
 	assertTrue("Result5", null==tester.getWho());
 		
 	}
 	
 @Test
-	public void testgetPower() {
+	public void testgetPower() throws BadParameterException {
 	String s = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 200.0, \"d\" :8, \"s\": 0.0}, {\"p\" : 120.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 80, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 	RNG.init();
 	String id = "111";
 	String InstId="222";
 	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, true).build();
+	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
 		
 	
 			tester.turnOn((long)1, "TestApp");
-			assertTrue("Result6",0==tester.getPower(100));
+			assertTrue("Result6",0==tester.getPower(100, "p"));
 			
 			tester.turnOn((long)10, "TestApp");
-			assertTrue("Result7",0==tester.getPower(100));
+			assertTrue("Result7",0==tester.getPower(100, "p"));
 			
 			tester.turnOn((long)100, "TestApp");
-			assertTrue("Result8",200==tester.getPower(100));
+			assertTrue("Result8",200==tester.getPower(100, "p"));
 			
 			tester.turnOn((long)60, "TestApp");
-			assertTrue("Result9",120==tester.getPower(70));
+			assertTrue("Result9",120==tester.getPower(70, "p"));
 			
-			Appliance tester2=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s), 10, false).build();
-			assertTrue("Result10",10==tester2.getPower(100));
+			Appliance tester2=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, false).build();
+			assertTrue("Result10",10==tester2.getPower(100, "p"));
 	}
 }

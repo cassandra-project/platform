@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,16 +23,17 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.api.exceptions.MongoInvalidObjectId;
 import eu.cassandra.server.api.exceptions.RestQueryParamMissingException;
 import eu.cassandra.server.mongo.MongoCopyEntities;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("copy")
 @Produces(MediaType.APPLICATION_JSON)
-
 public class CopyEntities {
 
 	/**
@@ -47,6 +48,7 @@ public class CopyEntities {
 	 * @param persID
 	 * @param scnID
 	 * @param smpID
+	 * 
 	 * @param toPrjID
 	 * @param toActID
 	 * @param toActmodID
@@ -57,7 +59,7 @@ public class CopyEntities {
 	 * @return
 	 */
 	@POST
-	public String createConsumptionModel(
+	public Response createConsumptionModel(
 			@QueryParam("actID") String actID,
 			@QueryParam("actmodID") String actmodID,
 			@QueryParam("appID") String appID,
@@ -98,10 +100,10 @@ public class CopyEntities {
 		if(toInstID != null) counter2++;
 		if(toPersID != null) counter2++;
 		if(toScnID != null) counter2++;
-
+		
 		if(counter1 != 1 || counter2 != 1) {
-			return PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid ObjectId Parameters",
-					new RestQueryParamMissingException("You should provide two and only two valid ObjectId")));
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid ObjectId Parameters",
+					new RestQueryParamMissingException("You should provide two and only two valid ObjectId"))));
 		}
 
 		String answer = "";
@@ -109,30 +111,40 @@ public class CopyEntities {
 		try {
 		if(scnID != null && toPrjID != null) //Scenario to Project
 			answer = copy.copyScenarioToProject(scnID, toPrjID);
-		else if(instID != null && toScnID != null) //Installation to Scenario
-			answer = copy.copyInstallationToScenario(instID, toScnID,null);
-		else if(smpID != null && toScnID != null) //Simulation Parameter to Scenario
-			answer = copy.copySimParamsToScenario(smpID, toScnID,null);
+		else if(instID != null && toScnID != null) { //Installation to Scenario
+			answer = copy.copyInstallationToScenario(instID, toScnID, null, true);
+		} else if(smpID != null && toScnID != null) //Simulation Parameter to Scenario
+			answer = copy.copySimParamsToScenario(smpID, toScnID, null);
 		else if(appID != null && toInstID != null) //Appliance to Installation
-			answer = copy.copyApplianceToInstallation(appID, toInstID,null);
+			answer = copy.copyApplianceToInstallation(appID, toInstID, null);
 		else if(persID != null && toInstID != null) //Person to Installation
-			answer = copy.copyPersonToInstallation(persID, toInstID,null);
+			answer = copy.copyPersonToInstallation(persID, toInstID, null, false, null);
 		else if(actID != null && toPersID != null) //Activities to Person
-			answer = copy.copyActivityToPerson(actID, toPersID,null);
+			answer = copy.copyActivityToPerson(actID, toPersID, null, false, null);
 		else if(consmodID != null && toAppID != null) //Consumption Model to Appliance
-			answer = copy.copyConsModelToAppliance(consmodID, toAppID,null);
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
+			// obsolete
+			//answer = copy.copyConsModelToAppliance(consmodID, toAppID,null);
 		else if(actmodID != null && toActID != null) //Activity Model to Activity
-			answer = copy.copyActivityModelToActivity(actmodID, toActID,null);
-		else if(distrID != null && toActmodID != null) //Distribution to Activity Model 
-			answer = copy.copyDistributionToActivityModel(distrID, toActmodID,null);
+			// return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					//new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
+			// obsolete
+			answer = copy.copyActivityModelToActivity(actmodID, toActID, null, false, null); 
+		else if(distrID != null && toActmodID != null) //Distribution to Activity Model
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
+			// obsolete
+			// answer = copy.copyDistributionToActivityModel(distrID, toActmodID, null); obsolete
 		else {
-			return PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
-					new RestQueryParamMissingException("Please check documentation for valid copy commands")));
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					new RestQueryParamMissingException("Please check documentation for valid copy commands"))));
 		}
 		}catch (Exception e){
-			return PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
-					new MongoInvalidObjectId("The ObjecID provided is probably invalid or not existing")));
+			e.printStackTrace();
+			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new JSONtoReturn().createJSONError("Invalid copy command",
+					new MongoInvalidObjectId("The ObjecID provided is probably invalid or not existing"))));
 		}
-		return PrettyJSONPrinter.prettyPrint(answer);
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(answer));
 	}
 }

@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,9 +26,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("prj/{prj_id: [a-z0-9][a-z0-9]*}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -42,9 +44,9 @@ public class Project {
 	 * @return
 	 */
 	@GET
-	public String getProject(@PathParam("prj_id") String prj_id,
+	public Response getProject(@PathParam("prj_id") String prj_id,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders,prj_id,false));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoProjects().getProjects(httpHeaders, null, prj_id,false)));
 	}
 
 	/**
@@ -54,8 +56,8 @@ public class Project {
 	 * @return
 	 */
 	@PUT
-	public String updateProject(@PathParam("prj_id") String prj_id, String message) {
-		return  PrettyJSONPrinter.prettyPrint(new MongoProjects().updateProject(prj_id,message));
+	public Response updateProject(@PathParam("prj_id") String prj_id, String message) {
+		return  Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoProjects().updateProject(prj_id,message)));
 	}
 
 	/**
@@ -63,7 +65,7 @@ public class Project {
 	 * Delete a project
 	 */
 	@DELETE
-	public String deleteProject(@PathParam("prj_id") String prj_id) {
-		return PrettyJSONPrinter.prettyPrint(new MongoProjects().deleteProject(prj_id));
+	public Response deleteProject(@PathParam("prj_id") String prj_id) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoProjects().deleteProject(prj_id)));
 	}
 }

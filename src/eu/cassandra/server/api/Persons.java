@@ -1,5 +1,5 @@
 /*   
-   Copyright 2011-2012 The Cassandra Consortium (cassandra-fp7.eu)
+   Copyright 2011-2013 The Cassandra Consortium (cassandra-fp7.eu)
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import eu.cassandra.server.mongo.MongoPersons;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
+import eu.cassandra.sim.utilities.Utils;
 
 @Path("pers")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,20 +43,20 @@ public class Persons {
 	 * @return
 	 */
 	@GET
-	public String getPersons(
+	public Response getPersons(
 			@QueryParam("inst_id") String inst_id,
 			@QueryParam("scn_id") String scn_id,
 			@QueryParam("count") boolean count,
 			@QueryParam("pertype") boolean pertype,
 			@Context HttpHeaders httpHeaders) {
-		return PrettyJSONPrinter.prettyPrint(new MongoPersons().getPersons(httpHeaders,inst_id, scn_id, count,pertype));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoPersons().getPersons(httpHeaders,inst_id, scn_id, count,pertype)));
 	}
 	
 	/**
 	 * Create a Person
 	 */
 	@POST
-	public String create(String message) {
-		return PrettyJSONPrinter.prettyPrint(new MongoPersons().createPerson(message));
+	public Response create(String message) {
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoPersons().createPerson(message)));
 	}
 }

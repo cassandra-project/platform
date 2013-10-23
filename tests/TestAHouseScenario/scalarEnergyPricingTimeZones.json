@@ -1,0 +1,38 @@
+{
+    "name" : "Pricing name",
+    "description" : "Pricing description",
+    "type" : "ScalarEnergyPricingTimeZones",
+    "scn_id" : "500d1133e4b087bdfeda0900",
+    "fixedCharge" : 15.00,
+    "billingCycle" : 120,
+    "levels" : [
+        {
+            "price" : 0.06,
+            "level" : 500.00
+        },
+        {
+            "price" : 0.07,
+            "level" : 400.00
+        },
+        {
+            "price" : 0.08,
+            "level" : 400.00
+        },
+        {
+            "price" : 0.10
+        },
+        {
+            "price" : 0.05
+        }
+    ],
+    "offpeak" : [
+        {
+            "from" : 900, 
+            "to" : 1000
+        },
+        {
+            "from" : 1200,
+            "to" : 1440
+        }
+    ]
+}
