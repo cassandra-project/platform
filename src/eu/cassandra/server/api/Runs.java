@@ -17,7 +17,6 @@
 package eu.cassandra.server.api;
 
 import java.net.UnknownHostException;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -62,6 +60,7 @@ import eu.cassandra.server.mongo.MongoProjects;
 import eu.cassandra.server.mongo.MongoRuns;
 import eu.cassandra.server.mongo.MongoScenarios;
 import eu.cassandra.server.mongo.MongoSimParam;
+import eu.cassandra.server.mongo.MongoThermal;
 import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.server.mongo.util.JSONtoReturn;
 import eu.cassandra.server.mongo.util.PrettyJSONPrinter;
@@ -195,9 +194,17 @@ public class Runs {
 				countInst++;
 				DBObject obj = cursor.next();
 				if(!isDynamic) db.getCollection(MongoInstallations.COL_INSTALLATIONS).insert(obj);
+				String inst_id = obj.get("_id").toString();
+				// Thermal module
+				query = new BasicDBObject();
+				query.put("inst_id", inst_id);
+				DBObject thermal = DBConn.getConn().getCollection(MongoThermal.COL_THERMAL).findOne(query);
+				if(thermal != null) {
+					db.getCollection(MongoThermal.COL_THERMAL).insert(thermal);
+					obj.put("thermal", thermal);
+				}
 				
 				// Persons
-				String inst_id = obj.get("_id").toString();
 				query = new BasicDBObject();
 				query.put("inst_id", inst_id);
 				DBCursor persons = DBConn.getConn().getCollection(MongoPersons.COL_PERSONS).find(query);

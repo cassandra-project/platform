@@ -45,6 +45,11 @@
             },
             "uniqueItems": false,
             "optional": false
+        },
+        "prc_id": {
+            "type": "string",
+            "description": "The ObjectId of a TOU Pricing scheme",
+            "optional": false
         }
     },
     "additionalProperties" : false

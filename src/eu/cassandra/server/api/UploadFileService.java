@@ -69,7 +69,6 @@ public class UploadFileService {
 		
 
 		String filename = fileDetail.getFileName();
-		System.out.println("Project_id: " + prj_id);
 		String uploadedFileLocation = context.getRealPath("/resources") + 
 				"/" + filename;
 		

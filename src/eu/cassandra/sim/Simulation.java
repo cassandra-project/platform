@@ -38,6 +38,7 @@ import eu.cassandra.server.mongo.util.DBConn;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel;
+import eu.cassandra.sim.entities.external.ThermalModule;
 import eu.cassandra.sim.entities.installations.Installation;
 import eu.cassandra.sim.entities.people.Activity;
 import eu.cassandra.sim.entities.people.Person;
@@ -143,6 +144,7 @@ public class Simulation implements Runnable {
   	  					for (Installation installation: installations) {
 //  						System.out.println(installation.getName());
   	  						installation.updateDailySchedule(tick, queue, pricing, baseline_pricing);
+  	  						
   	  					}
   	  					billingCycleDays++;
 //  					System.out.println("Daily queue size: " + queue.size() + "(" + 
@@ -313,11 +315,11 @@ public class Simulation implements Runnable {
   	public void setup(boolean jump) throws Exception {
   		installations = new Vector<Installation>();
   		/* TODO  Change the Simulation Calendar initialization */
-  		simulationWorld = new SimulationParams();
   		logger.info("Simulation setup started: " + dbname);
   		DBObject jsonScenario = (DBObject) JSON.parse(scenario);
   		DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
+  		simulationWorld = new SimulationParams(simParamsDoc);
   		DBObject pricingDoc = (DBObject) jsonScenario.get("pricing");
   		DBObject basePricingDoc = (DBObject) jsonScenario.get("baseline_pricing");
   		if(pricingDoc != null) {
@@ -358,6 +360,13 @@ public class Simulation implements Runnable {
 	    	String type = (String)instDoc.get("type");
 	    	Installation inst = new Installation.Builder(
 	    			id, name, description, type).build();
+	    	// Thermal module if exists
+	    	DBObject thermalDoc = (DBObject)instDoc.get("thermal");
+	    	if(thermalDoc != null && pricing.getType().equalsIgnoreCase("TOUPricing")) {
+	    		ThermalModule tm = new ThermalModule(thermalDoc, pricing.getTOUArray());
+	    		inst.setThermalModule(tm);
+	    	}
+	    	
 	    	int appcount = ((Integer)instDoc.get("appcount")).intValue();
 	    	// Create the appliances
 	    	HashMap<String,Appliance> existing = new HashMap<String,Appliance>();
@@ -409,7 +418,6 @@ public class Simulation implements Runnable {
 	    		ProbabilityDistribution startDist;
 	    		ProbabilityDistribution durDist;
 	    		ProbabilityDistribution timesDist;
-	    		Boolean isShiftable;
 	    		for (int k = 1; k <= actmodcount; k++) {
 	    			DBObject actmodDoc = (DBObject)activityDoc.get("actmod"+k);
 	    			String actmodName = (String)actmodDoc.get("name");

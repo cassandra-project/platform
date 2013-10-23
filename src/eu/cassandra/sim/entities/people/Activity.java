@@ -308,7 +308,6 @@ public class Activity extends Entity {
 				}				
 			}
 		}
-
 		if(notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
 
 			int numOfTimes = 0;
@@ -322,14 +321,13 @@ public class Activity extends Entity {
 			// Response
 			responseStartProb = startProb;
 			if(isShiftable.booleanValue()) {
-				System.out.println("isshiftable " + pricing.getType() + " " + baseline.getType());
 				if(pricing.getType().equalsIgnoreCase("TOUPricing") && 
 						baseline.getType().equalsIgnoreCase("TOUPricing")) {
-					System.out.println("responsive");
 					responseStartProb = Response.respond(startProb, pricing,
 							baseline, awareness, sensitivity);
 				}
 			}
+			
 			/*
 			 * Decide the duration and start time for each activity activation
 			 */
@@ -344,13 +342,12 @@ public class Activity extends Entity {
 						int appDuration = duration;
 						int appStartTime = startTime;
 						String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
+//						System.out.println((tick + appStartTime) + " "  + a.getName());
 						Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
-//						System.out.println((tick + appStartTime) + " " + Event.SWITCH_ON + " " + a.getName());
 						queue.offer(eOn);
 						Event eOff =
 								new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
 						queue.offer(eOff);
-//						System.out.println((tick + appStartTime + appDuration) + " " + Event.SWITCH_ON + " " + a.getName());
 					}
 				}
 				numOfTimes--;

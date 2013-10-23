@@ -27,91 +27,130 @@ package eu.cassandra.sim.math.response;
 public class Pricing
 {
 
-  /** This variable signifies the start minute of the day for the incentive. */
-  private int startMinute;
+	/** This variable signifies the start minute of the day for the incentive. */
+	  private final int startMinute;
 
-  /** This variable signifies the end minute of the day for the incentive. */
-  private int endMinute;
+	  /** This variable signifies the end minute of the day for the incentive. */
+	  private final int endMinute;
 
-  /**
-   * This variable the price.
-   */
-  private double price;
+	  /**
+	   * This variable is the previous price of the new pricing scheme.
+	   */
+	  private final double previousPrice;
 
-  /**
-   * This variable states the type of the pricing (Penalty or Reward).
-   */
-  private String type;
+	  /**
+	   * This variable is the current price of the new pricing scheme.
+	   */
+	  private final double currentPrice;
 
-  /**
-   * A constructor of a pricing where all of the input variables are known.
-   * 
-   * @param start
-   *          The incentive's start minute of the day
-   * @param end
-   *          The incentive's end minute of the day
-   * @param price
-   *          The monetary value of the pricing
-   * @param type
-   *          The type of pricing policy (Penalty or Reward)
-   */
-  public Pricing (int start, int end, double price, String type)
-  {
-    startMinute = start;
-    endMinute = end;
-    this.price = price;
-    this.type = type;
-  }
+	  /**
+	   * This variable states the type of the pricing (Penalty or Reward).
+	   */
+	  private final String type;
 
-  /**
-   * This function is used as a getter for the start minute of the pricing.
-   * 
-   * @return pricing's start minute.
-   */
-  public int getStartMinute ()
-  {
-    return startMinute;
-  }
+	  /**
+	   * A constructor of a pricing where all of the input variables are known.
+	   * 
+	   * @param start
+	   *          The incentive's start minute of the day
+	   * @param end
+	   *          The incentive's end minute of the day
+	   * @param price
+	   *          The monetary value of the pricing
+	   * @param type
+	   *          The type of pricing policy (Penalty or Reward)
+	   */
+	  public Pricing (int start, int end, double previous, double current,
+	                  String type)
+	  {
+	    startMinute = start;
+	    endMinute = end;
+	    previousPrice = previous;
+	    currentPrice = current;
+	    this.type = type;
 
-  /**
-   * This function is used as a getter for the end minute of the pricing.
-   * 
-   * @return pricing's end minute.
-   */
-  public int getEndMinute ()
-  {
-    return endMinute;
-  }
+	  }
 
-  /**
-   * This function is used as a getter for the price of the pricing.
-   * 
-   * @return pricing's price.
-   */
-  public double getPrice ()
-  {
-    return price;
-  }
+	  /**
+	   * This function is used as a getter for the start minute of the pricing.
+	   * 
+	   * @return pricing's start minute.
+	   */
+	  public int getStartMinute ()
+	  {
+	    return startMinute;
+	  }
 
-  /**
-   * This function is used as a getter for the type of the pricing.
-   * 
-   * @return pricing's type (Penalty or Reward).
-   */
-  public String getType ()
-  {
-    return type;
-  }
+	  /**
+	   * This function is used as a getter for the end minute of the pricing.
+	   * 
+	   * @return pricing's end minute.
+	   */
+	  public int getEndMinute ()
+	  {
+	    return endMinute;
+	  }
 
-  /**
-   * This function is used to present the basic attributes of the price.
-   */
-  public void status ()
-  {
-    System.out.println("Start Minute: " + startMinute);
-    System.out.println("End Minute: " + endMinute);
-    System.out.println("Pricing: " + price);
-    System.out.println("Pricing Type: " + type);
-  }
+	  /**
+	   * This function is used as a getter for the price of the pricing.
+	   * 
+	   * @return pricing's price.
+	   */
+	  public double getPreviousPrice ()
+	  {
+	    return previousPrice;
+	  }
+
+	  /**
+	   * This function is used as a getter for the price of the pricing.
+	   * 
+	   * @return pricing's price.
+	   */
+	  public double getCurrentPrice ()
+	  {
+	    return currentPrice;
+	  }
+
+	  /**
+	   * This function is used as a getter for the type of the pricing.
+	   * 
+	   * @return pricing's type (Penalty or Reward).
+	   */
+	  public String getType ()
+	  {
+	    return type;
+	  }
+
+	  /**
+	   * This function is used to estimate the ratio of the pricing schemes.
+	   * 
+	   * @return the ratio of the pricing scheme.
+	   */
+	  public double getGainRatio ()
+	  {
+	    return previousPrice / currentPrice;
+	  }
+
+	  /**
+	   * This function is used to estimate the ratio of the pricing schemes.
+	   * 
+	   * @return the ratio of the pricing scheme.
+	   */
+	  public double getLossRatio ()
+	  {
+	    return currentPrice / previousPrice;
+	  }
+
+	  /**
+	   * This function is used to present the basic attributes of the price.
+	   */
+	  public void status ()
+	  {
+	    System.out.println("Start Minute: " + startMinute);
+	    System.out.println("End Minute: " + endMinute);
+	    System.out.println("Current Pricing: " + currentPrice);
+	    System.out.println("Previous Pricing: " + previousPrice);
+	    System.out.println("Pricing Type: " + type);
+	  }
 
 }

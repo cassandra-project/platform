@@ -62,7 +62,7 @@ public class SimCalendar {
 
 		myCalendar = Calendar.getInstance();
 
-		myCalendar.set(year, month, day, 0, 0, 0);
+		myCalendar.set(year, month-1, day, 0, 0, 0);
 		base = myCalendar.getTime();
 		this.duration = duration;
 
@@ -189,9 +189,17 @@ public class SimCalendar {
 		granularity = gran;
 		granularityValue = value;
 	}
+	
+	private Calendar copyCal(Calendar cal) {
+		Calendar temp = Calendar.getInstance();
+		temp.set(myCalendar.get(Calendar.YEAR), 
+				myCalendar.get(Calendar.MONTH), 
+				myCalendar.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+		return temp;
+	}
 
 	public boolean isWeekend (int tick) {
-		Calendar temp = Calendar.getInstance();
+		Calendar temp = copyCal(myCalendar);
 		int gran = getGranularityRaw();
 		temp.add(gran, tick * granularityValue);
 		int day = temp.get(Calendar.DAY_OF_WEEK);
@@ -201,7 +209,7 @@ public class SimCalendar {
 	}
 	
 	public String getCurrentDate(int tick) {
-		Calendar temp = Calendar.getInstance();
+		Calendar temp = copyCal(myCalendar);
 		int gran = getGranularityRaw();
 		temp.add(gran, tick * granularityValue);
 		int day = temp.get(Calendar.DAY_OF_MONTH);
@@ -210,7 +218,7 @@ public class SimCalendar {
 	}
 	
 	public String getDayOfWeek(int tick) {
-		Calendar temp = Calendar.getInstance();
+		Calendar temp = copyCal(myCalendar);
 		int gran = getGranularityRaw();
 		temp.add(gran, tick * granularityValue);
 		return ABBR_DAYS[temp.get(Calendar.DAY_OF_WEEK)];

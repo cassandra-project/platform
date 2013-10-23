@@ -16,7 +16,6 @@
 package eu.cassandra.sim.entities.installations;
 
 import java.util.Vector;
-
 import java.util.concurrent.PriorityBlockingQueue;
 
 import com.mongodb.BasicDBObject;
@@ -26,6 +25,7 @@ import eu.cassandra.sim.Event;
 import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
+import eu.cassandra.sim.entities.external.ThermalModule;
 import eu.cassandra.sim.entities.people.Person;
 import eu.cassandra.sim.utilities.Constants;
 
@@ -43,6 +43,7 @@ public class Installation extends Entity {
 	private double energyOffpeak = 0;
 	private double previousEnergyOffpeak = 0;
 	private double cost = 0;
+	private ThermalModule tm;
 	
 	public static class Builder {
     	// Required variables
@@ -96,9 +97,11 @@ public class Installation extends Entity {
     public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue, 
     		PricingPolicy pricing, PricingPolicy baseline) {
     	for(Person person : getPersons()) {
-    		//System.out.println(person.getName());
     		person.updateDailySchedule(tick, queue, pricing, baseline);
 		}
+    	if(tm != null) {
+    		tm.nextStep();
+    	}
     }
     
     public void updateMaxPower(double power) {
@@ -150,6 +153,9 @@ public class Installation extends Entity {
 			p += appliance.getPower(tick, "p");
 			q += appliance.getPower(tick, "q");
 		}
+		if(tm != null) {
+			p += tm.getPower(tick);
+		}
 		currentPowerP = p;
 		currentPowerQ = q;
 	}
@@ -168,6 +174,10 @@ public class Installation extends Entity {
 
     public void addPerson (Person person) {
     	persons.add(person);
+    }
+    
+    public void setThermalModule (ThermalModule atm) {
+    	tm = atm;
     }
 
     public Vector<Appliance> getAppliances () {

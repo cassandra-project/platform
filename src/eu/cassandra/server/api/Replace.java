@@ -89,7 +89,6 @@ public class Replace {
 					// Delete the replaced
 					new MongoPersons().deletePerson(entity);
 					answer = copy.copyPersonToInstallation((String)persObj.get("_id"), inst_id, null, false, null);
-					System.out.println(answer);
 					break;
 				case "app":
 					// Get the replacement object
@@ -109,7 +108,6 @@ public class Replace {
 					int added = DBConn.getConn().getCollection(MongoActivityModels.COL_ACTMODELS).update(qry, obj, false, true).getN();
 					// Delete the replaced it will make a cascade delete as well...
 					new MongoAppliances().deleteAppliance(entity);
-					System.out.println(added);
 					break;
 				default:
 					return Utils.returnResponse(jSON2Rrn.createJSONError("Entity type is not a match", 
