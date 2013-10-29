@@ -38,6 +38,7 @@ public class SimulationParams
   private SimCalendar simCalendar;
   private String name;
   private String locationInfo;
+  private String responseType;
 
   public SimulationParams ()
   {
@@ -49,18 +50,19 @@ public class SimulationParams
   public SimulationParams (DBObject dbo) throws ParseException
   {
 
+	  responseType = dbo.get("responseType").toString();
+	  
     int day;
     int month;
     int year;
 
     name = dbo.get("name").toString();
     locationInfo = dbo.get("locationInfo").toString();
-    int duration = Integer.parseInt(dbo.get("numberOfDay").toString());
+    int duration = Integer.parseInt(dbo.get("numberOfDays").toString());
 
-    BasicDBObject tempList = (BasicDBObject) dbo.get("calendar");
+    DBObject tempList = (DBObject) dbo.get("calendar");
 
     if (tempList == null) {
-
       simCalendar = new SimCalendar();
       day = simCalendar.getMyCalendar().get(Calendar.DAY_OF_MONTH);
       month = simCalendar.getMyCalendar().get(Calendar.MONTH);
@@ -68,11 +70,9 @@ public class SimulationParams
 
     }
     else {
-
-      day = tempList.getInt("dayOfMonth");
-      month = tempList.getInt("month");
-      year = tempList.getInt("year");
-
+      day = ((Integer)tempList.get("dayOfMonth")).intValue();
+      month = ((Integer)tempList.get("month")).intValue();
+      year = ((Integer)tempList.get("year")).intValue();
     }
     simCalendar = new SimCalendar(day, month, year, duration);
 
@@ -88,6 +88,11 @@ public class SimulationParams
     return name;
   }
 
+  public String getResponseType ()
+  {
+    return responseType;
+  }
+  
   public String getLocationInfo ()
   {
     return locationInfo;

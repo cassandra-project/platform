@@ -78,15 +78,13 @@ public class Person extends Entity {
   }
 
   	public void addActivity(Activity a) {
-  		//System.out.println(a.getName());
   		activities.add(a);
   	}
   
     public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
-    		PricingPolicy pricing, PricingPolicy baseline) {
+    		PricingPolicy pricing, PricingPolicy baseline, String responseType) {
     	for(Activity activity: activities) {
-    		//System.out.println(activity.getName());
-    		activity.updateDailySchedule(tick, queue, pricing, baseline, awareness, sensitivity);
+    		activity.updateDailySchedule(tick, queue, pricing, baseline, awareness, sensitivity, responseType);
     	}
     }
 

@@ -51,7 +51,7 @@
         "responseType": {
             "type": "string",
             "description": "Response types",
-            "optional": false,
+            "optional": true,
             "enum": [
                 "None",
                 "Optimal",
