@@ -248,7 +248,7 @@ Ext.define('C.view.DynamicGrid', {
 
 					default: return false;
 				}
-
+				this.store.navigationNode.removeAll();
 				Ext.Ajax.request({
 					url: '/cassandra/api/copy?'+meID+'='+record.get('_id')+'&'+targetID+'='+parent_id,
 					method: 'POST',
@@ -257,7 +257,7 @@ Ext.define('C.view.DynamicGrid', {
 						response = JSON.parse(response.responseText);
 						var params = {};
 						params[parent_idKey] = parent_id;
-						this.store.navigationNode.removeAll();
+
 						this.store.load( {params : params });
 						Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 					}
