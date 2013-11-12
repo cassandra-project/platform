@@ -83,7 +83,6 @@ Ext.define('C.store.Installations', {
 				record.node = node;
 			});
 			else {
-				debugger;
 				var pages = Math.ceil(store.totalCount / C.limit);
 				var counter = 1;
 				//TODO find a solution for expandable last node instead of this crappy hack

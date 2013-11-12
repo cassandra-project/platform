@@ -37,15 +37,7 @@ Ext.define('C.model.Run', {
 			persist: false
 		},
 		{
-			name: 'percentage',
-			persist: false
-		},
-		{
 			name: 'prj_id',
-			persist: false
-		},
-		{
-			name: 'state',
 			persist: false
 		},
 		{
@@ -54,6 +46,14 @@ Ext.define('C.model.Run', {
 		{
 			name: 'type',
 			type: 'string'
+		},
+		{
+			name: 'percentage',
+			persist: false
+		},
+		{
+			name: 'state',
+			persist: false
 		}
 	]
 });

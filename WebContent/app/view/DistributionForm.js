@@ -175,7 +175,7 @@ Ext.define('C.view.DistributionForm', {
 	},
 
 	onTextareafieldBeforeRender1: function(component, eOpts) {
-		component.helpText = 'For the Uniform Distribution one needs to insert an expression with start and end values:</br>[{"start":100,"end":200}]</br></br>For the Normal Distribution one needs to insert an expression with mean and std values:</br>[{"mean":45,"std":10}]</br></br>Finally, for the Gaussian Mixture Models one needs to insert tuples of w, mean and std:</br>[{"w":1 , "mean":45,"std":10}, {"w":1 , "mean":100,"std":10}]' ;
+		component.helpText = 'For the Uniform Distribution one needs to insert an expression with start and end values:</br>[{"start":100,"end":200}]</br></br>For the Normal Distribution one needs to insert an expression with mean and std values:</br>[{"mean":45,"std":10}]</br></br>Finally, for the Gaussian Mixture Models one needs to insert tuples of w (which should sum up to 1), mean and std:</br>[{"w":0.5 , "mean":45,"std":10}, {"w":0.5 , "mean":100,"std":10}]' ;
 		component.url = 'https://github.com/cassandra-project/platform/wiki/Activity-Model-form';
 	},
 

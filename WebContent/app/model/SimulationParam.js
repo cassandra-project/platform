@@ -55,12 +55,10 @@ Ext.define('C.model.SimulationParam', {
 			type: 'int'
 		},
 		{
-			name: 'base_prc_id',
-			type: 'string'
+			name: 'base_prc_id'
 		},
 		{
-			name: 'prc_id',
-			type: 'string'
+			name: 'prc_id'
 		},
 		{
 			defaultValue: 'None',

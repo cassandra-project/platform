@@ -57,7 +57,7 @@ Ext.define('C.controller.setDbName', {
 		Ext.util.Observable.observe(Ext.data.AbstractStore);
 
 		Ext.data.AbstractStore.on('write', function(store, operation, options) {
-			if (Ext.getCmp("MainTabPanel").getActiveTab().corresponding_node.get('nodeId') == operation.records[0].get('_id')) {
+			if (Ext.getCmp("MainTabPanel").getActiveTab() && Ext.getCmp("MainTabPanel").getActiveTab().corresponding_node.get('nodeId') == operation.records[0].get('_id')) {
 				if (Ext.getDom("warnings")) {
 					Ext.getDom("warnings").parentElement.remove();
 				}

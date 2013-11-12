@@ -126,6 +126,7 @@ Ext.define('C.view.UserLibTreePanel', {
 
 					default: return false;
 				}
+				overModel.removeAll();
 
 				Ext.Ajax.request({
 					url: '/cassandra/api/copy?'+meID+'='+record.get('_id')+'&'+targetID+'='+overModel.get('parentId'),
@@ -135,15 +136,13 @@ Ext.define('C.view.UserLibTreePanel', {
 						response = JSON.parse(response.responseText);
 						var params = {};
 						params[parent_idKey] = overModel.get('parentId');
-						overModel.removeAll();
-						overModel.expand();
-						/*try {
-						overModel.c.store.load( {params : params });
+
+						try {
+							overModel.c.store.load( {params : params });
 						}
 						catch (e) {
-						overModel.expand();
-						overModel.c.store.load( {params : params });
-						}*/
+							overModel.expand();
+						}
 						Ext.sliding_box.msg('Success', JSON.stringify(response.message));
 					}
 				});
