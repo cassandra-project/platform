@@ -334,24 +334,26 @@ public class Activity extends Entity {
 			while (numOfTimes > 0) {
 				int duration = Math.max(durationProb.getPrecomputedBin(), 1);
 				int startTime = Math.min(Math.max(responseStartProb.getPrecomputedBin(), 0), 1439);
-				int selectedApp = RNG.nextInt(vector.size());
-				// Select appliances to be switched on
-//				for (int j = 0; j < vector.size(); j++) {
-					//if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
-//					if (RNG.nextDouble() < 1.0) {
-//						Appliance a = vector.get(j);
-						Appliance a = vector.get(selectedApp);
-						int appDuration = duration;
-						int appStartTime = startTime;
-						String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
-//						System.out.println((tick + appStartTime) + " "  + a.getName());
-						Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
-						queue.offer(eOn);
-						Event eOff =
-								new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
-						queue.offer(eOff);
-//					}
-//				}
+				if(vector.size() > 0) {
+					int selectedApp = RNG.nextInt(vector.size());
+					// Select appliances to be switched on
+	//				for (int j = 0; j < vector.size(); j++) {
+						//if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
+	//					if (RNG.nextDouble() < 1.0) {
+	//						Appliance a = vector.get(j);
+							Appliance a = vector.get(selectedApp);
+							int appDuration = duration;
+							int appStartTime = startTime;
+							String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
+	//						System.out.println((tick + appStartTime) + " "  + a.getName());
+							Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
+							queue.offer(eOn);
+							Event eOff =
+									new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
+							queue.offer(eOff);
+	//					}
+	//				}
+				}
 				numOfTimes--;
 			}
 		}
