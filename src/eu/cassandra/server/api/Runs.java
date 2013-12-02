@@ -303,7 +303,8 @@ public class Runs {
 				scenario.put("inst"+countInst,obj);
 			}
 			scenario.put("instcount", new Integer(countInst));
-			Simulation sim = new Simulation(scenario.toString(), dbname);
+			String resources_path = (String)context.getAttribute("RESOURCES_PATH");
+			Simulation sim = new Simulation(scenario.toString(), dbname, resources_path);
 			sim.setup(false);
 			// Scenario building finished
 			DBObject run = buildRunObj(objid, name, prj_id, "sim");

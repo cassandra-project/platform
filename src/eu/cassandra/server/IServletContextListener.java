@@ -31,6 +31,8 @@ public class IServletContextListener implements ServletContextListener {
 	
 	public static File schemas;
 	public static File graphs;
+	public static String resources_path;
+	
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
@@ -39,6 +41,8 @@ public class IServletContextListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
+		resources_path = arg0.getServletContext().getRealPath("resources/");
+		arg0.getServletContext().setAttribute("RESOURCES_PATH", resources_path);
 		String path = arg0.getServletContext().getRealPath("resources/jsonSchema/");
 		schemas = new File(path);
 		graphs = new File(arg0.getServletContext().getRealPath("resources/graphs/"));
