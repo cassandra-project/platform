@@ -141,13 +141,13 @@ public class Simulation implements Runnable {
   				double[] avgPPowerPerHourPerInst = new double[installations.size()];
   				double[] avgQPowerPerHourPerInst = new double[installations.size()];
   	  			double maxPower = 0;
+  	  			double cycleMaxPower = 0;
   	  			double avgPower = 0;
   	  			double energy = 0;
   	  			double energyOffpeak = 0;
   	  			double cost = 0;
   	  			double billingCycleEnergy = 0;
   	  			double billingCycleEnergyOffpeak = 0;
-  	  			double billingCycleDays = 0;
   	  			while (tick < endTick) {
   	  				// If it is the beginning of the day create the events
   	  				if (tick % Constants.MIN_IN_DAY == 0) {
@@ -157,7 +157,6 @@ public class Simulation implements Runnable {
   	  						installation.updateDailySchedule(tick, queue, pricing, baseline_pricing, simulationWorld.getResponseType());
   	  						
   	  					}
-  	  					billingCycleDays++;
 //  					System.out.println("Daily queue size: " + queue.size() + "(" + 
 //  					simulationWorld.getSimCalendar().isWeekend(tick) + ")");
   	  				}
@@ -214,26 +213,29 @@ public class Simulation implements Runnable {
 		//  				+ "Power: " + power);
 		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  		  				+ "Power: " + power);
-		  				if(billingCycleDays % pricing.getBillingCycle() == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
+		  				if((tick + 1) % (Constants.MIN_IN_DAY *  pricing.getBillingCycle()) == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
 		  					installation.updateCost(pricing, tick);
 		  				}
 		  				counter++;
 		  			}
 		  			if(sumP > maxPower) maxPower = sumP;
+		  			if(sumP > cycleMaxPower) cycleMaxPower = sumP;
 		  			avgPower += sumP/endTick;
 		  			if(pricing.isOffpeak(tick)) {
 		  				energyOffpeak += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 		  			} else {
 		  				energy += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 		  			}
-		  			if(billingCycleDays % pricing.getBillingCycle() == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
+		  			if((tick + 1) % (Constants.MIN_IN_DAY *  pricing.getBillingCycle()) == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
 		  				cost += pricing.calculateCost(energy, 
 		  						billingCycleEnergy, 
 		  						energyOffpeak,
 		  						billingCycleEnergyOffpeak,
-		  						tick);
+		  						tick,
+		  						cycleMaxPower);
 		  				billingCycleEnergy = energy;
 		  				billingCycleEnergyOffpeak = energyOffpeak;
+		  				cycleMaxPower = 0;
 		  			}
 		  			m.addAggregatedTickResult(tick, 
 		  					sumP * mcrunsRatio, 
@@ -286,7 +288,8 @@ public class Simulation implements Runnable {
   	  					billingCycleEnergy,
   						energyOffpeak,
   						billingCycleEnergyOffpeak,
-  						tick);
+  						tick,
+  						cycleMaxPower);
   	  			m.addKPIs(MongoResults.AGGR, 
   	  					maxPower * mcrunsRatio, 
   	  					avgPower * mcrunsRatio, 
