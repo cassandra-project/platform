@@ -234,6 +234,7 @@ public class Activity extends Entity {
 		 *  during a day
 		 */
 		ProbabilityDistribution numOfTimesProb;
+		ProbabilityDistribution responseNumOfTimesProb;
 		ProbabilityDistribution startProb;
 		ProbabilityDistribution responseStartProb;
 		ProbabilityDistribution durationProb;
@@ -310,22 +311,27 @@ public class Activity extends Entity {
 		}
 		if(notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
 
-			int numOfTimes = 0;
-			try {
-				numOfTimes = numOfTimesProb.getPrecomputedBin();
-			} catch (Exception e) {
-				logger.error(Utils.stackTraceToString(e.getStackTrace()));
-				e.printStackTrace();
-			}
+			
 			
 			// Response
 			responseStartProb = startProb;
+			responseNumOfTimesProb = numOfTimesProb;
 			if(isShiftable.booleanValue()) {
 				if(pricing.getType().equalsIgnoreCase("TOUPricing") && 
 						baseline.getType().equalsIgnoreCase("TOUPricing")) {
 					responseStartProb = Response.respond(startProb, pricing,
 							baseline, awareness, sensitivity, responseType);
+					responseNumOfTimesProb = Response.respond(numOfTimesProb, pricing,
+							baseline, awareness, sensitivity, "Daily");
 				}
+			}
+			
+			int numOfTimes = 0;
+			try {
+				numOfTimes = responseNumOfTimesProb.getPrecomputedBin();
+			} catch (Exception e) {
+				logger.error(Utils.stackTraceToString(e.getStackTrace()));
+				e.printStackTrace();
 			}
 			
 			/*
