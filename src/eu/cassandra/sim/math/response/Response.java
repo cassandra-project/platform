@@ -30,16 +30,24 @@ public class Response {
 				case "None":
 					return pd;
 				case "Optimal":
-					newHist = shiftingOptimal(previousHist, baseArr, policyArr, awareness, sensitivity);
+					System.out.println("Discrete: " + Arrays.toString(previousHist));
+					newHist = shiftingOptimal(previousHist, baseArr, policyArr, 1.5 * awareness, 1.5 * sensitivity);
 					break;
 				case "Normal":
-					newHist = shiftingNormal(previousHist, baseArr, policyArr, awareness, sensitivity);
+					newHist = shiftingNormal(previousHist, baseArr, policyArr, 1.5 * awareness, 1.5 * sensitivity);
 					break;
 				case "Discrete":
-					newHist = shiftingDiscrete(previousHist, baseArr, policyArr, awareness, sensitivity);
+//					System.out.println("Discrete: " + Arrays.toString(previousHist));
+					newHist = shiftingDiscrete(previousHist, baseArr, policyArr, 1.5 * awareness, 1.5 * sensitivity);
 					break;
 				case "Daily":
 					newHist = shiftingDaily(previousHist, baseArr, policyArr, awareness, sensitivity);
+					// Clean up NaNs
+					for(int i = 0; i < newHist.length; i++) {
+						if(Double.isNaN(newHist[i])) {
+							newHist[i] = 0.0;
+						}
+					}
 					break;
 				default:
 					return pd;

@@ -15,6 +15,7 @@
 */
 package eu.cassandra.sim.entities.people;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -319,10 +320,13 @@ public class Activity extends Entity {
 			if(isShiftable.booleanValue()) {
 				if(pricing.getType().equalsIgnoreCase("TOUPricing") && 
 						baseline.getType().equalsIgnoreCase("TOUPricing")) {
+//					System.out.println(name);
 					responseStartProb = Response.respond(startProb, pricing,
 							baseline, awareness, sensitivity, responseType);
 					responseNumOfTimesProb = Response.respond(numOfTimesProb, pricing,
 							baseline, awareness, sensitivity, "Daily");
+//					System.out.println("Before: " + Arrays.toString(numOfTimesProb.getHistogram()));
+//					System.out.println("After: " + Arrays.toString(responseNumOfTimesProb.getHistogram()));
 				}
 			}
 			
