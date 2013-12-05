@@ -15,6 +15,7 @@ import eu.cassandra.sim.utilities.Constants;
 public class Response {
 	
 	private static final int SHIFTING_WINDOW_IN_MINUTES = 30;
+	private static final double SMALL_NUMBER = 0.0000001;
 	
 	public static ProbabilityDistribution respond(ProbabilityDistribution pd, 
 			PricingPolicy policy, 
@@ -511,8 +512,10 @@ public class Response {
 		return result;
 	}
 
-	private static double[] reduceUse (double[] result, double diff) {
-		int index = result.length - 1;
+	 private static double[] reduceUse (double[] result, double diff)
+	  {
+
+	    int index = result.length - 1;
 	    double diffTemp = diff;
 	    double sum = 0;
 
@@ -525,8 +528,8 @@ public class Response {
 	      result[index] -= reduction;
 	      diffTemp -= reduction;
 
-	      System.out.println("Index: " + index + " Reduction: " + reduction
-	                         + " DiffTemp: " + diffTemp);
+	      // System.out.println("Index: " + index + " Reduction: " + reduction
+	      // + " DiffTemp: " + diffTemp);
 
 	      index--;
 
@@ -535,22 +538,24 @@ public class Response {
 	    // Fixes out of bounds error
 	    index = Math.max(0, index);
 
-	    System.out.println("After:" + Arrays.toString(result));
+	    // System.out.println("After:" + Arrays.toString(result));
 
 	    for (int i = 0; i <= index; i++)
 	      sum += result[i];
 
 	    for (int i = 0; i <= index; i++)
-	      result[i] += (result[i] / sum) * diff;
+	      result[i] += (result[i] / (sum + SMALL_NUMBER)) * diff;
 
 	    sum = 0;
 
 	    for (int i = 0; i < result.length; i++)
 	      sum += result[i];
 
-	    System.out.println("After Normalization:" + Arrays.toString(result));
+	    result[0] += (1 - sum);
 
-	    System.out.println("Summary: " + sum);
+	    // System.out.println("After Normalization:" + Arrays.toString(result));
+	    //
+	    // System.out.println("Summary: " + sum);
 
 	    index = result.length - 1;
 
@@ -558,38 +563,54 @@ public class Response {
 	      index--;
 
 	    return Arrays.copyOfRange(result, 0, index + 1);
-	}
 
-	private static double[] increaseUse (double[] result, double diff) {
-		int index = 0;
-		double diffTemp = diff;
-		double sum = 0;
+	  }
 
-		while (diffTemp > 0) {
+	 private static double[] increaseUse (double[] result, double diff)
+	  {
 
-			double reduction = Math.min(result[index], diffTemp);
+	    int index = 0;
+	    double diffTemp = diff;
+	    double sum = 0;
 
-			result[index] -= reduction;
-			diffTemp -= reduction;
+	    // System.out.println("Before:" + Arrays.toString(result));
 
-			index++;
+	    while (diffTemp > 0) {
 
-		}
+	      double reduction = Math.min(result[index], diffTemp);
 
-		index = Math.min(index, result.length - 1);
+	      result[index] -= reduction;
+	      diffTemp -= reduction;
 
-		for (int i = index; i < result.length; i++)
-			sum += result[i];
+	      // System.out.println("Index: " + index + " Reduction: " + reduction
+	      // + " DiffTemp: " + diffTemp);
 
-		for (int i = index; i < result.length; i++)
-			result[i] += (result[i] / sum) * diff;
+	      index++;
 
-		sum = 0;
+	    }
 
-		for (int i = 0; i < result.length; i++)
-			sum += result[i];
+	    index = Math.min(index, result.length - 1);
 
-		return Arrays.copyOf(result, result.length);
-	}
+	    // System.out.println("After:" + Arrays.toString(result));
+
+	    for (int i = index; i < result.length; i++)
+	      sum += result[i];
+
+	    for (int i = index; i < result.length; i++)
+	      result[i] += (result[i] / (sum + SMALL_NUMBER)) * diff;
+
+	    sum = 0;
+
+	    for (int i = 0; i < result.length; i++)
+	      sum += result[i];
+
+	    result[result.length - 1] += (1 - sum);
+
+	    // System.out.println("After Normalization:" + Arrays.toString(result));
+	    //
+	    // System.out.println("Summary: " + sum);
+
+	    return Arrays.copyOf(result, result.length);
+	  }
 
 }
