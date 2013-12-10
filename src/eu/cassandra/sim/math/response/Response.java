@@ -32,14 +32,13 @@ public class Response {
 					return pd;
 				case "Optimal":
 					System.out.println("Discrete: " + Arrays.toString(previousHist));
-					newHist = shiftingOptimal(previousHist, baseArr, policyArr, 1.5 * awareness, 1.5 * sensitivity);
+					newHist = shiftingOptimal(previousHist, baseArr, policyArr, awareness, sensitivity);
 					break;
 				case "Normal":
-					newHist = shiftingNormal(previousHist, baseArr, policyArr, 1.5 * awareness, 1.5 * sensitivity);
+					newHist = shiftingNormal(previousHist, baseArr, policyArr, awareness, sensitivity);
 					break;
 				case "Discrete":
-//					System.out.println("Discrete: " + Arrays.toString(previousHist));
-					newHist = shiftingDiscrete(previousHist, baseArr, policyArr, 1.5 * awareness, 1.5 * sensitivity);
+					newHist = shiftingDiscrete(previousHist, baseArr, policyArr, awareness, sensitivity);
 					break;
 				case "Daily":
 					newHist = shiftingDaily(previousHist, baseArr, policyArr, awareness, sensitivity);
