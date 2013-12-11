@@ -340,6 +340,7 @@ public class Simulation implements Runnable {
     		zos.closeEntry();
     		//remember close it
     		zos.close();
+    		fos.close();
   			csvFile.delete();
   			// End of zip file
 	  		long endTime = System.currentTimeMillis();
