@@ -31,7 +31,6 @@ public class Response {
 				case "None":
 					return pd;
 				case "Optimal":
-					System.out.println("Discrete: " + Arrays.toString(previousHist));
 					newHist = shiftingOptimal(previousHist, baseArr, policyArr, awareness, sensitivity);
 					break;
 				case "Normal":
@@ -518,7 +517,7 @@ public class Response {
 	    double diffTemp = diff;
 	    double sum = 0;
 
-	    System.out.println("Before:" + Arrays.toString(result));
+//	    System.out.println("Before:" + Arrays.toString(result));
 
 	    while (diffTemp > 0) {
 
