@@ -14,7 +14,7 @@ import eu.cassandra.sim.utilities.Constants;
 
 public class Response {
 	
-	private static final int SHIFTING_WINDOW_IN_MINUTES = 30;
+	private static final int SHIFTING_WINDOW_IN_MINUTES = 120;
 	private static final double SMALL_NUMBER = 0.0000001;
 	
 	public static ProbabilityDistribution respond(ProbabilityDistribution pd, 
