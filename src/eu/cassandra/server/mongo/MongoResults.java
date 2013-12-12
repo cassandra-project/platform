@@ -187,6 +187,14 @@ public class MongoResults {
 		}
 	}
 	
+	public DBObject getTickResultForInstallation(int tick,
+			String inst_id, String collection) {
+		DBObject query = new BasicDBObject();
+		query.put("inst_id", inst_id);
+		query.put("tick", tick);
+		return DBConn.getConn(dbname).getCollection(collection).findOne(query);
+	}
+	
 	public void normalize(int tick, String inst_id, int divisor, String collection) {
 		DBObject query = new BasicDBObject();
 		query.put("inst_id", inst_id);

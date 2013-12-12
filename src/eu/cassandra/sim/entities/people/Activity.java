@@ -15,6 +15,7 @@
 */
 package eu.cassandra.sim.entities.people;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -234,6 +235,7 @@ public class Activity extends Entity {
 		 *  during a day
 		 */
 		ProbabilityDistribution numOfTimesProb;
+		ProbabilityDistribution responseNumOfTimesProb;
 		ProbabilityDistribution startProb;
 		ProbabilityDistribution responseStartProb;
 		ProbabilityDistribution durationProb;
@@ -310,22 +312,30 @@ public class Activity extends Entity {
 		}
 		if(notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
 
-			int numOfTimes = 0;
-			try {
-				numOfTimes = numOfTimesProb.getPrecomputedBin();
-			} catch (Exception e) {
-				logger.error(Utils.stackTraceToString(e.getStackTrace()));
-				e.printStackTrace();
-			}
+			
 			
 			// Response
 			responseStartProb = startProb;
+			responseNumOfTimesProb = numOfTimesProb;
 			if(isShiftable.booleanValue()) {
 				if(pricing.getType().equalsIgnoreCase("TOUPricing") && 
 						baseline.getType().equalsIgnoreCase("TOUPricing")) {
+//					System.out.println(name);
 					responseStartProb = Response.respond(startProb, pricing,
 							baseline, awareness, sensitivity, responseType);
+					responseNumOfTimesProb = Response.respond(numOfTimesProb, pricing,
+							baseline, awareness, sensitivity, "Daily");
+//					System.out.println("Before: " + Arrays.toString(numOfTimesProb.getHistogram()));
+//					System.out.println("After: " + Arrays.toString(responseNumOfTimesProb.getHistogram()));
 				}
+			}
+			
+			int numOfTimes = 0;
+			try {
+				numOfTimes = responseNumOfTimesProb.getPrecomputedBin();
+			} catch (Exception e) {
+				logger.error(Utils.stackTraceToString(e.getStackTrace()));
+				e.printStackTrace();
 			}
 			
 			/*
@@ -334,21 +344,25 @@ public class Activity extends Entity {
 			while (numOfTimes > 0) {
 				int duration = Math.max(durationProb.getPrecomputedBin(), 1);
 				int startTime = Math.min(Math.max(responseStartProb.getPrecomputedBin(), 0), 1439);
-				// Select appliances to be switched on
-				for (int j = 0; j < vector.size(); j++) {
-					//if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
-					if (RNG.nextDouble() < 1.0) {
-						Appliance a = vector.get(j);
-						int appDuration = duration;
-						int appStartTime = startTime;
-						String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
-//						System.out.println((tick + appStartTime) + " "  + a.getName());
-						Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
-						queue.offer(eOn);
-						Event eOff =
-								new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
-						queue.offer(eOff);
-					}
+				if(vector.size() > 0) {
+					int selectedApp = RNG.nextInt(vector.size());
+					// Select appliances to be switched on
+	//				for (int j = 0; j < vector.size(); j++) {
+						//if (RNG.nextDouble() < probVector.get(j).doubleValue()) {
+	//					if (RNG.nextDouble() < 1.0) {
+	//						Appliance a = vector.get(j);
+							Appliance a = vector.get(selectedApp);
+							int appDuration = duration;
+							int appStartTime = startTime;
+							String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
+	//						System.out.println((tick + appStartTime) + " "  + a.getName());
+							Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
+							queue.offer(eOn);
+							Event eOff =
+									new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
+							queue.offer(eOff);
+	//					}
+	//				}
 				}
 				numOfTimes--;
 			}

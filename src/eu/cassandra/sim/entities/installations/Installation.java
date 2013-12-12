@@ -37,6 +37,7 @@ public class Installation extends Entity {
 	private double currentPowerP;
 	private double currentPowerQ;
 	private double maxPower = 0;
+	private double cycleMaxPower = 0;
 	private double avgPower = 0;
 	private double energy = 0;
 	private double previousEnergy = 0;
@@ -106,6 +107,7 @@ public class Installation extends Entity {
     
     public void updateMaxPower(double power) {
     	if(power > maxPower) maxPower = power;
+    	if(power > cycleMaxPower) cycleMaxPower = power;
     }
     
     public double getMaxPower() {
@@ -129,7 +131,8 @@ public class Installation extends Entity {
     }
     
     public void updateCost(PricingPolicy pp, int tick) {
-    	cost += pp.calculateCost(energy, previousEnergy, energyOffpeak, previousEnergyOffpeak, tick);
+    	cost += pp.calculateCost(energy, previousEnergy, energyOffpeak, previousEnergyOffpeak, tick, cycleMaxPower);
+    	cycleMaxPower = 0;
     	previousEnergy = energy;
     	previousEnergyOffpeak = energyOffpeak;
     }

@@ -32,6 +32,15 @@
             "uniqueItems": true,
             "optional": true
         },
+        "config": {
+            "type": "string",
+            "description": "Configures whether one or all appliances will be turned on during an activity.",
+            "optional": true,
+            "enum": [
+                "exclusive",
+                "concurrent"
+            ]
+        },
         "day_type": {
             "type": "string",
             "description": "The day type that this activity model concerns",

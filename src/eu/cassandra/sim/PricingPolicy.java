@@ -33,17 +33,7 @@ import eu.cassandra.server.mongo.MongoPricingPolicy;
 import eu.cassandra.sim.utilities.Constants;
 
 public class PricingPolicy {
-	
-	public final static int SCALAR_ENERGY_PRICING = 0;
-	
-	public final static int SCALAR_ENERGY_PRICING_TIME_ZONES = 1;
-	
-	public final static int ENERGY_POWER_PRICING = 2;
-	
-	public final static int ALL_INCLUSIVE_PRICING = 3;
-	
-	public final static int TOU_PRICING = 3;
-	
+		
 	private String type;
 	
 	private double fixedCharge;
@@ -61,6 +51,8 @@ public class PricingPolicy {
 	private double fixedCost;
 	
 	private double additionalCost;
+	
+	private double maximumPower;
 	
 	private double offpeakPrice;
 	
@@ -144,6 +136,13 @@ public class PricingPolicy {
 				energyPricing = Double.parseDouble(dbo.get("energyPrice").toString());
 				powerPricing = Double.parseDouble(dbo.get("powerPrice").toString());
 				break;
+			case "MaximumPowerPricing":
+				billingCycle = Integer.parseInt(dbo.get("billingCycle").toString());
+				fixedCharge = Double.parseDouble(dbo.get("fixedCharge").toString());
+				maximumPower = Double.parseDouble(dbo.get("maximumPower").toString());
+				energyPricing = Double.parseDouble(dbo.get("energyPrice").toString());
+				powerPricing = Double.parseDouble(dbo.get("powerPrice").toString());
+				break;
 			case "AllInclusivePricing":
 				billingCycle = Integer.parseInt(dbo.get("billingCycle").toString());
 				fixedCharge = Double.parseDouble(dbo.get("fixedCharge").toString());
@@ -206,7 +205,8 @@ public class PricingPolicy {
 	}
 	
 	public double calculateCost(double toEnergy, double fromEnergy,
-			double toEnergyOffpeak, double fromEnergyOffpeak, int tick) {
+			double toEnergyOffpeak, double fromEnergyOffpeak, int tick,
+			double maxPower) {
 		double remainingEnergy = toEnergy - fromEnergy;
 		double cost = 0;
 		switch(type) {
@@ -266,6 +266,11 @@ public class PricingPolicy {
 				cost += remainingEnergy * energyPricing;
 				cost += contractedCapacity * powerPricing;
 				break;
+			case "MaximumPowerPricing":
+				cost += fixedCharge;
+				cost += remainingEnergy * energyPricing;
+				cost += maxPower * powerPricing;
+				break;
 			case "AllInclusivePricing":
 				cost += fixedCharge;
 				cost += fixedCost;
@@ -314,7 +319,7 @@ public class PricingPolicy {
 		PricingPolicy pp = new PricingPolicy(pricingPolicy);
 		System.out.println(pp.getType());
 		System.out.println(pp.getFixedCharge());
-		System.out.println(pp.calculateCost(1500, 0, 0, 0, 1));
+		System.out.println(pp.calculateCost(1500, 0, 0, 0, 1, 10));
 	}
 
 }

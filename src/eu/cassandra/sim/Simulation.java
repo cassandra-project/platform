@@ -15,12 +15,20 @@
 */
 package eu.cassandra.sim;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -84,6 +92,8 @@ public class Simulation implements Runnable {
 	private String scenario;
 	
 	private String dbname;
+	
+	private String resources_path;
 
 	public Collection<Installation> getInstallations () {
 		return installations;
@@ -101,9 +111,10 @@ public class Simulation implements Runnable {
 		return endTick;
 	}
   
-	public Simulation(String ascenario, String adbname) {
+	public Simulation(String ascenario, String adbname, String aresources_path) {
 		scenario = ascenario;
 		dbname = adbname;
+		resources_path = aresources_path;
 		m = new MongoResults(dbname);
 		m.createIndexes();
   		RNG.init();
@@ -130,13 +141,13 @@ public class Simulation implements Runnable {
   				double[] avgPPowerPerHourPerInst = new double[installations.size()];
   				double[] avgQPowerPerHourPerInst = new double[installations.size()];
   	  			double maxPower = 0;
+  	  			double cycleMaxPower = 0;
   	  			double avgPower = 0;
   	  			double energy = 0;
   	  			double energyOffpeak = 0;
   	  			double cost = 0;
   	  			double billingCycleEnergy = 0;
   	  			double billingCycleEnergyOffpeak = 0;
-  	  			double billingCycleDays = 0;
   	  			while (tick < endTick) {
   	  				// If it is the beginning of the day create the events
   	  				if (tick % Constants.MIN_IN_DAY == 0) {
@@ -146,7 +157,6 @@ public class Simulation implements Runnable {
   	  						installation.updateDailySchedule(tick, queue, pricing, baseline_pricing, simulationWorld.getResponseType());
   	  						
   	  					}
-  	  					billingCycleDays++;
 //  					System.out.println("Daily queue size: " + queue.size() + "(" + 
 //  					simulationWorld.getSimCalendar().isWeekend(tick) + ")");
   	  				}
@@ -203,26 +213,29 @@ public class Simulation implements Runnable {
 		//  				+ "Power: " + power);
 		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  		  				+ "Power: " + power);
-		  				if(billingCycleDays % pricing.getBillingCycle() == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
+		  				if((tick + 1) % (Constants.MIN_IN_DAY *  pricing.getBillingCycle()) == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
 		  					installation.updateCost(pricing, tick);
 		  				}
 		  				counter++;
 		  			}
 		  			if(sumP > maxPower) maxPower = sumP;
+		  			if(sumP > cycleMaxPower) cycleMaxPower = sumP;
 		  			avgPower += sumP/endTick;
 		  			if(pricing.isOffpeak(tick)) {
 		  				energyOffpeak += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 		  			} else {
 		  				energy += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 		  			}
-		  			if(billingCycleDays % pricing.getBillingCycle() == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
+		  			if((tick + 1) % (Constants.MIN_IN_DAY *  pricing.getBillingCycle()) == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
 		  				cost += pricing.calculateCost(energy, 
 		  						billingCycleEnergy, 
 		  						energyOffpeak,
 		  						billingCycleEnergyOffpeak,
-		  						tick);
+		  						tick,
+		  						cycleMaxPower);
 		  				billingCycleEnergy = energy;
 		  				billingCycleEnergyOffpeak = energyOffpeak;
+		  				cycleMaxPower = 0;
 		  			}
 		  			m.addAggregatedTickResult(tick, 
 		  					sumP * mcrunsRatio, 
@@ -275,7 +288,8 @@ public class Simulation implements Runnable {
   	  					billingCycleEnergy,
   						energyOffpeak,
   						billingCycleEnergyOffpeak,
-  						tick);
+  						tick,
+  						cycleMaxPower);
   	  			m.addKPIs(MongoResults.AGGR, 
   	  					maxPower * mcrunsRatio, 
   	  					avgPower * mcrunsRatio, 
@@ -284,17 +298,51 @@ public class Simulation implements Runnable {
   	  					energy * co2 * mcrunsRatio);
   	  			if(i+1 != mcruns) setup(true);
   			}
-  			// Obsolete normalization code (to be removed) now it is done on the fly
-//  			for(int i = 0; i < endTick; i++) {
-//  				for(Installation installation: installations) {
-//  					m.normalize(i,installation.getId(), mcruns, MongoResults.COL_INSTRESULTS);
-//  					System.out.println(installation.getId());
-//  					m.normalize(i,installation.getId(), mcruns, MongoResults.COL_INSTRESULTS_HOURLY);
-//  					System.out.println(installation.getId());
-//  				}
-//  				m.normalize(i, mcruns, MongoResults.COL_AGGRRESULTS);
-//  				m.normalize(i, mcruns, MongoResults.COL_AGGRRESULTS_HOURLY);
-//  			}
+  			// Write installation results to csv file
+  			String filename = resources_path + "/csvs/" + dbname + ".csv";
+  			File csvFile = new File(filename);
+  			FileWriter fw = new FileWriter(csvFile);
+  			String row = "tick";
+  			for(Installation installation: installations) {
+  				row += "," + installation.getId() + "_p";
+  				row += "," + installation.getId() + "_q";
+  			}
+  			fw.write(row+"\n");
+  			for(int i = 0; i < endTick; i++) {
+  				row = String.valueOf(i);
+  				for(Installation installation: installations) {
+  					DBObject tickResult = m.getTickResultForInstallation(i, 
+  							installation.getId(),  
+  							MongoResults.COL_INSTRESULTS);
+  					double p = ((Double)tickResult.get("p")).doubleValue();
+  					double q = ((Double)tickResult.get("q")).doubleValue();
+  					row += "," + p;
+  	  				row += "," + q;
+  				}
+  				fw.write(row+"\n");
+  			}
+  			fw.flush();
+  			fw.close();
+  			// End of file writing
+  			// zip file
+  			// http://www.mkyong.com/java/how-to-compress-files-in-zip-format/
+  			byte[] buffer = new byte[1024];
+  			FileOutputStream fos = new FileOutputStream(filename + ".zip");
+  			ZipOutputStream zos = new ZipOutputStream(fos);
+  			ZipEntry ze= new ZipEntry(dbname + ".csv");
+  			zos.putNextEntry(ze);
+    		FileInputStream in = new FileInputStream(filename);
+    		int len;
+    		while ((len = in.read(buffer)) > 0) {
+    			zos.write(buffer, 0, len);
+    		}
+    		in.close();
+    		zos.closeEntry();
+    		//remember close it
+    		zos.close();
+    		fos.close();
+  			csvFile.delete();
+  			// End of zip file
 	  		long endTime = System.currentTimeMillis();
 	  		objRun.put("ended", endTime);
 	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
