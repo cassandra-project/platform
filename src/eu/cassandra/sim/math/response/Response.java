@@ -26,7 +26,7 @@ import eu.cassandra.sim.utilities.Constants;
 
 public class Response {
 	
-	private static final int SHIFTING_WINDOW_IN_MINUTES = 30;
+	private static final int SHIFTING_WINDOW_IN_MINUTES = 60;
 	private static final double SMALL_NUMBER = 0.0000001;
 	
 	public static ProbabilityDistribution respond(ProbabilityDistribution pd, 
@@ -35,6 +35,7 @@ public class Response {
 			double awareness, 
 			double sensitivity, 
 			String responseType) {
+			double w = 10;
 			double[] previousHist = pd.getHistogram();
 			double[] newHist = new double[Constants.MIN_IN_DAY];
 			double[] policyArr = policy.getTOUArray();
@@ -43,13 +44,13 @@ public class Response {
 				case "None":
 					return pd;
 				case "Optimal":
-					newHist = shiftingOptimal(previousHist, baseArr, policyArr, awareness, sensitivity);
+					newHist = shiftingOptimal(previousHist, baseArr, policyArr, w * awareness, w * sensitivity);
 					break;
 				case "Normal":
-					newHist = shiftingNormal(previousHist, baseArr, policyArr, awareness, sensitivity);
+					newHist = shiftingNormal(previousHist, baseArr, policyArr, w * awareness, w * sensitivity);
 					break;
 				case "Discrete":
-					newHist = shiftingDiscrete(previousHist, baseArr, policyArr, awareness, sensitivity);
+					newHist = shiftingDiscrete(previousHist, baseArr, policyArr, w * awareness, w * sensitivity);
 					break;
 				case "Daily":
 					newHist = shiftingDaily(previousHist, baseArr, policyArr, awareness, sensitivity);
@@ -646,7 +647,7 @@ public class Response {
 			PricingPolicy pp2 = new PricingPolicy(pricingPolicy);
 			System.out.println(Arrays.toString(pp2.getTOUArray()));
 			System.out.println(pp2.getTOUArray().length);
-			System.out.println(Arrays.toString(respond(g, pp1, pp2, 1, 1, "Normal").getHistogram()));
+			System.out.println(Arrays.toString(respond(g, pp2, pp1, 1, 1, "Normal").getHistogram()));
 	 }
 	 
 	 
