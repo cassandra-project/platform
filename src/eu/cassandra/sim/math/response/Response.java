@@ -635,6 +635,7 @@ public class Response {
 			DB db = m.getDB("test");
 			DBObject pricingPolicy = db.getCollection(MongoPricingPolicy.COL_PRICING).findOne(query);
 			PricingPolicy pp1 = new PricingPolicy(pricingPolicy);
+			System.out.println(pp1.getTOUArray().length);
 			System.out.println(Arrays.toString(pp1.getTOUArray()));
 			prc_id = "52aa161b712edbccc31438f2";
 			query = new BasicDBObject(); // A query
@@ -644,6 +645,7 @@ public class Response {
 			pricingPolicy = db.getCollection(MongoPricingPolicy.COL_PRICING).findOne(query);
 			PricingPolicy pp2 = new PricingPolicy(pricingPolicy);
 			System.out.println(Arrays.toString(pp2.getTOUArray()));
+			System.out.println(pp2.getTOUArray().length);
 			System.out.println(Arrays.toString(respond(g, pp1, pp2, 1, 1, "Normal").getHistogram()));
 	 }
 	 
