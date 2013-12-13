@@ -40,9 +40,9 @@ Ext.define('C.view.ActmodPropertiesForm', {
 					items: [
 						{
 							xtype: 'fieldset',
-							height: 230,
+							height: 250,
 							itemId: 'actmodFieldset',
-							width: 300,
+							width: 305,
 							title: 'Properties',
 							items: [
 								{
@@ -90,13 +90,34 @@ Ext.define('C.view.ActmodPropertiesForm', {
 									checked: true,
 									inputValue: 'true',
 									uncheckedValue: 'false'
+								},
+								{
+									xtype: 'radiogroup',
+									width: 300,
+									fieldLabel: 'Configuration',
+									labelWidth: 95,
+									items: [
+										{
+											xtype: 'radiofield',
+											name: 'config',
+											boxLabel: 'Exclusive',
+											checked: true,
+											inputValue: 'exclusive'
+										},
+										{
+											xtype: 'radiofield',
+											name: 'config',
+											boxLabel: 'Concurrent',
+											inputValue: 'concurrent'
+										}
+									]
 								}
 							]
 						},
 						{
 							xtype: 'fieldset',
 							margins: '0 10px',
-							height: 230,
+							height: 250,
 							itemId: 'appliancesFieldset',
 							width: 300,
 							autoScroll: true,
@@ -179,7 +200,8 @@ Ext.define('C.view.ActmodPropertiesForm', {
 				'description': values.description,
 				'day_type': values.day_type,
 				'shiftable': values.shiftable, 
-				'containsAppliances': gridIds
+				'containsAppliances': gridIds,
+				'config': values.config
 			});
 
 			this.dirtyForm = false;

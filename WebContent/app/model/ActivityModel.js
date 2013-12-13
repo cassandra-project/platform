@@ -32,6 +32,11 @@ Ext.define('C.model.ActivityModel', {
 			type: 'string'
 		},
 		{
+			defaultValue: 'exclusive',
+			name: 'config',
+			type: 'string'
+		},
+		{
 			name: 'description',
 			type: 'string'
 		},

@@ -164,13 +164,6 @@ Ext.define('C.view.PricingForm', {
 						{
 							xtype: 'numberfield',
 							width: 200,
-							fieldLabel: 'Maximum power',
-							labelWidth: 60,
-							name: 'maximumPower'
-						},
-						{
-							xtype: 'numberfield',
-							width: 200,
 							fieldLabel: 'Energy Price',
 							labelWidth: 60,
 							name: 'energyPrice2'
@@ -340,7 +333,6 @@ Ext.define('C.view.PricingForm', {
 			'energyPrice' : (values.type == 'EnergyPowerPricing') ? values.energyPrice : (values.type == 'MaximumPowerPricing') ? values.energyPrice2 : 0,
 			'powerPrice' : (values.type == 'EnergyPowerPricing')  ? values.powerPrice : (values.type == 'MaximumPowerPricing') ?  values.powerPrice2 : 0,
 			'contractedEnergy' : (values.type == 'AllInclusivePricing') ? values.contractedEnergy : 0,
-			'maximumPower' : (values.type == 'MaximumPowerPricing') ? values.maximumPower : 0,
 			'fixedCost' : (values.type == 'AllInclusivePricing') ? values.fixedCost : 0,
 			'additionalCost' : (values.type == 'AllInclusivePricing') ? values.additionalCost : 0,
 			'timezones': timezones

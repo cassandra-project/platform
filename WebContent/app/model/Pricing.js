@@ -52,10 +52,6 @@ Ext.define('C.model.Pricing', {
 			type: 'float'
 		},
 		{
-			name: 'maximumPower',
-			type: 'float'
-		},
-		{
 			name: 'energyPrice',
 			type: 'float'
 		},
