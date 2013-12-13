@@ -73,7 +73,7 @@ public class Response {
 			double awareness, double sensitivity) {
 		double[] result = Arrays.copyOf(values, values.length);
 		PricingVector pricingVector = new PricingVector(basicScheme, newScheme);
-		System.out.println(pricingVector.getNumberOfRewards());
+		pricingVector.show();
 		IncentiveVector inc = new IncentiveVector(basicScheme, newScheme);
 		if (pricingVector.getPricings().size() > 1)
 			for (Incentive incentive: inc.getIncentives())

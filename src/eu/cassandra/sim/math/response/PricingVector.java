@@ -170,7 +170,7 @@ public class PricingVector
 	   * This function is used for the exhibition of the details of the attributes
 	   * contained in the Pricings Vector.
 	   */
-	  private void show ()
+	  public void show ()
 	  {
 	    // for (int i = 0; i < pricings.size(); i++)
 	    // pricings.get(i).status();
