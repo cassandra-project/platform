@@ -35,7 +35,7 @@ public class Response {
 			double awareness, 
 			double sensitivity, 
 			String responseType) {
-			double w = 10;
+			double w = 2;
 			double[] previousHist = pd.getHistogram();
 			double[] newHist = new double[Constants.MIN_IN_DAY];
 			double[] policyArr = policy.getTOUArray();
