@@ -33,6 +33,7 @@ import edu.uci.ics.jung.algorithms.layout.AggregateLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import edu.uci.ics.jung.io.PajekNetWriter;
 import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
@@ -68,6 +69,19 @@ public class SaveGraphImg {
 		String fileName =  Calendar.getInstance().getTimeInMillis() + ".png";
 		File outputfile = new File(IServletContextListener.graphs.getAbsolutePath()  + "/" +fileName);
 		ImageIO.write(image, "png", outputfile);
+		exportNetworkToFile(graph, "/resources/graphs/" + fileName);
 		return "/resources/graphs/" + fileName;
+	}
+
+
+	private String exportNetworkToFile(Graph<MyNode, String> graph, String fileName) {
+		try {
+			PajekNetWriter<MyNode, String> writer = new PajekNetWriter<MyNode, String>();
+			fileName += ".pajek";
+			writer.save(graph, fileName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return fileName;
 	}
 }

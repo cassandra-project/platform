@@ -351,6 +351,7 @@ public class MongoCluster {
 			}
 			String img = new SaveGraphImg().saveImg(nodes, edges);
 			clusterObject.put("img", img);
+			clusterObject.put("pajek", img + ".pajek");
 
 			Vector<DBObject> allClusters = new Vector<DBObject>();
 

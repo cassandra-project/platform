@@ -82,6 +82,7 @@ public class MongoGraphs {
 				String img = new SaveGraphImg().saveImg(nodes,edges);
 				DBObject d = DBConn.getConn().getCollection(COL_GRAPHS).findOne(new BasicDBObject("_id",new ObjectId(graph_id)));
 				d.put("img", img);
+				d.put("pajek", img + ".pajek");
 				DBConn.getConn().getCollection(COL_GRAPHS).save(d);
 				((DBObject)answer.get("data")).put("img", img);
 
