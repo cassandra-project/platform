@@ -107,6 +107,17 @@ public class Runs {
 	 * <i>Run the thread</i>
 	 * <i>Store the run document</i>
 	 * </ol>
+	 * 
+	 * if with CSN
+	 * <ol>
+	 * <li>Check that the db of the run_id exists</li>
+	 * <li>Get the scenario</li>
+	 * <li>Update the scenario</li>
+	 * <li>Re run</li>
+	 * </ol>
+	 * 
+	 * Change how the run handles the pricing schemes.
+	 * 
 	 */
 	@POST
 	public Response createRun(String message) {

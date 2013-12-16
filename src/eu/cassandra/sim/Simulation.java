@@ -472,6 +472,7 @@ public class Simulation implements Runnable {
 	    			String actmodType = (String)actmodDoc.get("type");
 	    			String actmodDayType = (String)actmodDoc.get("day_type");
 	    			boolean shiftable = Utils.getBoolean(actmodDoc.get("shiftable"));
+	    			boolean exclusive = Utils.getEquality(actmodDoc.get("config"), "exclusive", true);
 	    			DBObject duration = (DBObject)actmodDoc.get("duration");
 	    			durDist = json2dist(duration);
 	    			DBObject start = (DBObject)actmodDoc.get("start");
@@ -482,6 +483,7 @@ public class Simulation implements Runnable {
 	    			act.addStartTime(actmodDayType, startDist);
 	    			act.addTimes(actmodDayType, timesDist);
 	    			act.addShiftable(actmodDayType, shiftable);
+	    			act.addConfig(actmodDayType, exclusive);
 	    			// add appliances
 		    		BasicDBList containsAppliances = (BasicDBList)actmodDoc.get("containsAppliances");
 		    		for(int l = 0; l < containsAppliances.size(); l++) {
@@ -612,6 +614,7 @@ public class Simulation implements Runnable {
 		    			String actmodType = (String)actmodDoc.get("type");
 		    			String actmodDayType = (String)actmodDoc.get("day_type");
 		    			boolean shiftable = Utils.getBoolean(actmodDoc.get("shiftable"));
+		    			boolean exclusive = Utils.getEquality(actmodDoc.get("config"), "exclusive", true);
 		    			DBObject duration = (DBObject)actmodDoc.get("duration");
 		    			act.addDurations(duration);
 		    			durDist = json2dist(duration);
@@ -628,6 +631,7 @@ public class Simulation implements Runnable {
 		    			act.addStartTime(actmodDayType, startDist);
 		    			act.addTimes(actmodDayType, timesDist);
 		    			act.addShiftable(actmodDayType, shiftable);
+		    			act.addConfig(actmodDayType, exclusive);
 		    			// add appliances
 			    		BasicDBList containsAppliances = (BasicDBList)actmodDoc.get("containsAppliances");
 			    		for(int m = 0; m < containsAppliances.size(); m++) {
