@@ -591,14 +591,15 @@ public class MongoDBQueries {
 			dbName = getDbNameFromHTTPHeader(httpHeaders);
 		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
 			double values[] = null;
+			String type = null;
 			if(dBObject.containsField("parameters")){
-				String type = MongoActivityModels.REF_DISTR_STARTTIME ;
+				type = MongoActivityModels.REF_DISTR_STARTTIME ;
 				if(DBConn.getConn(dbName).getCollection("act_models").
-						findOne(new BasicDBObject("duration._id",new ObjectId(id) )) != null) {
+						findOne(new BasicDBObject("duration", id)) != null) {
 					type = MongoActivityModels.REF_DISTR_DURATION;
 				}
 				else if (DBConn.getConn(dbName).getCollection("act_models").
-						findOne(new BasicDBObject("repeatsNrOfTime._id",new ObjectId(id))) != null) {
+						findOne(new BasicDBObject("repeatsNrOfTime", id)) != null) {
 					type = MongoActivityModels.REF_DISTR_REPEATS;
 				}
 				values = new GUIDistribution(type, dBObject).getValues();
@@ -618,6 +619,14 @@ public class MongoDBQueries {
 				}
 				dBObject.put("values", list);
 				dBObject.put("exp", exp);
+				System.out.println(type + " " + values.length);
+				if(type.equalsIgnoreCase(MongoActivityModels.REF_DISTR_REPEATS)) {
+					if(values.length <= 100) {
+						dBObject.put("chartType", "bars");
+					} else {
+						dBObject.put("chartType", "line");
+					}
+				}
 			}
 		}
 		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS)  ) {
