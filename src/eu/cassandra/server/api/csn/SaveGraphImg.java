@@ -69,7 +69,7 @@ public class SaveGraphImg {
 		String fileName =  Calendar.getInstance().getTimeInMillis() + ".png";
 		File outputfile = new File(IServletContextListener.graphs.getAbsolutePath()  + "/" +fileName);
 		ImageIO.write(image, "png", outputfile);
-		exportNetworkToFile(graph, "/resources/graphs/" + fileName);
+		exportNetworkToFile(graph, fileName);
 		return "/resources/graphs/" + fileName;
 	}
 
@@ -77,11 +77,11 @@ public class SaveGraphImg {
 	private String exportNetworkToFile(Graph<MyNode, String> graph, String fileName) {
 		try {
 			PajekNetWriter<MyNode, String> writer = new PajekNetWriter<MyNode, String>();
-			fileName += ".pajek";
-			writer.save(graph, fileName);
+			File outputfile = new File(IServletContextListener.graphs.getAbsolutePath()  + "/" +fileName + ".pajek");
+			writer.save(graph, outputfile.getPath());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return fileName;
+		return fileName + ".pajek";
 	}
 }

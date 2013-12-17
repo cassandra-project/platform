@@ -85,6 +85,7 @@ public class MongoGraphs {
 				d.put("pajek", img + ".pajek");
 				DBConn.getConn().getCollection(COL_GRAPHS).save(d);
 				((DBObject)answer.get("data")).put("img", img);
+				((DBObject)answer.get("data")).put("pajek", img + ".pajek");
 
 				return answer.toString();
 			}catch(Exception e) {
