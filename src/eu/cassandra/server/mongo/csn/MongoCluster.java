@@ -351,6 +351,7 @@ public class MongoCluster {
 			}
 			String img = new SaveGraphImg().saveImg(nodes, edges);
 			clusterObject.put("img", img);
+			clusterObject.put("pajek", img + ".pajek");
 
 			Vector<DBObject> allClusters = new Vector<DBObject>();
 
@@ -359,7 +360,15 @@ public class MongoCluster {
 				DBObject cl = new BasicDBObject();
 				cl.put("name", "cluster" + j);
 				cl.put("pricing_id", "");
-				cl.put("installations", clusters.get(j));
+
+				Vector<String> nodesInClusters = clusters.get(j);
+				Vector<String> installationsInClusters = new Vector<String>();
+				for(String nodeInClusters : nodesInClusters) {
+					String installationID = DBConn.getConn().getCollection(MongoGraphs.COL_CSN_NODES).findOne(new BasicDBObject("_id",new ObjectId(nodeInClusters))).get("inst_id").toString();
+					installationsInClusters.add(installationID);
+				}
+				cl.put("installations", installationsInClusters);
+				//cl.put("installations", clusters.get(j));
 
 				allClusters.add(cl);
 				//clusterObject.put("cluster_" + j, clusters.get(j));

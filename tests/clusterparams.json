@@ -1,7 +1,7 @@
 {
 "clusterbasedon": "AverageActivePowerPerHour",
 "clustermethod": "hierarchical",
-"graph_id": "52247bbae4b054a0a7f9a753",
-"n": 3,
+"graph_id": "521b693ae4b004eb84344925",
+"n": 2,
 "name": "Clustering params A"
 } 

@@ -27,12 +27,15 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.collections15.Transformer;
+
 import com.mongodb.DBObject;
 
 import edu.uci.ics.jung.algorithms.layout.AggregateLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import edu.uci.ics.jung.io.PajekNetWriter;
 import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
@@ -41,8 +44,9 @@ import edu.uci.ics.jung.visualization.renderers.Renderer;
 import eu.cassandra.server.IServletContextListener;
 
 public class SaveGraphImg {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String saveImg(Vector<DBObject> nodes, Vector<DBObject> edges) throws IOException {
-
+try {
 		AggregateLayout<MyNode,String> aggrLayout = new AggregateLayout<MyNode,String>(new FRLayout<MyNode,String>(SparseMultigraph.<MyNode,String>getFactory().create()));
 		Graph<MyNode, String> graph = aggrLayout.getGraph();
 		HashMap<String,MyNode> n = new HashMap<String,MyNode>();
@@ -58,7 +62,12 @@ public class SaveGraphImg {
 		VisualizationImageServer<MyNode,String> vis = new VisualizationImageServer<MyNode,String>(vv.getGraphLayout(),
 				vv.getGraphLayout().getSize());
 		vis.setBackground(Color.WHITE);
-		vis.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<String>());
+		//vis.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<String>());
+		vis.getRenderContext().setEdgeLabelTransformer(new Transformer() {
+		    public String transform(Object e) {
+		        return "";
+		    }
+		});
 		vis.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<MyNode, String>());
 		vis.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<MyNode>());
 		vis.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
@@ -68,6 +77,23 @@ public class SaveGraphImg {
 		String fileName =  Calendar.getInstance().getTimeInMillis() + ".png";
 		File outputfile = new File(IServletContextListener.graphs.getAbsolutePath()  + "/" +fileName);
 		ImageIO.write(image, "png", outputfile);
+		exportNetworkToFile(graph, fileName);
 		return "/resources/graphs/" + fileName;
+}catch(Exception e) {
+	e.printStackTrace();
+	return "";
+}
+	}
+
+
+	private String exportNetworkToFile(Graph<MyNode, String> graph, String fileName) {
+		try {
+			PajekNetWriter<MyNode, String> writer = new PajekNetWriter<MyNode, String>();
+			File outputfile = new File(IServletContextListener.graphs.getAbsolutePath()  + "/" +fileName + ".pajek");
+			writer.save(graph, outputfile.getPath());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return fileName + ".pajek";
 	}
 }

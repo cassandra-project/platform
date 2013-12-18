@@ -1,5 +1,7 @@
 package eu.cassandra.sim.math.response;
 
+import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,14 +9,24 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.MongoException;
+
+import eu.cassandra.server.mongo.MongoPricingPolicy;
 import eu.cassandra.sim.PricingPolicy;
+import eu.cassandra.sim.math.Gaussian;
 import eu.cassandra.sim.math.Histogram;
 import eu.cassandra.sim.math.ProbabilityDistribution;
 import eu.cassandra.sim.utilities.Constants;
 
 public class Response {
 	
-	private static final int SHIFTING_WINDOW_IN_MINUTES = 120;
+	private static final int SHIFTING_WINDOW_IN_MINUTES = 60;
 	private static final double SMALL_NUMBER = 0.0000001;
 	
 	public static ProbabilityDistribution respond(ProbabilityDistribution pd, 
@@ -23,6 +35,7 @@ public class Response {
 			double awareness, 
 			double sensitivity, 
 			String responseType) {
+			double w = 2;
 			double[] previousHist = pd.getHistogram();
 			double[] newHist = new double[Constants.MIN_IN_DAY];
 			double[] policyArr = policy.getTOUArray();
@@ -31,13 +44,13 @@ public class Response {
 				case "None":
 					return pd;
 				case "Optimal":
-					newHist = shiftingOptimal(previousHist, baseArr, policyArr, awareness, sensitivity);
+					newHist = shiftingOptimal(previousHist, baseArr, policyArr, w * awareness, w * sensitivity);
 					break;
 				case "Normal":
-					newHist = shiftingNormal(previousHist, baseArr, policyArr, awareness, sensitivity);
+					newHist = shiftingNormal(previousHist, baseArr, policyArr, w * awareness, w * sensitivity);
 					break;
 				case "Discrete":
-					newHist = shiftingDiscrete(previousHist, baseArr, policyArr, awareness, sensitivity);
+					newHist = shiftingDiscrete(previousHist, baseArr, policyArr, w * awareness, w * sensitivity);
 					break;
 				case "Daily":
 					newHist = shiftingDaily(previousHist, baseArr, policyArr, awareness, sensitivity);
@@ -61,6 +74,7 @@ public class Response {
 			double awareness, double sensitivity) {
 		double[] result = Arrays.copyOf(values, values.length);
 		PricingVector pricingVector = new PricingVector(basicScheme, newScheme);
+		pricingVector.show();
 		IncentiveVector inc = new IncentiveVector(basicScheme, newScheme);
 		if (pricingVector.getPricings().size() > 1)
 			for (Incentive incentive: inc.getIncentives())
@@ -610,5 +624,32 @@ public class Response {
 
 	    return Arrays.copyOf(result, result.length);
 	  }
+	 
+	 public static void main(String[] args) throws UnknownHostException, MongoException, ParseException {
+		    Gaussian g = new Gaussian(840, 100);
+		    g.precompute(0, 1439, 1440);
+		    System.out.println(Arrays.toString(g.getHistogram()));
+		    String prc_id = "52aa0f7f712edbccc313a1b3";
+			DBObject query = new BasicDBObject(); // A query
+			query.put("_id", new ObjectId(prc_id));
+			Mongo m = new Mongo("cassandra.iti.gr");
+			DB db = m.getDB("test");
+			DBObject pricingPolicy = db.getCollection(MongoPricingPolicy.COL_PRICING).findOne(query);
+			PricingPolicy pp1 = new PricingPolicy(pricingPolicy);
+			System.out.println(pp1.getTOUArray().length);
+			System.out.println(Arrays.toString(pp1.getTOUArray()));
+			prc_id = "52aa161b712edbccc31438f2";
+			query = new BasicDBObject(); // A query
+			query.put("_id", new ObjectId(prc_id));
+			m = new Mongo("cassandra.iti.gr");
+			db = m.getDB("test");
+			pricingPolicy = db.getCollection(MongoPricingPolicy.COL_PRICING).findOne(query);
+			PricingPolicy pp2 = new PricingPolicy(pricingPolicy);
+			System.out.println(Arrays.toString(pp2.getTOUArray()));
+			System.out.println(pp2.getTOUArray().length);
+			System.out.println(Arrays.toString(respond(g, pp2, pp1, 1, 1, "Normal").getHistogram()));
+	 }
+	 
+	 
 
 }

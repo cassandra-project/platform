@@ -59,6 +59,18 @@ public class Utils {
 		}
 	}
 	
+	public static boolean getEquality(Object o, String s, boolean onnull) {
+		if(o == null) {
+			return onnull;
+		} else {
+			if(((String)o).equalsIgnoreCase(s)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+	
 	public static double getDouble(Object o) {
 		if(o == null) {
 			return 0.0;
