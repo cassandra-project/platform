@@ -619,8 +619,7 @@ public class MongoDBQueries {
 				}
 				dBObject.put("values", list);
 				dBObject.put("exp", exp);
-				System.out.println(type + " " + values.length);
-				if(type.equalsIgnoreCase(MongoActivityModels.REF_DISTR_REPEATS)) {
+				if(((String)dBObject.get("distrType")).equalsIgnoreCase("Histogram")) {
 					if(values.length <= 100) {
 						dBObject.put("chartType", "bars");
 					} else {
