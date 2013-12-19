@@ -89,10 +89,6 @@ Ext.define('C.view.DistributionForm', {
 								beforerender: {
 									fn: me.onTextareafieldBeforeRender,
 									scope: me
-								},
-								change: {
-									fn: me.onValChange,
-									scope: me
 								}
 							}
 						},
@@ -136,42 +132,17 @@ Ext.define('C.view.DistributionForm', {
 			this.down('#val').show();
 			this.down('#params').setValue('[]');
 			this.down('#params').hide();
-			/*if (this.query('chart')[1]) {
-			this.query('chart')[1].show();
-			this.query('chart')[0].hide();
-			}*/
 		}
 		else {
 			this.down('#params').show();
 			this.down('#val').setValue('[]');
 			this.down('#val').hide();
-			/*if (this.query('chart')[1] ) {
-			this.query('chart')[1].hide();
-			this.query('chart')[0].show();
-			}*/
 		} 
-
 	},
 
 	onTextareafieldBeforeRender: function(component, eOpts) {
 		component.helpText = 'For Histogram one needs to insert values:</br>[1,2,3,4...]';
 		component.url = 'https://github.com/cassandra-project/platform/wiki/Activity-Model-form';
-	},
-
-	onValChange: function(field, newValue, oldValue, eOpts) {
-		var valuesDistr = newValue.trim();
-		try {
-			valuesDistr = JSON.parse(valuesDistr);
-		}
-		catch(e) {
-			return false;
-		}
-		if (this.query('chart')[1]) {
-			if ( valuesDistr.length > 100) {
-				this.query('chart')[1].hide();
-				this.query('chart')[0].show();
-			}
-		}
 	},
 
 	onTextareafieldBeforeRender1: function(component, eOpts) {
@@ -261,7 +232,7 @@ Ext.define('C.view.DistributionForm', {
 		distr_store.on(
 		'update', 
 		function(store, record, operation, eOpts ) {
-			if (record.isNew) {
+			if (record.isNew) { 
 				actmod_record.set(distr_type,record.get('_id') );
 				myForm.loadRecord(record);
 				myDistrChartStore.proxy.url += '/' + record.get('_id');
@@ -271,15 +242,16 @@ Ext.define('C.view.DistributionForm', {
 				var exp = store.proxy.reader.rawData.data[0].exp;
 				var html = (exp < 0) ? ' x 10<span class="sup">' + exp + '</span>'  : ' ';
 				myFormCmp.down('#expLabel').update(html);
-
-				if (myFormCmp.query('chart')[1]) {
-					if (record.get('distrType') == "Histogram") {
-						myFormCmp.query('chart')[0].hide();
-						myFormCmp.query('chart')[1].show();
-					}
-					else {
+				if (record.get('distrType') == 'Histogram') {
+					switch (record.get('chartType')) {
+						case 'line':
 						myFormCmp.query('chart')[1].hide();
 						myFormCmp.query('chart')[0].show();
+						break;
+						case 'bars':
+						myFormCmp.query('chart')[0].hide();
+						myFormCmp.query('chart')[1].show();
+						break;
 					}
 				}
 			});

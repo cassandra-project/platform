@@ -675,120 +675,98 @@ Ext.define('C.view.MyTreePanel', {
 						return progressRenderer(tmpValue, tmpText);
 					}
 				},
-				/*{
-				header: '',
-				sortable: false,
-				width: 60,
-				dataIndex: 'refresh',
-				renderer: function (v, m, r) {
-				var id = Ext.id();
-				Ext.defer(function () {
-				Ext.widget('button', {
-				renderTo: id,
-				text: 'Refresh',
-				//iconCls: 'refresh',
-				disabled: (r.get('percentage') == 100) ? true : false,
-				handler: function () { 
 
-					Ext.Ajax.request({
-						url: '/cassandra/api/runs/' + r.get('_id'),
-						method: 'GET',
-						scope: this,
-						success: function(response, opts) {
-							var o = Ext.decode(response.responseText);
-
-							r.set('percentage', o.data[0].percentage);
-							if (o.data[0].percentage == 100) {
-								r.set('ended', o.data[0].ended);
-								this.setDisabled(true);
+				{
+					sortable: false,
+					xtype: 'actioncolumn',
+					width: 17,
+					items: [{
+						tooltip: 'Refresh',
+						handler: function(grid, rowIndex, colIndex) {
+							var r = grid.getStore().getAt(rowIndex);
+							Ext.Ajax.request({
+								url: '/cassandra/api/runs/' + r.get('_id'),
+								method: 'GET',
+								scope: this,
+								success: function(response, opts) {
+									var o = Ext.decode(response.responseText);
+									var r = grid.getStore().getAt(rowIndex);
+									r.set('percentage', o.data[0].percentage);
+									if (o.data[0].percentage == 100) {
+										r.set('ended', o.data[0].ended);
+										grid.refresh();
+									}
+								}
+							});
+						},
+						getClass: function(v, meta, rec) {
+							if (rec.get('percentage') < 100 && rec.get('percentage') >= 0) {
+								return 'refresh_progress';
+							} else {
+								return 'refresh_progress_disabled';
 							}
 						}
-					});
-
-				}
-			});
-		}, 50);
-		return Ext.String.format('<div id="{0}"></div>', id);
-	}
-			}*/
-			{
-	sortable: false,
-	xtype: 'actioncolumn',
-	width: 17,
-	items: [{
-		tooltip: 'Refresh',
-		handler: function(grid, rowIndex, colIndex) {
-			var r = grid.getStore().getAt(rowIndex);
-			Ext.Ajax.request({
-				url: '/cassandra/api/runs/' + r.get('_id'),
-				method: 'GET',
-				scope: this,
-				success: function(response, opts) {
-					var o = Ext.decode(response.responseText);
-					var r = grid.getStore().getAt(rowIndex);
-					r.set('percentage', o.data[0].percentage);
-					if (o.data[0].percentage == 100) {
-						r.set('ended', o.data[0].ended);
-						grid.refresh();
+					}]
+				},
+				{
+					header: '',
+					width: 17,
+					sortable: false,
+					renderer: function (v, m, r) {
+						if (r.get('percentage') == 100 && r.get('type') == 'sim') {
+							return '<a class = "download" href = "/cassandra/resources/csvs/'+r.get('_id')+'.csv.zip" title = "Download"></a>';
+						}
+						else {
+							return '<div class = "download disabled"></div>';
+						}
 					}
 				}
+
+				);
+			}
+			else if (f.name == 'started' || f.name == 'ended'){
+				cols.push({
+					header: f.name,
+					dataIndex: f.name,
+					renderer: function (v, m, r) {
+						return (v == -1) ? '' : new Date(v);
+					}
+				});
+			}
+			/*else if (f.name == 'compare'){
+			cols.push({
+			header: f.name,
+			dataIndex: f.name,
+			renderer: function (v, m, r) {
+			return "<input type='checkbox'" + (f.value ? "checked='checked'" : "") + ">";
+			}
 			});
-		},
-		getClass: function(v, meta, rec) {
-			if (rec.get('percentage') < 100 && rec.get('percentage') >= 0) {
-				return 'refresh_progress';
-			} else {
-				return 'refresh_progress_disabled';
+
+			}*/
+			else {
+				cols.push({
+					header: C.app.getHeaderFromName(f.name),
+					dataIndex: f.name,
+					hidden: (f.type.type == 'auto') ? true : false
+				});
+			}
+		});
+
+		try {
+			if (store.navigationNode.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
+				grid.getDockedItems()[0].hide();
 			}
 		}
-	}]
-			}
-
-			);
-}
-else if (f.name == 'started' || f.name == 'ended'){
-			cols.push({
-	header: f.name,
-	dataIndex: f.name,
-	renderer: function (v, m, r) {
-		return (v == -1) ? '' : new Date(v);
-	}
-			});
-}
-/*else if (f.name == 'compare'){
-cols.push({
-header: f.name,
-dataIndex: f.name,
-renderer: function (v, m, r) {
-return "<input type='checkbox'" + (f.value ? "checked='checked'" : "") + ">";
-}
-});
-
-}*/
-else {
-			cols.push({
-	header: C.app.getHeaderFromName(f.name),
-	dataIndex: f.name,
-	hidden: (f.type.type == 'auto') ? true : false
-			});
-}
-});
-
-try {
-if (store.navigationNode.store.treeStore.tree.root.get('nodeType') == 'CassLibrary') {
-			grid.getDockedItems()[0].hide();
-}
-}
-catch (e){}
+		catch (e){}
 
 
-var grid = new C.view.DynamicGrid({
-store: myStore,
-columns: cols
-});
+		var grid = new C.view.DynamicGrid({
+			store: myStore,
+			columns: cols
+		});
 
-//grid.reconfigure(store, cols); 
-return grid;
+		//grid.reconfigure(store, cols); 
+		return grid;
 
 
 	}
