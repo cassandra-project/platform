@@ -547,10 +547,23 @@ public class MongoDBQueries {
 			Vector<DBObject> recordsVec = new Vector<DBObject>();
 			while (cursorDoc.hasNext()) {
 				DBObject obj = cursorDoc.next();
-
 				if(collection.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS) &&
 						dbObj1.containsField("_id")) {
 					obj = getValues(obj,httpHeaders,dbName, obj.get("_id").toString(),MongoDistributions.COL_DISTRIBUTIONS);
+				}
+				if(collection.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS) &&
+						dbObj1.containsField("actmod_id")) {
+					if(((String)obj.get("distrType")).equalsIgnoreCase("Histogram")) {
+						BasicDBList t = (BasicDBList)obj.get("values");
+						if(t != null) {
+							double[] values = Utils.dblist2doubleArr(t);
+							if(values.length <= 100) {
+								obj.put("chartType", "bars");
+							} else {
+								obj.put("chartType", "line");
+							}
+						}
+					}
 				}
 				else if(collection.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS) &&
 						dbObj1.containsField("_id")) {
@@ -587,6 +600,7 @@ public class MongoDBQueries {
 	 */
 	private DBObject getValues(DBObject dBObject, HttpHeaders httpHeaders, String dbName,
 			String id, String coll) throws JSONSchemaNotValidException, BadParameterException {
+		System.out.println("Here");
 		if(dbName == null)
 			dbName = getDbNameFromHTTPHeader(httpHeaders);
 		if(coll.equalsIgnoreCase(MongoDistributions.COL_DISTRIBUTIONS)) {
@@ -619,6 +633,7 @@ public class MongoDBQueries {
 				}
 				dBObject.put("values", list);
 				dBObject.put("exp", exp);
+				System.out.println((String)dBObject.get("distrType"));
 				if(((String)dBObject.get("distrType")).equalsIgnoreCase("Histogram")) {
 					if(values.length <= 100) {
 						dBObject.put("chartType", "bars");
@@ -627,8 +642,7 @@ public class MongoDBQueries {
 					}
 				}
 			}
-		}
-		else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS)  ) {
+		} else if(coll.equalsIgnoreCase(MongoConsumptionModels.COL_CONSMODELS)  ) {
 			double pvalues[] = null;
 			double qvalues[] = null;
 			double ppoints[] = null;
@@ -669,15 +683,6 @@ public class MongoDBQueries {
 				}
 			}
 			dBObject.put("values", list);
-			// Obsolete?
-			//			if((pvalues == null || pvalues.length==0) && dBObject.containsField("pvalues")) {; 
-			//				BasicDBList t = (BasicDBList)dBObject.get("pvalues");
-			//				pvalues = Utils.dblist2doubleArr(t); 
-			//			}
-			//			if((qvalues == null || qvalues.length==0) && dBObject.containsField("qvalues")) {; 
-			//				BasicDBList t = (BasicDBList)dBObject.get("qvalues");
-			//				qvalues = Utils.dblist2doubleArr(t); 
-			//			}
 		}
 
 		return dBObject;
