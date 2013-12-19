@@ -40,6 +40,11 @@ Ext.define('C.model.Distribution', {
 			type: 'string'
 		},
 		{
+			name: 'chartType',
+			persist: false,
+			type: 'string'
+		},
+		{
 			name: 'values'
 		},
 		{
