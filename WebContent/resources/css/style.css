@@ -147,6 +147,19 @@ background-color: transparent !important;
 	cursor: default;
 }
 
+.download {
+	background-image : url(../icons/download.png);
+	width: 20px;
+	height: 20px;
+	background-position : 0px 3px;
+	background-repeat: no-repeat;
+	display: block;
+}
+
+.disabled {
+	opacity: 0.5;
+}
+
 .sup {
   position: relative;
   bottom: 1ex; 

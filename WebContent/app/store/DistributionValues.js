@@ -62,9 +62,9 @@ Ext.define('C.store.DistributionValues', {
 		console.info(store, records);
 		var params, raw_data;
 		if (successful) {
-			if (store.distr_type == 'repeatsNrOfTime')
-			store.loadData(records.slice(0, 5));
-			else if ( store.proxy.reader.rawData ) {
+			/*if (store.distr_type == 'repeatsNrOfTime')
+			store.loadData(records.slice(0, 5));*/
+			if ( store.proxy.reader.rawData ) {
 				raw_data = store.proxy.reader.rawData.data[0];
 				/*if (raw_data.distrType !== 'Histogram' ) {
 				Ext.each(records, function(record){
