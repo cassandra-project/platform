@@ -82,6 +82,20 @@ Ext.define('C.view.CsnClusterForm', {
 					width: 700
 				},
 				{
+					xtype: 'displayfield',
+					renderer: function(value, displayField) {
+						if (value.length > 0) {
+							var showValueArray = value.split('/');
+							var showValue = showValueArray.length > 0 ? showValueArray.pop() : value;
+							return '<a href="/cassandra'+value+'" title="'+showValue+'">'+showValue+'</a>';
+						}
+					},
+					anchor: '100%',
+					fieldLabel: 'Pajek file',
+					name: 'pajek',
+					htmlEncode: true
+				},
+				{
 					xtype: 'fieldcontainer',
 					formBind: false,
 					itemId: 'clusterContainer',
