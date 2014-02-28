@@ -37,6 +37,18 @@ Ext.define('C.model.Csn', {
 			type: 'string'
 		},
 		{
+			convert: function(v, rec) {
+				if (v.length > 0) {
+					var showValueArray = v.split('/');
+					var showValue = showValueArray.length > 0 ? showValueArray.pop() : v;
+					return '<a href="/cassandra'+v+'" title="'+showValue+'">'+showValue+'</a>';
+				}
+			},
+			name: 'pajek',
+			persist: false,
+			type: 'string'
+		},
+		{
 			name: 'run_id'
 		},
 		{
