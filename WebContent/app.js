@@ -556,7 +556,6 @@ Ext.application({
 		*/
 		var consmodGraphStore = new C.store.ConsumptionModelValues();
 		var myResultsChart = new C.view.ConsModChart({store: consmodGraphStore, legend: {position: 'top'}});
-		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: consmodGraphStore});
 		myFormCmp.insert(3, myResultsChart);
 
 		consmod_store = new C.store.ConsumptionModels({
@@ -856,7 +855,7 @@ Ext.application({
 
 		myResultsStore = new C.store.Results({});
 		myResultsChart = new C.view.ResultsLineChart({store: myResultsStore});
-		var myMask = new Ext.LoadMask(myResultsChart, { msg: 'Please wait...', store: myResultsStore});
+
 		myFormCmp.insert(2, myResultsChart);
 		myResultsStore.load();
 
