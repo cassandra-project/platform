@@ -30,7 +30,7 @@ Ext.define('C.view.DynamicGrid', {
 			viewConfig: {
 				overflowX: 'auto',
 				overflowY: 'auto',
-				loadingText: 'loading..',
+				loadMask: false,
 				plugins: [
 					Ext.create('Ext.grid.plugin.DragDrop', {
 						containerScroll: true,

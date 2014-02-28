@@ -21,6 +21,10 @@ Ext.define('C.controller.setDbName', {
 		//set max loaded records limit
 		C.limit = 200;
 
+		//increase request timeout
+		Ext.override(Ext.data.proxy.Ajax, { timeout: 60000 });
+		Ext.override(Ext.form.action.Action, { timeout: 60 });
+
 		//prevent pop up windows move out of browser area
 		Ext.override(Ext.Window, {
 			constrainHeader: true
@@ -89,9 +93,21 @@ Ext.define('C.controller.setDbName', {
 		Ext.data.Connection.on('beforerequest', function(conn, options, eOpts) {
 			if (!options.headers)
 			options.headers = (C.dbname) ? { "dbname": C.dbname, 'Authorization': Ext.util.Cookies.get('auth')} : {'Authorization': C.auth};
+			if (Ext.getCmp("MainTabPanel")) {
+				Ext.getCmp("MainTabPanel").setLoading();
+			}
+		});
+
+		Ext.data.Connection.on('requestcomplete', function(conn, options, eOpts) {
+			if (Ext.getCmp("MainTabPanel")) {
+				Ext.getCmp("MainTabPanel").setLoading(false);
+			}
 		});
 
 		Ext.data.Connection.on('requestexception', function(conn, response, options, eOpts) {
+			if (Ext.getCmp("MainTabPanel")) {
+				Ext.getCmp("MainTabPanel").setLoading(false);
+			}
 			var msg = '';
 			try {
 				var response_obj = JSON.parse(response.responseText);
