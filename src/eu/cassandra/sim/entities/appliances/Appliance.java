@@ -19,10 +19,13 @@ import com.mongodb.BasicDBObject;
 
 import eu.cassandra.server.api.exceptions.BadParameterException;
 import eu.cassandra.server.mongo.MongoAppliances;
+import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel.Tripplet;
 import eu.cassandra.sim.entities.installations.Installation;
+import eu.cassandra.sim.entities.people.Activity;
 import eu.cassandra.sim.utilities.Constants;
+import eu.cassandra.sim.utilities.ORNG;
 import eu.cassandra.sim.utilities.RNG;
 
 /**
@@ -43,6 +46,16 @@ public class Appliance extends Entity {
 	private boolean inUse;
 	private long onTick;
 	private String who;
+	private Activity what;
+	
+	private double maxPower = 0;
+	private double cycleMaxPower = 0;
+	private double avgPower = 0;
+	private double energy = 0;
+	private double previousEnergy = 0;
+	private double energyOffpeak = 0;
+	private double previousEnergyOffpeak = 0;
+	private double cost = 0;
 	
 	public static class Builder {
 		// Required variables
@@ -78,12 +91,12 @@ public class Appliance extends Entity {
 			standByConsumption = astandy;
 			base = abase;
 		}
-		public Appliance build() {
-			return new Appliance(this);
+		public Appliance build(ORNG orng) {
+			return new Appliance(this, orng);
 		}
 	}
 	
-	private Appliance(Builder builder) {
+	private Appliance(Builder builder, ORNG orng) {
 		id = builder.id;
 		name = builder.name;
 		description = builder.description;
@@ -94,7 +107,7 @@ public class Appliance extends Entity {
 		qcm = builder.qcm;
 		base = builder.base;
 		inUse = (base) ? true : false;
-		onTick = (base) ? -RNG.nextInt(Constants.MIN_IN_DAY) : builder.onTick;
+		onTick = (base) ? -orng.nextInt(Constants.MIN_IN_DAY) : builder.onTick;
 		who = builder.who;
 	}
 
@@ -175,10 +188,11 @@ public class Appliance extends Entity {
 		}
 	}
 
-	public void turnOn(long tick, String awho) {
+	public void turnOn(long tick, String awho, Activity awhat) {
 		inUse = true;
 		onTick = tick;
 		who = awho;
+		what = awhat;
 	}
 
 	public long getOnTick() {
@@ -189,9 +203,12 @@ public class Appliance extends Entity {
 		return who;
 	}
 	
+	public Activity getWhat() {
+		return what;
+	}
+	
 	public static void main(String[] args) throws BadParameterException {
 		// TODO [TEST] check the getPower method
-		RNG.init();
 		String p = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		String q = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"q\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"q\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"q\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"q\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"q\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"q\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
 		Appliance freezer = new Appliance.Builder("id2",
@@ -202,7 +219,7 @@ public class Appliance extends Entity {
 				new ConsumptionModel(p, "p"),
 				new ConsumptionModel(q, "q"),
 				2f,
-				true).build();
+				true).build(new ORNG());
 		System.out.println(freezer.getId());
 		System.out.println(freezer.getName());
 		for(int i = 0; i < 200; i++) {
@@ -224,5 +241,48 @@ public class Appliance extends Entity {
 	public String getCollection() {
 		return MongoAppliances.COL_APPLIANCES;
 	}
+	
+    public void updateMaxPower(double power) {
+    	if(power > maxPower) maxPower = power;
+    	if(power > cycleMaxPower) cycleMaxPower = power;
+    }
+    
+    public double getMaxPower() {
+    	return maxPower;
+    }
+    
+    public void updateAvgPower(double powerFraction) {
+    	avgPower += powerFraction;
+    }
+    
+    public double getAvgPower() {
+    	return avgPower;
+    }
+    
+    public void updateEnergy(double power) {
+    	energy += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
+    }
+    
+    public void updateEnergyOffpeak(double power) {
+    	energyOffpeak += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
+    }
+    
+    public void updateCost(PricingPolicy pp, int tick) {
+    	cost += pp.calculateCost(energy, previousEnergy, energyOffpeak, previousEnergyOffpeak, tick, cycleMaxPower);
+    	cycleMaxPower = 0;
+    	previousEnergy = energy;
+    	previousEnergyOffpeak = energyOffpeak;
+    	if(what != null) {
+    		what.updateCost(pp, tick);
+    	}
+    }
+    
+    public double getEnergy() {
+    	return energy;
+    }
+    
+    public double getCost() {
+    	return cost;
+    }
 	
 }

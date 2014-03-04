@@ -20,6 +20,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import eu.cassandra.sim.utilities.RNG;
+
 public class TestGaussian {
 	
 	@Test
@@ -36,7 +38,7 @@ public class TestGaussian {
 	    }
 
 	    GaussianMixtureModels g = new GaussianMixtureModels(num, pi, means, sigmas);
-	    assertTrue(g.getPrecomputedBin() == -1);
+	    assertTrue(g.getPrecomputedBin(RNG.nextDouble()) == -1);
 	    
 	}
 	

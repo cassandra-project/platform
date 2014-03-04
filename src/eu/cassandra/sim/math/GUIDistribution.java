@@ -68,11 +68,16 @@ public class GUIDistribution {
 		case "Uniform Distribution":
 			double start = Double.parseDouble(parameters.get("start").toString());
 			double end = Double.parseDouble(parameters.get("end").toString());
-			prob = new Uniform(start, end);
+			System.out.println(start + " " + end);
 			if (type.equalsIgnoreCase("duration")){
-				endValue = (int)end + 10;
+				end = (int)end + 10;
 			}
-			prob.precompute(endValue);
+			if (type.equalsIgnoreCase("duration")){
+				prob = new Uniform(start, end, false);
+			} else {
+				prob = new Uniform(start, end, true);
+			}
+//			prob.precompute(endValue);
 			break;
 		case "Gaussian Mixture Models":
    			int length = tempList.size();

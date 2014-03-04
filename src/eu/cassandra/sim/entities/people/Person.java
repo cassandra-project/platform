@@ -25,6 +25,7 @@ import eu.cassandra.sim.Event;
 import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.installations.Installation;
+import eu.cassandra.sim.utilities.ORNG;
 
 public class Person extends Entity {
 
@@ -82,9 +83,9 @@ public class Person extends Entity {
   	}
   
     public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
-    		PricingPolicy pricing, PricingPolicy baseline, String responseType) {
+    		PricingPolicy pricing, PricingPolicy baseline, String responseType, ORNG orng) {
     	for(Activity activity: activities) {
-    		activity.updateDailySchedule(tick, queue, pricing, baseline, awareness, sensitivity, responseType);
+    		activity.updateDailySchedule(tick, queue, pricing, baseline, awareness, sensitivity, responseType, orng);
     	}
     }
 

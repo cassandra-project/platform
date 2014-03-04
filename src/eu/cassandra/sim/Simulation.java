@@ -16,6 +16,7 @@
 package eu.cassandra.sim;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -56,7 +57,7 @@ import eu.cassandra.sim.math.Histogram;
 import eu.cassandra.sim.math.ProbabilityDistribution;
 import eu.cassandra.sim.math.Uniform;
 import eu.cassandra.sim.utilities.Constants;
-import eu.cassandra.sim.utilities.RNG;
+import eu.cassandra.sim.utilities.ORNG;
 import eu.cassandra.sim.utilities.Utils;
 
 /**
@@ -94,6 +95,8 @@ public class Simulation implements Runnable {
 	private String dbname;
 	
 	private String resources_path;
+	
+	private ORNG orng;
 
 	public Collection<Installation> getInstallations () {
 		return installations;
@@ -111,13 +114,19 @@ public class Simulation implements Runnable {
 		return endTick;
 	}
   
-	public Simulation(String ascenario, String adbname, String aresources_path) {
+	public Simulation(String ascenario, String adbname, String aresources_path, int seed) {
 		scenario = ascenario;
 		dbname = adbname;
 		resources_path = aresources_path;
 		m = new MongoResults(dbname);
 		m.createIndexes();
-  		RNG.init();
+		
+		if(seed > 0) {
+			orng = new ORNG(seed);
+		} else {
+			orng = new ORNG();
+		}
+  		
 	}
   
   	public SimulationParams getSimulationWorld () {
@@ -154,7 +163,7 @@ public class Simulation implements Runnable {
 //  	  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
   	  					for (Installation installation: installations) {
 //  						System.out.println(installation.getName());
-  	  						installation.updateDailySchedule(tick, queue, pricing, baseline_pricing, simulationWorld.getResponseType());
+  	  						installation.updateDailySchedule(tick, queue, pricing, baseline_pricing, simulationWorld.getResponseType(), orng);
   	  						
   	  					}
 //  					System.out.println("Daily queue size: " + queue.size() + "(" + 
@@ -197,6 +206,7 @@ public class Simulation implements Runnable {
 		  				} else {
 		  					installation.updateEnergy(p);
 		  				}
+		  				installation.updateAppliancesAndActivitiesConsumptions(tick, endTick, pricing);
 		  				m.addTickResultForInstallation(tick, 
 		  						installation.getId(), 
 		  						p * mcrunsRatio, 
@@ -208,11 +218,11 @@ public class Simulation implements Runnable {
 		  				avgQPowerPerHour += q;
 		  				avgPPowerPerHourPerInst[counter] += p;
 		  				avgQPowerPerHourPerInst[counter] += q;
-		//  				String name = installation.getName();
+		  				String name = installation.getName();
 		//  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  				+ "Power: " + power);
-		//  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
-		//  		  				+ "Power: " + power);
+		  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
+		  		  				+ "Power: " + p);
 		  				if((tick + 1) % (Constants.MIN_IN_DAY *  pricing.getBillingCycle()) == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
 		  					installation.updateCost(pricing, tick);
 		  				}
@@ -283,6 +293,8 @@ public class Simulation implements Runnable {
   	  						installation.getEnergy() * mcrunsRatio, 
   	  						installation.getCost() * mcrunsRatio,
   	  						installation.getEnergy() * co2 * mcrunsRatio);
+  	  				installation.addAppliancesKPIs(m, mcrunsRatio, co2);
+  	  				installation.addActivitiesKPIs(m, mcrunsRatio, co2);
   	  			}
   	  			cost += pricing.calculateCost(energy, 
   	  					billingCycleEnergy,
@@ -300,6 +312,7 @@ public class Simulation implements Runnable {
   			}
   			// Write installation results to csv file
   			String filename = resources_path + "/csvs/" + dbname + ".csv";
+  			System.out.println(filename);
   			File csvFile = new File(filename);
   			FileWriter fw = new FileWriter(csvFile);
   			String row = "tick";
@@ -438,7 +451,7 @@ public class Simulation implements Runnable {
 	    				pconsmod,
 	    				qconsmod,
 	    				standy,
-	            		base).build();
+	            		base).build(orng);
 	    		existing.put(appid, app);
 	    		inst.addAppliance(app);
 	    	}
@@ -460,8 +473,9 @@ public class Simulation implements Runnable {
 	    		DBObject activityDoc = (DBObject)personDoc.get("activity"+j);
 	    		String activityName = (String)activityDoc.get("name");
 	    		String activityType = (String)activityDoc.get("type");
+	    		String actid = ((ObjectId)activityDoc.get("_id")).toString();
 	    		int actmodcount = ((Integer)activityDoc.get("actmodcount")).intValue();
-	    		Activity act = new Activity.Builder(activityName, "", 
+	    		Activity act = new Activity.Builder(actid, activityName, "", 
 	    				activityType, simulationWorld).build();
 	    		ProbabilityDistribution startDist;
 	    		ProbabilityDistribution durDist;
@@ -474,11 +488,11 @@ public class Simulation implements Runnable {
 	    			boolean shiftable = Utils.getBoolean(actmodDoc.get("shiftable"));
 	    			boolean exclusive = Utils.getEquality(actmodDoc.get("config"), "exclusive", true);
 	    			DBObject duration = (DBObject)actmodDoc.get("duration");
-	    			durDist = json2dist(duration);
+	    			durDist = json2dist(duration, "duration");
 	    			DBObject start = (DBObject)actmodDoc.get("start");
-	    			startDist = json2dist(start);
+	    			startDist = json2dist(start, "start");
 	    			DBObject rep = (DBObject)actmodDoc.get("repetitions");
-	    			timesDist = json2dist(rep);
+	    			timesDist = json2dist(rep, "reps");
 	    			act.addDuration(actmodDayType, durDist);
 	    			act.addStartTime(actmodDayType, startDist);
 	    			act.addTimes(actmodDayType, timesDist);
@@ -548,7 +562,7 @@ public class Simulation implements Runnable {
 	    				pconsmod,
 	    				qconsmod,
 	    				standy,
-	            		base).build();
+	            		base).build(orng);
 	    		existing.put(appid, app);
 	    	}
 	    	
@@ -565,7 +579,7 @@ public class Simulation implements Runnable {
 	    		Double prob = gens.get(key);
 	    		if(prob != null) {
 	    			double probValue = prob.doubleValue();
-	    			if(RNG.nextDouble() < probValue) {
+	    			if(orng.nextDouble() < probValue) {
     					Appliance selectedApp = existing.get(key);
     					selectedApp.setParentId(inst.getId());
     			    	String app_id = addEntity(selectedApp, jump);
@@ -601,8 +615,9 @@ public class Simulation implements Runnable {
 		    		DBObject activityDoc = (DBObject)personDoc.get("activity"+k);
 		    		String activityName = (String)activityDoc.get("name");
 		    		String activityType = (String)activityDoc.get("type");
+		    		String actid = ((ObjectId)activityDoc.get("_id")).toString();
 		    		int actmodcount = Utils.getInt(activityDoc.get("actmodcount"));
-		    		Activity act = new Activity.Builder(activityName, "", 
+		    		Activity act = new Activity.Builder(actid, activityName, "", 
 		    				activityType, simulationWorld).build();
 		    		ProbabilityDistribution startDist;
 		    		ProbabilityDistribution durDist;
@@ -617,15 +632,15 @@ public class Simulation implements Runnable {
 		    			boolean exclusive = Utils.getEquality(actmodDoc.get("config"), "exclusive", true);
 		    			DBObject duration = (DBObject)actmodDoc.get("duration");
 		    			act.addDurations(duration);
-		    			durDist = json2dist(duration);
+		    			durDist = json2dist(duration, "duration");
 		    			//System.out.println(durDist.getPrecomputedBin());
 		    			DBObject start = (DBObject)actmodDoc.get("start");
 		    			act.addStarts(start);
-		    			startDist = json2dist(start);
+		    			startDist = json2dist(start, "start");
 		    			//System.out.println(startDist.getPrecomputedBin());
 		    			DBObject rep = (DBObject)actmodDoc.get("repetitions");
 		    			act.addTimes(rep);
-		    			timesDist = json2dist(rep);
+		    			timesDist = json2dist(rep, "reps");
 		    			//System.out.println(timesDist.getPrecomputedBin());
 		    			act.addDuration(actmodDayType, durDist);
 		    			act.addStartTime(actmodDayType, startDist);
@@ -646,7 +661,7 @@ public class Simulation implements Runnable {
 		    	existingPersons.put(personid, person);
 	    	}
 	    	
-	    	double roulette = RNG.nextDouble();
+	    	double roulette = orng.nextDouble();
 	    	double sum = 0;
 	    	for(int k = 0; k < generators.size(); k++) {
 	    		DBObject generator = (DBObject)generators.get(k);
@@ -696,7 +711,7 @@ public class Simulation implements Runnable {
   		
   	}
   
-	public static ProbabilityDistribution json2dist(DBObject distribution) throws Exception {
+	public static ProbabilityDistribution json2dist(DBObject distribution, String flag) throws Exception {
   		String distType = (String)distribution.get("distrType");
   		switch (distType) {
   		case ("Normal Distribution"):
@@ -712,8 +727,13 @@ public class Simulation implements Runnable {
    			DBObject unifDoc = (DBObject)unifList.get(0);
    			double from = Double.parseDouble(unifDoc.get("start").toString()); 
    			double to = Double.parseDouble(unifDoc.get("end").toString()); 
-   			Uniform uniform = new Uniform(from, to);
-   			uniform.precompute(from, to, (int) to + 1);
+   			System.out.println(from + " " + to);
+   			Uniform uniform = null;
+   			if(flag.equalsIgnoreCase("start")) {
+   				uniform = new Uniform(Math.max(from-1,0), Math.min(to-1, 1439), true);
+   			} else {
+   				uniform = new Uniform(from, to, false);
+   			}
    			return uniform;
    		case ("Gaussian Mixture Models"):
         	BasicDBList mixList = (BasicDBList)distribution.get("parameters");

@@ -162,13 +162,13 @@ public class GaussianMixtureModels implements ProbabilityDistribution
     return histogram[bin];
   }
 
-  public int getPrecomputedBin ()
+  public int getPrecomputedBin (double rn)
   {
     if (!precomputed) {
       return -1;
     }
     // double div = (precomputeTo - precomputeFrom) / (double) numberOfBins;
-    double dice = RNG.nextDouble();
+    double dice = rn;
     double sum = 0;
     for (int i = 0; i < numberOfBins; i++) {
       sum += histogram[i];
@@ -251,7 +251,7 @@ public class GaussianMixtureModels implements ProbabilityDistribution
     RNG.init();
     System.out.println("Testing Random Bins");
     for (int i = 0; i < num; i++) {
-      int temp = g.getPrecomputedBin();
+      int temp = g.getPrecomputedBin(RNG.nextDouble());
       System.out.println("Random Bin: " + temp + " Possibility Value: "
                          + g.getPrecomputedProbability(temp));
     }
@@ -268,7 +268,7 @@ public class GaussianMixtureModels implements ProbabilityDistribution
     g2.status();
     RNG.init();
     for (int i = 0; i < 10; i++) {
-    	int temp = g2.getPrecomputedBin();
+    	int temp = g2.getPrecomputedBin(RNG.nextDouble());
     	System.out.println(temp + " " + g2.getPrecomputedProbability(temp));
     }
     double[] h = g2.getHistogram();

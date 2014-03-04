@@ -98,13 +98,13 @@ public class Histogram implements ProbabilityDistribution{
 	}
 
 	@Override
-	public int getPrecomputedBin ()
+	public int getPrecomputedBin (double rn)
 	  {
 	    if (!precomputed) {
 	      return -1;
 	    }
 	    // double div = (precomputeTo - precomputeFrom) / (double) numberOfBins;
-	    double dice = RNG.nextDouble();
+	    double dice = rn;
 	    double sum = 0;
 	    for (int i = 0; i < numberOfBins; i++) {
 	      sum += histogram[i];
@@ -152,14 +152,14 @@ public class Histogram implements ProbabilityDistribution{
 			sum += values[i];
 		}
 		System.out.println(sum);
-		System.out.println(h.getPrecomputedBin());
-		System.out.println(h.getPrecomputedBin());
-		System.out.println(h.getPrecomputedBin());
-		System.out.println(h.getPrecomputedBin());
-		System.out.println(h.getPrecomputedBin());
-		System.out.println(h.getPrecomputedBin());
-		System.out.println(h.getPrecomputedBin());
-		System.out.println(h.getPrecomputedBin());
+		System.out.println(h.getPrecomputedBin(RNG.nextDouble()));
+		System.out.println(h.getPrecomputedBin(RNG.nextDouble()));
+		System.out.println(h.getPrecomputedBin(RNG.nextDouble()));
+		System.out.println(h.getPrecomputedBin(RNG.nextDouble()));
+		System.out.println(h.getPrecomputedBin(RNG.nextDouble()));
+		System.out.println(h.getPrecomputedBin(RNG.nextDouble()));
+		System.out.println(h.getPrecomputedBin(RNG.nextDouble()));
+		System.out.println(h.getPrecomputedBin(RNG.nextDouble()));
 	}
 	
 }

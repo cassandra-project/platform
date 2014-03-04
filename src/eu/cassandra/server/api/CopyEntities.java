@@ -16,8 +16,10 @@
  */
 package eu.cassandra.server.api;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -146,5 +148,28 @@ public class CopyEntities {
 					new MongoInvalidObjectId("The ObjecID provided is probably invalid or not existing"))));
 		}
 		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(answer));
+	}
+	
+	@GET
+	public Response batchCopy(@Context HttpHeaders httpHeaders) {
+//		MongoCopyEntities copy = new MongoCopyEntities(null);
+		String answer = "";
+//		answer += copy.copyInstallationToScenario("52a8a7eb712edbccc30d1d8f", "51407454bf13fdfa30000000", null, true);
+//		answer += copy.copyInstallationToScenario("52a8a7ee712edbccc30d1e0e", "51407454bf13fdfa30000000", null, true);
+//		answer += copy.copyInstallationToScenario("52a8a7f1712edbccc30d1e9b", "51407454bf13fdfa30000000", null, true);
+//		answer += copy.copyInstallationToScenario("52a8a7f3712edbccc30d1ed2", "51407454bf13fdfa30000000", null, true);
+//		answer += copy.copyInstallationToScenario("52a8a7f6712edbccc30d1f5d", "51407454bf13fdfa30000000", null, true);
+//		answer += copy.copyInstallationToScenario("52a8a7f9712edbccc30d1fcd", "51407454bf13fdfa30000000", null, true);
+//		answer += copy.copyInstallationToScenario("52a8a7fb712edbccc30d2029", "51407454bf13fdfa30000000", null, true);
+//		answer += copy.copyInstallationToScenario("52a8a7fd712edbccc30d208c", "51407454bf13fdfa30000000", null, true);
+//		answer += copy.copyInstallationToScenario("52a8a800712edbccc30d20e6", "51407454bf13fdfa30000000", null, true);
+//		answer += copy.copyInstallationToScenario("52a8a801712edbccc30d212b", "51407454bf13fdfa30000000", null, true);
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(answer));
+	}
+	
+	// This main is useful for creating copies to the Cassandra library
+	public static void main(String[] args) {
+		
+		
 	}
 }

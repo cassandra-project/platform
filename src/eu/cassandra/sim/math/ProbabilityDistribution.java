@@ -134,7 +134,7 @@ public interface ProbabilityDistribution
    * @return A random integer following the distribution of the precomputed
    *         histogram
    */
-  public int getPrecomputedBin ();
+  public int getPrecomputedBin (double rn);
   
   /**
    * Returns the histogram in question.

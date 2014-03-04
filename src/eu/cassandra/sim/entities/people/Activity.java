@@ -35,6 +35,8 @@ import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.math.ProbabilityDistribution;
 import eu.cassandra.sim.math.response.Response;
+import eu.cassandra.sim.utilities.Constants;
+import eu.cassandra.sim.utilities.ORNG;
 import eu.cassandra.sim.utilities.RNG;
 import eu.cassandra.sim.utilities.Utils;
 
@@ -60,9 +62,19 @@ public class Activity extends Entity {
 	private Vector<DBObject> starts;
 	private Vector<DBObject> durations;
 	private Vector<DBObject> times;
+	
+	private double maxPower = 0;
+	private double cycleMaxPower = 0;
+	private double avgPower = 0;
+	private double energy = 0;
+	private double previousEnergy = 0;
+	private double energyOffpeak = 0;
+	private double previousEnergyOffpeak = 0;
+	private double cost = 0;
 
 	public static class Builder {
 		// Required parameters
+		private final String id;
 		private final String name;
 		private final String description;
 		private final String type;
@@ -80,7 +92,8 @@ public class Activity extends Entity {
 		private Vector<DBObject> times;
 		private SimulationParams simulationWorld;
 
-		public Builder (String aname, String adesc, String atype, SimulationParams world) {
+		public Builder (String aid, String aname, String adesc, String atype, SimulationParams world) {
+			id = aid;
 			name = aname;
 			description = adesc;
 			type = atype;
@@ -124,6 +137,7 @@ public class Activity extends Entity {
 	}
 
 	private Activity (Builder builder) {
+		id = builder.id;
 		name = builder.name;
 		description = builder.description;
 		type = builder.type;
@@ -237,7 +251,7 @@ public class Activity extends Entity {
 	public void
 		updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
 				PricingPolicy pricing, PricingPolicy baseline, double awareness,
-				double sensitivity, String responseType) {
+				double sensitivity, String responseType, ORNG orng) {
 		/*
 		 *  Decide on the number of times the activity is going to be activated
 		 *  during a day
@@ -344,7 +358,7 @@ public class Activity extends Entity {
 			
 			int numOfTimes = 0;
 			try {
-				numOfTimes = responseNumOfTimesProb.getPrecomputedBin();
+				numOfTimes = responseNumOfTimesProb.getPrecomputedBin(orng.nextDouble());
 			} catch (Exception e) {
 				logger.error(Utils.stackTraceToString(e.getStackTrace()));
 				e.printStackTrace();
@@ -354,17 +368,17 @@ public class Activity extends Entity {
 			 * Decide the duration and start time for each activity activation
 			 */
 			while (numOfTimes > 0) {
-				int duration = Math.max(durationProb.getPrecomputedBin(), 1);
-				int startTime = Math.min(Math.max(responseStartProb.getPrecomputedBin(), 0), 1439);
+				int duration = Math.max(durationProb.getPrecomputedBin(orng.nextDouble()), 1);
+				int startTime = Math.min(Math.max(responseStartProb.getPrecomputedBin(orng.nextDouble()), 0), 1439);
 				if(vector.size() > 0) {
 					if(isExclusive.booleanValue()) {
-						int selectedApp = RNG.nextInt(vector.size());
+						int selectedApp = orng.nextInt(vector.size());
 						Appliance a = vector.get(selectedApp);
-						addApplianceActivation(a, duration, startTime, tick, queue);
+						addApplianceActivation(a, duration, startTime, tick, queue, this, orng);
 					} else {
 						for (int j = 0; j < vector.size(); j++) {
 							Appliance a = vector.get(j);
-							addApplianceActivation(a, duration, startTime, tick, queue);
+							addApplianceActivation(a, duration, startTime, tick, queue, this, orng);
 							
 						}
 					}
@@ -374,13 +388,14 @@ public class Activity extends Entity {
 		}
 	}
 	
-	private void addApplianceActivation(Appliance a, int duration, int startTime, int tick, PriorityBlockingQueue<Event> queue) {
+	private void addApplianceActivation(Appliance a, int duration, int startTime, int tick, PriorityBlockingQueue<Event> queue, Activity act, ORNG orng) {
 		int appDuration = duration;
 		int appStartTime = startTime;
+		RNG.init();
 		String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
-		Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash);
+		Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash, act);
 		queue.offer(eOn);
-		Event eOff = new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash);
+		Event eOff = new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash, act);
 		queue.offer(eOff);
 	}
 	
@@ -410,5 +425,45 @@ public class Activity extends Entity {
 	public String getCollection() {
 		return MongoActivities.COL_ACTIVITIES;
 	}
+	
+    public void updateMaxPower(double power) {
+    	if(power > maxPower) maxPower = power;
+    	if(power > cycleMaxPower) cycleMaxPower = power;
+    }
+    
+    public double getMaxPower() {
+    	return maxPower;
+    }
+    
+    public void updateAvgPower(double powerFraction) {
+    	avgPower += powerFraction;
+    }
+    
+    public double getAvgPower() {
+    	return avgPower;
+    }
+    
+    public void updateEnergy(double power) {
+    	energy += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
+    }
+    
+    public void updateEnergyOffpeak(double power) {
+    	energyOffpeak += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
+    }
+    
+    public void updateCost(PricingPolicy pp, int tick) {
+    	cost += pp.calculateCost(energy, previousEnergy, energyOffpeak, previousEnergyOffpeak, tick, cycleMaxPower);
+    	cycleMaxPower = 0;
+    	previousEnergy = energy;
+    	previousEnergyOffpeak = energyOffpeak;
+    }
+    
+    public double getEnergy() {
+    	return energy;
+    }
+    
+    public double getCost() {
+    	return cost;
+    }
 
 }

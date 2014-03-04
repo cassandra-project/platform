@@ -21,13 +21,16 @@ import java.util.concurrent.PriorityBlockingQueue;
 import com.mongodb.BasicDBObject;
 
 import eu.cassandra.server.mongo.MongoInstallations;
+import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.sim.Event;
 import eu.cassandra.sim.PricingPolicy;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.external.ThermalModule;
+import eu.cassandra.sim.entities.people.Activity;
 import eu.cassandra.sim.entities.people.Person;
 import eu.cassandra.sim.utilities.Constants;
+import eu.cassandra.sim.utilities.ORNG;
 
 public class Installation extends Entity {
 	private Vector<Person> persons;
@@ -96,9 +99,9 @@ public class Installation extends Entity {
 	}
     
     public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue, 
-    		PricingPolicy pricing, PricingPolicy baseline, String responseType) {
+    		PricingPolicy pricing, PricingPolicy baseline, String responseType, ORNG orng) {
     	for(Person person : getPersons()) {
-    		person.updateDailySchedule(tick, queue, pricing, baseline, responseType);
+    		person.updateDailySchedule(tick, queue, pricing, baseline, responseType, orng);
 		}
     	if(tm != null) {
     		tm.nextStep();
@@ -135,6 +138,33 @@ public class Installation extends Entity {
     	cycleMaxPower = 0;
     	previousEnergy = energy;
     	previousEnergyOffpeak = energyOffpeak;
+    	for(Appliance appliance : getAppliances()) {
+    		appliance.updateCost(pp, tick);
+    	}
+    }
+    
+    public void addAppliancesKPIs(MongoResults m, double mcrunsRatio, double co2) {
+    	for(Appliance appliance : getAppliances()) {
+    		m.addAppKPIs(appliance.getId(), 
+    			appliance.getMaxPower() * mcrunsRatio, 
+    			appliance.getAvgPower() * mcrunsRatio, 
+    			appliance.getEnergy() * mcrunsRatio, 
+    			appliance.getCost() * mcrunsRatio,
+    			appliance.getEnergy() * co2 * mcrunsRatio);
+    	}
+    }
+    
+    public void addActivitiesKPIs(MongoResults m, double mcrunsRatio, double co2) {
+    	for(Person person : getPersons()) {
+    		for(Activity activity: person.getActivities()) {
+	    		m.addActKPIs(activity.getId(), 
+	    			activity.getMaxPower() * mcrunsRatio, 
+	    			activity.getAvgPower() * mcrunsRatio, 
+	    			activity.getEnergy() * mcrunsRatio, 
+	    			activity.getCost() * mcrunsRatio,
+	    			activity.getEnergy() * co2 * mcrunsRatio);
+    		}
+    	}
     }
     
     public double getEnergy() {
@@ -149,6 +179,29 @@ public class Installation extends Entity {
 		updateRegistry(tick);
 	}
 
+	public void updateAppliancesAndActivitiesConsumptions(int tick, int endTick, PricingPolicy pricing) {
+		for(Appliance appliance : getAppliances()) {
+			double p = appliance.getPower(tick, "p");
+			Activity act = appliance.getWhat();
+			if(act != null) {
+				act.updateMaxPower(p);
+				act.updateAvgPower(p/endTick);
+				if(pricing.isOffpeak(tick)) {
+					act.updateEnergyOffpeak(p);
+				} else {
+					act.updateEnergy(p);
+				}
+			}
+			appliance.updateMaxPower(p);
+			appliance.updateAvgPower(p/endTick);
+			if(pricing.isOffpeak(tick)) {
+				appliance.updateEnergyOffpeak(p);
+			} else {
+				appliance.updateEnergy(p);
+			}
+		}
+	}
+	
 	public void updateRegistry(int tick) {
 		float p = 0f;
 		float q = 0f;

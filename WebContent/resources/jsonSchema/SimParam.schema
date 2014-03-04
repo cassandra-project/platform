@@ -33,6 +33,11 @@
             "description": "The number of days that the simulation will run",
             "optional": true
         },
+        "seed": {
+            "type": "integer",
+            "description": "Seed for the RNG",
+            "optional": true
+        },
         "co2": {
             "type": "number",
             "description": "CO2 emissions factor per KWh",
