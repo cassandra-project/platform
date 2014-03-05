@@ -93,8 +93,7 @@ Ext.application({
 		'ThermalFeaturesStore',
 		'ThermalModuleStore',
 		'LightingModuleStore',
-		'ResponseTypeStore',
-		'SelectPlotTypeStore'
+		'ResponseTypeStore'
 	],
 	views: [
 		'MyViewport',
