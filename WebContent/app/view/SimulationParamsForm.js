@@ -76,6 +76,14 @@ Ext.define('C.view.SimulationParamsForm', {
 									minValue: 1
 								},
 								{
+									xtype: 'numberfield',
+									fieldLabel: 'Seed',
+									name: 'seed',
+									value: 1,
+									allowDecimals: false,
+									minValue: 1
+								},
+								{
 									xtype: 'datefield',
 									fieldLabel: 'Date Started',
 									name: 'dateStarted',
@@ -95,11 +103,6 @@ Ext.define('C.view.SimulationParamsForm', {
 									queryMode: 'local',
 									store: 'ResponseTypeStore',
 									valueField: 'responseType'
-								},
-								{
-									xtype: 'textareafield',
-									fieldLabel: 'Notes',
-									name: 'description'
 								},
 								{
 									xtype: 'numberfield',
@@ -152,6 +155,11 @@ Ext.define('C.view.SimulationParamsForm', {
 											scope: me
 										}
 									}
+								},
+								{
+									xtype: 'textareafield',
+									fieldLabel: 'Notes',
+									name: 'description'
 								},
 								{
 									xtype: 'container',
@@ -295,6 +303,7 @@ Ext.define('C.view.SimulationParamsForm', {
 				'description': values.description,
 				'locationInfo': values.locationInfo,
 				'mcruns':values.mcruns,
+				'seed':values.seed,
 				'calendar': calendar, 
 				'numberOfDays': duration,
 				'prc_id': values.prc_id,
