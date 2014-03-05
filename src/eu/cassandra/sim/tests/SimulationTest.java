@@ -26,12 +26,13 @@ import org.mockito.Mock;
 
 
 
+
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel;
 import eu.cassandra.sim.entities.installations.Installation;
 import eu.cassandra.sim.entities.people.Person;
+import eu.cassandra.sim.utilities.ORNG;
 import eu.cassandra.sim.utilities.RNG;
-
 import eu.cassandra.sim.Simulation;
 import eu.cassandra.sim.SimulationParams;
 
@@ -49,8 +50,8 @@ public class SimulationTest {
 	public void SimulationTest() throws Exception {
 		RNG.init();
 		
-		Appliance app1=new Appliance.Builder("Appid1","App1", "App1Desc", "App1Type", inst1, new ConsumptionModel(scenario, "p"), null, 1f, true).build();
-		Appliance app2=new Appliance.Builder("Appid2","App2", "App2Desc", "App2Type", inst1, new ConsumptionModel(scenario, "p"), null, 1f, true).build();
+		Appliance app1=new Appliance.Builder("Appid1","App1", "App1Desc", "App1Type", inst1, new ConsumptionModel(scenario, "p"), null, 1f, true).build(new ORNG());
+		Appliance app2=new Appliance.Builder("Appid2","App2", "App2Desc", "App2Type", inst1, new ConsumptionModel(scenario, "p"), null, 1f, true).build(new ORNG());
 		Person person1=new Person.Builder("Personid1","Person1", "Person1Desc", "Person1Type", inst1, 0, 0).build();
 		Person person2=new Person.Builder("Personid2","App2", "App2Desc", "App2Type", inst1, 0, 0).build();
 		p[0]=inst1;

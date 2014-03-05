@@ -153,9 +153,9 @@ public class GaussianMixtureModelsTest
 	       sigmas[i] = 144 * Math.random();
 	     }
 		GaussianMixtureModels tester=new GaussianMixtureModels(num, pi, means, sigmas);
-		assertTrue("Result",-1==tester.getPrecomputedBin());
+		assertTrue("Result",-1==tester.getPrecomputedBin(RNG.nextDouble()));
 		tester.precompute(0, 1439, 1440);
-		assertTrue("Result2",0<tester.getPrecomputedBin());
+		assertTrue("Result2",0<tester.getPrecomputedBin(RNG.nextDouble()));
 	}
 	
 	

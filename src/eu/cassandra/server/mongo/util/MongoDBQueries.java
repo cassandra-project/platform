@@ -1323,17 +1323,25 @@ public class MongoDBQueries {
 	 * @param installationId
 	 * @return
 	 */
-	public DBObject mongoKPIsQuery(HttpHeaders httpHeaders, String installationId) {
+	public DBObject mongoKPIsQuery(HttpHeaders httpHeaders, String installationId, String appId, String actId) {
 		try {
 			String runId = getDbNameFromHTTPHeader(httpHeaders);
-			if(runId == null && installationId == null)
+			if(runId == null && (installationId == null || appId == null || actId == null))
 				throw new RestQueryParamMissingException(
 						"QueryParamMissing: Both run_id and installation_id are null");
 			String coll = MongoResults.COL_AGGRKPIS;
 			if(installationId != null) coll = MongoResults.COL_INSTKPIS;
+			if(appId != null) coll = MongoResults.COL_APPKPIS;
+			if(actId != null) coll = MongoResults.COL_ACTKPIS;
 			DBObject condition = new BasicDBObject();
 			if( installationId != null) {
 				condition.put("inst_id",installationId);
+			}
+			if( appId != null) {
+				condition.put("app_id",appId);
+			}
+			if( actId != null) {
+				condition.put("act_id",actId);
 			}
 			DBObject result = DBConn.getConn(runId).getCollection(coll).findOne(condition);
 			if(result == null) throw new Exception("KPIs not found");

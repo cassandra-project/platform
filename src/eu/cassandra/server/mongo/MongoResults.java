@@ -33,6 +33,8 @@ public class MongoResults {
 	public final static String COL_AGGRRESULTS_HOURLY = "aggr_results_hourly";
 	public final static String COL_AGGRRESULTS_HOURLY_EN = "aggr_results_hourly_energy";
 	public final static String COL_INSTKPIS = "inst_kpis";
+	public final static String COL_APPKPIS = "app_kpis";
+	public final static String COL_ACTKPIS = "act_kpis";
 	public final static String COL_AGGRKPIS = "aggr_kpis";
 	public final static String AGGR = "aggr";
 	
@@ -153,6 +155,79 @@ public class MongoResults {
 		}
 	}
 
+	public void addAppKPIs(String app_id, double maxPower, double avgPower, double energy, double cost, double co2) {
+		boolean first = false;
+		DBObject query = new BasicDBObject();
+		String collection;
+		String id = app_id;
+		collection = COL_APPKPIS;
+		query.put("app_id", id);
+		DBObject data = DBConn.getConn(dbname).getCollection(collection).findOne(query);
+		double newMaxPower = maxPower;
+		double newAvgPower = avgPower;
+		double newEnergy = energy;
+		double newCost = cost;
+		double newCo2 = co2;
+		if(data == null) {
+			data = new BasicDBObject();
+			first = true;
+			data.put("app_id", id);
+		} else {
+			newMaxPower += ((Double)data.get("maxPower")).doubleValue();
+			newAvgPower += ((Double)data.get("avgPower")).doubleValue();
+			newEnergy += ((Double)data.get("energy")).doubleValue();
+			newCost += ((Double)data.get("cost")).doubleValue();
+			newCo2 += ((Double)data.get("co2")).doubleValue();
+		}
+		data.put("maxPower", newMaxPower);
+		data.put("avgPower", newAvgPower);
+		data.put("energy", newEnergy);
+		data.put("cost", newCost);
+		data.put("co2", newCo2);
+		if(first) {
+			DBConn.getConn(dbname).getCollection(collection).insert(data);
+		} else {
+			DBConn.getConn(dbname).getCollection(collection).update(query, data, false, false);
+		}
+	}
+	
+	public void addActKPIs(String app_id, double maxPower, double avgPower, double energy, double cost, double co2) {
+		boolean first = false;
+		DBObject query = new BasicDBObject();
+		String collection;
+		String id = app_id;
+		collection = COL_ACTKPIS;
+		query.put("act_id", id);
+		DBObject data = DBConn.getConn(dbname).getCollection(collection).findOne(query);
+		double newMaxPower = maxPower;
+		double newAvgPower = avgPower;
+		double newEnergy = energy;
+		double newCost = cost;
+		double newCo2 = co2;
+		if(data == null) {
+			data = new BasicDBObject();
+			first = true;
+			data.put("act_id", id);
+		} else {
+			newMaxPower += ((Double)data.get("maxPower")).doubleValue();
+			newAvgPower += ((Double)data.get("avgPower")).doubleValue();
+			newEnergy += ((Double)data.get("energy")).doubleValue();
+			newCost += ((Double)data.get("cost")).doubleValue();
+			newCo2 += ((Double)data.get("co2")).doubleValue();
+		}
+		data.put("maxPower", newMaxPower);
+		data.put("avgPower", newAvgPower);
+		data.put("energy", newEnergy);
+		data.put("cost", newCost);
+		data.put("co2", newCo2);
+		if(first) {
+			DBConn.getConn(dbname).getCollection(collection).insert(data);
+		} else {
+			DBConn.getConn(dbname).getCollection(collection).update(query, data, false, false);
+		}
+	}
+
+	
 	/**
 	 * 
 	 * @param tick

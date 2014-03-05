@@ -142,6 +142,8 @@ public class Runs {
 			checkForNull(simParams, "The provided Simulation Parameters were not found in the DB.");
 			db.getCollection(MongoSimParam.COL_SIMPARAM).insert(simParams);
 			scenario.put("sim_params", simParams);
+			String seedStr = (String)simParams.get("seed");
+			String runName = (String)simParams.get("name");
 			
 			// Scenario
 			String scn_id = (String) simParams.get("scn_id");
@@ -315,10 +317,16 @@ public class Runs {
 			}
 			scenario.put("instcount", new Integer(countInst));
 			String resources_path = (String)context.getAttribute("RESOURCES_PATH");
-			Simulation sim = new Simulation(scenario.toString(), dbname, resources_path);
+			int seed = -1;
+			try {
+				seed = Integer.parseInt(seedStr);
+			} catch(NumberFormatException e) {
+				seed = -1;
+			}
+			Simulation sim = new Simulation(scenario.toString(), dbname, resources_path, seed);
 			sim.setup(false);
 			// Scenario building finished
-			DBObject run = buildRunObj(objid, name, prj_id, "sim");
+			DBObject run = buildRunObj(objid, runName, prj_id, "sim");
 			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).insert(run);
 			String returnMsg = PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSON(run, "Sim creation successful"));
 			logger.info(returnMsg);
@@ -351,17 +359,16 @@ public class Runs {
 	}
 	
 	private static DB createDB(String dbname) throws UnknownHostException, MongoException {
-		Mongo m = new Mongo("localhost");
-		return m.getDB(dbname);
+		return DBConn.getConn(dbname);
 	}
 	
-	private static DBObject buildRunObj(ObjectId objid, String name, String prj_id, String type) {
+	private static DBObject buildRunObj(ObjectId objid, String runName, String prj_id, String type) {
 		DBObject run = new BasicDBObject();
 		Calendar calendar = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmm");
-		String runName = "Run for " + name + " on " + sdf.format(calendar.getTime());
+		String name = "Run " + runName + " on " + sdf.format(calendar.getTime());
 		run.put("_id", objid);
-		run.put("name", runName);
+		run.put("name", name);
 		run.put("started", System.currentTimeMillis());
 		run.put("ended", -1);
 		run.put("type", type);

@@ -18,8 +18,8 @@ package eu.cassandra.sim;
 
 import org.apache.log4j.Logger;
 
-
 import eu.cassandra.sim.entities.appliances.Appliance;
+import eu.cassandra.sim.entities.people.Activity;
 
 public class Event implements Comparable<Event> {
 	
@@ -37,15 +37,22 @@ public class Event implements Comparable<Event> {
 	
 	private Appliance app;
 	
-	public Event(int atick, int aaction, Appliance aapp, String ahashcode) {
+	private Activity act;
+	
+	public Event(int atick, int aaction, Appliance aapp, String ahashcode, Activity aact) {
 		tick = atick;
 		action = aaction;
 		app = aapp;
 		hashcode = ahashcode;
+		act = aact;
 	}
 	
 	public Appliance getAppliance() {
 		return app;
+	}
+	
+	public Activity getActivity() {
+		return act;
 	}
 	
 	public int getAction() {
@@ -60,7 +67,7 @@ public class Event implements Comparable<Event> {
 		switch(action) {
 			case SWITCH_ON:
 				if(!app.isInUse()) {
-					app.turnOn(tick, hashcode);
+					app.turnOn(tick, hashcode, act);
 					return true;
 				} else {
 					logger.warn("Tried to switch on appliance while on.");

@@ -24,12 +24,12 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-
 import eu.cassandra.server.api.exceptions.BadParameterException;
 import eu.cassandra.sim.Event;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel;
 import eu.cassandra.sim.entities.installations.Installation;
+import eu.cassandra.sim.utilities.ORNG;
 import eu.cassandra.sim.utilities.RNG;
 import eu.cassandra.sim.utilities.Constants;
 
@@ -42,9 +42,9 @@ public class EventTest {
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
+		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		String hash="0000";
-		Event tester=new Event(1,1,app,hash);
+		Event tester=new Event(1,1,app,hash, null);
 		assertTrue("Result1", app==tester.getAppliance());
 	}
 	
@@ -55,9 +55,9 @@ public class EventTest {
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
+		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		String hash="0000";
-		Event tester=new Event(1,1,app,hash);
+		Event tester=new Event(1,1,app,hash, null);
 		assertTrue("Result2", 1==tester.getAction());
 	}
 	
@@ -68,9 +68,9 @@ public class EventTest {
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
+		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		String hash="0000";
-		Event tester=new Event(3,1,app,hash);
+		Event tester=new Event(3,1,app,hash, null);
 		assertTrue("Result3", 3==tester.getTick());
 	}
 	@Test
@@ -80,9 +80,9 @@ public class EventTest {
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
+		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		String hash="0000";
-		Event tester=new Event(3,1,app,hash);
+		Event tester=new Event(3,1,app,hash, null);
 		assertTrue("Result4", false==tester.apply());
 	}
 	
@@ -93,10 +93,10 @@ public class EventTest {
 		String id = "111";
 		String InstId="222";
 		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
-		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build();
+		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		String hash="0000";
-		Event tester=new Event(3,1,app,hash);
-		Event tester2=new Event(1,1,app,hash);
+		Event tester=new Event(3,1,app,hash, null);
+		Event tester2=new Event(1,1,app,hash, null);
 		assertTrue("Result4", 1==tester.compareTo(tester2));
 	}
 

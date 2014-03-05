@@ -186,13 +186,13 @@ public class Gaussian implements ProbabilityDistribution
     return histogram[bin];
   }
 
-  public int getPrecomputedBin ()
+  public int getPrecomputedBin (double rn)
   {
     if (!precomputed) {
       return -1;
     }
     // double div = (precomputeTo - precomputeFrom) / (double) numberOfBins;
-    double dice = RNG.nextDouble();
+    double dice = rn;
 //    System.out.println(dice);
     double sum = 0;
     for (int i = 0; i < numberOfBins; i++) {
@@ -259,15 +259,15 @@ public class Gaussian implements ProbabilityDistribution
     }
     System.out.println("Sum = " + sum);
     RNG.init();
-    int temp = g.getPrecomputedBin();
+    int temp = g.getPrecomputedBin(RNG.nextDouble());
     System.out.println(temp + " " + g.getPrecomputedProbability(temp));
-    temp = g.getPrecomputedBin();
+    temp = g.getPrecomputedBin(RNG.nextDouble());
     System.out.println(temp + " " + g.getPrecomputedProbability(temp));
-    temp = g.getPrecomputedBin();
+    temp = g.getPrecomputedBin(RNG.nextDouble());
     System.out.println(temp + " " + g.getPrecomputedProbability(temp));
-    temp = g.getPrecomputedBin();
+    temp = g.getPrecomputedBin(RNG.nextDouble());
     System.out.println(temp + " " + g.getPrecomputedProbability(temp));
-    temp = g.getPrecomputedBin();
+    temp = g.getPrecomputedBin(RNG.nextDouble());
     System.out.println(temp + " " + g.getPrecomputedProbability(temp));
     System.out.println("Testing start time.");
     g = new Gaussian(30, 50);

@@ -35,8 +35,10 @@ public class KPIs {
 	@GET
 	public Response getResults(
 			@QueryParam("inst_id") String inst_id,
+			@QueryParam("app_id") String app_id,
+			@QueryParam("act_id") String act_id,
 			@Context HttpHeaders httpHeaders) {
-		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDBQueries().mongoKPIsQuery(httpHeaders,inst_id).toString()));
+		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDBQueries().mongoKPIsQuery(httpHeaders,inst_id, app_id, act_id).toString()));
 	}
 	
 }
