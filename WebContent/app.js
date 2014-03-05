@@ -93,7 +93,8 @@ Ext.application({
 		'ThermalFeaturesStore',
 		'ThermalModuleStore',
 		'LightingModuleStore',
-		'ResponseTypeStore'
+		'ResponseTypeStore',
+		'SelectPlotTypeStore'
 	],
 	views: [
 		'MyViewport',
@@ -588,7 +589,18 @@ Ext.application({
 		});
 		record.c = {store: consmod_store};
 
-		console.info(consmod_store);
+		//add kpis only on results forms
+		if (C.dbname) {
+			var kpiStore = new C.store.Kpis();
+			kpiStore.load({params:{'app_id': record.get('_id')}});
+			var grid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(kpiStore);
+			grid.width = 700;
+			grid.margins = '10px 0 0 0';
+			grid.closable = false;
+			grid.setTitle("Appliance KPIs");
+			myFormCmp.insert(4, grid);
+		}
+
 		return myFormCmp;
 	},
 
@@ -663,6 +675,16 @@ Ext.application({
 			grid.closable = false;
 			grid.setTitle(childNode.get('name'));
 			myFormCmp.insert(1, grid);
+		}
+
+		//add kpis only on results forms
+		if (C.dbname) {
+			var kpiStore = new C.store.Kpis();
+			kpiStore.load({params:{'act_id': record.get('_id')}});
+			var kpiGrid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(kpiStore);
+			kpiGrid.closable = false;
+			kpiGrid.setTitle("Activity KPIs");
+			myFormCmp.insert(2, kpiGrid);
 		}
 
 
