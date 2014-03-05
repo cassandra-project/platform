@@ -55,7 +55,6 @@ Ext.define('C.model.SimulationParam', {
 			type: 'int'
 		},
 		{
-			defaultValue: 1,
 			name: 'seed',
 			type: 'int'
 		},
