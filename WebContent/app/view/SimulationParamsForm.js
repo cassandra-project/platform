@@ -79,9 +79,7 @@ Ext.define('C.view.SimulationParamsForm', {
 									xtype: 'numberfield',
 									fieldLabel: 'Seed',
 									name: 'seed',
-									value: 1,
-									allowDecimals: false,
-									minValue: 1
+									allowDecimals: false
 								},
 								{
 									xtype: 'datefield',
