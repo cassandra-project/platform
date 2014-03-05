@@ -142,7 +142,7 @@ public class Runs {
 			checkForNull(simParams, "The provided Simulation Parameters were not found in the DB.");
 			db.getCollection(MongoSimParam.COL_SIMPARAM).insert(simParams);
 			scenario.put("sim_params", simParams);
-			String seedStr = (String)simParams.get("seed");
+			String seedStr = simParams.get("seed").toString();
 			String runName = (String)simParams.get("name");
 			
 			// Scenario

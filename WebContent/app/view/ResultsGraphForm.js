@@ -51,7 +51,9 @@ Ext.define('C.view.ResultsGraphForm', {
 							items: [
 								{
 									xtype: 'fieldcontainer',
+									cls: 'idContainer',
 									height: 27,
+									itemId: 'instFieldContainer',
 									layout: {
 										align: 'middle',
 										pack: 'center',
@@ -134,6 +136,7 @@ Ext.define('C.view.ResultsGraphForm', {
 					xtype: 'label',
 					flex: 0,
 					margins: '10px 0',
+					itemId: 'plot_title',
 					style: 'font-size:20px;font-weight:bold;',
 					text: 'Total Consumption Active Power'
 				}
@@ -144,15 +147,17 @@ Ext.define('C.view.ResultsGraphForm', {
 	},
 
 	onTextfieldRender: function(component, eOpts) {
-		var myForm = this.getForm();
+		myForm = this.getForm();
 		new Ext.dd.DropTarget(this.body.dom.getElementsByClassName('dropTarget')[0],{
 			ddGroup:'ddGlobal',
 			notifyDrop: function(dds,e,data) {	
-				if (dds.dragData.records[0].get('nodeType') != 'Installation' )
-				return false;
-				myForm.setValues({ inst_id: dds.dragData.records[0].get('id')});
+				if (dds.dragData.records[0].get('nodeType') !== 'Installation' ) {
+					return false;
+				}
+				myForm.setValues({ 'inst_id': dds.dragData.records[0].get('id')});
 			return true; }
 		});
+
 	},
 
 	onButtonClick2: function(button, e, eOpts) {
@@ -190,7 +195,6 @@ Ext.define('C.view.ResultsGraphForm', {
 
 		if ( dataSize > 1000 ) {
 			Ext.MessageBox.alert('Error', 'Too many plot data! Chart will not be loaded!'); 
-			myResultsStore.removeAll();
 			return false;
 		}
 		else if (dataSize > 500)
