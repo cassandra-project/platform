@@ -74,6 +74,7 @@ Ext.define('C.view.CsnClusterForm', {
 				},
 				{
 					xtype: 'container',
+					cls: 'gridbg',
 					itemId: 'image_container',
 					style: {
 						'text-align': 'center',
@@ -291,9 +292,9 @@ Ext.define('C.view.CsnClusterForm', {
 	setImageContainerHtml: function(img, graph_desc) {
 		html = "<h1>" + graph_desc + " Graph" + "</h1>";
 		if (!img) 
-		html += "<div id='no_graph_data' class='gridbg'><h1>No " + graph_desc + " Graph Data Available</h1></div>";
+		html += "<div id='no_graph_data'><h1>No " + graph_desc + " Graph Data Available</h1></div>";
 		else	
-		html += "<img src=/cassandra" + img + " width='600' height='600' alt='graph data'/>";
+		html += "<img src=/cassandra" + img + " width='400' height='400' alt='graph data'/>";
 
 		this.down("#image_container").update(html);
 	}
