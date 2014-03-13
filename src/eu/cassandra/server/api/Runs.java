@@ -317,11 +317,11 @@ public class Runs {
 			}
 			scenario.put("instcount", new Integer(countInst));
 			String resources_path = (String)context.getAttribute("RESOURCES_PATH");
-			int seed = -1;
+			int seed = 0;
 			try {
 				seed = Integer.parseInt(seedStr);
 			} catch(NumberFormatException e) {
-				seed = -1;
+				seed = 0;
 			}
 			Simulation sim = new Simulation(scenario.toString(), dbname, resources_path, seed);
 			sim.setup(false);
