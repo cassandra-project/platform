@@ -100,7 +100,7 @@ Ext.define('C.view.CsnForm', {
 									delete cur_record.run_name;
 									cur_record.run_id = selected_run._id;
 									cur_record.prj_id = selected_run.prj_id;
-									debugger;
+
 									//if csns store doesn't exist create it
 									if (!csnsNode.c) {
 										csnsNode.c = {

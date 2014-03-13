@@ -733,16 +733,17 @@ Ext.define('C.view.MyTreePanel', {
 					}
 				});
 			}
-			/*else if (f.name == 'compare'){
-			cols.push({
-			header: f.name,
-			dataIndex: f.name,
-			renderer: function (v, m, r) {
-			return "<input type='checkbox'" + (f.value ? "checked='checked'" : "") + ">";
+			else if (f.name == 'img'){
+				cols.push({
+					header: 'Image',
+					dataIndex: f.name,
+					renderer: function (v, m, r) {
+						if (v.length > 0) {
+							return "<img src='/cassandra"+v+"' alt='"+v+"' width='100' height='100' class='imgZoom'/>";
+						}
+					}
+				});
 			}
-			});
-
-			}*/
 			else {
 				cols.push({
 					header: C.app.getHeaderFromName(f.name),

@@ -84,6 +84,9 @@ Ext.define('C.view.CsnClusterForm', {
 				{
 					xtype: 'displayfield',
 					renderer: function(value, displayField) {
+						if (value.indexOf('</a>') !== -1) {
+							return value;
+						}
 						if (value.length > 0) {
 							var showValueArray = value.split('/');
 							var showValue = showValueArray.length > 0 ? showValueArray.pop() : value;
@@ -92,8 +95,7 @@ Ext.define('C.view.CsnClusterForm', {
 					},
 					anchor: '100%',
 					fieldLabel: 'Pajek file',
-					name: 'pajek',
-					htmlEncode: true
+					name: 'pajek'
 				},
 				{
 					xtype: 'fieldcontainer',
@@ -183,8 +185,10 @@ Ext.define('C.view.CsnClusterForm', {
 
 											Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
 
-											//add image if exists
+											//update
 											myFormCmp.setImageContainerHtml(data_obj.img, "Csn Clusters");
+											//update pajek
+											myForm.setValues({'pajek': data_obj.pajek});
 
 											if (!myFormCmp.clusterRecord) {
 												var clusterGrid = new C.view.ClustersGrid({ 

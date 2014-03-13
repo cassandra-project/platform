@@ -226,3 +226,8 @@ background-color: transparent !important;
 	font-weight: bold;
 	color: #535151;
 }
+
+.imgZoom:hover {
+	width: 100%;
+	height: 100%;
+}
