@@ -1352,6 +1352,42 @@ public class MongoDBQueries {
 		}
 	}
 
+	public DBObject mongoExpectedQuery(HttpHeaders httpHeaders, String installationId, String actId) {
+		try {
+			String runId = getDbNameFromHTTPHeader(httpHeaders);
+			if(runId == null) {
+				throw new RestQueryParamMissingException("QueryParamMissing: run_id is null");
+			}
+			DBObject condition = new BasicDBObject();
+			String collection = new String();
+			if( installationId != null) {
+				condition.put("id", installationId);
+				collection = MongoResults.COL_INSTRESULTS_EXP;
+			} else if( actId != null) {
+				condition.put("id", actId);
+				collection = MongoResults.COL_ACTRESULTS_EXP;
+			} else {
+				condition.put("id", "aggr");
+				collection = MongoResults.COL_AGGRRESULTS_EXP;
+			}
+			DBCursor cursor = DBConn.getConn(runId).getCollection(collection).find(condition);
+			BasicDBList dbList = new BasicDBList();
+			while(cursor.hasNext()) {
+				DBObject o = cursor.next();
+				DBObject dbo = new BasicDBObject();
+				dbo.put("x", o.get("tick"));
+				dbo.put("y", o.get("p"));
+				dbList.add(dbo);
+			}
+			jSON2Rrn.createJSONPlot(dbList, "Data for plot retrieved successfully", 
+					"Expected Active Power", "Time", "W", 1, 1); 
+			return jSON2Rrn.createJSON(dbList, "Expected power retrieved succesfully.");
+		} catch(Exception e) {
+			e.printStackTrace();
+			return jSON2Rrn.createJSONError("Error in retrieving results", e.getMessage());
+		}
+	}
+	
 
 	/**
 	 * 

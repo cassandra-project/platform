@@ -207,6 +207,14 @@ public class Appliance extends Entity {
 		return what;
 	}
 	
+	public Double[] getActiveConsumption () {
+		return pcm.getConsumption();
+	}
+	
+	public boolean isStaticConsumption() {
+		return pcm.checkStatic();
+	}
+	
 	public static void main(String[] args) throws BadParameterException {
 		// TODO [TEST] check the getPower method
 		String p = "{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";

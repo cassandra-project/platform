@@ -26,10 +26,14 @@ import eu.cassandra.server.mongo.util.MongoDBQueries;
 public class MongoResults {
 
 	public final static String COL_APPRESULTS = "app_results";
+	public final static String COL_APPRESULTS_EXP = "app_expected";
+	public final static String COL_ACTRESULTS_EXP = "act_expected";
 	public final static String COL_INSTRESULTS = "inst_results";
+	public final static String COL_INSTRESULTS_EXP = "inst_expected";
 	public final static String COL_INSTRESULTS_HOURLY = "inst_results_hourly";
 	public final static String COL_INSTRESULTS_HOURLY_EN = "inst_results_hourly_energy";
 	public final static String COL_AGGRRESULTS = "aggr_results";
+	public final static String COL_AGGRRESULTS_EXP = "aggr_expected";
 	public final static String COL_AGGRRESULTS_HOURLY = "aggr_results_hourly";
 	public final static String COL_AGGRRESULTS_HOURLY_EN = "aggr_results_hourly_energy";
 	public final static String COL_INSTKPIS = "inst_kpis";
@@ -260,6 +264,15 @@ public class MongoResults {
 		} else {
 			DBConn.getConn(dbname).getCollection(collection).update(query, data, false, false);
 		}
+	}
+	
+	public void addExpectedPowerTick(int tick, String id, double p, double q, String collection) {
+		DBObject data = new BasicDBObject();
+		data.put("id", id);
+		data.put("tick", tick);
+		data.put("p", p);
+		data.put("q", q);
+		DBConn.getConn(dbname).getCollection(collection).insert(data);
 	}
 	
 	public DBObject getTickResultForInstallation(int tick,

@@ -120,6 +120,19 @@ public class Histogram implements ProbabilityDistribution{
 		
 		return histogram;
 	}
+	
+	  @Override
+	  public double getProbabilityGreaterEqual (int x)
+	  {
+	    double prob = 0;
+
+	    int start = (int) x;
+
+	    for (int i = start; i < histogram.length; i++)
+	      prob += histogram[i];
+
+	    return prob;
+	  }
 
 	@Override
 	public void status() {

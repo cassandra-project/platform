@@ -178,6 +178,104 @@ public class ConsumptionModel extends Entity {
 		// TODO [TEST] check is parsing is done correctly
 		
 	}
+	
+	public boolean checkStatic()
+	  {
+	    boolean result = true;
+
+	    Double[] values = getValues();
+
+	    // System.out.println("Appliance: " + name + " Model: "
+	    // + activeConsumptionModelString);
+	    //
+	    // System.out.println("Appliance: " + name + " Values: "
+	    // + Arrays.toString(values));
+
+	    for (int i = 0; i < values.length - 1; i++) {
+	      // System.out.println("Previous: " + values[i].doubleValue() + " Next: "
+	      // + values[i + 1].doubleValue());
+	      if (values[i].doubleValue() != values[i + 1].doubleValue()) {
+	        // System.out.println("IN");
+	        result = false;
+	        break;
+	      }
+	    }
+
+	    return result;
+	  }
+	
+	public Double[] getValues ()
+	  {
+	    ArrayList<Double> temp = new ArrayList<Double>();
+	    int times = getOuterN();
+	    if (times == 0)
+	      times = 1;
+	    // Number of repeats
+	    for (int i = 0; i < times; i++) {
+	      // System.out.println("Time: " + i);
+	      // Number of patterns in each repeat
+	      for (int j = 0; j < getPatternN(); j++) {
+	        // System.out.println("Pattern: " + j);
+	        int internalTimes = getN(j);
+	        if (internalTimes == 0)
+	          internalTimes = 2;
+	        // System.out.println("Internal Times: " + k);
+	        for (int k = 0; k < internalTimes; k++) {
+	          ArrayList<Tripplet> triplets = getPattern(j);
+	          for (int l = 0; l < triplets.size(); l++) {
+	            // System.out.println("Tripplet: " + l);
+	            for (int m = 0; m < triplets.get(l).d; m++) {
+	              temp.add(triplets.get(l).v);
+	            }
+	          }
+	        }
+	      }
+	    }
+	    ArrayList<Double> values = new ArrayList<Double>();
+	    for (int i = 0; i < temp.size(); i++) {
+	      values.add(temp.get(i));
+	      values.add(temp.get(i));
+	      values.add(temp.get(Math.min(i + 1, temp.size() - 1)));
+	    }
+	    Double[] result = new Double[values.size()];
+	    values.toArray(result);
+	    return result;
+	  }
+
+	
+	public Double[] getConsumption()
+	  {
+
+	    ArrayList<Double> temp = new ArrayList<Double>();
+	    int times = getOuterN();
+	    if (times == 0)
+	      times = 2;
+	    // Number of repeats
+	    for (int i = 0; i < times; i++) {
+	      // System.out.println("Time: " + i);
+	      // Number of patterns in each repeat
+	      for (int j = 0; j < getPatternN(); j++) {
+	        // System.out.println("Pattern: " + j);
+	        int internalTimes = getN(j);
+	        if (internalTimes == 0)
+	          internalTimes = 2;
+	        // System.out.println("Internal Times: " + k);
+	        for (int k = 0; k < internalTimes; k++) {
+	          ArrayList<Tripplet> tripplets = getPattern(j);
+	          for (int l = 0; l < tripplets.size(); l++) {
+	            // System.out.println("TripletPower: " + l);
+	            for (int m = 0; m < tripplets.get(l).d; m++) {
+	              temp.add(tripplets.get(l).v);
+	            }
+	          }
+	        }
+	      }
+	    }
+	    Double[] result = new Double[temp.size()];
+	    temp.toArray(result);
+	    return result;
+
+	  }
 
 	public void status() {
 		
