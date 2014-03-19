@@ -1379,9 +1379,10 @@ public class MongoDBQueries {
 				dbo.put("y", o.get("p"));
 				dbList.add(dbo);
 			}
-			jSON2Rrn.createJSONPlot(dbList, "Data for plot retrieved successfully", 
+			return jSON2Rrn.createJSONPlot(dbList, "Data for plot retrieved successfully", 
 					"Expected Active Power", "Time", "W", 1, 1); 
-			return jSON2Rrn.createJSON(dbList, "Expected power retrieved succesfully.");
+			//return jSON2Rrn.createJSON(dbList, "Expected power retrieved succesfully.");
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 			return jSON2Rrn.createJSONError("Error in retrieving results", e.getMessage());

@@ -139,6 +139,14 @@ Ext.define('C.view.ResultsGraphForm', {
 					itemId: 'plot_title',
 					style: 'font-size:20px;font-weight:bold;',
 					text: 'Total Consumption Active Power'
+				},
+				{
+					xtype: 'label',
+					flex: 0,
+					margins: '10px 0',
+					itemId: 'expected_plot_title',
+					style: 'font-size:20px;font-weight:bold;',
+					text: 'Expected Active Power'
 				}
 			]
 		});
@@ -164,17 +172,22 @@ Ext.define('C.view.ResultsGraphForm', {
 		var myForm = this.getForm();
 		this.dirtyForm = false;
 		var formValues = myForm.getValues();
-		var myResultsStore = this.query('chart')[0].store;
+		var myResultsStore = this.query('#resultsChart')[0].store;
+		var expectedStore = this.query('#expectedChart')[0].store;
+		var expectedLoadParams = {}; 
 		var powerType = (formValues.metric == 'q') ? 'Reactive' : 'Active';
 		var chartTitle = 'Consumption ' + powerType + ' Power';
 
 		if (!formValues.inst_id) {
 			delete formValues.inst_id;
-			this.items.items[1].setText('Total ' + chartTitle);
+			this.query('#plot_title')[0].setText('Total ' + chartTitle);
+			this.query('#expected_plot_title')[0].setText('Expected Active Power');
 		}
 		else {
-			this.items.items[1].setText('Installation ' + chartTitle);
+			this.query('#plot_title')[0].setText('Installation ' + chartTitle);
+			this.query('#expected_plot_title')[0].setText('Installation Expected Active Power');
 			this.down('grid').store.load({params:{'inst_id':  formValues.inst_id}});
+			expectedLoadParams = { params: {inst_id : formValues.inst_id} };
 		}
 
 		var defaultAggrUnit = (formValues.aggr_unit)? formValues.aggr_unit : myResultsStore.proxy.reader.jsonData.aggregationUnit;  
@@ -202,6 +215,7 @@ Ext.define('C.view.ResultsGraphForm', {
 
 
 		myResultsStore.load( {params: formValues});
+		expectedStore.load(expectedLoadParams);
 		//record.save();
 		//TODO better impementation. Ignore all empty fields
 	}

@@ -93,7 +93,8 @@ Ext.application({
 		'ThermalFeaturesStore',
 		'ThermalModuleStore',
 		'LightingModuleStore',
-		'ResponseTypeStore'
+		'ResponseTypeStore',
+		'ExpectedPower'
 	],
 	views: [
 		'MyViewport',
@@ -524,7 +525,19 @@ Ext.application({
 			myFormCmp.insert(index + 1, grid);
 		});
 
-		console.info(record);
+		if (C.dbname) {
+			var expectedPowerStore = new C.store.ExpectedPower({});
+			var expectedPowerChart = new C.view.ResultsLineChart({store: expectedPowerStore, itemId: 'expectedChart'});
+			var expectedContainer = myFormCmp.query('#expectedContainer')[0];
+
+			expectedContainer.show();
+			expectedContainer.add(expectedPowerChart);
+			expectedPowerStore.load({
+				params: {
+					inst_id: record.get('_id')
+				}
+			});
+		}
 		return myFormCmp;
 	},
 
@@ -678,12 +691,24 @@ Ext.application({
 
 		//add kpis only on results forms
 		if (C.dbname) {
+			var expectedPowerStore = new C.store.ExpectedPower({});
+			var expectedPowerChart = new C.view.ResultsLineChart({store: expectedPowerStore, itemId: 'expectedChart'});
+			var expectedContainer = myFormCmp.query('#expectedContainer')[0];
+
+			expectedContainer.show();
+			expectedContainer.add(expectedPowerChart);
+			expectedPowerStore.load({
+				params: {
+					act_id: record.get('_id')
+				}
+			});
+
 			var kpiStore = new C.store.Kpis();
 			kpiStore.load({params:{'act_id': record.get('_id')}});
 			var kpiGrid = Ext.getCmp('uiNavigationTreePanel').getCustomGrid(kpiStore);
 			kpiGrid.closable = false;
 			kpiGrid.setTitle("Activity KPIs");
-			myFormCmp.insert(2, kpiGrid);
+			myFormCmp.insert(3, kpiGrid);
 		}
 
 
@@ -874,11 +899,17 @@ Ext.application({
 	getResultsGraphForm: function() {
 		var myFormCmp = new C.view.ResultsGraphForm({});
 
-		myResultsStore = new C.store.Results({});
-		myResultsChart = new C.view.ResultsLineChart({store: myResultsStore});
+		var myResultsStore = new C.store.Results({});
+		var myResultsChart = new C.view.ResultsLineChart({store: myResultsStore, itemId: 'resultsChart'});
 
 		myFormCmp.insert(2, myResultsChart);
 		myResultsStore.load();
+
+		var expectedPowerStore = new C.store.ExpectedPower({});
+		var expectedPowerChart = new C.view.ResultsLineChart({store: expectedPowerStore, itemId: 'expectedChart'});
+
+		myFormCmp.insert(4, expectedPowerChart);
+		expectedPowerStore.load();
 
 		var kpiStore = new C.store.Kpis();
 		kpiStore.load();
@@ -886,7 +917,7 @@ Ext.application({
 		grid.width = 700;
 		grid.closable = false;
 		grid.setTitle("KPIs");
-		myFormCmp.insert(3, grid);
+		myFormCmp.insert(5, grid);
 
 		return myFormCmp;
 	},

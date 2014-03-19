@@ -27,11 +27,10 @@ Ext.define('C.view.InstallationForm', {
 			items: [
 				{
 					xtype: 'container',
-					minWidth: 400,
-					width: 400,
 					autoScroll: true,
 					layout: {
-						type: 'anchor'
+						align: 'middle',
+						type: 'hbox'
 					},
 					items: [
 						{
@@ -103,6 +102,24 @@ Ext.define('C.view.InstallationForm', {
 											scope: me
 										}
 									}
+								}
+							]
+						},
+						{
+							xtype: 'container',
+							hidden: true,
+							itemId: 'expectedContainer',
+							margin: '0 0 0 20px',
+							layout: {
+								align: 'center',
+								type: 'vbox'
+							},
+							items: [
+								{
+									xtype: 'label',
+									itemId: 'plot_title2',
+									style: 'font-size:20px;font-weight:bold;',
+									text: 'Expected Active Power'
 								}
 							]
 						}

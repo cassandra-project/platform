@@ -17,9 +17,6 @@ Ext.define('C.view.ActivityForm', {
 	extend: 'Ext.form.Panel',
 
 	autoScroll: true,
-	layout: {
-		type: 'auto'
-	},
 	bodyPadding: 10,
 	title: 'My Form',
 
@@ -30,10 +27,10 @@ Ext.define('C.view.ActivityForm', {
 			items: [
 				{
 					xtype: 'container',
-					maxWidth: 500,
 					autoScroll: true,
 					layout: {
-						type: 'anchor'
+						align: 'middle',
+						type: 'hbox'
 					},
 					items: [
 						{
@@ -80,13 +77,31 @@ Ext.define('C.view.ActivityForm', {
 									}
 								}
 							]
+						},
+						{
+							xtype: 'container',
+							hidden: true,
+							itemId: 'expectedContainer',
+							margin: '0 0 0 20px',
+							layout: {
+								align: 'center',
+								type: 'vbox'
+							},
+							items: [
+								{
+									xtype: 'label',
+									itemId: 'plot_title2',
+									style: 'font-size:20px;font-weight:bold;',
+									text: 'Expected Active Power'
+								}
+							]
 						}
 					]
 				},
 				{
 					xtype: 'container',
 					layout: {
-						align: 'middle',
+						align: 'stretch',
 						type: 'hbox'
 					}
 				}
