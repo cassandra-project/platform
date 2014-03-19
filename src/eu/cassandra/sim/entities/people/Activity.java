@@ -247,31 +247,26 @@ public class Activity extends Entity {
 		}
 		return new String();
 	}
-
-	public void
-		updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
-				PricingPolicy pricing, PricingPolicy baseline, double awareness,
-				double sensitivity, String responseType, ORNG orng) {
-		/*
-		 *  Decide on the number of times the activity is going to be activated
-		 *  during a day
-		 */
-		ProbabilityDistribution numOfTimesProb;
-		ProbabilityDistribution responseNumOfTimesProb;
-		ProbabilityDistribution startProb;
-		ProbabilityDistribution responseStartProb;
-		ProbabilityDistribution durationProb;
-		Boolean isShiftable;
-		Boolean isExclusive;
-		
-		Vector<Double> probVector;
-		Vector<Appliance> vector;
+	
+	public double[] calcExpPower() {
+		double[] act_exp = new double[Constants.MIN_IN_DAY];
+		ProbabilityDistribution numOfTimesProb = null;
+		ProbabilityDistribution responseNumOfTimesProb = null;
+		ProbabilityDistribution startProb = null;
+		ProbabilityDistribution responseStartProb = null;
+		ProbabilityDistribution durationProb = null;
+		Boolean isShiftable = null;
+		Boolean isExclusive = null;
+		Vector<Double> probVector = new Vector<Double>();
+		Vector<Appliance> vector = new Vector<Appliance>();
+		int tick = 0;
 		
 		// First search for specific days
 		String date = simulationWorld.getSimCalendar().getCurrentDate(tick);
 		String dayOfWeek = simulationWorld.getSimCalendar().getDayOfWeek(tick);
 		String dateKey = getKey(date);
 		String dayOfWeekKey = getKey(dayOfWeek);
+
 		boolean weekend = simulationWorld.getSimCalendar().isWeekend(tick);
 		numOfTimesProb = nTimesGivenDay.get(dateKey);
 		startProb = probStartTime.get(dateKey);
@@ -339,10 +334,132 @@ public class Activity extends Entity {
 				}				
 			}
 		}
-		if(notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
+		
+		int durationMax = Math.min(Constants.MIN_IN_DAY, durationProb.getHistogram().length - 1);
+		
+		if(vector != null) {
+			for(Appliance app : vector) {
+				System.out.println(app.getName());
+				Double[] applianceConsumption = app.getActiveConsumption();
+				boolean staticConsumption = app.isStaticConsumption();
+				for (int j = 0; j < act_exp.length; j++)
+					act_exp[j] += aggregatedProbability(durationProb, startProb, applianceConsumption, j, durationMax, staticConsumption);			
+			}
+		}
+		
+		return act_exp;
+	}
+	
+	  private double aggregatedProbability (ProbabilityDistribution duration, ProbabilityDistribution startTime,
+			  Double[] consumption, int index,
+              int durationMax,
+              boolean staticConsumption) {
+		  
+		  double result = 0;
+		  for (int i = 0; i < durationMax; i++) {
+			  if (staticConsumption)
+				  result += duration.getProbabilityGreaterEqual(i) * startTime.getProbability((Constants.MIN_IN_DAY + index - i) % Constants.MIN_IN_DAY) * consumption[0];
+			  else
+				  result += duration.getProbabilityGreaterEqual(i) * startTime.getProbability((Constants.MIN_IN_DAY + index - i) % Constants.MIN_IN_DAY) * consumption[i % consumption.length];
+		  }
+		  return result;
+	  }
 
-			
-			
+	public void
+		updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
+				PricingPolicy pricing, PricingPolicy baseline, double awareness,
+				double sensitivity, String responseType, ORNG orng) {
+		/*
+		 *  Decide on the number of times the activity is going to be activated
+		 *  during a day
+		 */
+		ProbabilityDistribution numOfTimesProb = null;
+		ProbabilityDistribution responseNumOfTimesProb = null;
+		ProbabilityDistribution startProb = null;
+		ProbabilityDistribution responseStartProb = null;
+		ProbabilityDistribution durationProb = null;
+		Boolean isShiftable = null;
+		Boolean isExclusive = null;
+		Vector<Double> probVector = null;
+		Vector<Appliance> vector = null;
+		
+		// First search for specific days
+				String date = simulationWorld.getSimCalendar().getCurrentDate(tick);
+				String dayOfWeek = simulationWorld.getSimCalendar().getDayOfWeek(tick);
+				String dateKey = getKey(date);
+				String dayOfWeekKey = getKey(dayOfWeek);
+				System.out.println(date);
+				boolean weekend = simulationWorld.getSimCalendar().isWeekend(tick);
+				numOfTimesProb = nTimesGivenDay.get(dateKey);
+				startProb = probStartTime.get(dateKey);
+				durationProb = probDuration.get(dateKey);
+				probVector = probApplianceUsed.get(dateKey);
+				vector = appliances.get(dateKey);
+				isShiftable = shiftable.get(dateKey);
+				isExclusive = config.get(dateKey);
+				// Then search for specific days
+				if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
+					numOfTimesProb = nTimesGivenDay.get(dayOfWeekKey);
+					startProb = probStartTime.get(dayOfWeekKey);
+					durationProb = probDuration.get(dayOfWeekKey);
+					probVector = probApplianceUsed.get(dayOfWeekKey);
+					isShiftable = shiftable.get(dayOfWeekKey);
+					vector = appliances.get(dayOfWeekKey);
+					// Then for weekdays and weekends
+					if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
+						if (weekend) {
+							numOfTimesProb = nTimesGivenDay.get(WEEKENDS);
+							startProb = probStartTime.get(WEEKENDS);
+							durationProb = probDuration.get(WEEKENDS);
+							probVector = probApplianceUsed.get(WEEKENDS);
+							isShiftable = shiftable.get(WEEKENDS);
+							isExclusive = config.get(WEEKENDS);
+							vector = appliances.get(WEEKENDS);
+						} else {
+							numOfTimesProb = nTimesGivenDay.get(WEEKDAYS);
+							startProb = probStartTime.get(WEEKDAYS);
+							durationProb = probDuration.get(WEEKDAYS);
+							probVector = probApplianceUsed.get(WEEKDAYS);
+							isShiftable = shiftable.get(WEEKDAYS);
+							isExclusive = config.get(WEEKDAYS);
+							vector = appliances.get(WEEKDAYS);
+						}
+						// Backwards compatibility
+						if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
+							if (weekend) {
+								numOfTimesProb = nTimesGivenDay.get(NONWORKING);
+								startProb = probStartTime.get(NONWORKING);
+								durationProb = probDuration.get(NONWORKING);
+								probVector = probApplianceUsed.get(NONWORKING);
+								isShiftable = shiftable.get(NONWORKING);
+								isExclusive = config.get(NONWORKING);
+								vector = appliances.get(NONWORKING);
+							} else {
+								numOfTimesProb = nTimesGivenDay.get(WORKING);
+								startProb = probStartTime.get(WORKING);
+								durationProb = probDuration.get(WORKING);
+								probVector = probApplianceUsed.get(WORKING);
+								isShiftable = shiftable.get(WORKING);
+								isExclusive = config.get(WORKING);
+								vector = appliances.get(WORKING);
+							}
+							// Then for any
+							if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
+								System.out.println("Any");
+								numOfTimesProb = nTimesGivenDay.get(ANY);
+								startProb = probStartTime.get(ANY);
+								durationProb = probDuration.get(ANY);
+								System.out.println(durationProb.toString());
+								probVector = probApplianceUsed.get(ANY);
+								isShiftable = shiftable.get(ANY);
+								isExclusive = config.get(ANY);
+								vector = appliances.get(ANY);
+							}
+						}				
+					}
+				}
+		
+		if(notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
 			// Response
 			responseStartProb = startProb;
 			responseNumOfTimesProb = numOfTimesProb;
@@ -391,8 +508,7 @@ public class Activity extends Entity {
 	private void addApplianceActivation(Appliance a, int duration, int startTime, int tick, PriorityBlockingQueue<Event> queue, Activity act, ORNG orng) {
 		int appDuration = duration;
 		int appStartTime = startTime;
-		RNG.init();
-		String hash = Utils.hashcode((new Long(RNG.nextLong()).toString()));
+		String hash = Utils.hashcode((new Long(orng.nextLong()).toString()));
 		Event eOn = new Event(tick + appStartTime, Event.SWITCH_ON, a, hash, act);
 		queue.offer(eOn);
 		Event eOff = new Event(tick + appStartTime + appDuration, Event.SWITCH_OFF, a, hash, act);

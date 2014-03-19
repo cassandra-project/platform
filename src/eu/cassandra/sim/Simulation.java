@@ -139,6 +139,7 @@ public class Simulation implements Runnable {
 		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   		try {
   			System.out.println("Run " + dbname + " started @ " + Calendar.getInstance().getTimeInMillis());
+  			calculateExpectedPower();
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
@@ -339,6 +340,7 @@ public class Simulation implements Runnable {
   			// End of file writing
   			// zip file
   			// http://www.mkyong.com/java/how-to-compress-files-in-zip-format/
+  			System.out.println("Zipping...");
   			byte[] buffer = new byte[1024];
   			FileOutputStream fos = new FileOutputStream(filename + ".zip");
   			ZipOutputStream zos = new ZipOutputStream(fos);
@@ -356,9 +358,12 @@ public class Simulation implements Runnable {
     		fos.close();
   			csvFile.delete();
   			// End of zip file
+  			System.out.println("End of Zipping...");
 	  		long endTime = System.currentTimeMillis();
 	  		objRun.put("ended", endTime);
+	  		System.out.println("Updating DB...");
 	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
+	  		System.out.println("End of Updating DB...");
 	  		logger.info("Time elapsed for Run " + dbname + ": " + ((endTime - startTime)/(1000.0 * 60)) + " mins");
 	  		logger.info("Run " + dbname + " ended @ " + Calendar.getInstance().toString());
   		} catch(Exception e) {
@@ -511,6 +516,31 @@ public class Simulation implements Runnable {
 	    	installations.add(inst);
 	    }
   }
+  	
+  	private void calculateExpectedPower() {
+  		System.out.println("Start exp power calc.");
+  		double[] aggr_exp = new double[Constants.MIN_IN_DAY];
+  		for(Installation installation: installations) {
+  			double[] inst_exp = new double[Constants.MIN_IN_DAY];
+  			Person person = installation.getPersons().get(0);
+  			for(Activity activity: person.getActivities()) {
+  				double[] act_exp = activity.calcExpPower();
+  				for(int i = 0; i < act_exp.length; i++) {
+  	  				inst_exp[i] += act_exp[i];
+  	  				m.addExpectedPowerTick(i, activity.getId(), act_exp[i], 0, MongoResults.COL_ACTRESULTS_EXP);
+  	  			}
+  			}
+  			for(int i = 0; i < inst_exp.length; i++) {
+  				aggr_exp[i] += inst_exp[i];
+  				m.addExpectedPowerTick(i, installation.getId(), inst_exp[i], 0, MongoResults.COL_INSTRESULTS_EXP);
+  			}
+  		}
+  		for(int i = 0; i < aggr_exp.length; i++) {
+  			m.addExpectedPowerTick(i, "aggr", aggr_exp[i], 0, MongoResults.COL_AGGRRESULTS_EXP);
+				System.out.println(aggr_exp[i]);
+			}
+  		System.out.println("End exp power calc.");
+  	}
   	
   	private String addEntity(Entity e, boolean jump) {
   		BasicDBObject obj = e.toDBObject();

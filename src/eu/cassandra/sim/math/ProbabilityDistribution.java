@@ -116,6 +116,15 @@ public interface ProbabilityDistribution
    * @return The probability value at x (P(x)).
    */
   public double getProbability (double x);
+  
+  /**
+   * Get the probability value P(X < x).
+   * 
+   * @param x
+   *          The input value.
+   * @return The probability value at x (P(x)).
+   */
+  public double getProbabilityGreaterEqual (int x);
 
   /**
    * Get the precomputed probability value for the x.

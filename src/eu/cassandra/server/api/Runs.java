@@ -121,6 +121,8 @@ public class Runs {
 	 */
 	@POST
 	public Response createRun(String message) {
+		DBObject index = new BasicDBObject("_id", 1);
+		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).createIndex(index);
 		
 		DBObject query = new BasicDBObject(); // A query
 		
