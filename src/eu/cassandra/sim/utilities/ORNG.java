@@ -29,10 +29,10 @@ import java.util.Random;
  */
 public class ORNG {
 	
-	private SecureRandom random;
+	private Random random;
 	
 	public ORNG() { 
-		random = new SecureRandom();
+		random = new Random();
 		random.setSeed(System.currentTimeMillis());
 		random.nextDouble();
 		random.nextDouble();
@@ -42,7 +42,7 @@ public class ORNG {
 	}
 	
 	public ORNG(long seed) { 
-		random = new SecureRandom();
+		random = new Random();
 		random.setSeed(seed);
 		random.nextDouble();
 		random.nextDouble();
