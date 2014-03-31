@@ -530,6 +530,21 @@ public class Simulation implements Runnable {
   	  				m.addExpectedPowerTick(i, activity.getId(), act_exp[i], 0, MongoResults.COL_ACTRESULTS_EXP);
   	  			}
   			}
+  			// For every appliance that is a base load find mean value and add
+  			for(Appliance appliance: installation.getAppliances()) {
+  				if(appliance.isBase()) {
+  					double mean = 0;
+  					Double[] cons = appliance.getActiveConsumption();
+  					for(int i = 0; i < cons.length; i++) {
+  						mean += cons[i].doubleValue();
+  					}
+  					mean /= cons.length;
+  					for(int i = 0; i < inst_exp.length; i++) {
+  		  				inst_exp[i] += mean;
+  					}
+  				}
+  			}
+  			
   			for(int i = 0; i < inst_exp.length; i++) {
   				aggr_exp[i] += inst_exp[i];
   				m.addExpectedPowerTick(i, installation.getId(), inst_exp[i], 0, MongoResults.COL_INSTRESULTS_EXP);

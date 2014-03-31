@@ -119,6 +119,10 @@ public class Appliance extends Entity {
 		return inUse;
 	}
 	
+	public boolean isBase() {
+		return base;
+	}
+	
 	public ConsumptionModel getQConsumptionModel() {
 		return qcm;
 	}
