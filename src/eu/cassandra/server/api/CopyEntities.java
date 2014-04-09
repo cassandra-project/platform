@@ -154,16 +154,8 @@ public class CopyEntities {
 	public Response batchCopy(@Context HttpHeaders httpHeaders) {
 //		MongoCopyEntities copy = new MongoCopyEntities(null);
 		String answer = "";
-//		answer += copy.copyInstallationToScenario("52a8a7eb712edbccc30d1d8f", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7ee712edbccc30d1e0e", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7f1712edbccc30d1e9b", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7f3712edbccc30d1ed2", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7f6712edbccc30d1f5d", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7f9712edbccc30d1fcd", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7fb712edbccc30d2029", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7fd712edbccc30d208c", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a800712edbccc30d20e6", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a801712edbccc30d212b", "51407454bf13fdfa30000000", null, true);
+//		answer += copy.copyInstallationToScenario("source_id", "51407454bf13fdfa30000000", null, true);
+//		System.out.println("Check");
 		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(answer));
 	}
 	
