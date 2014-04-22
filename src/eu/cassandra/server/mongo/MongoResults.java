@@ -146,8 +146,8 @@ public class MongoResults {
 		}
 		double maxavgValue = newAvgPower;
 		if(maxavg != null) maxavgValue = ((Double)maxavg.get("p")).doubleValue();
-		data.put("avgPeak", newMaxPower);
-		data.put("maxPower", maxavgValue);
+		data.put("avgPeak", maxavgValue);
+		data.put("maxPower", newMaxPower);
 		data.put("avgPower", newAvgPower);
 		data.put("energy", newEnergy);
 		data.put("cost", newCost);

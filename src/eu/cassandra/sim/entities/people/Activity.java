@@ -347,8 +347,26 @@ public class Activity extends Entity {
 			}
 		}
 		
+		for (int j = 0; j < act_exp.length; j++)
+			act_exp[j] = (act_exp[j] * estimateNumberOfTimesFactor(numOfTimesProb) / appliances.size());
+		
+		
 		return act_exp;
 	}
+	
+
+  public double estimateNumberOfTimesFactor (ProbabilityDistribution dailyTimes)
+   {
+     double result = 0;
+ 
+     for (int i = 0; i < dailyTimes.getHistogram().length; i++) {
+
+       result += i * dailyTimes.getHistogram()[i];
+ 
+     }
+ 
+     return result;
+   }
 	
 	  private double aggregatedProbability (ProbabilityDistribution duration, ProbabilityDistribution startTime,
 			  Double[] consumption, int index,
@@ -358,9 +376,9 @@ public class Activity extends Entity {
 		  double result = 0;
 		  for (int i = 0; i < durationMax; i++) {
 			  if (staticConsumption)
-				  result += duration.getProbabilityGreaterEqual(i) * startTime.getProbability((Constants.MIN_IN_DAY + index - i) % Constants.MIN_IN_DAY) * consumption[0];
+				  result += duration.getProbabilityGreater(i) * startTime.getProbability((Constants.MIN_IN_DAY + index - i) % Constants.MIN_IN_DAY) * consumption[0];
 			  else
-				  result += duration.getProbabilityGreaterEqual(i) * startTime.getProbability((Constants.MIN_IN_DAY + index - i) % Constants.MIN_IN_DAY) * consumption[i % consumption.length];
+				  result += duration.getProbabilityGreater(i) * startTime.getProbability((Constants.MIN_IN_DAY + index - i) % Constants.MIN_IN_DAY) * consumption[i % consumption.length];
 		  }
 		  return result;
 	  }

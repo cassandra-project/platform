@@ -121,10 +121,10 @@ public class PricingPolicy {
 				BasicDBList tzs = (BasicDBList)dbo.get("offpeak");
 				DBObject tz;
 				offpeaks = new ArrayList<Offpeak>();
-				for(int i = 0; i < levelsObj2.size(); i++) {
-					levelObj2 =  (DBObject)levelsObj2.get(i);
-					String from = levelObj2.get("from").toString();
-					String to = levelObj2.get("to").toString();
+				for(int i = 0; i < tzs.size(); i++) {
+					tz =  (DBObject)tzs.get(i);
+					String from = tz.get("from").toString();
+					String to = tz.get("to").toString();
 					Offpeak o = new Offpeak(from, to);
 					offpeaks.add(o);
 				}

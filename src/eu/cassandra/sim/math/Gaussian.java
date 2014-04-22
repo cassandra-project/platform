@@ -244,13 +244,13 @@ public class Gaussian implements ProbabilityDistribution
   
 
   @Override
-  public double getProbabilityGreaterEqual (int x)
+  public double getProbabilityGreater (int x)
   {
     double prob = 0;
 
     int start = (int) x;
 
-    for (int i = start; i < histogram.length; i++)
+    for (int i = start+1; i < histogram.length; i++)
       prob += histogram[i];
 
     return prob;
