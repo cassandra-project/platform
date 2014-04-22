@@ -182,6 +182,11 @@ Ext.define('C.view.DynamicGrid', {
 						}
 					}
 				}
+			],
+			plugins: [
+				Ext.create('Ext.grid.plugin.BufferedRenderer', {
+
+				})
 			]
 		});
 
