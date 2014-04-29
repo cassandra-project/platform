@@ -222,8 +222,8 @@ public class Simulation implements Runnable {
 		  				String name = installation.getName();
 		//  				logger.info("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 		//  				+ "Power: " + power);
-		  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
-		  		  				+ "Power: " + p);
+//		  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
+//		  		  				+ "Power: " + p);
 		  				if((tick + 1) % (Constants.MIN_IN_DAY *  pricing.getBillingCycle()) == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
 		  					installation.updateCost(pricing, tick);
 		  				}
@@ -238,12 +238,7 @@ public class Simulation implements Runnable {
 		  				energy += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 		  			}
 		  			if((tick + 1) % (Constants.MIN_IN_DAY *  pricing.getBillingCycle()) == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
-		  				cost += pricing.calculateCost(energy, 
-		  						billingCycleEnergy, 
-		  						energyOffpeak,
-		  						billingCycleEnergyOffpeak,
-		  						tick,
-		  						cycleMaxPower);
+		  				cost = totalInstCost(); //alternate method
 		  				billingCycleEnergy = energy;
 		  				billingCycleEnergyOffpeak = energyOffpeak;
 		  				cycleMaxPower = 0;
@@ -297,12 +292,7 @@ public class Simulation implements Runnable {
   	  				installation.addAppliancesKPIs(m, mcrunsRatio, co2);
   	  				installation.addActivitiesKPIs(m, mcrunsRatio, co2);
   	  			}
-  	  			cost += pricing.calculateCost(energy, 
-  	  					billingCycleEnergy,
-  						energyOffpeak,
-  						billingCycleEnergyOffpeak,
-  						tick,
-  						cycleMaxPower);
+  	  			cost = totalInstCost();
   	  			m.addKPIs(MongoResults.AGGR, 
   	  					maxPower * mcrunsRatio, 
   	  					avgPower * mcrunsRatio, 
@@ -376,6 +366,14 @@ public class Simulation implements Runnable {
   				DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   			}
   		}
+  	}
+  	
+  	private double totalInstCost() {
+  		double cost = 0;
+  		for(Installation installation: installations) {
+  			cost += installation.getCost();
+  		}
+  		return cost;
   	}
 
   	public void setup(boolean jump) throws Exception {
@@ -772,7 +770,7 @@ public class Simulation implements Runnable {
    			DBObject unifDoc = (DBObject)unifList.get(0);
    			double from = Double.parseDouble(unifDoc.get("start").toString()); 
    			double to = Double.parseDouble(unifDoc.get("end").toString()); 
-   			System.out.println(from + " " + to);
+//   			System.out.println(from + " " + to);
    			Uniform uniform = null;
    			if(flag.equalsIgnoreCase("start")) {
    				uniform = new Uniform(Math.max(from-1,0), Math.min(to-1, 1439), true);
