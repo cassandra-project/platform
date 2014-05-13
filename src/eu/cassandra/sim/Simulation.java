@@ -522,6 +522,7 @@ public class Simulation implements Runnable {
   			double[] inst_exp = new double[Constants.MIN_IN_DAY];
   			Person person = installation.getPersons().get(0);
   			for(Activity activity: person.getActivities()) {
+  				System.out.println("CEP: " + activity.getName());
   				double[] act_exp = activity.calcExpPower();
   				for(int i = 0; i < act_exp.length; i++) {
   	  				inst_exp[i] += act_exp[i];
