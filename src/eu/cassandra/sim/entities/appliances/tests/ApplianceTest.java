@@ -65,7 +65,7 @@ public class ApplianceTest {
 		RNG.init();
 		String id = "111";
 		String InstId="222";
-		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType", null, null, null).build();
 		Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 1f, true).build(new ORNG());
 		assertTrue("Result2", inst==tester.getInstallation());
 		
@@ -77,7 +77,7 @@ public class ApplianceTest {
 	RNG.init();
 	String id = "111";
 	String InstId="222";
-	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType", null, null, null).build();
 	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 1f, true).build(new ORNG());
 	assertTrue("Result3", true==tester.isInUse());
 		
@@ -89,7 +89,7 @@ public class ApplianceTest {
 	RNG.init();
 	String id = "111";
 	String InstId="222";
-	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType", null, null, null).build();
 	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 	tester.turnOn((long)1, "TestApp", null);
 	assertTrue("Result4", 1==tester.getOnTick());
@@ -102,7 +102,7 @@ public class ApplianceTest {
 	RNG.init();
 	String id = "111";
 	String InstId="222";
-	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType", null, null, null).build();
 	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 1f, true).build(new ORNG());
 	assertTrue("Result5", null==tester.getWho());
 		
@@ -114,7 +114,7 @@ public class ApplianceTest {
 	RNG.init();
 	String id = "111";
 	String InstId="222";
-	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+	Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType", null, null, null).build();
 	Appliance tester=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		
 	

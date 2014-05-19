@@ -139,7 +139,7 @@ public class Simulation implements Runnable {
 		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   		try {
   			System.out.println("Run " + dbname + " started @ " + Calendar.getInstance().getTimeInMillis());
-  			calculateExpectedPower();
+  			calculateExpectedPower(dbname);
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
@@ -151,20 +151,20 @@ public class Simulation implements Runnable {
   				double[] avgPPowerPerHourPerInst = new double[installations.size()];
   				double[] avgQPowerPerHourPerInst = new double[installations.size()];
   	  			double maxPower = 0;
-  	  			double cycleMaxPower = 0;
+//  	  			double cycleMaxPower = 0;
   	  			double avgPower = 0;
   	  			double energy = 0;
   	  			double energyOffpeak = 0;
   	  			double cost = 0;
-  	  			double billingCycleEnergy = 0;
-  	  			double billingCycleEnergyOffpeak = 0;
+//  	  			double billingCycleEnergy = 0;
+//  	  			double billingCycleEnergyOffpeak = 0;
   	  			while (tick < endTick) {
   	  				// If it is the beginning of the day create the events
   	  				if (tick % Constants.MIN_IN_DAY == 0) {
 //  	  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
   	  					for (Installation installation: installations) {
 //  						System.out.println(installation.getName());
-  	  						installation.updateDailySchedule(tick, queue, pricing, baseline_pricing, simulationWorld.getResponseType(), orng);
+  	  						installation.updateDailySchedule(tick, queue, simulationWorld.getResponseType(), orng);
   	  						
   	  					}
 //  					System.out.println("Daily queue size: " + queue.size() + "(" + 
@@ -202,12 +202,12 @@ public class Simulation implements Runnable {
 //		  				if(p> 0.001) System.out.println(p);
 		  				installation.updateMaxPower(p);
 		  				installation.updateAvgPower(p/endTick);
-		  				if(pricing.isOffpeak(tick)) {
+		  				if(installation.getPricing().isOffpeak(tick)) {
 		  					installation.updateEnergyOffpeak(p);
 		  				} else {
 		  					installation.updateEnergy(p);
 		  				}
-		  				installation.updateAppliancesAndActivitiesConsumptions(tick, endTick, pricing);
+		  				installation.updateAppliancesAndActivitiesConsumptions(tick, endTick);
 		  				m.addTickResultForInstallation(tick, 
 		  						installation.getId(), 
 		  						p * mcrunsRatio, 
@@ -224,25 +224,25 @@ public class Simulation implements Runnable {
 		//  				+ "Power: " + power);
 //		  				System.out.println("Tick: " + tick + " \t " + "Name: " + name + " \t " 
 //		  		  				+ "Power: " + p);
-		  				if((tick + 1) % (Constants.MIN_IN_DAY *  pricing.getBillingCycle()) == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
-		  					installation.updateCost(pricing, tick);
+		  				if((tick + 1) % (Constants.MIN_IN_DAY *  installation.getPricing().getBillingCycle()) == 0 || installation.getPricing().getType().equalsIgnoreCase("TOUPricing")) {
+		  					installation.updateCost(tick);
 		  				}
 		  				counter++;
 		  			}
 		  			if(sumP > maxPower) maxPower = sumP;
-		  			if(sumP > cycleMaxPower) cycleMaxPower = sumP;
+//		  			if(sumP > cycleMaxPower) cycleMaxPower = sumP;
 		  			avgPower += sumP/endTick;
-		  			if(pricing.isOffpeak(tick)) {
-		  				energyOffpeak += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
-		  			} else {
-		  				energy += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
-		  			}
-		  			if((tick + 1) % (Constants.MIN_IN_DAY *  pricing.getBillingCycle()) == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
-		  				cost = totalInstCost(); //alternate method
-		  				billingCycleEnergy = energy;
-		  				billingCycleEnergyOffpeak = energyOffpeak;
-		  				cycleMaxPower = 0;
-		  			}
+//		  			if(pricing.isOffpeak(tick)) {
+//		  				energyOffpeak += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
+//		  			} else {
+//		  				energy += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
+//		  			}
+//		  			if((tick + 1) % (Constants.MIN_IN_DAY *  pricing.getBillingCycle()) == 0 || pricing.getType().equalsIgnoreCase("TOUPricing")) {
+//		  				cost = totalInstCost(); //alternate method
+//		  				billingCycleEnergy = totalInstEnergy();
+//		  				billingCycleEnergyOffpeak = totalInstOffpeak();
+//		  				cycleMaxPower = 0;
+//		  			}
 		  			m.addAggregatedTickResult(tick, 
 		  					sumP * mcrunsRatio, 
 		  					sumQ * mcrunsRatio, 
@@ -277,12 +277,12 @@ public class Simulation implements Runnable {
 			  			}
 		  			}
 		  			mccount++;
-		  			percentage = (int)(mccount * 100.0 / (mcruns * endTick));
-		  			objRun.put("percentage", percentage);
+		  			percentage = (int)(0.75 * mccount * 100.0 / (mcruns * endTick));
+		  			objRun.put("percentage", 25 + percentage);
 		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   	  			}
   	  			for(Installation installation: installations) {
-  	  				installation.updateCost(pricing, tick); // update the rest of the energy
+  	  				installation.updateCost(tick); // update the rest of the energy
   	  				m.addKPIs(installation.getId(), 
   	  						installation.getMaxPower() * mcrunsRatio, 
   	  						installation.getAvgPower() * mcrunsRatio, 
@@ -384,6 +384,7 @@ public class Simulation implements Runnable {
   		DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
   		simulationWorld = new SimulationParams(simParamsDoc);
+  		// get from scenario for each installation otherwise fallback
   		DBObject pricingDoc = (DBObject) jsonScenario.get("pricing");
   		DBObject basePricingDoc = (DBObject) jsonScenario.get("baseline_pricing");
   		if(pricingDoc != null) {
@@ -422,12 +423,23 @@ public class Simulation implements Runnable {
 	    	String name = (String)instDoc.get("name");
 	    	String description = (String)instDoc.get("description");
 	    	String type = (String)instDoc.get("type");
+	    	String clustername = (String)instDoc.get("cluster");
+	    	PricingPolicy instPricing = pricing;
+	    	PricingPolicy instBaseline_pricing = baseline_pricing;
+	    	if(jsonScenario.get("pricing-" + clustername + "-" + id) != null) {
+	    		DBObject pricingDoc = (DBObject) jsonScenario.get("pricing-" + clustername + "-" + id);
+	    		instPricing = new PricingPolicy(pricingDoc);
+	    	}	
+	    	if(jsonScenario.get("baseline_pricing-" + clustername + "-" + id) != null) {
+	    		DBObject basePricingDoc = (DBObject) jsonScenario.get("baseline_pricing-" + clustername + "-" + id);
+	    		instBaseline_pricing = new PricingPolicy(basePricingDoc);
+	    	}	    	
 	    	Installation inst = new Installation.Builder(
-	    			id, name, description, type).build();
+	    			id, name, description, type, clustername, instPricing, instBaseline_pricing).build();
 	    	// Thermal module if exists
 	    	DBObject thermalDoc = (DBObject)instDoc.get("thermal");
-	    	if(thermalDoc != null && pricing.getType().equalsIgnoreCase("TOUPricing")) {
-	    		ThermalModule tm = new ThermalModule(thermalDoc, pricing.getTOUArray());
+	    	if(thermalDoc != null && inst.getPricing().getType().equalsIgnoreCase("TOUPricing")) {
+	    		ThermalModule tm = new ThermalModule(thermalDoc, inst.getPricing().getTOUArray());
 	    		inst.setThermalModule(tm);
 	    	}
 	    	
@@ -515,9 +527,14 @@ public class Simulation implements Runnable {
 	    }
   }
   	
-  	private void calculateExpectedPower() {
+  	private void calculateExpectedPower(String dbname) {
+  		DBObject query = new BasicDBObject();
+		query.put("_id", new ObjectId(dbname));
+		DBObject objRun = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).findOne(query);
   		System.out.println("Start exp power calc.");
+  		int percentage = 0;
   		double[] aggr_exp = new double[Constants.MIN_IN_DAY];
+  		int count = 0;
   		for(Installation installation: installations) {
   			double[] inst_exp = new double[Constants.MIN_IN_DAY];
   			Person person = installation.getPersons().get(0);
@@ -548,6 +565,10 @@ public class Simulation implements Runnable {
   				aggr_exp[i] += inst_exp[i];
   				m.addExpectedPowerTick(i, installation.getId(), inst_exp[i], 0, MongoResults.COL_INSTRESULTS_EXP);
   			}
+  			count++;
+  			percentage = (int)(0.25 * count * 100.0) / (installations.size());
+  			objRun.put("percentage", percentage);
+  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   		}
   		for(int i = 0; i < aggr_exp.length; i++) {
   			m.addExpectedPowerTick(i, "aggr", aggr_exp[i], 0, MongoResults.COL_AGGRRESULTS_EXP);
@@ -579,7 +600,7 @@ public class Simulation implements Runnable {
 	    	String description = (String)instDoc.get("description");
 	    	String type = (String)instDoc.get("type");
 	    	Installation inst = new Installation.Builder(
-	    			id, name, description, type).build();
+	    			id, name, description, type, null, pricing, baseline_pricing).build();
 	    	inst.setParentId(scenario_id);
 	    	String inst_id = addEntity(inst, jump);
 	    	inst.setId(inst_id);
