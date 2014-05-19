@@ -240,46 +240,91 @@ Ext.define('C.view.CsnClusterForm', {
 					itemId: 'clusterPricingContainer',
 					margin: '20 0 0 0',
 					width: 100,
+					layout: {
+						type: 'anchor'
+					},
 					fieldLabel: 'Clusters - Pricing Scheme Correlation',
 					items: [
 						{
-							xtype: 'button',
-							handler: function(button, event) {
-								var myFormCmp = button.up('form');
-								var clusterStore = myFormCmp.down('grid').store;
-								var clusterRecord = myFormCmp.clusterRecord;
-								var clusters = clusterRecord.clusters;
-
-								Ext.each(clusters, function(cluster){
-									var cluster_grid_record = clusterStore.getById(cluster.name);
-									if (!cluster_grid_record)
-									return;
-									cluster.pricing_id = cluster_grid_record.get("pricing_id");
-									cluster.base_prc_id = cluster_grid_record.get("base_prc_id");
-
-								});
-
-								Ext.Ajax.request({
-									url: '/cassandra/api/csnclusters',
-									jsonData: clusterRecord,
-									method: 'PUT',
-									scope: this,
-									success: function(response, opts) {
-										var response_obj = Ext.JSON.decode(response.responseText);
-
-										var successMsg = response_obj.message;
-										Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
-										myFormCmp.clusterRecord = response_obj.data[0];
-									},
-									failure: function(response, opts) {
-										var response_obj = Ext.JSON.decode(response.responseText);
-										Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
-									}
-								});
+							xtype: 'container',
+							width: 300,
+							layout: {
+								align: 'middle',
+								type: 'hbox'
 							},
-							margin: '20 0 20 0',
-							width: 150,
-							text: 'Add pricing schemes'
+							items: [
+								{
+									xtype: 'button',
+									handler: function(button, event) {
+										var myFormCmp = button.up('form');
+										var clusterStore = myFormCmp.down('grid').store;
+										var clusterRecord = myFormCmp.clusterRecord;
+										var clusters = clusterRecord.clusters;
+
+										Ext.each(clusters, function(cluster){
+											var cluster_grid_record = clusterStore.getById(cluster.name);
+											if (!cluster_grid_record)
+											return;
+											cluster.pricing_id = cluster_grid_record.get("pricing_id");
+											cluster.base_prc_id = cluster_grid_record.get("base_prc_id");
+
+										});
+
+										Ext.Ajax.request({
+											url: '/cassandra/api/csnclusters',
+											jsonData: clusterRecord,
+											method: 'PUT',
+											scope: this,
+											success: function(response, opts) {
+												var response_obj = Ext.JSON.decode(response.responseText);
+
+												var successMsg = response_obj.message;
+												Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
+												myFormCmp.clusterRecord = response_obj.data[0];
+
+												myFormCmp.down("#runWithPricing").show();
+											},
+											failure: function(response, opts) {
+												var response_obj = Ext.JSON.decode(response.responseText);
+												Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
+											}
+										});
+									},
+									margin: '20 0 20 0',
+									text: 'Add pricing schemes'
+								},
+								{
+									xtype: 'button',
+									handler: function(button, event) {
+										var myFormCmp = button.up('form');
+										var clusterStore = myFormCmp.down('grid').store;
+										var clusterRecord = myFormCmp.clusterRecord;
+
+										Ext.Ajax.request({
+											url: '/cassandra/api/runs',
+											jsonData: clusterRecord,
+											method: 'POST',
+											scope: this,
+											success: function(response, opts) {
+												var response_obj = Ext.JSON.decode(response.responseText);
+
+												var successMsg = response_obj.message;
+												Ext.sliding_box.msg('Success', JSON.stringify(successMsg));
+											},
+											failure: function(response, opts) {
+												var response_obj = Ext.JSON.decode(response.responseText);
+												Ext.MessageBox.show({title:'Error', msg: JSON.stringify(response_obj.errors), icon: Ext.MessageBox.ERROR, buttons: Ext.MessageBox.OK}); 
+											}
+										});
+									},
+									hidden: true,
+									itemId: 'runWithPricing',
+									margin: '20 0 20 10',
+									style: 'background: red; border-color: red',
+									width: 150,
+									text: 'Run'
+								}
+							]
 						}
 					]
 				}
