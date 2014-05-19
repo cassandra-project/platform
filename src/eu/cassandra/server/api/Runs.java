@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -39,6 +40,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
@@ -121,9 +123,9 @@ public class Runs {
 	 */
 	@POST
 	public Response createRun(String message) {
+		System.out.println(message);
 		DBObject index = new BasicDBObject("_id", 1);
 		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).createIndex(index);
-		
 		DBObject query = new BasicDBObject(); // A query
 		
 		try {
@@ -137,7 +139,20 @@ public class Runs {
 			
 			// Simulation parameters
 			DBObject jsonMessage = (DBObject) JSON.parse(message);
-			String smp_id =  (String)jsonMessage.get("smp_id");
+			boolean rerun = false;
+			String smp_id = null;
+			Object run_id = jsonMessage.get("run_id");
+			if( run_id != null) {
+				rerun = true;
+			}
+			if(rerun) {
+				DBObject simParams = DBConn.getConn(run_id.toString()).getCollection(MongoSimParam.COL_SIMPARAM).findOne();
+				ObjectId simParamsOID = (ObjectId)simParams.get("_id");
+				smp_id = simParamsOID.toString();;
+				System.out.println("Sim Params id: " + smp_id);
+			} else {
+				smp_id =  (String)jsonMessage.get("smp_id");
+			}
 			checkForNull(smp_id, "Simulation Parameters id not posted.");
 			query.put("_id", new ObjectId(smp_id));			
 			DBObject simParams = DBConn.getConn().getCollection(MongoSimParam.COL_SIMPARAM).findOne(query);
@@ -155,6 +170,40 @@ public class Runs {
 			checkForNull(scn, "The provided Scenario was not found in the DB.");
 			db.getCollection(MongoScenarios.COL_SCENARIOS).insert(scn);
 			scenario.put("scenario", scn);
+			
+			HashMap<String, String> clusterToInst = new HashMap<String, String>();
+			
+			//TODO Create 2 hashmaps with installation as key and pricing policy as value.
+			if(rerun) {
+				BasicDBList clusters = (BasicDBList)jsonMessage.get("clusters");
+				Iterator<Object> iter = clusters.iterator();
+				while(iter.hasNext()) {
+					DBObject obj = (DBObject)iter.next();
+					String name = obj.get("name").toString();
+					// Current pricing
+					String pricingId = obj.get("pricing_id").toString();
+					query.put("_id", new ObjectId(pricingId));
+					DBObject pricingPolicy = DBConn.getConn().getCollection(MongoPricingPolicy.COL_PRICING).findOne(query);
+					checkForNull(pricingPolicy, "The provided Baseline Pricing Policy was not found in the DB.");
+					db.getCollection(MongoPricingPolicy.COL_PRICING).insert(pricingPolicy);
+					scenario.put("pricing-" + name, pricingPolicy);
+					// Baseline pricing
+					String basePricingId = obj.get("base_prc_id").toString();
+					query.put("_id", new ObjectId(basePricingId));
+					DBObject basePricingPolicy = DBConn.getConn().getCollection(MongoPricingPolicy.COL_PRICING).findOne(query);
+					checkForNull(basePricingPolicy, "The provided Baseline Pricing Policy was not found in the DB.");
+					db.getCollection(MongoPricingPolicy.COL_PRICING).insert(basePricingPolicy);
+					scenario.put("baseline_pricing-"+name, basePricingPolicy);
+					BasicDBList installations = (BasicDBList)obj.get("installations");
+					Iterator<Object> iter2 = installations.iterator();
+					while(iter2.hasNext()) {
+						String inst_id = (String)iter2.next();
+						clusterToInst.put(inst_id, name);
+						scenario.put("pricing-" + name + "-" + inst_id, pricingPolicy);
+						scenario.put("baseline_pricing-" + name + "-" + inst_id, basePricingPolicy);
+					}
+				}
+			}	
 			
 			// Pricing Policy
 			String prc_id = (String)simParams.get("prc_id");
@@ -200,6 +249,7 @@ public class Runs {
 			}
 			
 			// Installations
+			// TODO Add installation cluster number in each installation
 			query = new BasicDBObject();
 			query.put("scenario_id", scn_id);
 			DBCursor cursor = DBConn.getConn().getCollection(MongoInstallations.COL_INSTALLATIONS).find(query);
@@ -314,6 +364,7 @@ public class Runs {
 					appliance.put("consmod", consModel);
 					obj.put("app"+countApps, appliance);
 				}
+				obj.put("cluster", clusterToInst.get(inst_id));
 				obj.put("appcount", new Integer(countApps));
 				scenario.put("inst"+countInst,obj);
 			}
@@ -325,6 +376,7 @@ public class Runs {
 			} catch(NumberFormatException e) {
 				seed = 0;
 			}
+			// TODO insert the hashmaps here as argument
 			Simulation sim = new Simulation(scenario.toString(), dbname, resources_path, seed);
 			sim.setup(false);
 			// Scenario building finished

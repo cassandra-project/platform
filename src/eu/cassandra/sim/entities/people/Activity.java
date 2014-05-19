@@ -333,11 +333,10 @@ public class Activity extends Entity {
 					}
 				}				
 			}
-		}
-		
-		int durationMax = Math.min(Constants.MIN_IN_DAY, durationProb.getHistogram().length - 1);
+		}		
 		
 		if(vector != null) {
+			int durationMax = Math.min(Constants.MIN_IN_DAY, durationProb.getHistogram().length - 1);
 			for(Appliance app : vector) {
 				System.out.println(app.getName());
 				Double[] applianceConsumption = app.getActiveConsumption();
@@ -345,11 +344,9 @@ public class Activity extends Entity {
 				for (int j = 0; j < act_exp.length; j++)
 					act_exp[j] += aggregatedProbability(durationProb, startProb, applianceConsumption, j, durationMax, staticConsumption);			
 			}
+			for (int j = 0; j < act_exp.length; j++)
+				act_exp[j] = (act_exp[j] * estimateNumberOfTimesFactor(numOfTimesProb) / appliances.size());
 		}
-		
-		for (int j = 0; j < act_exp.length; j++)
-			act_exp[j] = (act_exp[j] * estimateNumberOfTimesFactor(numOfTimesProb) / appliances.size());
-		
 		
 		return act_exp;
 	}

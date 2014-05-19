@@ -41,8 +41,8 @@ public class SimulationTest {
 	
 	@Mock SimulationParams simulationWorld;
 	@Mock String scenario ="{ \"n\" : 0, \"params\" : [{ \"n\" : 1, \"values\" : [ {\"p\" : 140.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 117.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 0.0, \"d\" : 73, \"s\": 0.0}]},{ \"n\" : 1, \"values\" : [ {\"p\" : 14.0, \"d\" : 20, \"s\": 0.0}, {\"p\" : 11.0, \"d\" : 18, \"s\": 0.0}, {\"p\" : 5.0, \"d\" : 73, \"s\": 0.0}]}]}";
-	@Mock Installation inst1= new Installation.Builder("1", "HouseholdInst", "A household installation", "Low Voltage Installation").build();
-	@Mock Installation inst2=new Installation.Builder("2", "IndustrialInst", "An industrial installation", "Medium Voltage Installation").build();
+	@Mock Installation inst1= new Installation.Builder("1", "HouseholdInst", "A household installation", "Low Voltage Installation", null, null, null).build();
+	@Mock Installation inst2=new Installation.Builder("2", "IndustrialInst", "An industrial installation", "Medium Voltage Installation", null, null, null).build();
 	@Mock Installation[] p=new Installation[2];
 	
 	
