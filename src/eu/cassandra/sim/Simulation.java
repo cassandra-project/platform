@@ -232,6 +232,7 @@ public class Simulation implements Runnable {
 		  			if(sumP > maxPower) maxPower = sumP;
 //		  			if(sumP > cycleMaxPower) cycleMaxPower = sumP;
 		  			avgPower += sumP/endTick;
+		  			energy += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 //		  			if(pricing.isOffpeak(tick)) {
 //		  				energyOffpeak += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 //		  			} else {
