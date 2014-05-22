@@ -85,6 +85,7 @@ public class Person extends Entity {
     public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
     		PricingPolicy pricing, PricingPolicy baseline, String responseType, ORNG orng) {
     	for(Activity activity: activities) {
+//    		System.out.println("Activity: " + activity.getName());
     		activity.updateDailySchedule(tick, queue, pricing, baseline, awareness, sensitivity, responseType, orng);
     	}
     }
