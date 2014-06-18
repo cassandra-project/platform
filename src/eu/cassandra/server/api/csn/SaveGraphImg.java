@@ -51,7 +51,7 @@ try {
 		Graph<MyNode, String> graph = aggrLayout.getGraph();
 		HashMap<String,MyNode> n = new HashMap<String,MyNode>();
 		for(DBObject node : nodes) {
-			MyNode myNode = new MyNode(node.get("_id").toString(), (node.get("name")==null)?"":node.get("name").toString());
+			MyNode myNode = new MyNode(node.get("_id").toString(), (node.get("name")==null || node.get("name").toString().trim().equalsIgnoreCase("") )?"NoName":node.get("name").toString());
 			n.put(node.get("_id").toString(),myNode);
 			graph.addVertex(n.get(node.get("_id").toString() ) );
 		}

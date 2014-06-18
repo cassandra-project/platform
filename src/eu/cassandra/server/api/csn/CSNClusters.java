@@ -82,6 +82,7 @@ public class CSNClusters {
 		}catch(Exception e) {
 			return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSONError("Update failed",e)));
 		}
+		System.out.println(obj.toString());
 		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(jSON2Rrn.createJSON(obj,"Updated Successfully")));
 
 	}

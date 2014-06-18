@@ -1,0 +1,427 @@
+<?xml version="1.0"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://wadl.dev.java.net/2009/02 wadl.xsd" xmlns:tns="urn:cassandra" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://wadl.dev.java.net/2009/02">
+	<resources base="https://cassandra.iti.gr:8443/cassandra/api/">
+		<resource path="act">
+			<method name="GET">
+				<request> 
+					<param name="dbname" style="header"/>
+					<param name="pers_id" style="query"/> 
+					<param name="count" style="query"/> 
+					<param name="pertype" style="query"/> 
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{act_id}">
+				<param name="act_id" style="template"/>
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="actmod">
+			<method name="GET">
+				<request> 
+					<param name="dbname" style="header"/>
+					<param name="act_id" style="query"/>
+					<param name="count" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{actmod_id}">
+				<param name="actmod_id" style="template"/>
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="app">
+			<method name="GET">
+				<request> 
+					<param name="dbname" style="header"/>
+					<param name="inst_id" style="query"/>
+					<param name="scn_id" style="query"/>
+					<param name="actmod_id" style="query"/>
+					<param name="count" style="query"/>  
+					<param name="pertype" style="query"/>
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{app_id}">
+				<param name="app_id" style="template"/>
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="consmod">
+			<method name="GET">
+				<request> 
+					<param name="dbname" style="header"/>
+					<param name="app_id" style="query"/>
+					<param name="count" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{consmod_id}">
+				<param name="consmod_id" style="template"/>
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="copy">
+			<method name="POST">
+				<request> 
+					<param name="dbname" style="header"/>
+					<param name="actID" style="query"/>  
+					<param name="actmodID" style="query"/>  
+					<param name="appID" style="query"/>  
+					<param name="consmodID" style="query"/>  
+					<param name="distrID" style="query"/>  
+					<param name="instID" style="query"/>  
+					<param name="persID" style="query"/>  
+					<param name="scnID" style="query"/>  
+					<param name="smpID" style="query"/>  
+					<param name="toPrjID" style="query"/>  
+					<param name="toActID" style="query"/>  
+					<param name="toActmodID" style="query"/>  
+					<param name="toAppID" style="query"/>  
+					<param name="toInstID" style="query"/>  
+					<param name="toPersID" style="query"/>  
+					<param name="toScnID" style="query"/>  
+				</request>
+			</method>
+		</resource>
+		<resource path="demog">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="scn_id" style="query"/>
+					<param name="count" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{demog_id}">
+				<param name="demog_id" style="template"/>
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="distr">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="actmod_id" style="query"/>
+					<param name="count" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{distr_id}">
+				<param name="distr_id" style="template"/>
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="expected">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="inst_id" style="query"/>
+					<param name="act_id" style="query"/>
+				</request>
+			</method>
+		</resource>
+		<resource path="inst">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="scn_id" style="query"/>
+					<param name="count" style="query"/>  
+					<param name="filter" style="query"/>  
+					<param name="sort" style="query"/>  
+					<param name="limit" style="query"/>  
+					<param name="skip" style="query"/>  
+					<param name="pertype" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{inst_id}">
+				<param name="inst_id" style="template" />
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="kpis">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="inst_id" style="query"/>  
+					<param name="app_id" style="query"/>
+					<param name="act_id" style="query"/>
+				</request>
+			</method>
+		</resource>
+		<resource path="lighting">
+			<method name="POST">
+			</method>
+			<resource path="{light_id}">
+				<param name="light_id" style="template"/>
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="pers">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="inst_id" style="query"/>
+					<param name="scn_id" style="query"/>  
+					<param name="count" style="query"/>  
+					<param name="pertype" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{pers_id}">
+				<param name="pers_id" style="template" />
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="prc">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="prj_id" style="query"/>
+					<param name="count" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{prc_id}">
+				<param name="prc_id" style="template" />
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="prj">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="count" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{prj_id}">
+				<param name="prj_id" style="template" />
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="replace">
+			<method name="POST">
+			</method>
+		</resource>
+		<resource path="results">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="inst_id" style="query"/>  
+					<param name="metric" style="query"/>
+					<param name="aggr_unit" style="query"/>
+					<param name="from" style="query"/>
+					<param name="to" style="query"/>
+				</request>
+			</method>
+		</resource>
+		<resource path="runs">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="prj_id" style="query"/>  
+					<param name="count" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{run_id}">
+				<param name="run_id" style="template" />
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="scn">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="prj_id" style="query"/>  
+					<param name="count" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{scn_id}">
+				<param name="scn_id" style="template" />
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="search">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="scn_id" style="query"/>  
+					<param name="col" style="query"/>
+					<param name="name" style="query"/>
+					<param name="type" style="query"/>
+					<param name="description" style="query"/>
+				</request>
+			</method>
+		</resource>
+		<resource path="smp">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+					<param name="scn_id" style="query"/>  
+					<param name="count" style="query"/>  
+				</request>
+			</method>
+			<method name="POST">
+			</method>
+			<resource path="{smp_id}">
+				<param name="smp_id" style="template" />
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="thermal">
+			<method name="POST">
+			</method>
+			<resource path="{thermal_id}">
+				<param name="thermal_id" style="template" />
+				<method name="GET">
+					<request>
+						<param name="dbname" style="header"/>
+					</request>
+				</method>
+				<method name="PUT">
+				</method>
+				<method name="DELETE">
+				</method>
+			</resource>
+		</resource>
+		<resource path="file/upload">
+			<method name="POST">
+			</method>
+		</resource>
+		<resource path="usr">
+			<method name="GET">
+				<request>
+					<param name="dbname" style="header"/>
+				</request>
+			</method>
+		</resource>
+	</resources>
+</application>

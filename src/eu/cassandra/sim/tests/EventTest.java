@@ -41,7 +41,7 @@ public class EventTest {
 		RNG.init();
 		String id = "111";
 		String InstId="222";
-		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType", null, null, null).build();
 		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		String hash="0000";
 		Event tester=new Event(1,1,app,hash, null);
@@ -54,7 +54,7 @@ public class EventTest {
 		RNG.init();
 		String id = "111";
 		String InstId="222";
-		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType", null, null, null).build();
 		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		String hash="0000";
 		Event tester=new Event(1,1,app,hash, null);
@@ -67,7 +67,7 @@ public class EventTest {
 		RNG.init();
 		String id = "111";
 		String InstId="222";
-		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType", null, null, null).build();
 		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		String hash="0000";
 		Event tester=new Event(3,1,app,hash, null);
@@ -79,7 +79,7 @@ public class EventTest {
 		RNG.init();
 		String id = "111";
 		String InstId="222";
-		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType", null, null, null).build();
 		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		String hash="0000";
 		Event tester=new Event(3,1,app,hash, null);
@@ -92,7 +92,7 @@ public class EventTest {
 		RNG.init();
 		String id = "111";
 		String InstId="222";
-		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType").build();
+		Installation inst= new Installation.Builder(InstId, "TestInst", "TestInstDesc", "TestType", null, null, null).build();
 		Appliance app=new Appliance.Builder(id,"TestApp", "testDesc", "testType", inst, new ConsumptionModel(s, "p"), null, 10, true).build(new ORNG());
 		String hash="0000";
 		Event tester=new Event(3,1,app,hash, null);

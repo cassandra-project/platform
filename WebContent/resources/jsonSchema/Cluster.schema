@@ -42,6 +42,11 @@
             "type": "array",
             "description": "Information about the clusters (pricing scheme and installation of each cluster)",
             "optional": false
+        },
+        "pajek": {
+            "type": "string",
+            "description": "pajek path",
+            "optional": true
         }
      },
     "additionalProperties" : false

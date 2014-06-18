@@ -152,18 +152,42 @@ public class CopyEntities {
 	
 	@GET
 	public Response batchCopy(@Context HttpHeaders httpHeaders) {
-//		MongoCopyEntities copy = new MongoCopyEntities(null);
+		MongoCopyEntities copy = new MongoCopyEntities(null);
 		String answer = "";
-//		answer += copy.copyInstallationToScenario("52a8a7eb712edbccc30d1d8f", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7ee712edbccc30d1e0e", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7f1712edbccc30d1e9b", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7f3712edbccc30d1ed2", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7f6712edbccc30d1f5d", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7f9712edbccc30d1fcd", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7fb712edbccc30d2029", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a7fd712edbccc30d208c", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a800712edbccc30d20e6", "51407454bf13fdfa30000000", null, true);
-//		answer += copy.copyInstallationToScenario("52a8a801712edbccc30d212b", "51407454bf13fdfa30000000", null, true);
+		answer += copy.copyInstallationToScenario("537f1e21712e954bd83e76ca", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f1f4a712e954bd83e779b", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f225d712e954bd83e781f", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2439712e954bd83e78bf", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f25b5712e954bd83e7a00", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f268d712e954bd83e7ac3", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2767712e954bd83e7bef", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f28cf712e954bd83e7ce3", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2aad712e954bd83e7dd0", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2bd3712e954bd83e7f03", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2c85712e954bd83e7fa3", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2d19712e954bd83e806d", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2d73712e954bd83e8106", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2e2c712e954bd83e8159", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2ec4712e954bd83e8215", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2f48712e954bd83e82df", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f2fe8712e954bd83e836a", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f3046712e954bd83e83e0", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f3106712e954bd83e8528", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f31ae712e954bd83e85b3", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f322e712e954bd83e864c", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f32e4712e954bd83e86a6", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f3390712e954bd83e8777", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f3439712e954bd83e8856", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f34e2712e954bd83e88e8", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f3584712e954bd83e89a4", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f3648712e954bd83e8a6e", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("537f3b36712e954bd83e8b4d", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("538058d7712e954bd8981be9", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("538059a8712e954bd8981cd6", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("538300be712e954bd8c2e568", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("5383042b712e954bd8c381e1", "511cf876bf13fde604000000", null, true);
+		answer += copy.copyInstallationToScenario("5383073d712e954bd8c382f7", "511cf876bf13fde604000000", null, true);
+		System.out.println("Check");
 		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(answer));
 	}
 	

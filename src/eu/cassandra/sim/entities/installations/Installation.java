@@ -37,6 +37,8 @@ public class Installation extends Entity {
 	private Vector<Appliance> appliances;
 	private Vector<Installation> subInstallations;
 	private LocationInfo locationInfo;
+	private PricingPolicy pp;
+	private PricingPolicy bpp;
 	private double currentPowerP;
 	private double currentPowerQ;
 	private double maxPower = 0;
@@ -47,6 +49,7 @@ public class Installation extends Entity {
 	private double energyOffpeak = 0;
 	private double previousEnergyOffpeak = 0;
 	private double cost = 0;
+	private String clustername;
 	private ThermalModule tm;
 	
 	public static class Builder {
@@ -62,12 +65,18 @@ public class Installation extends Entity {
         private Vector<Installation> subInstallations;
         private double currentPowerP = 0.0;
         private double currentPowerQ = 0.0;
+    	private PricingPolicy pp;
+    	private PricingPolicy bpp;
+    	private String clustername;
         
-        public Builder(String aid, String aname, String adescription, String atype) {
+        public Builder(String aid, String aname, String adescription, String atype, String aclustername, PricingPolicy app, PricingPolicy abpp) {
         	id = aid;
 			name = aname;
 		    description = adescription;
 		    type = atype;
+		    pp = app;
+		    bpp = abpp;
+		    clustername = aclustername;
         }
         
 		public Builder locationInfo (LocationInfo aLocationInfo) {
@@ -96,12 +105,14 @@ public class Installation extends Entity {
         appliances = builder.appliances;
         subInstallations = builder.subInstallations;
         locationInfo = builder.locationInfo;
+        pp = builder.pp;
+        bpp = builder.bpp;
+        clustername = builder.clustername;
 	}
     
-    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue, 
-    		PricingPolicy pricing, PricingPolicy baseline, String responseType, ORNG orng) {
+    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue, String responseType, ORNG orng) {
     	for(Person person : getPersons()) {
-    		person.updateDailySchedule(tick, queue, pricing, baseline, responseType, orng);
+    		person.updateDailySchedule(tick, queue, pp, bpp, responseType, orng);
 		}
     	if(tm != null) {
     		tm.nextStep();
@@ -133,7 +144,7 @@ public class Installation extends Entity {
     	energyOffpeak += (power/1000.0) * Constants.MINUTE_HOUR_RATIO; 
     }
     
-    public void updateCost(PricingPolicy pp, int tick) {
+    public void updateCost(int tick) {
     	cost += pp.calculateCost(energy, previousEnergy, energyOffpeak, previousEnergyOffpeak, tick, cycleMaxPower);
     	cycleMaxPower = 0;
     	previousEnergy = energy;
@@ -141,6 +152,10 @@ public class Installation extends Entity {
     	for(Appliance appliance : getAppliances()) {
     		appliance.updateCost(pp, tick);
     	}
+    }
+    
+    public PricingPolicy getPricing() {
+    	return pp;
     }
     
     public void addAppliancesKPIs(MongoResults m, double mcrunsRatio, double co2) {
@@ -179,14 +194,14 @@ public class Installation extends Entity {
 		updateRegistry(tick);
 	}
 
-	public void updateAppliancesAndActivitiesConsumptions(int tick, int endTick, PricingPolicy pricing) {
+	public void updateAppliancesAndActivitiesConsumptions(int tick, int endTick) {
 		for(Appliance appliance : getAppliances()) {
 			double p = appliance.getPower(tick, "p");
 			Activity act = appliance.getWhat();
 			if(act != null) {
 				act.updateMaxPower(p);
 				act.updateAvgPower(p/endTick);
-				if(pricing.isOffpeak(tick)) {
+				if(pp.isOffpeak(tick)) {
 					act.updateEnergyOffpeak(p);
 				} else {
 					act.updateEnergy(p);
@@ -194,7 +209,7 @@ public class Installation extends Entity {
 			}
 			appliance.updateMaxPower(p);
 			appliance.updateAvgPower(p/endTick);
-			if(pricing.isOffpeak(tick)) {
+			if(pp.isOffpeak(tick)) {
 				appliance.updateEnergyOffpeak(p);
 			} else {
 				appliance.updateEnergy(p);

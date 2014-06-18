@@ -50,23 +50,23 @@ public class RunsContextListener implements ServletContextListener {
 		runs = new HashMap<String, Future<?>>();
 		context.setAttribute("MY_RUNS", runs);
 		// Delete all unfinished thread from db and their dbs:
-		DBObject query = new BasicDBObject();
-		query.put("ended", -1);
-		DBCursor cursor = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).find(query);
-		while(cursor.hasNext()) {
-			DBObject run = cursor.next();
-			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).remove(run);
-			String run_id = run.get("_id").toString();
-			Mongo mongo;
-			try {
-				mongo = new Mongo();
-				mongo.dropDatabase(run_id);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			} catch (MongoException e) {
-				e.printStackTrace();
-			}
-		}
+//		DBObject query = new BasicDBObject();
+//		query.put("ended", -1);
+//		DBCursor cursor = DBConn.getConn().getCollection(MongoRuns.COL_RUNS).find(query);
+//		while(cursor.hasNext()) {
+//			DBObject run = cursor.next();
+//			DBConn.getConn().getCollection(MongoRuns.COL_RUNS).remove(run);
+//			String run_id = run.get("_id").toString();
+//			Mongo mongo;
+//			try {
+//				mongo = new Mongo();
+//				mongo.dropDatabase(run_id);
+//			} catch (UnknownHostException e) {
+//				e.printStackTrace();
+//			} catch (MongoException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 }
