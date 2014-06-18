@@ -382,6 +382,7 @@ public class Simulation implements Runnable {
   		installations = new Vector<Installation>();
   		/* TODO  Change the Simulation Calendar initialization */
   		logger.info("Simulation setup started: " + dbname);
+  		logger.info(scenario);
   		DBObject jsonScenario = (DBObject) JSON.parse(scenario);
   		DBObject scenarioDoc = (DBObject) jsonScenario.get("scenario");
   		DBObject simParamsDoc = (DBObject) jsonScenario.get("sim_params");
