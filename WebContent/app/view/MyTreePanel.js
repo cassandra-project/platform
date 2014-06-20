@@ -66,7 +66,14 @@ Ext.define('C.view.MyTreePanel', {
 			}
 		});
 
+		me.processMyTreePanel(me);
 		me.callParent(arguments);
+	},
+
+	processMyTreePanel: function(config) {
+		this.plugins = [{
+			ptype: 'bufferedrenderer'
+		}];
 	},
 
 	onTreedragdroppluginBeforeDrop: function(node, data, overModel, dropPosition, dropHandlers, eOpts) {
