@@ -214,7 +214,7 @@ public class MongoNodes {
 			installationNode.put(MongoEdges.MinReactivePowerPerHour, Double.parseDouble(decim.format(minReactivePowerPerHour)));
 
 			installationNode.put("nHours", hours);
-			installationNode.put("name", name);
+			installationNode.put("name", installationsObj.get("name") );
 
 			
 			Vector<Double> hourVecP = new Vector<Double>();

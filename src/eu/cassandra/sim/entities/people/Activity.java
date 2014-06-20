@@ -15,6 +15,8 @@
 */
 package eu.cassandra.sim.entities.people;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,6 +53,8 @@ public class Activity extends Entity {
 
 	private final HashMap<String, ProbabilityDistribution> nTimesGivenDay;
 	private final HashMap<String, ProbabilityDistribution> probStartTime;
+	private final HashMap<String, ProbabilityDistribution> responsenTimesGivenDay;
+	private final HashMap<String, ProbabilityDistribution> responseprobStartTime;
 	private final HashMap<String, ProbabilityDistribution> probDuration;
 	private final HashMap<String, Boolean> shiftable;
 	private final HashMap<String, Boolean> config;
@@ -81,6 +85,8 @@ public class Activity extends Entity {
 		private final HashMap<String, ProbabilityDistribution> nTimesGivenDay;
 		private final HashMap<String, ProbabilityDistribution> probStartTime;
 		private final HashMap<String, ProbabilityDistribution> probDuration;
+		private final HashMap<String, ProbabilityDistribution> responsenTimesGivenDay;
+		private final HashMap<String, ProbabilityDistribution> responseprobStartTime;
 		private final HashMap<String, Boolean> shiftable;
 		private final HashMap<String, Boolean> config;
 		// Optional parameters: not available
@@ -100,6 +106,8 @@ public class Activity extends Entity {
 			appliances = new HashMap<String, Vector<Appliance>>();
 			probApplianceUsed = new HashMap<String, Vector<Double>>();
 			nTimesGivenDay = new HashMap<String, ProbabilityDistribution>();
+			responsenTimesGivenDay = new HashMap<String, ProbabilityDistribution>();
+			responseprobStartTime = new HashMap<String, ProbabilityDistribution>();
 			probStartTime = new HashMap<String, ProbabilityDistribution>();
 			probDuration = new HashMap<String, ProbabilityDistribution>();
 			shiftable = new HashMap<String, Boolean>();
@@ -145,6 +153,8 @@ public class Activity extends Entity {
 		nTimesGivenDay = builder.nTimesGivenDay;
 		probStartTime = builder.probStartTime;
 		probDuration = builder.probDuration;
+		responsenTimesGivenDay = builder.responsenTimesGivenDay;
+		responseprobStartTime = builder.responseprobStartTime;
 		shiftable = builder.shiftable;
 		config = builder.config;
 		probApplianceUsed = builder.probApplianceUsed;
@@ -338,11 +348,20 @@ public class Activity extends Entity {
 		if(vector != null) {
 			int durationMax = Math.min(Constants.MIN_IN_DAY, durationProb.getHistogram().length - 1);
 			for(Appliance app : vector) {
-				System.out.println(app.getName());
+//				System.out.println("Appliance:" + app.getName());
 				Double[] applianceConsumption = app.getActiveConsumption();
+				NumberFormat nf = new DecimalFormat("0.#");
+//		        for (double c : applianceConsumption) {
+//		            System.out.println(nf.format(c));
+//		        }
 				boolean staticConsumption = app.isStaticConsumption();
+//				System.out.println("Is static: " + staticConsumption);
 				for (int j = 0; j < act_exp.length; j++)
-					act_exp[j] += aggregatedProbability(durationProb, startProb, applianceConsumption, j, durationMax, staticConsumption);			
+					act_exp[j] += aggregatedProbability(durationProb, startProb, applianceConsumption, j, durationMax, staticConsumption);
+//  			for (double c : act_exp) {
+//		            System.out.print(nf.format(c) + " ");
+//		        }
+//  			System.out.println(" ");
 			}
 			for (int j = 0; j < act_exp.length; j++)
 				act_exp[j] = (act_exp[j] * estimateNumberOfTimesFactor(numOfTimesProb) / appliances.size());
@@ -403,7 +422,8 @@ public class Activity extends Entity {
 				String dayOfWeek = simulationWorld.getSimCalendar().getDayOfWeek(tick);
 				String dateKey = getKey(date);
 				String dayOfWeekKey = getKey(dayOfWeek);
-				System.out.println(date);
+//				System.out.println(date);
+				String selector = "date";
 				boolean weekend = simulationWorld.getSimCalendar().isWeekend(tick);
 				numOfTimesProb = nTimesGivenDay.get(dateKey);
 				startProb = probStartTime.get(dateKey);
@@ -414,6 +434,7 @@ public class Activity extends Entity {
 				isExclusive = config.get(dateKey);
 				// Then search for specific days
 				if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
+					selector = "dateofweek";
 					numOfTimesProb = nTimesGivenDay.get(dayOfWeekKey);
 					startProb = probStartTime.get(dayOfWeekKey);
 					durationProb = probDuration.get(dayOfWeekKey);
@@ -423,6 +444,7 @@ public class Activity extends Entity {
 					// Then for weekdays and weekends
 					if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
 						if (weekend) {
+							selector = "weekend";
 							numOfTimesProb = nTimesGivenDay.get(WEEKENDS);
 							startProb = probStartTime.get(WEEKENDS);
 							durationProb = probDuration.get(WEEKENDS);
@@ -431,6 +453,7 @@ public class Activity extends Entity {
 							isExclusive = config.get(WEEKENDS);
 							vector = appliances.get(WEEKENDS);
 						} else {
+							selector = "weekday";
 							numOfTimesProb = nTimesGivenDay.get(WEEKDAYS);
 							startProb = probStartTime.get(WEEKDAYS);
 							durationProb = probDuration.get(WEEKDAYS);
@@ -442,6 +465,7 @@ public class Activity extends Entity {
 						// Backwards compatibility
 						if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
 							if (weekend) {
+								selector = "weekend";
 								numOfTimesProb = nTimesGivenDay.get(NONWORKING);
 								startProb = probStartTime.get(NONWORKING);
 								durationProb = probDuration.get(NONWORKING);
@@ -450,6 +474,7 @@ public class Activity extends Entity {
 								isExclusive = config.get(NONWORKING);
 								vector = appliances.get(NONWORKING);
 							} else {
+								selector = "weekday";
 								numOfTimesProb = nTimesGivenDay.get(WORKING);
 								startProb = probStartTime.get(WORKING);
 								durationProb = probDuration.get(WORKING);
@@ -460,11 +485,10 @@ public class Activity extends Entity {
 							}
 							// Then for any
 							if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {
-								System.out.println("Any");
+								selector = "any";
 								numOfTimesProb = nTimesGivenDay.get(ANY);
 								startProb = probStartTime.get(ANY);
 								durationProb = probDuration.get(ANY);
-								System.out.println(durationProb.toString());
 								probVector = probApplianceUsed.get(ANY);
 								isShiftable = shiftable.get(ANY);
 								isExclusive = config.get(ANY);
@@ -481,10 +505,20 @@ public class Activity extends Entity {
 			if(isShiftable.booleanValue()) {
 				if(pricing.getType().equalsIgnoreCase("TOUPricing") && 
 						baseline.getType().equalsIgnoreCase("TOUPricing")) {
-					responseStartProb = Response.respond(startProb, pricing,
-							baseline, awareness, sensitivity, responseType);
-					responseNumOfTimesProb = Response.respond(numOfTimesProb, pricing,
-							baseline, awareness, sensitivity, "Daily");
+					if(responsenTimesGivenDay.containsKey(selector)) {
+						responseNumOfTimesProb = responsenTimesGivenDay.get(selector);
+					} else {
+						responseNumOfTimesProb = Response.respond(numOfTimesProb, pricing,
+								baseline, awareness, sensitivity, "Daily");
+						responsenTimesGivenDay.put(selector, responseNumOfTimesProb);
+					}
+					if(responseprobStartTime.containsKey(selector)) {
+						responseStartProb = responseprobStartTime.get(selector);
+					} else {
+						responseStartProb = Response.respond(startProb, pricing,
+								baseline, awareness, sensitivity, responseType);
+						responseprobStartTime.put(selector, responseStartProb);
+					}
 				}
 			}
 			

@@ -16,10 +16,11 @@
 package eu.cassandra.sim;
 
 import java.io.File;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -140,6 +141,7 @@ public class Simulation implements Runnable {
   		try {
   			System.out.println("Run " + dbname + " started @ " + Calendar.getInstance().getTimeInMillis());
   			calculateExpectedPower(dbname);
+//  			System.out.println("EP calculated");
   			long startTime = System.currentTimeMillis();
   			int percentage = 0;
   			int mccount = 0;
@@ -163,7 +165,7 @@ public class Simulation implements Runnable {
   	  				if (tick % Constants.MIN_IN_DAY == 0) {
 //  	  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
   	  					for (Installation installation: installations) {
-//  						System.out.println(installation.getName());
+//  						System.out.println("Installation: " + installation.getName());
   	  						installation.updateDailySchedule(tick, queue, simulationWorld.getResponseType(), orng);
   	  						
   	  					}
@@ -232,6 +234,7 @@ public class Simulation implements Runnable {
 		  			if(sumP > maxPower) maxPower = sumP;
 //		  			if(sumP > cycleMaxPower) cycleMaxPower = sumP;
 		  			avgPower += sumP/endTick;
+		  			energy += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 //		  			if(pricing.isOffpeak(tick)) {
 //		  				energyOffpeak += (sumP/1000.0) * Constants.MINUTE_HOUR_RATIO;
 //		  			} else {
@@ -278,6 +281,7 @@ public class Simulation implements Runnable {
 		  			}
 		  			mccount++;
 		  			percentage = (int)(0.75 * mccount * 100.0 / (mcruns * endTick));
+//		  			System.out.println("Percentage: " + percentage + " - " + mccount);
 		  			objRun.put("percentage", 25 + percentage);
 		  	  		DBConn.getConn().getCollection(MongoRuns.COL_RUNS).update(query, objRun);
   	  			}
@@ -541,6 +545,11 @@ public class Simulation implements Runnable {
   			for(Activity activity: person.getActivities()) {
   				System.out.println("CEP: " + activity.getName());
   				double[] act_exp = activity.calcExpPower();
+//  			NumberFormat nf = new DecimalFormat("0.#");
+//  			for (double c : act_exp) {
+//		            System.out.print(nf.format(c) + " ");
+//		        }
+//  			System.out.println(" ");
   				for(int i = 0; i < act_exp.length; i++) {
   	  				inst_exp[i] += act_exp[i];
   	  				m.addExpectedPowerTick(i, activity.getId(), act_exp[i], 0, MongoResults.COL_ACTRESULTS_EXP);
