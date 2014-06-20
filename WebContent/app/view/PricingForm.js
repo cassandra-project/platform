@@ -226,11 +226,13 @@ Ext.define('C.view.PricingForm', {
 					items: [
 						{
 							xtype: 'numberfield',
+							formBind: false,
 							width: 200,
 							fieldLabel: 'Onekw24',
 							labelWidth: 60,
 							name: 'onekw24',
-							readOnly: true
+							readOnly: true,
+							decimalPrecision: 4
 						}
 					]
 				},
@@ -317,34 +319,37 @@ Ext.define('C.view.PricingForm', {
 			Ext.each(timezonesData.items, function(index){
 				timezones.push(index.data);
 			});
-			break;
-		}
+			record.store.on('write', function (store, operation, eOpts) {
+				myForm.loadRecord(operation.getRecords()[0]);
+			}, null, {single: true});
+				break;
+			}
 
-		record.set({
-			'name' : values.name,
-			'type' : values.type,
-			'description' : values.description,
-			'billingCycle' : values.billingCycle,
-			'fixedCharge' : values.fixedCharge,
-			'offpeakPrice' : values.offpeakPrice,
-			'levels' : levels,
-			'offpeak' : offpeak,
-			'contractedCapacity' : (values.type == 'EnergyPowerPricing') ? values.contractedCapacity : 0,
-			'energyPrice' : (values.type == 'EnergyPowerPricing') ? values.energyPrice : (values.type == 'MaximumPowerPricing') ? values.energyPrice2 : 0,
-			'powerPrice' : (values.type == 'EnergyPowerPricing')  ? values.powerPrice : (values.type == 'MaximumPowerPricing') ?  values.powerPrice2 : 0,
-			'contractedEnergy' : (values.type == 'AllInclusivePricing') ? values.contractedEnergy : 0,
-			'fixedCost' : (values.type == 'AllInclusivePricing') ? values.fixedCost : 0,
-			'additionalCost' : (values.type == 'AllInclusivePricing') ? values.additionalCost : 0,
-			'timezones': timezones
-		});
+			record.set({
+				'name' : values.name,
+				'type' : values.type,
+				'description' : values.description,
+				'billingCycle' : values.billingCycle,
+				'fixedCharge' : values.fixedCharge,
+				'offpeakPrice' : values.offpeakPrice,
+				'levels' : levels,
+				'offpeak' : offpeak,
+				'contractedCapacity' : (values.type == 'EnergyPowerPricing') ? values.contractedCapacity : 0,
+				'energyPrice' : (values.type == 'EnergyPowerPricing') ? values.energyPrice : (values.type == 'MaximumPowerPricing') ? values.energyPrice2 : 0,
+				'powerPrice' : (values.type == 'EnergyPowerPricing')  ? values.powerPrice : (values.type == 'MaximumPowerPricing') ?  values.powerPrice2 : 0,
+				'contractedEnergy' : (values.type == 'AllInclusivePricing') ? values.contractedEnergy : 0,
+				'fixedCost' : (values.type == 'AllInclusivePricing') ? values.fixedCost : 0,
+				'additionalCost' : (values.type == 'AllInclusivePricing') ? values.additionalCost : 0,
+				'timezones': timezones
+			});
 
-		this.dirtyForm = false;
-		//clear dirty record
-		record.node.commit();
+			this.dirtyForm = false;
+			//clear dirty record
+			record.node.commit();
 
-		if (record.isNew)
-		record.isNew = false;
-		//record.save();
+			if (record.isNew)
+			record.isNew = false;
+			//record.save();
 	},
 
 	onToolClick11: function(tool, e, eOpts) {

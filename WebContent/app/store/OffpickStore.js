@@ -24,11 +24,11 @@ Ext.define('C.store.OffpickStore', {
 			fields: [
 				{
 					name: 'from',
-					type: 'int'
+					type: 'string'
 				},
 				{
 					name: 'to',
-					type: 'int'
+					type: 'string'
 				}
 			]
 		}, cfg)]);
