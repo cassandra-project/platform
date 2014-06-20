@@ -63,7 +63,14 @@ Ext.define('C.view.CassLibTreePanel', {
 			}
 		});
 
+		me.processCassLibTreePanel(me);
 		me.callParent(arguments);
+	},
+
+	processCassLibTreePanel: function(config) {
+		this.plugins = [{
+			ptype: 'bufferedrenderer'
+		}];
 	},
 
 	onViewBeforeItemDblClick: function(dataview, record, item, index, e, eOpts) {
