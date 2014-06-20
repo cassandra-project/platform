@@ -1189,13 +1189,26 @@ Ext.application({
 
 	getHeaderFromName: function(name) {
 		switch (name) {
-			case "maxPower": return "max Power (W)";
-			case "avgPower": return "avg Power (W)";
-			case "avgPeak": return "avg Peak (W)";
-			case "energy": return "energy (KWh)";
-			case "cost": return "cost (EUR)";
-			case "co2": return "CO2 (kg/kWh)";
-			default: return name;
+			case "energy_class": return "Energy Class";
+			case "standy_consumption": return "Standy consumption";
+			case "activityModels": return "# Activity Models";
+			case "consumptionModels": return "# Consumption Models";
+			case "installations": return "# Installations";
+			case "simulationParameters": return "# Simulation Parameters";
+			case "scenarios": return "# Scenarios";	
+			case "runs": return "# Runs";
+			case "activities": return "# Activities";
+			case "appliances": return "# Appliances";
+			case "persons": return "# Persons";
+			case "noEdges": return "No edges";
+			case "trans_id": return "Transformer ID";
+			case "maxPower": return "Max Power (W)";
+			case "avgPower": return "Avg Power (W)";
+			case "avgPeak": return "Avg Peak (W)";
+			case "energy": return "Energy (KWh)";
+			case "cost": return "Cost (EUR)";
+			case "numberOfEntities": return "Number of Entities";
+			default: return Ext.util.Format.capitalize(name);
 		}
 	},
 
