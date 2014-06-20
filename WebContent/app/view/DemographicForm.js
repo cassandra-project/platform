@@ -29,75 +29,55 @@ Ext.define('C.view.DemographicForm', {
 			items: [
 				{
 					xtype: 'container',
-					width: 620,
 					layout: {
 						type: 'hbox'
 					},
 					items: [
 						{
-							xtype: 'container',
-							flex: 1,
+							xtype: 'fieldset',
+							height: 220,
+							itemId: 'demogFieldset',
+							width: 300,
+							title: 'Properties',
 							items: [
 								{
-									xtype: 'fieldset',
-									height: 220,
-									itemId: 'demogFieldset',
-									width: 300,
-									title: 'Properties',
-									items: [
-										{
-											xtype: 'textfield',
-											width: 246,
-											fieldLabel: 'Name',
-											name: 'name',
-											listeners: {
-												change: {
-													fn: me.onTextfieldChange11,
-													scope: me
-												}
-											}
-										},
-										{
-											xtype: 'textfield',
-											width: 246,
-											fieldLabel: 'Type',
-											name: 'type'
-										},
-										{
-											xtype: 'textareafield',
-											width: 246,
-											fieldLabel: 'Description',
-											name: 'description'
-										},
-										{
-											xtype: 'textfield',
-											width: 246,
-											fieldLabel: 'Number of entities',
-											name: 'numberOfEntities'
-										}
-									]
-								},
-								{
-									xtype: 'button',
-									itemId: 'btn',
-									margin: '10px 120px',
-									width: 70,
-									text: 'Update',
+									xtype: 'textfield',
+									width: 246,
+									fieldLabel: 'Name',
+									name: 'name',
 									listeners: {
-										click: {
-											fn: me.onButtonClick2,
+										change: {
+											fn: me.onTextfieldChange11,
 											scope: me
 										}
 									}
+								},
+								{
+									xtype: 'textfield',
+									width: 246,
+									fieldLabel: 'Type',
+									name: 'type'
+								},
+								{
+									xtype: 'textareafield',
+									width: 246,
+									fieldLabel: 'Description',
+									name: 'description'
+								},
+								{
+									xtype: 'textfield',
+									width: 246,
+									fieldLabel: 'Number of entities',
+									name: 'numberOfEntities'
 								}
 							]
 						},
 						{
 							xtype: 'fieldset',
+							flex: 2,
 							margins: '0 10px',
 							height: 220,
 							itemId: 'entitiesFieldset',
-							width: 300,
 							autoScroll: true,
 							layout: {
 								type: 'auto'
@@ -110,6 +90,24 @@ Ext.define('C.view.DemographicForm', {
 									text: '*Entities can be added by droping  persons or appliances under the collection node to the following entities grid:'
 								}
 							]
+						}
+					]
+				},
+				{
+					xtype: 'container',
+					items: [
+						{
+							xtype: 'button',
+							itemId: 'btn',
+							margin: '10px 120px',
+							width: 70,
+							text: 'Update',
+							listeners: {
+								click: {
+									fn: me.onButtonClick2,
+									scope: me
+								}
+							}
 						}
 					]
 				}

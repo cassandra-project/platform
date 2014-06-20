@@ -16,7 +16,7 @@
 Ext.define('C.view.EntitiesGrid', {
 	extend: 'Ext.grid.Panel',
 
-	margin: '10px 0',
+	margin: '5px',
 	columnLines: false,
 	forceFit: true,
 	store: 'DemographicEntities',
@@ -115,9 +115,12 @@ Ext.define('C.view.EntitiesGrid', {
 		*/
 
 		var record = data.records[0];
+		var allowDD = ((record.get('nodeType') == 'Appliance' || record.get('nodeType') == 'Person' ) &&
+		record.parentNode.parentNode.parentNode.parentNode.get('nodeId') == this.scenarioId) ||
+		(record.get('nodeType')=='Installation' && record.parentNode.parentNode.get('nodeId') == this.scenarioId);
 
-		if( (record.get('nodeType')=='Appliance' || record.get('nodeType')=='Person')&& record.parentNode.parentNode.parentNode.parentNode.get('nodeId') == this.scenarioId){
 
+		if (allowDD === true) {
 			data.copy = true;
 
 			this.store.insert(0, {'entity_id':record.get('nodeId'), 'entity_name':record.get('name'), 'entity_type':record.get('nodeType').toLowerCase()});
