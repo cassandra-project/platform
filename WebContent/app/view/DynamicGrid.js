@@ -16,6 +16,10 @@
 Ext.define('C.view.DynamicGrid', {
 	extend: 'Ext.grid.Panel',
 
+	uses: [
+		'Ext.ux.exporter.Exporter'
+	],
+
 	minHeight: 250,
 	autoScroll: true,
 	title: 'My Grid Panel',
@@ -81,6 +85,10 @@ Ext.define('C.view.DynamicGrid', {
 								click: {
 									fn: me.onButtonClick1,
 									scope: me
+								},
+								beforerender: {
+									fn: me.onButtonBeforeRender3,
+									scope: me
 								}
 							}
 						},
@@ -142,7 +150,16 @@ Ext.define('C.view.DynamicGrid', {
 									scope: me
 								}
 							}
-						}
+						},
+						{
+							xtype: 'tbseparator',
+							flex: 5
+						},
+						me.processExporttocsv({
+							xtype: 'exporterbutton',
+							text: 'Export to csv',
+							textAlign: 'right'
+						})
 					]
 				}
 			],
@@ -191,6 +208,13 @@ Ext.define('C.view.DynamicGrid', {
 		});
 
 		me.callParent(arguments);
+	},
+
+	processExporttocsv: function(config) {
+		config.swfPath = 'ux/exporter/downloadify.swf';
+		config.downloadImage = 'ux/exporter/download2.png';
+
+		return config;
 	},
 
 	onGriddragdroppluginBeforeDrop: function(node, data, overModel, dropPosition, dropHandlers, eOpts) {
@@ -319,7 +343,7 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onButtonBeforeRender: function(component, eOpts) {
-		if (this.store.model.getName() == "C.model.Run" || this.store.model.getName() == "C.model.Csn")
+		if (this.store.model.getName() == "C.model.Run" || this.store.model.getName() == "C.model.Csn" || this.store.model.getName() == "C.model.Kpi")
 		component.hide();
 	},
 
@@ -349,6 +373,11 @@ Ext.define('C.view.DynamicGrid', {
 		}
 	},
 
+	onButtonBeforeRender3: function(component, eOpts) {
+		if (this.store.model.getName() == "C.model.Kpi")
+		component.hide();
+	},
+
 	onButtonClick11: function(button, e, eOpts) {
 		console.info('Edit clicked.', this, button, e, eOpts);
 
@@ -364,7 +393,7 @@ Ext.define('C.view.DynamicGrid', {
 	},
 
 	onButtonBeforeRender1: function(component, eOpts) {
-		if (this.store.model.getName() == "C.model.Run")
+		if (this.store.model.getName() == "C.model.Run" || this.store.model.getName() == "C.model.Kpi")
 		component.hide();
 	},
 
@@ -706,7 +735,7 @@ Ext.define('C.view.DynamicGrid', {
 			component.tools[0].hidden = true;
 		}
 		if (component.store.model.getName() == "C.model.Kpi") {
-			component.down('toolbar').hide();
+			//component.down('toolbar').hide();
 			//hide refresh tool
 			component.tools[1].hidden = true;
 		}

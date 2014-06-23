@@ -15,7 +15,11 @@
 
 //@require @packageOverrides
 Ext.Loader.setConfig({
-	enabled: true
+	enabled: true,
+	paths: {
+		Ext: '.',
+		'Ext.ux.Exporter': '/resources/js/Ext.ux.Exporter'
+	}
 });
 
 Ext.application({
