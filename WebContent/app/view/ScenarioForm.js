@@ -16,7 +16,6 @@
 Ext.define('C.view.ScenarioForm', {
 	extend: 'Ext.form.Panel',
 
-	autoScroll: true,
 	layout: {
 		type: 'auto'
 	},
@@ -36,9 +35,8 @@ Ext.define('C.view.ScenarioForm', {
 					items: [
 						{
 							xtype: 'container',
-							flex: 2,
+							flex: 1.5,
 							itemId: 'dataContainer',
-							autoScroll: true,
 							layout: {
 								type: 'anchor'
 							},
@@ -46,7 +44,6 @@ Ext.define('C.view.ScenarioForm', {
 								{
 									xtype: 'fieldset',
 									padding: '10px',
-									width: 400,
 									title: 'Properties',
 									items: [
 										{
