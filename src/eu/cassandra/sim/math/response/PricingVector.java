@@ -44,7 +44,7 @@ public class PricingVector
   ArrayList<Integer> bases = new ArrayList<Integer>();
 
   /** This variable shows the index to the cheapest pricing of the list. */
-  int indexOfCheapest = -1;
+  ArrayList<Integer> indexOfCheapest = new ArrayList<Integer>();
 
   /**
    * The constructor of the Pricing Vector. It uses the pricing schemes to
@@ -117,7 +117,7 @@ public class PricingVector
 
     if (startFlag) {
       // System.out.println("In for end of index!");
-      end = Constants.MIN_IN_DAY - 1;
+      end = Constants.MINUTES_PER_DAY - 1;
       startFlag = false;
       pricings.add(new Pricing(start, end, previousPricing, currentValue, type));
     }
@@ -135,8 +135,6 @@ public class PricingVector
   {
 
     double minPrice = Double.POSITIVE_INFINITY;
-    int minDur = 0;
-    int newDur = 0;
 
     for (int i = 0; i < pricings.size(); i++) {
 
@@ -149,17 +147,11 @@ public class PricingVector
 
       if (minPrice > pricings.get(i).getCurrentPrice()) {
         minPrice = pricings.get(i).getCurrentPrice();
-        minDur =
-          pricings.get(i).getEndMinute() - pricings.get(i).getStartMinute();
-        indexOfCheapest = i;
+        indexOfCheapest.clear();
+        indexOfCheapest.add(i);
       }
       else if (minPrice == pricings.get(i).getCurrentPrice()) {
-        newDur =
-          pricings.get(i).getEndMinute() - pricings.get(i).getStartMinute();
-        if (minDur < newDur) {
-          minDur = newDur;
-          indexOfCheapest = i;
-        }
+        indexOfCheapest.add(i);
       }
 
     }
@@ -170,7 +162,7 @@ public class PricingVector
    * This function is used for the exhibition of the details of the attributes
    * contained in the Pricings Vector.
    */
-  public void show ()
+  private void show ()
   {
     // for (int i = 0; i < pricings.size(); i++)
     // pricings.get(i).status();
@@ -179,7 +171,8 @@ public class PricingVector
     System.out.println("Base: " + bases.size());
 
     System.out.println("Cheapest Pricing: ");
-    pricings.get(indexOfCheapest).status();
+    for (Integer index: indexOfCheapest)
+      pricings.get(index).status();
 
   }
 
@@ -268,7 +261,7 @@ public class PricingVector
    * 
    * @return the index of the cheapest pricing in the list.
    */
-  public int getCheapest ()
+  public ArrayList<Integer> getCheapest ()
   {
     return indexOfCheapest;
   }
