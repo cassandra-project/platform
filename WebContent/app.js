@@ -906,13 +906,13 @@ Ext.application({
 		var myResultsStore = new C.store.Results({});
 		var myResultsChart = new C.view.ResultsLineChart({store: myResultsStore, itemId: 'resultsChart'});
 
-		myFormCmp.insert(2, myResultsChart);
+		myFormCmp.down('#plotContainer').insert(2, myResultsChart);
 		myResultsStore.load();
 
 		var expectedPowerStore = new C.store.ExpectedPower({});
 		var expectedPowerChart = new C.view.ResultsLineChart({store: expectedPowerStore, itemId: 'expectedChart'});
 
-		myFormCmp.insert(4, expectedPowerChart);
+		myFormCmp.down('#plotContainer').insert(4, expectedPowerChart);
 		expectedPowerStore.load();
 
 		var kpiStore = new C.store.Kpis();
@@ -921,7 +921,19 @@ Ext.application({
 		grid.width = 700;
 		grid.closable = false;
 		grid.setTitle("KPIs");
-		myFormCmp.insert(5, grid);
+		myFormCmp.down('#plotContainer').insert(5, grid);
+
+		var dummyData = [{type: 'Grandma', count: '350'},{type: 'Grandpa', count: '550'}];
+		var myPersonTypesStore = new C.store.PersonTypesStore({});
+		myPersonTypesStore.loadData(dummyData);
+		var myPersonPie = new C.view.TypesPieChart({store: myPersonTypesStore, legend: {position:'right'}});
+		myFormCmp.down('#pieChartContainer2').insert(1, myPersonPie);
+
+		dummyData = [{type: 'Dell Laptop', count: '350'},{type: 'Microwave oven', count: '550'}];
+		var myApplianceTypesStore = new C.store.ApplianceTypesStore({});
+		myApplianceTypesStore.loadData(dummyData);
+		var myAppliancePie = new C.view.TypesPieChart({store: myApplianceTypesStore, legend: {position:'right'}});
+		myFormCmp.down('#pieChartContainer2').insert(3, myAppliancePie);
 
 		return myFormCmp;
 	},
