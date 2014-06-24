@@ -95,6 +95,8 @@ public class Simulation implements Runnable {
 	
 	private String dbname;
 	
+	private String runName;
+	
 	private String resources_path;
 	
 	private ORNG orng;
@@ -115,9 +117,10 @@ public class Simulation implements Runnable {
 		return endTick;
 	}
   
-	public Simulation(String ascenario, String adbname, String aresources_path, int seed) {
+	public Simulation(String ascenario, String adbname, String arunName, String aresources_path, int seed) {
 		scenario = ascenario;
 		dbname = adbname;
+		runName = arunName;
 		resources_path = aresources_path;
 		m = new MongoResults(dbname);
 		m.createIndexes();
@@ -306,7 +309,7 @@ public class Simulation implements Runnable {
   	  			if(i+1 != mcruns) setup(true);
   			}
   			// Write installation results to csv file
-  			String filename = resources_path + "/csvs/" + dbname + ".csv";
+  			String filename = resources_path + "/csvs/" + runName + ".csv";
   			System.out.println(filename);
   			File csvFile = new File(filename);
   			FileWriter fw = new FileWriter(csvFile);
@@ -336,9 +339,9 @@ public class Simulation implements Runnable {
   			// http://www.mkyong.com/java/how-to-compress-files-in-zip-format/
   			System.out.println("Zipping...");
   			byte[] buffer = new byte[1024];
-  			FileOutputStream fos = new FileOutputStream(filename + ".zip");
+  			FileOutputStream fos = new FileOutputStream(runName + ".zip");
   			ZipOutputStream zos = new ZipOutputStream(fos);
-  			ZipEntry ze= new ZipEntry(dbname + ".csv");
+  			ZipEntry ze= new ZipEntry(runName + ".csv");
   			zos.putNextEntry(ze);
     		FileInputStream in = new FileInputStream(filename);
     		int len;
