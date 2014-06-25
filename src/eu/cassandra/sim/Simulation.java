@@ -315,8 +315,8 @@ public class Simulation implements Runnable {
   			FileWriter fw = new FileWriter(csvFile);
   			String row = "tick";
   			for(Installation installation: installations) {
-  				row += "," + installation.getId() + "_p";
-  				row += "," + installation.getId() + "_q";
+  				row += "," + installation.getName() + "_p";
+  				row += "," + installation.getName() + "_q";
   			}
   			fw.write(row+"\n");
   			for(int i = 0; i < endTick; i++) {
