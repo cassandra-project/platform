@@ -721,7 +721,7 @@ Ext.define('C.view.MyTreePanel', {
 					sortable: false,
 					renderer: function (v, m, r) {
 						if (r.get('percentage') == 100 && r.get('type') == 'sim') {
-							return '<a class = "download" href = "/cassandra/resources/csvs/'+r.get('_id')+'.csv.zip" title = "Download"></a>';
+							return '<a class = "download" href = "/cassandra/resources/csvs/'+r.get('name')+'.csv.zip" title = "Download"></a>';
 						}
 						else {
 							return '<div class = "download disabled"></div>';
