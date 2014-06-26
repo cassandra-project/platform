@@ -339,7 +339,7 @@ public class Simulation implements Runnable {
   			// http://www.mkyong.com/java/how-to-compress-files-in-zip-format/
   			System.out.println("Zipping...");
   			byte[] buffer = new byte[1024];
-  			FileOutputStream fos = new FileOutputStream(runName + ".zip");
+  			FileOutputStream fos = new FileOutputStream(filename + ".zip");
   			ZipOutputStream zos = new ZipOutputStream(fos);
   			ZipEntry ze= new ZipEntry(runName + ".csv");
   			zos.putNextEntry(ze);
