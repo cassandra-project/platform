@@ -546,7 +546,7 @@ public class Simulation implements Runnable {
   			double[] inst_exp = new double[Constants.MIN_IN_DAY];
   			Person person = installation.getPersons().get(0);
   			for(Activity activity: person.getActivities()) {
-  				System.out.println("CEP: " + activity.getName());
+//  				System.out.println("CEP: " + activity.getName());
   				double[] act_exp = activity.calcExpPower();
 //  			NumberFormat nf = new DecimalFormat("0.#");
 //  			for (double c : act_exp) {
@@ -584,7 +584,7 @@ public class Simulation implements Runnable {
   		}
   		for(int i = 0; i < aggr_exp.length; i++) {
   			m.addExpectedPowerTick(i, "aggr", aggr_exp[i], 0, MongoResults.COL_AGGRRESULTS_EXP);
-				System.out.println(aggr_exp[i]);
+//				System.out.println(aggr_exp[i]);
 			}
   		System.out.println("End exp power calc.");
   	}

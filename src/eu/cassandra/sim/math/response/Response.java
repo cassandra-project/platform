@@ -514,7 +514,7 @@ values[j] += additive;
 
 for (int j = 0; j < values.length; j++)
 sum += values[j];
-System.out.println("Summary after index " + i + ": " + sum);
+//System.out.println("Summary after index " + i + ": " + sum);
 
 }
 
