@@ -106,6 +106,14 @@ public class MongoPersons {
 			list.add(warning);
 		}
 		
+		returnQuery = 
+				new MongoDBQueries().getEntity(MongoPersons.COL_PERSONS, "_id", objID);
+		
+		if(returnQuery == null) {
+			String warning = "Usually one person is required per installation";
+			list.add(warning);
+		}
+		
 		if(!list.isEmpty()) {
 			jsonResponse.put("warnings", list);
 		}

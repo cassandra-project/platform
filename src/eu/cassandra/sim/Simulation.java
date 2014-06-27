@@ -95,6 +95,8 @@ public class Simulation implements Runnable {
 	
 	private String dbname;
 	
+	private String runName;
+	
 	private String resources_path;
 	
 	private ORNG orng;
@@ -115,9 +117,10 @@ public class Simulation implements Runnable {
 		return endTick;
 	}
   
-	public Simulation(String ascenario, String adbname, String aresources_path, int seed) {
+	public Simulation(String ascenario, String adbname, String arunName, String aresources_path, int seed) {
 		scenario = ascenario;
 		dbname = adbname;
+		runName = arunName;
 		resources_path = aresources_path;
 		m = new MongoResults(dbname);
 		m.createIndexes();
@@ -306,14 +309,14 @@ public class Simulation implements Runnable {
   	  			if(i+1 != mcruns) setup(true);
   			}
   			// Write installation results to csv file
-  			String filename = resources_path + "/csvs/" + dbname + ".csv";
+  			String filename = resources_path + "/csvs/" + runName + ".csv";
   			System.out.println(filename);
   			File csvFile = new File(filename);
   			FileWriter fw = new FileWriter(csvFile);
   			String row = "tick";
   			for(Installation installation: installations) {
-  				row += "," + installation.getId() + "_p";
-  				row += "," + installation.getId() + "_q";
+  				row += "," + installation.getName() + "_p";
+  				row += "," + installation.getName() + "_q";
   			}
   			fw.write(row+"\n");
   			for(int i = 0; i < endTick; i++) {
@@ -338,7 +341,7 @@ public class Simulation implements Runnable {
   			byte[] buffer = new byte[1024];
   			FileOutputStream fos = new FileOutputStream(filename + ".zip");
   			ZipOutputStream zos = new ZipOutputStream(fos);
-  			ZipEntry ze= new ZipEntry(dbname + ".csv");
+  			ZipEntry ze= new ZipEntry(runName + ".csv");
   			zos.putNextEntry(ze);
     		FileInputStream in = new FileInputStream(filename);
     		int len;
@@ -543,7 +546,7 @@ public class Simulation implements Runnable {
   			double[] inst_exp = new double[Constants.MIN_IN_DAY];
   			Person person = installation.getPersons().get(0);
   			for(Activity activity: person.getActivities()) {
-  				System.out.println("CEP: " + activity.getName());
+//  				System.out.println("CEP: " + activity.getName());
   				double[] act_exp = activity.calcExpPower();
 //  			NumberFormat nf = new DecimalFormat("0.#");
 //  			for (double c : act_exp) {
@@ -581,7 +584,7 @@ public class Simulation implements Runnable {
   		}
   		for(int i = 0; i < aggr_exp.length; i++) {
   			m.addExpectedPowerTick(i, "aggr", aggr_exp[i], 0, MongoResults.COL_AGGRRESULTS_EXP);
-				System.out.println(aggr_exp[i]);
+//				System.out.println(aggr_exp[i]);
 			}
   		System.out.println("End exp power calc.");
   	}
