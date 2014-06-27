@@ -61,24 +61,34 @@ Ext.define('C.view.OffpickGrid', {
 			],
 			plugins: [
 				Ext.create('Ext.grid.plugin.RowEditing', {
-					clicksToMoveEditor: 1
+					clicksToMoveEditor: 1,
+					listeners: {
+						edit: {
+							fn: me.onRowEditingEdit,
+							scope: me
+						}
+					}
 				})
 			],
 			columns: [
 				{
-					xtype: 'numbercolumn',
+					xtype: 'gridcolumn',
 					dataIndex: 'from',
 					text: 'From',
 					editor: {
-						xtype: 'numberfield'
+						xtype: 'timefield',
+						invalidText: '{0} is not a valid time. </br> (i.e. 24:56)',
+						format: 'H:i'
 					}
 				},
 				{
-					xtype: 'numbercolumn',
+					xtype: 'gridcolumn',
 					dataIndex: 'to',
 					text: 'To',
 					editor: {
-						xtype: 'numberfield'
+						xtype: 'timefield',
+						invalidText: '{0} is not a valid time. </br> (i.e. 24:56)',
+						format: 'H:i'
 					}
 				}
 			]
@@ -103,6 +113,13 @@ Ext.define('C.view.OffpickGrid', {
 		var selections = this.getView().getSelectionModel().getSelection();
 		this.store.remove(selections);
 
+	},
+
+	onRowEditingEdit: function(editor, context, eOpts) {
+		if (context.newValues.from !== context.originalValues.from && new Date(context.newValues.from) !== "Invalid Date")
+		context.record.set("from", Ext.Date.format(new Date(context.newValues.from), "H:i"));
+		if (context.newValues.to !== context.originalValues.to && new Date(context.newValues.to) !== "Invalid Date")
+		context.record.set("to", Ext.Date.format(new Date(context.newValues.to), "H:i"));
 	}
 
 });

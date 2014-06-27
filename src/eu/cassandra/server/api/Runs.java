@@ -377,7 +377,11 @@ public class Runs {
 				seed = 0;
 			}
 			// TODO insert the hashmaps here as argument
-			Simulation sim = new Simulation(scenario.toString(), dbname, resources_path, seed);
+			Calendar calendar = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmm");
+			runName = "Run " + runName + " on " + sdf.format(calendar.getTime()) + " at " + dbname;
+			runName = runName.replace(' ', '_');
+			Simulation sim = new Simulation(scenario.toString(), dbname, runName, resources_path, seed);
 			sim.setup(false);
 			// Scenario building finished
 			DBObject run = buildRunObj(objid, runName, prj_id, "sim");
@@ -418,11 +422,8 @@ public class Runs {
 	
 	private static DBObject buildRunObj(ObjectId objid, String runName, String prj_id, String type) {
 		DBObject run = new BasicDBObject();
-		Calendar calendar = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmm");
-		String name = "Run " + runName + " on " + sdf.format(calendar.getTime());
 		run.put("_id", objid);
-		run.put("name", name);
+		run.put("name", runName);
 		run.put("started", System.currentTimeMillis());
 		run.put("ended", -1);
 		run.put("type", type);

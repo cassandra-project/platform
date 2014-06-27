@@ -100,14 +100,6 @@ Ext.define('C.view.ApplianceForm', {
 								},
 								{
 									xtype: 'checkboxfield',
-									fieldLabel: 'Shiftable',
-									name: 'shiftable',
-									boxLabel: '',
-									inputValue: 'true',
-									uncheckedValue: 'false'
-								},
-								{
-									xtype: 'checkboxfield',
 									fieldLabel: 'Controllable',
 									name: 'controllable',
 									boxLabel: '',

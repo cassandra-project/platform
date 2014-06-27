@@ -66,7 +66,14 @@ Ext.define('C.view.UserLibTreePanel', {
 			}
 		});
 
+		me.processUserLibTreePanel(me);
 		me.callParent(arguments);
+	},
+
+	processUserLibTreePanel: function(config) {
+		this.plugins = [{
+			ptype: 'bufferedrenderer'
+		}];
 	},
 
 	onTreedragdroppluginBeforeDrop: function(node, data, overModel, dropPosition, dropHandlers, eOpts) {

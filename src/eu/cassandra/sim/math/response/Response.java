@@ -26,7 +26,6 @@ import eu.cassandra.sim.utilities.Constants;
 
 public class Response {
 	
-	private static final int SHIFTING_WINDOW_IN_MINUTES = 60;
 	private static final double SMALL_NUMBER = 0.0000001;
 	
 	public static ProbabilityDistribution respond(ProbabilityDistribution pd, 
@@ -103,381 +102,426 @@ public class Response {
 	}
 	
 	public static double[] movingAverage (double[] values, Incentive incentive,
-			double awareness, double sensitivity) {
-		// Initialize the auxiliary variables.
-	    int side = -1;
-	    int startIndex = incentive.getStartMinute();
-	    int endIndex = incentive.getEndMinute();
-	    double overDiff = 0, overDiffTemp = 0;
-	    double temp = 0;
-	    String type = "";
+			double awareness, double sensitivity)
+{
+// Initialize the auxiliary variables.
+int side = -1;
+int startIndex = incentive.getStartMinute();
+int endIndex = incentive.getEndMinute();
+double overDiff = 0, overDiffTemp = 0;
+double temp = 0;
+String type = "";
+// double sum = 0;
 
-	    // First, the incentive type is checked (penalty or reward) and then the
-	    // before and after values are checked to see how the residual percentage
-	    // will be distributed.
-	    if (incentive.isPenalty()) {
+// First, the incentive type is checked (penalty or reward) and then the
+// before and after values are checked to see how the residual percentage
+// will be distributed.
+if (incentive.isPenalty()) {
 
-	      if (incentive.getBeforeDifference() > 0
-	          && incentive.getAfterDifference() < 0)
-	        type = "Both";
+if (incentive.getBeforeDifference() > 0
+&& incentive.getAfterDifference() < 0)
+type = "Both";
 
-	      if (incentive.getBeforeDifference() > 0
-	          && incentive.getAfterDifference() >= 0)
-	        type = "Left";
+if (incentive.getBeforeDifference() > 0
+&& incentive.getAfterDifference() >= 0)
+type = "Left";
 
-	      if (incentive.getBeforeDifference() <= 0
-	          && incentive.getAfterDifference() < 0)
-	        type = "Right";
+if (incentive.getBeforeDifference() <= 0
+&& incentive.getAfterDifference() < 0)
+type = "Right";
 
-	      if (incentive.getBeforeDifference() < 0
-	          && incentive.getAfterDifference() > 0)
-	        type = "None";
-	    } else {
+if (incentive.getBeforeDifference() < 0
+&& incentive.getAfterDifference() > 0)
+type = "None";
+}
+else {
 
-	      if (incentive.getBeforeDifference() < 0
-	          && incentive.getAfterDifference() > 0)
-	        type = "Both";
+if (incentive.getBeforeDifference() < 0
+&& incentive.getAfterDifference() > 0)
+type = "Both";
 
-	      if (incentive.getBeforeDifference() < 0
-	          && incentive.getAfterDifference() <= 0)
-	        type = "Left";
+if (incentive.getBeforeDifference() < 0
+&& incentive.getAfterDifference() <= 0)
+type = "Left";
 
-	      if (incentive.getBeforeDifference() >= 0
-	          && incentive.getAfterDifference() > 0)
-	        type = "Right";
+if (incentive.getBeforeDifference() >= 0
+&& incentive.getAfterDifference() > 0)
+type = "Right";
 
-	      if (incentive.getBeforeDifference() > 0
-	          && incentive.getAfterDifference() < 0)
-	        type = "None";
+if (incentive.getBeforeDifference() > 0
+&& incentive.getAfterDifference() < 0)
+type = "None";
 
-	    }
+}
 
-	    if (!type.equalsIgnoreCase("None")) {
-	      // In case of penalty the residual percentage is moved out of the window
-	      // to close distance, either on one or both sides accordingly
-	      if (incentive.isPenalty()) {
+// System.out.println("Penalty: " + incentive.isPenalty() + " Type: " +
+// type);
 
-	        for (int i = startIndex; i < endIndex; i++) {
+if (!type.equalsIgnoreCase("None")) {
+// In case of penalty the residual percentage is moved out of the window
+// to close distance, either on one or both sides accordingly
+if (incentive.isPenalty()) {
 
-	          temp = incentive.getBase() * values[i] / incentive.getPrice();
-	          overDiffTemp = (values[i] - temp) * awareness * sensitivity;
-	          overDiff += overDiffTemp;
-	          values[i] -= overDiffTemp;
+for (int i = startIndex; i < endIndex; i++) {
 
-	        }
-	        double additive = overDiff / SHIFTING_WINDOW_IN_MINUTES;
+temp = incentive.getBase() * values[i] / incentive.getPrice();
+// System.out.println("Temp = " + temp);
+overDiffTemp = (values[i] - temp) * awareness * sensitivity;
+overDiff += overDiffTemp;
+values[i] -= overDiffTemp;
 
-	        switch (type) {
+// overDiff += values[i] - temp;
+// values[i] = temp;
 
-	        case "Both":
+}
+// System.out.println("Over Difference = " + overDiff);
+double additive = overDiff / Constants.SHIFTING_WINDOW_IN_MINUTES;
 
-	          side = SHIFTING_WINDOW_IN_MINUTES / 2;
+switch (type) {
 
-	          for (int i = 0; i < side; i++) {
+case "Both":
 
-	            int before = startIndex - i;
-	            if (before < 0)
-	              before += Constants.MIN_IN_DAY;
-	            int after = endIndex + i;
-	            if (after > Constants.MIN_IN_DAY - 1)
-	              after %= Constants.MIN_IN_DAY;
+side = Constants.SHIFTING_WINDOW_IN_MINUTES / 2;
 
-	            values[before] += additive;
-	            values[after] += additive;
+for (int i = 0; i < side; i++) {
 
-	          }
-	          break;
+int before = startIndex - i;
+if (before < 0)
+before += Constants.MINUTES_PER_DAY;
+int after = endIndex + i;
+if (after > Constants.MINUTES_PER_DAY - 1)
+after %= Constants.MINUTES_PER_DAY;
 
-	        case "Left":
+values[before] += additive;
+values[after] += additive;
 
-	          side = SHIFTING_WINDOW_IN_MINUTES;
+}
+break;
 
-	          for (int i = 0; i < side; i++) {
+case "Left":
 
-	            int before = startIndex - i;
-	            if (before < 0)
-	              before += Constants.MIN_IN_DAY;
-	            values[before] += additive;
+side = Constants.SHIFTING_WINDOW_IN_MINUTES;
 
-	          }
-	          break;
+for (int i = 0; i < side; i++) {
 
-	        case "Right":
+int before = startIndex - i;
+if (before < 0)
+before += Constants.MINUTES_PER_DAY;
+values[before] += additive;
 
-	          side = SHIFTING_WINDOW_IN_MINUTES;
+}
+break;
 
-	          for (int i = 0; i < side; i++) {
+case "Right":
 
-	            int after = endIndex + i;
-	            if (after > Constants.MIN_IN_DAY - 1)
-	              after %= Constants.MIN_IN_DAY;
+side = Constants.SHIFTING_WINDOW_IN_MINUTES;
 
-	            values[after] += additive;
-	          }
-	        }
-	      }
-	      // In case of reward a percentage of the close distances are moved in the
-	      // window, either from one or both sides accordingly.
-	      else {
-	        side = SHIFTING_WINDOW_IN_MINUTES * 2;
-	        switch (type) {
+for (int i = 0; i < side; i++) {
 
-	        case "Both":
+int after = endIndex + i;
+if (after > Constants.MINUTES_PER_DAY - 1)
+after %= Constants.MINUTES_PER_DAY;
 
-	          for (int i = startIndex - side; i < startIndex; i++) {
+values[after] += additive;
+}
+}
+}
+// In case of reward a percentage of the close distances are moved in the
+// window, either from one or both sides accordingly.
+else {
+side = Constants.SHIFTING_WINDOW_IN_MINUTES * 2;
+switch (type) {
 
-	            int index = i;
+case "Both":
 
-	            if (index < 0)
-	              index += Constants.MIN_IN_DAY;
+for (int i = startIndex - side; i < startIndex; i++) {
 
-	            temp = incentive.getPrice() * values[index] / incentive.getBase();
-	            overDiffTemp = (values[index] - temp) * awareness * sensitivity;
-	            overDiff += overDiffTemp;
-	            values[index] -= overDiffTemp;
+int index = i;
 
-	          }
+if (index < 0)
+index += Constants.MINUTES_PER_DAY;
 
-	          for (int i = endIndex; i < endIndex + side; i++) {
+temp = incentive.getPrice() * values[index] / incentive.getBase();
+overDiffTemp = (values[index] - temp) * awareness * sensitivity;
+overDiff += overDiffTemp;
+values[index] -= overDiffTemp;
 
-	            int index = i;
+// overDiff += values[index] - temp;
+// values[index] = temp;
+}
 
-	            if (index > Constants.MIN_IN_DAY - 1)
-	              index %= Constants.MIN_IN_DAY;
+for (int i = endIndex; i < endIndex + side; i++) {
 
-	            temp = incentive.getPrice() * values[index] / incentive.getBase();
-	            overDiffTemp = (values[index] - temp) * awareness * sensitivity;
-	            overDiff += overDiffTemp;
-	            values[index] -= overDiffTemp;
+int index = i;
 
-	          }
-	          break;
+if (index > Constants.MINUTES_PER_DAY - 1)
+index %= Constants.MINUTES_PER_DAY;
 
-	        case "Left":
+temp = incentive.getPrice() * values[index] / incentive.getBase();
+overDiffTemp = (values[index] - temp) * awareness * sensitivity;
+overDiff += overDiffTemp;
+values[index] -= overDiffTemp;
 
-	          for (int i = startIndex - 2 * side; i < startIndex; i++) {
+// temp = incentive.getPrice() * values[index] /
+// incentive.getBase();
+// overDiff += values[index] - temp;
+// values[index] = temp;
+}
+break;
 
-	            int index = i;
+case "Left":
 
-	            if (index < 0)
-	              index += Constants.MIN_IN_DAY;
+for (int i = startIndex - 2 * side; i < startIndex; i++) {
 
-	            temp = incentive.getPrice() * values[index] / incentive.getBase();
-	            overDiffTemp = (values[index] - temp) * awareness * sensitivity;
-	            overDiff += overDiffTemp;
-	            values[index] -= overDiffTemp;
+int index = i;
 
-	          }
-	          break;
+if (index < 0)
+index += Constants.MINUTES_PER_DAY;
 
-	        case "Right":
+temp = incentive.getPrice() * values[index] / incentive.getBase();
+overDiffTemp = (values[index] - temp) * awareness * sensitivity;
+overDiff += overDiffTemp;
+values[index] -= overDiffTemp;
 
-	          for (int i = endIndex; i < endIndex + 2 * side; i++) {
+// temp = incentive.getPrice() * values[index] /
+// incentive.getBase();
+// overDiff += values[index] - temp;
+// values[index] = temp;
+}
+break;
 
-	            int index = i;
+case "Right":
 
-	            if (index > Constants.MIN_IN_DAY - 1)
-	              index %= Constants.MIN_IN_DAY;
+for (int i = endIndex; i < endIndex + 2 * side; i++) {
 
-	            temp = incentive.getPrice() * values[index] / incentive.getBase();
-	            overDiffTemp = (values[index] - temp) * awareness * sensitivity;
-	            overDiff += overDiffTemp;
-	            values[index] -= overDiffTemp;
+int index = i;
 
-	          }
+if (index > Constants.MINUTES_PER_DAY - 1)
+index %= Constants.MINUTES_PER_DAY;
 
-	        }
+temp = incentive.getPrice() * values[index] / incentive.getBase();
+overDiffTemp = (values[index] - temp) * awareness * sensitivity;
+overDiff += overDiffTemp;
+values[index] -= overDiffTemp;
 
-	        double additive = overDiff / (endIndex - startIndex);
+// temp = incentive.getPrice() * values[index] /
+// incentive.getBase();
+// overDiff += values[index] - temp;
+// values[index] = temp;
+}
 
-	        for (int i = startIndex; i < endIndex; i++)
-	          values[i] += additive;
+}
+// System.out.println("Over Difference = " + overDiff);
 
-	      }
+double additive = overDiff / (endIndex - startIndex);
 
-	    }
+for (int i = startIndex; i < endIndex; i++)
+values[i] += additive;
 
-	    return values;
-  }
+}
+
+}
+// for (int i = 0; i < values.length; i++)
+// sum += values[i];
+// System.out.println("Summary: " + sum);
+
+return values;
+}
 
   
-  public static double[] discreteOptimal (double[] values, PricingVector pricing,
-		  double awareness, double sensitivity) {
-	// Initialize the auxiliary variables.
-	    double temp = 0, additive = 0, overDiff = 0, overDiffTemp = 0, sum = 0;
-	    Pricing tempPricing;
-	    // double sum = 0;
+  public static double[] discreteOptimal(double[] values, PricingVector pricing,
+		  double awareness, double sensitivity)
+{
+// Initialize the auxiliary variables.
+double temp = 0, additive = 0, overDiff = 0, overDiffTemp = 0, sum = 0;
+Pricing tempPricing;
+// double sum = 0;
 
-	    int start, start2, end, end2, duration;
-	    double previousPrice, newPrice;
+int start, start2, end, end2, duration;
+double previousPrice, newPrice;
 
-	    if (pricing.getNumberOfPenalties() > 0) {
+if (pricing.getNumberOfPenalties() > 0) {
 
-	      Map<Integer, Double> percentageMap = new TreeMap<Integer, Double>();
-	      ArrayList<Integer> tempList = new ArrayList<Integer>(pricing.getBases());
-	      tempList.addAll(pricing.getRewards());
+Map<Integer, Double> percentageMap = new TreeMap<Integer, Double>();
+ArrayList<Integer> tempList = new ArrayList<Integer>(pricing.getBases());
+tempList.addAll(pricing.getRewards());
 
-	      for (Integer index: tempList)
-	        sum += pricing.getPricings(index).getGainRatio();
+for (Integer index: tempList)
+sum += pricing.getPricings(index).getGainRatio();
 
-	      for (Integer index: tempList)
-	        percentageMap.put(index, pricing.getPricings(index).getGainRatio()
-	                                 / sum);
+for (Integer index: tempList)
+percentageMap.put(index, pricing.getPricings(index).getGainRatio()
+        / sum);
 
-	      // System.out.println("Percentage Map: " + percentageMap.toString());
+// System.out.println("Percentage Map: " + percentageMap.toString());
 
-	      for (Integer index: pricing.getPenalties()) {
-	        overDiff = 0;
-	        sum = 0;
+for (Integer index: pricing.getPenalties()) {
+overDiff = 0;
+sum = 0;
 
-	        tempPricing = pricing.getPricings(index);
-	        start = tempPricing.getStartMinute();
-	        end = tempPricing.getEndMinute();
-	        previousPrice = tempPricing.getPreviousPrice();
-	        newPrice = tempPricing.getCurrentPrice();
+tempPricing = pricing.getPricings(index);
+start = tempPricing.getStartMinute();
+end = tempPricing.getEndMinute();
+previousPrice = tempPricing.getPreviousPrice();
+newPrice = tempPricing.getCurrentPrice();
 
-	        for (int i = start; i <= end; i++) {
+for (int i = start; i <= end; i++) {
 
-	          temp = ((previousPrice * values[i]) / newPrice);
-	          // System.out.println("Temp = " + temp);
-	          overDiffTemp = (values[i] - temp) * awareness * sensitivity;
-	          overDiff += overDiffTemp;
-	          values[i] -= overDiffTemp;
-	        }
+temp = ((previousPrice * values[i]) / newPrice);
+// System.out.println("Temp = " + temp);
+overDiffTemp = (values[i] - temp) * awareness * sensitivity;
+overDiff += overDiffTemp;
+values[i] -= overDiffTemp;
+}
 
-	        // System.out.println("OverDiff for index " + index + ": " + overDiff);
+// System.out.println("OverDiff for index " + index + ": " + overDiff);
 
-	        for (Integer index2: tempList) {
-	          start2 = pricing.getPricings(index2).getStartMinute();
-	          end2 = pricing.getPricings(index2).getEndMinute();
-	          duration = end2 - start2;
-	          additive = overDiff * percentageMap.get(index2) / duration;
-	          // System.out.println("Additive for index " + index2 + ": " +
-	          // additive);
-	          for (int i = start2; i < end2; i++)
-	            values[i] += additive;
-	        }
+for (Integer index2: tempList) {
+start2 = pricing.getPricings(index2).getStartMinute();
+end2 = pricing.getPricings(index2).getEndMinute();
+duration = end2 - start2;
+additive = overDiff * percentageMap.get(index2) / duration;
+// System.out.println("Additive for index " + index2 + ": " +
+// additive);
+for (int i = start2; i < end2; i++)
+values[i] += additive;
+}
 
-	        for (int i = 0; i < values.length; i++)
-	          sum += values[i];
+for (int i = 0; i < values.length; i++)
+sum += values[i];
 
-	        // System.out.println("Summary: " + sum);
+// System.out.println("Summary: " + sum);
 
-	      }
+}
 
-	    }
-	    else if (pricing.getNumberOfRewards() > 0) {
+}
+else if (pricing.getNumberOfRewards() > 0) {
 
-	      Pricing tempPricing2 = null;
-	      ArrayList<Pricing> tempList = new ArrayList<Pricing>();
+Pricing tempPricing2 = null;
+ArrayList<Pricing> tempList = new ArrayList<Pricing>();
 
-	      for (Integer index: pricing.getRewards())
-	        tempList.add(pricing.getPricings(index));
+for (Integer index: pricing.getRewards())
+tempList.add(pricing.getPricings(index));
 
-	      Collections.sort(tempList, comp);
+Collections.sort(tempList, comp);
 
-	      // System.out.println("Rewards List: " + tempList.toString());
+// System.out.println("Rewards List: " + tempList.toString());
 
-	      for (int i = 0; i < tempList.size(); i++) {
+for (int i = 0; i < tempList.size(); i++) {
 
-	        tempPricing2 = tempList.get(i);
-	        newPrice = tempPricing2.getCurrentPrice();
-	        start2 = tempPricing2.getStartMinute();
-	        end2 = tempPricing2.getEndMinute();
-	        duration = end2 - start2;
+tempPricing2 = tempList.get(i);
+newPrice = tempPricing2.getCurrentPrice();
+start2 = tempPricing2.getStartMinute();
+end2 = tempPricing2.getEndMinute();
+duration = end2 - start2;
 
-	        for (Integer index: pricing.getBases()) {
-	          overDiff = 0;
-	          sum = 0;
+for (Integer index: pricing.getBases()) {
+overDiff = 0;
+sum = 0;
 
-	          tempPricing = pricing.getPricings(index);
-	          start = tempPricing.getStartMinute();
-	          end = tempPricing.getEndMinute();
-	          previousPrice = tempPricing.getCurrentPrice();
+tempPricing = pricing.getPricings(index);
+start = tempPricing.getStartMinute();
+end = tempPricing.getEndMinute();
+previousPrice = tempPricing.getCurrentPrice();
 
-	          for (int j = start; j <= end; j++) {
+for (int j = start; j <= end; j++) {
 
-	            temp = newPrice * values[j] / previousPrice;
-	            overDiffTemp = (values[j] - temp) * awareness * sensitivity;
-	            overDiff += overDiffTemp;
-	            values[j] -= overDiffTemp;
+temp = newPrice * values[j] / previousPrice;
+overDiffTemp = (values[j] - temp) * awareness * sensitivity;
+overDiff += overDiffTemp;
+values[j] -= overDiffTemp;
 
-	          }
+}
 
-	          // System.out.println("OverDiff for index " + index + ": " +
-	          // overDiff);
+// System.out.println("OverDiff for index " + index + ": " +
+// overDiff);
 
-	          additive = overDiff / duration;
-	          // System.out.println("Additive for index " + i + ": " + additive);
+additive = overDiff / duration;
+// System.out.println("Additive for index " + i + ": " + additive);
 
-	          for (int j = start2; j < end2; j++)
-	            values[j] += additive;
-	        }
+for (int j = start2; j < end2; j++)
+values[j] += additive;
+}
 
-	        for (int j = 0; j < values.length; j++)
-	          sum += values[j];
+for (int j = 0; j < values.length; j++)
+sum += values[j];
 
-	        // System.out.println("Summary: " + sum);
+// System.out.println("Summary: " + sum);
 
-	      }
+}
 
-	    }
+}
 
-	    return values;
-  }
+return values;
+
+}
 
   
-  	public static double[] discreteAverage (double[] values, 
-  			PricingVector pricing,
-  			double awareness, double sensitivity) {
+  	public static double[] discreteAverage (double[] values, PricingVector pricing,
+  			double awareness, double sensitivity)
+{
 
-	    // Initialize the auxiliary variables.
-	    double temp = 0;
-	    // double sum = 0;
-	    double overDiff = 0, overDiffTemp = 0;
-	    int start, end;
-	    double newPrice;
+// Initialize the auxiliary variables.
+double temp = 0;
+double sum = 0;
+double overDiff = 0, overDiffTemp = 0;
+int start, end;
+double newPrice;
+int durationCheapest = 0;
 
-	    // Finding the cheapest window in the day.
-	    int cheapest = pricing.getCheapest();
-	    int startCheapest =
-	      pricing.getPricings(pricing.getCheapest()).getStartMinute();
-	    int endCheapest = pricing.getPricings(pricing.getCheapest()).getEndMinute();
-	    int durationCheapest = endCheapest - startCheapest;
-	    double cheapestPrice =
-	      pricing.getPricings(pricing.getCheapest()).getCurrentPrice();
+// Finding the cheapest window in the day.
+ArrayList<Integer> cheapest = pricing.getCheapest();
 
-	    // Moving from all the available vectors residual percentages to the
-	    // cheapest one.
-	    for (int i = 0; i < pricing.getPricings().size(); i++) {
+for (Integer index: cheapest) {
+int startCheapest = pricing.getPricings(index).getStartMinute();
+int endCheapest = pricing.getPricings(index).getEndMinute();
+durationCheapest += endCheapest - startCheapest;
+}
 
-	      if (i != cheapest) {
-	        // sum = 0;
-	        overDiff = 0;
-	        start = pricing.getPricings(i).getStartMinute();
-	        end = pricing.getPricings(i).getEndMinute();
-	        newPrice = pricing.getPricings(i).getCurrentPrice();
+double cheapestPrice =
+pricing.getPricings(pricing.getCheapest().get(0)).getCurrentPrice();
 
-	        for (int j = start; j <= end; j++) {
+// Moving from all the available vectors residual percentages to the
+// cheapest one.
+for (int i = 0; i < pricing.getPricings().size(); i++) {
 
-	          temp = cheapestPrice * values[j] / newPrice;
-	          overDiffTemp = (values[j] - temp) * awareness * sensitivity;
-	          overDiff += overDiffTemp;
-	          values[j] -= overDiffTemp;
+if (cheapest.contains(i) == false) {
+sum = 0;
+overDiff = 0;
+start = pricing.getPricings(i).getStartMinute();
+end = pricing.getPricings(i).getEndMinute();
+newPrice = pricing.getPricings(i).getCurrentPrice();
 
-	        }
+for (int j = start; j <= end; j++) {
 
-	        double additive = overDiff / durationCheapest;
+temp = cheapestPrice * values[j] / newPrice;
+overDiffTemp = (values[j] - temp) * awareness * sensitivity;
+overDiff += overDiffTemp;
+values[j] -= overDiffTemp;
 
-	        for (int j = startCheapest; j <= endCheapest; j++)
-	          values[j] += additive;
+}
 
-	      }
+double additive = overDiff / durationCheapest;
 
-	    }
+for (Integer index: cheapest) {
+int startCheapest = pricing.getPricings(index).getStartMinute();
+int endCheapest = pricing.getPricings(index).getEndMinute();
 
-	    return values;
-  	}
+for (int j = startCheapest; j <= endCheapest; j++)
+values[j] += additive;
+
+}
+
+for (int j = 0; j < values.length; j++)
+sum += values[j];
+//System.out.println("Summary after index " + i + ": " + sum);
+
+}
+
+}
+
+return values;
+}
 
   	public static Comparator<Pricing> comp = new Comparator<Pricing>() {
 	    @Override

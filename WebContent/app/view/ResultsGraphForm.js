@@ -16,11 +16,10 @@
 Ext.define('C.view.ResultsGraphForm', {
 	extend: 'Ext.form.Panel',
 
-	width: 710,
 	autoScroll: true,
 	layout: {
 		align: 'center',
-		type: 'vbox'
+		type: 'hbox'
 	},
 	bodyPadding: 10,
 	title: 'My Form',
@@ -37,16 +36,17 @@ Ext.define('C.view.ResultsGraphForm', {
 			items: [
 				{
 					xtype: 'container',
-					maxWidth: 500,
-					autoScroll: true,
+					flex: 2,
+					itemId: 'plotContainer',
 					layout: {
-						type: 'anchor'
+						align: 'stretch',
+						type: 'vbox'
 					},
 					items: [
 						{
 							xtype: 'fieldset',
+							flex: 1,
 							padding: '10px',
-							width: 455,
 							title: 'Plot Parameters',
 							items: [
 								{
@@ -55,8 +55,7 @@ Ext.define('C.view.ResultsGraphForm', {
 									height: 27,
 									itemId: 'instFieldContainer',
 									layout: {
-										align: 'middle',
-										pack: 'center',
+										align: 'stretch',
 										type: 'hbox'
 									},
 									items: [
@@ -129,24 +128,50 @@ Ext.define('C.view.ResultsGraphForm', {
 									}
 								}
 							]
+						},
+						{
+							xtype: 'label',
+							flex: 0,
+							margins: '10px 0',
+							itemId: 'plot_title',
+							style: 'font-size:20px;font-weight:bold;',
+							text: 'Total Consumption Active Power'
+						},
+						{
+							xtype: 'label',
+							flex: 0,
+							margins: '10px 0',
+							itemId: 'expected_plot_title',
+							style: 'font-size:20px;font-weight:bold;',
+							text: 'Expected Active Power'
 						}
 					]
 				},
 				{
-					xtype: 'label',
-					flex: 0,
-					margins: '10px 0',
-					itemId: 'plot_title',
-					style: 'font-size:20px;font-weight:bold;',
-					text: 'Total Consumption Active Power'
-				},
-				{
-					xtype: 'label',
-					flex: 0,
-					margins: '10px 0',
-					itemId: 'expected_plot_title',
-					style: 'font-size:20px;font-weight:bold;',
-					text: 'Expected Active Power'
+					xtype: 'container',
+					flex: 1,
+					itemId: 'pieChartContainer2',
+					margin: '0 0 0 20px',
+					minHeight: 500,
+					layout: {
+						align: 'center',
+						padding: '10px',
+						type: 'vbox'
+					},
+					items: [
+						{
+							xtype: 'label',
+							flex: 1,
+							width: 162,
+							text: 'Pie Chart 1: Consumption per Person Type'
+						},
+						{
+							xtype: 'label',
+							flex: 1,
+							width: 162,
+							text: 'Pie Chart 2: Consumption per Appliance Type'
+						}
+					]
 				}
 			]
 		});

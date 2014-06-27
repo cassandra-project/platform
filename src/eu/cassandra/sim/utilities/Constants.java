@@ -24,7 +24,11 @@ package eu.cassandra.sim.utilities;
  */
 public class Constants {
 	
+	public static final int SHIFTING_WINDOW_IN_MINUTES = 60;
+	
 	public final static int MIN_IN_HOUR = 60;
+	
+	public final static int MINUTES_PER_DAY = 60 * 24;
 	
 	public final static int MIN_IN_DAY = 60 * 24;
 	

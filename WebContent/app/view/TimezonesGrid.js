@@ -95,8 +95,10 @@ Ext.define('C.view.TimezonesGrid', {
 					xtype: 'numbercolumn',
 					dataIndex: 'price',
 					text: 'Price',
+					format: '0,000.0000',
 					editor: {
-						xtype: 'numberfield'
+						xtype: 'numberfield',
+						decimalPrecision: 4
 					}
 				}
 			]
@@ -124,7 +126,6 @@ Ext.define('C.view.TimezonesGrid', {
 	},
 
 	onRowEditingEdit: function(editor, context, eOpts) {
-		console.info(editor, context ,eOpts);
 		if (context.newValues.starttime !== context.originalValues.starttime && new Date(context.newValues.starttime) !== "Invalid Date")
 		context.record.set("starttime", Ext.Date.format(new Date(context.newValues.starttime), "H:i"));
 		if (context.newValues.endtime !== context.originalValues.endtime && new Date(context.newValues.endtime) !== "Invalid Date")
