@@ -155,8 +155,18 @@ Ext.define('C.view.MyViewport', {
 
 			component.getComponent('east_panel').hide();
 		}
+		else if (C.publicPage) {
+			var publicResultsPanel = new C.view.PublicPageResults();
+
+			component.getComponent('center_panel').layout = 'fit';
+			component.getComponent('center_panel').add(publicResultsPanel);
+
+			component.getComponent('east_panel').hide();
+			component.getComponent('west_panel').hide();
+		}
 		else {
 			var loginForm = new C.view.LoginForm({id: 'LoginForm'});
+
 			component.getComponent('center_panel').add(loginForm);
 		}
 	}

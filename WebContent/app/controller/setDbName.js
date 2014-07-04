@@ -18,6 +18,11 @@ Ext.define('C.controller.setDbName', {
 
 	init: function(application) {
 		C.dbname = window.location.hash.replace('#','');
+
+		var params = Ext.urlDecode(location.search.substring(1));
+		if (params.publicPage) {
+			C.publicPage = true;
+		}
 		//set max loaded records limit
 		C.limit = 200;
 
