@@ -1392,9 +1392,9 @@ public class MongoDBQueries {
 				Set<String> set = actTypes.keySet();
 				for(String s: set) {
 					DBObject dbo = new BasicDBObject();
-					dbo.put(s, actTypes.get(s));
+					dbo.put("type", s);
+					dbo.put("consumption", actTypes.get(s));
 					activities.add(dbo);
-					System.out.println(s + " " + actTypes.get(s));
 				}
 				// Appliances
 				cursor = DBConn.getConn(runId).getCollection(MongoAppliances.COL_APPLIANCES).find();
@@ -1420,9 +1420,9 @@ public class MongoDBQueries {
 				set = appTypes.keySet();
 				for(String s: set) {
 					DBObject dbo = new BasicDBObject();
-					dbo.put(s, appTypes.get(s));
+					dbo.put("type", s);
+					dbo.put("consumption", appTypes.get(s));
 					appliances.add(dbo);
-					System.out.println(s + " " + appTypes.get(s));
 				}
 			} else {
 				DBObject condition = new BasicDBObject();
@@ -1453,9 +1453,9 @@ public class MongoDBQueries {
 				Set<String> set = actTypes.keySet();
 				for(String s: set) {
 					DBObject dbo = new BasicDBObject();
-					dbo.put(s, actTypes.get(s));
+					dbo.put("type", s);
+					dbo.put("consumption", actTypes.get(s));
 					activities.add(dbo);
-					System.out.println(s + " " + actTypes.get(s));
 				}
 				// Appliances
 				condition = new BasicDBObject();
@@ -1470,7 +1470,6 @@ public class MongoDBQueries {
 					condition.put("app_id",o.get("_id").toString());
 					DBObject appliance = DBConn.getConn(runId).getCollection(MongoResults.COL_APPKPIS).findOne(condition);
 					double add = Double.parseDouble(appliance.get("energy").toString());
-					System.out.println(appliance.toString());
 					if(appTypes.containsKey(appType)) {
 						double energy = Double.parseDouble((actTypes.get(appType).toString()));
 						energy += add;
@@ -1483,9 +1482,9 @@ public class MongoDBQueries {
 				set = appTypes.keySet();
 				for(String s: set) {
 					DBObject dbo = new BasicDBObject();
-					dbo.put(s, appTypes.get(s));
+					dbo.put("type", s);
+					dbo.put("consumption", appTypes.get(s));
 					appliances.add(dbo);
-					System.out.println(s + " " + appTypes.get(s));
 				}
 			}
 

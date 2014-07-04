@@ -36,6 +36,7 @@ public class PieCharts {
 	public Response getResults(
 			@QueryParam("inst_id") String inst_id,
 			@Context HttpHeaders httpHeaders) {
+		System.out.println("hello");
 		return Utils.returnResponse(PrettyJSONPrinter.prettyPrint(new MongoDBQueries().mongoPieChartQuery(httpHeaders,inst_id).toString()));
 	}
 	
