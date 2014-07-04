@@ -1,0 +1,201 @@
+{
+  "success": true,
+  "message": "Results retrieved successfully",
+  "unit": "W",
+  "consumptionPlotData": [
+	  {
+	  	"x": "08:00",
+	  	"y": 540
+	  },
+	  {
+	  	"x": "09:00",
+	  	"y": 570
+	  },
+	  {
+	  	"x": "10:00",
+	  	"y": 940
+	  },
+	  {
+	  	"x": "11:00",
+	  	"y": 154
+	  },
+	  {
+	  	"x": "12:00",
+	  	"y": 354
+	  },
+	  {
+	  	"x": "13:00",
+	  	"y": 454
+	  },
+	  {
+	  	"x": "14:00",
+	  	"y": 64
+	  },
+	  {
+	  	"x": "15:00",
+	  	"y": 40
+	  },
+	  {
+	  	"x": "16:00",
+	  	"y": 50
+	  }
+	],
+	"energyBarsData": [
+		{
+			"name": "you",
+			"consumption": 16.5
+		},
+		{
+			"name": "group mean",
+			"consumption": 12.7
+		},
+		{
+			"name": "group min",
+			"consumption": 56
+		},
+		{
+			"name": "group max",
+			"consumption": 557
+		}
+	],
+	"pieChartData": [
+		{
+			"name": "Always-on",
+			"consumptionPercentage": 5
+		},
+		{
+			"name": "Clothes dryer",
+			"consumptionPercentage": 10
+		},
+		{
+			"name": "Cooking",
+			"consumptionPercentage": 50
+		},
+		{
+			"name": "Other",
+			"consumptionPercentage": 70
+		},
+		{
+			"name": "Always-on",
+			"consumptionPercentage": 5
+		},
+		{
+			"name": "Clothes dryer",
+			"consumptionPercentage": 10
+		},
+		{
+			"name": "Cooking",
+			"consumptionPercentage": 50
+		},
+		{
+			"name": "Other",
+			"consumptionPercentage": 70
+		}
+	],
+	"consumptionCategoryData": [
+		{
+			"name": "Whole House",
+			"consumption": 7,
+			"efficient": 400,
+			"average": 600,
+			"inefficient": 700,
+			"description": "lala1"
+		},
+		{
+			"name": "Always-on (device)",
+			"consumption": 8,
+			"efficient": 100,
+			"average": 200,
+			"inefficient": 300,
+			"description": "lala2"
+		},
+		{
+			"name": "Clothes dryer (device)",
+			"consumption": 89,
+			"efficient": 20,
+			"average": 30,
+			"inefficient": 49,
+			"description": "lala3"
+		},
+		{
+			"name": "Cooking (activity)",
+			"consumption": 180,
+			"efficient": 120,
+			"average": 200,
+			"inefficient": 280,
+			"description": "lala4"
+		},
+		{
+			"name": "Other",
+			"consumption": 435,
+			"efficient": 400,
+			"average": 600,
+			"inefficient": 700,
+			"description": "lala5"
+		},
+		{
+			"name": "Always-on (device)",
+			"consumption": 8,
+			"efficient": 100,
+			"average": 200,
+			"inefficient": 300,
+			"description": "lala2"
+		},
+		{
+			"name": "Clothes dryer (device)",
+			"consumption": 89,
+			"efficient": 20,
+			"average": 30,
+			"inefficient": 49,
+			"description": "lala3"
+		},
+		{
+			"name": "Cooking (activity)",
+			"consumption": 180,
+			"efficient": 120,
+			"average": 200,
+			"inefficient": 280,
+			"description": "lala4"
+		},
+		{
+			"name": "Other",
+			"consumption": 435,
+			"efficient": 400,
+			"average": 600,
+			"inefficient": 700,
+			"description": "lala5"
+		},
+		{
+			"name": "Always-on (device)",
+			"consumption": 8,
+			"efficient": 100,
+			"average": 200,
+			"inefficient": 300,
+			"description": "lala2"
+		},
+		{
+			"name": "Clothes dryer (device)",
+			"consumption": 89,
+			"efficient": 20,
+			"average": 30,
+			"inefficient": 49,
+			"description": "lala3"
+		},
+		{
+			"name": "Cooking (activity)",
+			"consumption": 180,
+			"efficient": 120,
+			"average": 200,
+			"inefficient": 280,
+			"description": "lala4"
+		},
+		{
+			"name": "Other",
+			"consumption": 435,
+			"efficient": 400,
+			"average": 600,
+			"inefficient": 700,
+			"description": "lala5"
+		}
+	]
+}
