@@ -244,6 +244,7 @@ public class Runs {
 			if(isDynamic) {
 				DBObject demog = DBConn.getConn().getCollection(MongoDemographics.COL_DEMOGRAPHICS).findOne(query);
 				checkForNull(demog, "The provided Demographics were not found in the DB.");
+				System.out.println(demog);
 				db.getCollection(MongoDemographics.COL_DEMOGRAPHICS).insert(demog);
 				scenario.put("demog", demog);
 			}

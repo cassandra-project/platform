@@ -1409,7 +1409,8 @@ public class MongoDBQueries {
 					double add = Double.parseDouble(appliance.get("energy").toString());
 					System.out.println(appliance.toString());
 					if(appTypes.containsKey(appType)) {
-						double energy = Double.parseDouble((actTypes.get(appType).toString()));
+						System.out.println(appTypes.get(appType));
+						double energy = Double.parseDouble((appTypes.get(appType).toString()));
 						energy += add;
 						appTypes.put(appType, new Double(energy));
 					} else {
@@ -1471,7 +1472,7 @@ public class MongoDBQueries {
 					DBObject appliance = DBConn.getConn(runId).getCollection(MongoResults.COL_APPKPIS).findOne(condition);
 					double add = Double.parseDouble(appliance.get("energy").toString());
 					if(appTypes.containsKey(appType)) {
-						double energy = Double.parseDouble((actTypes.get(appType).toString()));
+						double energy = Double.parseDouble((appTypes.get(appType).toString()));
 						energy += add;
 						appTypes.put(appType, new Double(energy));
 					} else {
