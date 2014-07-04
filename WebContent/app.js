@@ -18,7 +18,9 @@ Ext.Loader.setConfig({
 	enabled: true,
 	paths: {
 		Ext: '.',
-		'Ext.ux.Exporter': '/resources/js/Ext.ux.Exporter'
+		'Ext.ux.Exporter': '/resources/js/Ext.ux.Exporter',
+		'Ext.ux.chart': '/resources/js/Ext.ux.chart',
+		
 	}
 });
 
@@ -50,7 +52,9 @@ Ext.application({
 		'Csn',
 		'Cluster',
 		'ThermalModule',
-		'LightingModule'
+		'LightingModule',
+		'EntityConsumption',
+		'ResultsEntityConsumption'
 	],
 	stores: [
 		'Projects',
@@ -98,7 +102,16 @@ Ext.application({
 		'ThermalModuleStore',
 		'LightingModuleStore',
 		'ResponseTypeStore',
-		'ExpectedPower'
+		'ExpectedPower',
+		'PublicResultsStore',
+		'PublicConsumptionPlotStore',
+		'PublicConsumptionComparisonStore',
+		'PublicEntityConsumptionStore',
+		'DummyGaugeStore',
+		'PublicPieChartStore',
+		'ResultsPieChartsStore',
+		'ResultsActivityStore',
+		'ResultsApplianceStore'
 	],
 	views: [
 		'MyViewport',
@@ -137,7 +150,8 @@ Ext.application({
 		'OffpickGrid',
 		'TimezonesGrid',
 		'ThermalModuleForm',
-		'LightingModuleForm'
+		'LightingModuleForm',
+		'PublicPageResults'
 	],
 	autoCreateViewport: true,
 	controllers: [
@@ -923,17 +937,7 @@ Ext.application({
 		grid.setTitle("KPIs");
 		myFormCmp.down('#plotContainer').insert(5, grid);
 
-		var dummyData = [{type: 'Grandma', count: '350'},{type: 'Grandpa', count: '550'}];
-		var myPersonTypesStore = new C.store.PersonTypesStore({});
-		myPersonTypesStore.loadData(dummyData);
-		var myPersonPie = new C.view.TypesPieChart({store: myPersonTypesStore, legend: {position:'right'}});
-		myFormCmp.down('#pieChartContainer2').insert(1, myPersonPie);
-
-		dummyData = [{type: 'Dell Laptop', count: '350'},{type: 'Microwave oven', count: '550'}];
-		var myApplianceTypesStore = new C.store.ApplianceTypesStore({});
-		myApplianceTypesStore.loadData(dummyData);
-		var myAppliancePie = new C.view.TypesPieChart({store: myApplianceTypesStore, legend: {position:'right'}});
-		myFormCmp.down('#pieChartContainer2').insert(3, myAppliancePie);
+		Ext.getStore('ResultsPieChartsStore').load();
 
 		return myFormCmp;
 	},
