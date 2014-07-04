@@ -152,7 +152,7 @@ Ext.define('C.view.PublicPageResults', {
 											items: [
 												{
 													xtype: 'button',
-													cls: 'energyPowerBtn energyPowerBtnSelected',
+													cls: 'energyPowerBtn',
 													itemId: 'powerBtn',
 													style: 'border-top-radius: 0',
 													scale: 'medium',
@@ -166,7 +166,7 @@ Ext.define('C.view.PublicPageResults', {
 												},
 												{
 													xtype: 'button',
-													cls: 'energyPowerBtn',
+													cls: 'energyPowerBtn energyPowerBtnSelected',
 													itemId: 'energyBtn',
 													scale: 'medium',
 													text: 'Energy',
@@ -424,7 +424,7 @@ Ext.define('C.view.PublicPageResults', {
 		button.addCls('energyPowerBtnSelected');
 
 		var store = Ext.getStore('PublicResultsStore');
-		store.proxy.url = '/cassandra/cassandra/publicresults.json';
+		store.proxy.url = '/cassandra/cassandra/publicresults_power.json';
 		store.load();
 
 	},
@@ -434,7 +434,7 @@ Ext.define('C.view.PublicPageResults', {
 		button.addCls('energyPowerBtnSelected');
 
 		var store = Ext.getStore('PublicResultsStore');
-		store.proxy.url = '/cassandra/cassandra/publicresults_power.json';
+		store.proxy.url = '/cassandra/cassandra/publicresults.json';
 		store.load();
 	},
 
