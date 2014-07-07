@@ -160,10 +160,108 @@ Ext.define('C.view.ResultsGraphForm', {
 					},
 					items: [
 						{
+							xtype: 'chart',
+							border: 1,
+							height: 229,
+							itemId: 'resultsActivityPieChart',
+							margin: '0 0 0 80',
+							width: 338,
+							shadow: true,
+							animate: true,
+							store: 'ResultsActivityStore',
+							series: [
+								{
+									type: 'pie',
+									highlight: {
+										segment: {
+											margin: 20
+										}
+									},
+									label: {
+										field: 'type',
+										display: 'rotate',
+										contrast: true,
+										font: '12px Arial',
+										renderer: function(v) {
+										  return Ext.String.ellipsis(v, 12, false);
+										}
+									},
+									showInLegend: true,
+									tips: {
+										trackMouse: true,
+										width: 140,
+										height: 28,
+										renderer: function(storeItem, item) {
+										//calculate percentage.
+										var total = 0;
+										storeItem.store.each(function(rec) {
+											total += rec.get('count');
+										});
+										this.setTitle(storeItem.get('type') + ': ' + Math.round(storeItem.get('count') / total * 100) + '%');
+									  }
+									},
+									angleField: 'consumption',
+									highlightDuration: 200
+								}
+							],
+							legend: {
+								position: 'right'
+							}
+						},
+						{
 							xtype: 'label',
 							flex: 1,
 							width: 162,
-							text: 'Pie Chart 1: Consumption per Person Type'
+							text: 'Pie Chart 1: Consumption per Activity Type'
+						},
+						{
+							xtype: 'chart',
+							border: 1,
+							height: 229,
+							itemId: 'resultsAppliancePieChart',
+							margin: '0 0 0 80',
+							width: 338,
+							shadow: true,
+							animate: true,
+							store: 'ResultsApplianceStore',
+							series: [
+								{
+									type: 'pie',
+									highlight: {
+										segment: {
+											margin: 20
+										}
+									},
+									label: {
+										field: 'type',
+										display: 'rotate',
+										contrast: true,
+										font: '12px Arial',
+										renderer: function(v) {
+										  return Ext.String.ellipsis(v, 12, false);
+										}
+									},
+									showInLegend: true,
+									tips: {
+										trackMouse: true,
+										width: 140,
+										height: 28,
+										renderer: function(storeItem, item) {
+										//calculate percentage.
+										var total = 0;
+										storeItem.store.each(function(rec) {
+											total += rec.get('count');
+										});
+										this.setTitle(storeItem.get('type') + ': ' + Math.round(storeItem.get('count') / total * 100) + '%');
+									  }
+									},
+									angleField: 'consumption',
+									highlightDuration: 200
+								}
+							],
+							legend: {
+								position: 'right'
+							}
 						},
 						{
 							xtype: 'label',
@@ -241,7 +339,7 @@ Ext.define('C.view.ResultsGraphForm', {
 
 		myResultsStore.load( {params: formValues});
 		expectedStore.load(expectedLoadParams);
-		//record.save();
+		Ext.getStore('ResultsPieChartsStore').load(expectedLoadParams);
 		//TODO better impementation. Ignore all empty fields
 	}
 

@@ -17,6 +17,7 @@
 package eu.cassandra.server.mongo.util;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -1346,6 +1347,152 @@ public class MongoDBQueries {
 			DBObject result = DBConn.getConn(runId).getCollection(coll).findOne(condition);
 			if(result == null) throw new Exception("KPIs not found");
 			return jSON2Rrn.createJSON(result, "KPIs retrieved succesfully.");
+		}catch(Exception e) {
+			e.printStackTrace();
+			return jSON2Rrn.createJSONError("Error in retrieving results", e.getMessage());
+		}
+	}
+	
+	/**
+	 * curl -i  --header "dbname:run_id" 'http://localhost:8080/cassandra/api/kpis?inst_id=instID'
+	 * curl -i  --header "dbname:run_id" 'http://localhost:8080/cassandra/api/kpis'
+	 * 
+	 * @param installationId
+	 * @return
+	 */
+	public DBObject mongoPieChartQuery(HttpHeaders httpHeaders, String installationId) {
+		try {
+			String runId = getDbNameFromHTTPHeader(httpHeaders);
+			BasicDBList activities = new BasicDBList();
+			BasicDBList appliances = new BasicDBList();
+			if(runId == null)
+				throw new RestQueryParamMissingException(
+						"ParamMissing: run_id is null");
+			if(installationId == null) {
+				DBObject condition = new BasicDBObject();
+				DBCursor cursor = DBConn.getConn(runId).getCollection(MongoActivities.COL_ACTIVITIES).find();
+				HashMap<String, Double> actTypes = new HashMap<String, Double>();
+				while(cursor.hasNext()) {
+					DBObject o = cursor.next();
+//					System.out.println(o.toString());
+					String actType = o.get("type").toString();
+					condition = new BasicDBObject();
+					condition.put("act_id",o.get("_id").toString());
+					DBObject activity = DBConn.getConn(runId).getCollection(MongoResults.COL_ACTKPIS).findOne(condition);
+					double add = Double.parseDouble(activity.get("energy").toString());
+					System.out.println(activity.toString());
+					if(actTypes.containsKey(actType)) {
+						double energy = Double.parseDouble((actTypes.get(actType).toString()));
+						energy += add;
+						actTypes.put(actType, new Double(energy));
+					} else {
+						actTypes.put(actType, new Double(add));
+					}
+				}
+				Set<String> set = actTypes.keySet();
+				for(String s: set) {
+					DBObject dbo = new BasicDBObject();
+					dbo.put("type", s);
+					dbo.put("consumption", actTypes.get(s));
+					activities.add(dbo);
+				}
+				// Appliances
+				cursor = DBConn.getConn(runId).getCollection(MongoAppliances.COL_APPLIANCES).find();
+				HashMap<String, Double> appTypes = new HashMap<String, Double>();
+				while(cursor.hasNext()) {
+					DBObject o = cursor.next();
+//					System.out.println(o.toString());
+					String appType = o.get("type").toString();
+					condition = new BasicDBObject();
+					condition.put("app_id",o.get("_id").toString());
+					DBObject appliance = DBConn.getConn(runId).getCollection(MongoResults.COL_APPKPIS).findOne(condition);
+					double add = Double.parseDouble(appliance.get("energy").toString());
+					System.out.println(appliance.toString());
+					if(appTypes.containsKey(appType)) {
+						System.out.println(appTypes.get(appType));
+						double energy = Double.parseDouble((appTypes.get(appType).toString()));
+						energy += add;
+						appTypes.put(appType, new Double(energy));
+					} else {
+						appTypes.put(appType, new Double(add));
+					}
+				}
+				
+				set = appTypes.keySet();
+				for(String s: set) {
+					DBObject dbo = new BasicDBObject();
+					dbo.put("type", s);
+					dbo.put("consumption", appTypes.get(s));
+					appliances.add(dbo);
+				}
+			} else {
+				DBObject condition = new BasicDBObject();
+				condition.put("inst_id",installationId);
+				DBObject result = DBConn.getConn(runId).getCollection(MongoPersons.COL_PERSONS).findOne(condition);
+				String pers_id = result.get("_id").toString();
+				condition = new BasicDBObject();
+				condition.put("pers_id",pers_id);
+				DBCursor cursor = DBConn.getConn(runId).getCollection(MongoActivities.COL_ACTIVITIES).find(condition);
+				HashMap<String, Double> actTypes = new HashMap<String, Double>();
+				while(cursor.hasNext()) {
+					DBObject o = cursor.next();
+//					System.out.println(o.toString());
+					String actType = o.get("type").toString();
+					condition = new BasicDBObject();
+					condition.put("act_id",o.get("_id").toString());
+					DBObject activity = DBConn.getConn(runId).getCollection(MongoResults.COL_ACTKPIS).findOne(condition);
+					double add = Double.parseDouble(activity.get("energy").toString());
+					System.out.println(activity.toString());
+					if(actTypes.containsKey(actType)) {
+						double energy = Double.parseDouble((actTypes.get(actType).toString()));
+						energy += add;
+						actTypes.put(actType, new Double(energy));
+					} else {
+						actTypes.put(actType, new Double(add));
+					}
+				}
+				Set<String> set = actTypes.keySet();
+				for(String s: set) {
+					DBObject dbo = new BasicDBObject();
+					dbo.put("type", s);
+					dbo.put("consumption", actTypes.get(s));
+					activities.add(dbo);
+				}
+				// Appliances
+				condition = new BasicDBObject();
+				condition.put("inst_id",installationId);
+				cursor = DBConn.getConn(runId).getCollection(MongoAppliances.COL_APPLIANCES).find(condition);
+				HashMap<String, Double> appTypes = new HashMap<String, Double>();
+				while(cursor.hasNext()) {
+					DBObject o = cursor.next();
+//					System.out.println(o.toString());
+					String appType = o.get("type").toString();
+					condition = new BasicDBObject();
+					condition.put("app_id",o.get("_id").toString());
+					DBObject appliance = DBConn.getConn(runId).getCollection(MongoResults.COL_APPKPIS).findOne(condition);
+					double add = Double.parseDouble(appliance.get("energy").toString());
+					if(appTypes.containsKey(appType)) {
+						double energy = Double.parseDouble((appTypes.get(appType).toString()));
+						energy += add;
+						appTypes.put(appType, new Double(energy));
+					} else {
+						appTypes.put(appType, new Double(add));
+					}
+				}
+				
+				set = appTypes.keySet();
+				for(String s: set) {
+					DBObject dbo = new BasicDBObject();
+					dbo.put("type", s);
+					dbo.put("consumption", appTypes.get(s));
+					appliances.add(dbo);
+				}
+			}
+
+			DBObject retObj = new BasicDBObject();
+			retObj.put("activities", activities);
+			retObj.put("appliances", appliances);
+			return jSON2Rrn.createJSON(retObj, "Consumption per type for appliances and activities.");
 		}catch(Exception e) {
 			e.printStackTrace();
 			return jSON2Rrn.createJSONError("Error in retrieving results", e.getMessage());
