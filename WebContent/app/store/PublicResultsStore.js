@@ -24,7 +24,7 @@ Ext.define('C.store.PublicResultsStore', {
 			storeId: 'MyJsonStore2',
 			proxy: {
 				type: 'ajax',
-				url: '/cassandra/cassandra/publicresults.json',
+				url: '/cassandra/publicresults.json',
 				reader: {
 					type: 'json'
 				}

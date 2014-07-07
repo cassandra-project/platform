@@ -424,7 +424,7 @@ Ext.define('C.view.PublicPageResults', {
 		button.addCls('energyPowerBtnSelected');
 
 		var store = Ext.getStore('PublicResultsStore');
-		store.proxy.url = '/cassandra/cassandra/publicresults_power.json';
+		store.proxy.url = '/cassandra/publicresults_power.json';
 		store.load();
 
 	},
@@ -434,7 +434,7 @@ Ext.define('C.view.PublicPageResults', {
 		button.addCls('energyPowerBtnSelected');
 
 		var store = Ext.getStore('PublicResultsStore');
-		store.proxy.url = '/cassandra/cassandra/publicresults.json';
+		store.proxy.url = '/cassandra/publicresults.json';
 		store.load();
 	},
 
