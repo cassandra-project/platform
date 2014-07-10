@@ -38,6 +38,20 @@
             "description": "The ability to control the appliance",
             "optional": true
         },
+        "lighting": {
+            "type": "boolean",
+            "description": "Appliance related to lighting",
+            "optional": true
+        },
+        "monthlyConsumptions": {
+            "type": "array",
+            "description": "12 value vector",
+            "items": {
+                "type": "number"
+            },
+            "uniqueItems": false,
+            "optional": true
+        },
         "base": {
             "type": "boolean",
             "description": "Whether the appliance is a base load or not",
