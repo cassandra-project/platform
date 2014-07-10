@@ -57,6 +57,25 @@
             "type": "number",
             "description": "The Y coordinates of the Installation",
             "optional": true
+        },
+        "operatingHours": {
+            "type": "array",
+            "description": "An array pricing levels",
+            "optional": true,
+            "items" : {
+                "type" : "object",
+                "description" : "Hours",
+                "properties" : {
+                    "starttime" : {
+                        "type": "string",
+                        "description": "Start Time"
+                    },           
+                    "endtime" : {
+                        "type": "string",
+                        "description": "End Time"
+                    }
+                }
+            }
         }
     },
     "additionalProperties" : false
