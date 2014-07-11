@@ -91,6 +91,81 @@ Ext.define('C.view.InstallationForm', {
 									step: 0.01
 								},
 								{
+									xtype: 'gridpanel',
+									itemId: 'operatingHoursGrid',
+									margin: '20 0 0 0',
+									maxHeight: 400,
+									autoScroll: true,
+									title: 'Operating Hours',
+									forceFit: true,
+									store: 'TimezonesStore',
+									viewConfig: {
+										minHeight: 70
+									},
+									dockedItems: [
+										{
+											xtype: 'toolbar',
+											dock: 'top',
+											width: 508,
+											items: [
+												{
+													xtype: 'button',
+													text: 'New',
+													listeners: {
+														click: {
+															fn: me.onButtonClick211,
+															scope: me
+														}
+													}
+												},
+												{
+													xtype: 'button',
+													text: 'Delete',
+													listeners: {
+														click: {
+															fn: me.onButtonClick1211,
+															scope: me
+														}
+													}
+												}
+											]
+										}
+									],
+									plugins: [
+										Ext.create('Ext.grid.plugin.RowEditing', {
+											clicksToMoveEditor: 1,
+											listeners: {
+												edit: {
+													fn: me.onRowEditingEdit,
+													scope: me
+												}
+											}
+										})
+									],
+									columns: [
+										{
+											xtype: 'gridcolumn',
+											dataIndex: 'starttime',
+											text: 'Start time',
+											editor: {
+												xtype: 'timefield',
+												invalidText: '{0} is not a valid time. </br> (i.e. 24:56)',
+												format: 'H:i'
+											}
+										},
+										{
+											xtype: 'gridcolumn',
+											dataIndex: 'endtime',
+											text: 'End time',
+											editor: {
+												xtype: 'timefield',
+												invalidText: '{0} is not a valid time. </br> (i.e. 24:56)',
+												format: 'H:i'
+											}
+										}
+									]
+								},
+								{
 									xtype: 'button',
 									itemId: 'btn',
 									margin: '10px 0 0 185px',
@@ -361,11 +436,46 @@ Ext.define('C.view.InstallationForm', {
 		node.set({'name':newValue});
 	},
 
+	onButtonClick211: function(button, e, eOpts) {
+
+		var grid = this.down('#operatingHoursGrid');
+		grid.store.insert(0, {starttime:"", endtime:""});
+		grid.plugins[0].startEdit(0, 0);
+
+
+
+
+	},
+
+	onButtonClick1211: function(button, e, eOpts) {
+		console.info('Delete clicked.', this, button, e, eOpts);
+
+		var grid = this.down('#operatingHoursGrid');
+		var selections = grid.getView().getSelectionModel().getSelection();
+		grid.store.remove(selections);
+
+	},
+
+	onRowEditingEdit: function(editor, context, eOpts) {
+		if (context.newValues.starttime !== context.originalValues.starttime && new Date(context.newValues.starttime) !== "Invalid Date")
+		context.record.set("starttime", Ext.Date.format(new Date(context.newValues.starttime), "H:i"));
+		if (context.newValues.endtime !== context.originalValues.endtime && new Date(context.newValues.endtime) !== "Invalid Date")
+		context.record.set("endtime", Ext.Date.format(new Date(context.newValues.endtime), "H:i"));
+	},
+
 	onButtonClick2: function(button, e, eOpts) {
 
 		var myForm = this.getForm();
 		var node =C.app.getNodeFromTree(myForm.getRecord().internalId);
 		var record = C.app.getRecordByNode(node);
+		var operatingHours = [];
+
+		operatingHoursData = this.down('#operatingHoursGrid').store.data;
+		Ext.each(operatingHoursData.items, function(index){
+			operatingHours.push(index.data);
+		});
+
+		record.set('operatingHours', operatingHours);
 
 		myForm.updateRecord(record);
 
