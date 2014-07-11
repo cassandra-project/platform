@@ -51,6 +51,7 @@ Ext.define('C.store.PublicResultsStore', {
 			Ext.getStore('PublicConsumptionComparisonStore').loadData(rootData.energyBarsData);
 			Ext.getStore('PublicEntityConsumptionStore').loadData(rootData.consumptionCategoryData);
 			Ext.getStore('PublicPieChartStore').loadData(rootData.pieChartDataAppliances);
+			Ext.getStore('PublicPieChartActivitiesStore').loadData(rootData.pieChartDataActivities);
 
 			//grid default selection
 			var tablepanel = Ext.getCmp('publicResultsGrid');
@@ -60,13 +61,15 @@ Ext.define('C.store.PublicResultsStore', {
 
 			if (tablepanel) {
 				tablepanel.selModel.doSelect(tablepanel.store.data.items[0]);
-				tablepanel.columns[2].setText('Consumption (' + unit + ')');
+				//tablepanel.columns[2].setText('Consumption (' + unit + ')');
 			}
 
 			plotTitle.setText('Total Energy Consumption for ' + rootData.consumptionCategoryData[0].name + ' : ' + rootData.consumptionCategoryData[0].consumption + ' ' + unit);
 			totalEnergyPlot.axes.get(1).title = 'Consumption (' + unit + ')';
 			totalEnergyPlot.redraw();
 		}
+
+
 	}
 
 });
