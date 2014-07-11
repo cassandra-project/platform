@@ -142,7 +142,16 @@ Ext.define('C.view.MyViewport', {
 	},
 
 	onViewportAfterRender: function(component, eOpts) {
-		if (C.dbname) {
+		if (C.publicPage) {
+			var publicResultsPanel = new C.view.PublicPageResults();
+
+			component.getComponent('center_panel').layout = 'fit';
+			component.getComponent('center_panel').add(publicResultsPanel);
+
+			component.getComponent('east_panel').hide();
+			component.getComponent('west_panel').hide();
+		}
+		else if (C.dbname) {
 			var treePanel = new C.view.MyTreePanel({id: 'uiNavigationTreePanel'});
 			var tabPanel =  new C.view.MyTabPanel({id: 'MainTabPanel'});
 
@@ -154,15 +163,6 @@ Ext.define('C.view.MyViewport', {
 			component.getComponent('center_panel').add(tabPanel);
 
 			component.getComponent('east_panel').hide();
-		}
-		else if (C.publicPage) {
-			var publicResultsPanel = new C.view.PublicPageResults();
-
-			component.getComponent('center_panel').layout = 'fit';
-			component.getComponent('center_panel').add(publicResultsPanel);
-
-			component.getComponent('east_panel').hide();
-			component.getComponent('west_panel').hide();
 		}
 		else {
 			var loginForm = new C.view.LoginForm({id: 'LoginForm'});

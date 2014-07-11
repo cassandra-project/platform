@@ -22,6 +22,10 @@ Ext.define('C.model.EntityConsumption', {
 			type: 'string'
 		},
 		{
+			name: 'type',
+			type: 'string'
+		},
+		{
 			name: 'consumption',
 			type: 'float'
 		},

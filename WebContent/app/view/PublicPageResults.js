@@ -41,25 +41,31 @@ Ext.define('C.view.PublicPageResults', {
 					items: [
 						{
 							xtype: 'panel',
-							itemId: 'hourTab',
+							itemId: 'hour',
 							title: 'Hour'
 						},
 						{
 							xtype: 'panel',
-							itemId: 'dayTab',
+							itemId: 'day',
 							title: 'Day'
 						},
 						{
 							xtype: 'panel',
-							itemId: 'weekTab',
+							itemId: 'week',
 							title: 'Week'
 						},
 						{
 							xtype: 'panel',
-							itemId: 'monthTab',
+							itemId: 'month',
 							title: 'Month'
 						}
-					]
+					],
+					listeners: {
+						tabchange: {
+							fn: me.onTabpanelTabChange,
+							scope: me
+						}
+					}
 				}
 			],
 			items: [
@@ -197,7 +203,7 @@ Ext.define('C.view.PublicPageResults', {
 												{
 													type: 'Numeric',
 													fields: [
-														'consumption'
+														'value'
 													],
 													hidden: true,
 													position: 'left'
@@ -208,12 +214,12 @@ Ext.define('C.view.PublicPageResults', {
 													type: 'column',
 													label: {
 														display: 'insideEnd',
-														field: 'consumption',
+														field: 'value',
 														color: '#333',
 														'text-anchor': 'middle'
 													},
 													xField: 'name',
-													yField: 'consumption'
+													yField: 'value'
 												}
 											]
 										}
@@ -247,20 +253,6 @@ Ext.define('C.view.PublicPageResults', {
 									width: 350,
 									autoScroll: true,
 									store: 'PublicEntityConsumptionStore',
-									columns: [
-										{
-											xtype: 'gridcolumn',
-											dataIndex: 'name',
-											text: 'Entity',
-											flex: 2
-										},
-										{
-											xtype: 'numbercolumn',
-											dataIndex: 'consumption',
-											text: 'Consumption (kWh)',
-											flex: 1.5
-										}
-									],
 									selModel: Ext.create('Ext.selection.RowModel', {
 										listeners: {
 											select: {
@@ -268,7 +260,27 @@ Ext.define('C.view.PublicPageResults', {
 												scope: me
 											}
 										}
-									})
+									}),
+									columns: [
+										{
+											xtype: 'gridcolumn',
+											dataIndex: 'name',
+											text: 'Name',
+											flex: 1.5
+										},
+										{
+											xtype: 'gridcolumn',
+											dataIndex: 'type',
+											text: 'Type',
+											flex: 1
+										},
+										{
+											xtype: 'numbercolumn',
+											dataIndex: 'consumption',
+											text: 'Consumption',
+											flex: 1.5
+										}
+									]
 								},
 								{
 									xtype: 'chart',
@@ -415,8 +427,20 @@ Ext.define('C.view.PublicPageResults', {
 	},
 
 	onContainerAfterRender: function(component, eOpts) {
-		var publicResultsStore = new C.store.PublicResultsStore();
+		var publicResultsStore = Ext.getStore('PublicResultsStore');
+
+		var params = Ext.urlDecode(location.search.substring(1));
+		Ext.apply(publicResultsStore.getProxy().extraParams, {
+			inst_id: params.inst_id
+		});
+
 		publicResultsStore.load();
+	},
+
+	onTabpanelTabChange: function(tabPanel, newCard, oldCard, eOpts) {
+		var store = Ext.getStore('PublicResultsStore');
+		store.proxy.extraParams.timeRange = newCard.itemId;
+		store.load();
 	},
 
 	onPowerBtnClick: function(button, e, eOpts) {
@@ -424,7 +448,7 @@ Ext.define('C.view.PublicPageResults', {
 		button.addCls('energyPowerBtnSelected');
 
 		var store = Ext.getStore('PublicResultsStore');
-		store.proxy.url = '/cassandra/publicresults_power.json';
+		store.proxy.extraParams.unit = 'w';
 		store.load();
 
 	},
@@ -434,8 +458,9 @@ Ext.define('C.view.PublicPageResults', {
 		button.addCls('energyPowerBtnSelected');
 
 		var store = Ext.getStore('PublicResultsStore');
-		store.proxy.url = '/cassandra/publicresults.json';
+		store.proxy.extraParams.unit = 'kwh';
 		store.load();
+
 	},
 
 	onRowModelSelect: function(rowmodel, record, index, eOpts) {
