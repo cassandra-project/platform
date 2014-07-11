@@ -110,7 +110,8 @@ Ext.application({
 		'PublicPieChartStore',
 		'ResultsPieChartsStore',
 		'ResultsActivityStore',
-		'ResultsApplianceStore'
+		'ResultsApplianceStore',
+		'PublicPieChartActivitiesStore'
 	],
 	views: [
 		'MyViewport',

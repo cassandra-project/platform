@@ -16,6 +16,7 @@
 Ext.define('C.view.PublicPageResults', {
 	extend: 'Ext.panel.Panel',
 
+	id: 'MainTabPanel',
 	autoScroll: true,
 	layout: {
 		align: 'center',
@@ -236,6 +237,7 @@ Ext.define('C.view.PublicPageResults', {
 							xtype: 'container',
 							itemId: 'secondRow',
 							margin: 10,
+							autoScroll: true,
 							layout: {
 								align: 'middle',
 								pack: 'center',
@@ -243,14 +245,75 @@ Ext.define('C.view.PublicPageResults', {
 							},
 							items: [
 								{
-									xtype: 'gridpanel',
+									xtype: 'chart',
 									flex: 1,
+									height: 200,
+									maxHeight: 400,
+									maxWidth: 350,
+									width: 350,
+									animate: true,
+									insetPadding: 20,
+									store: 'PublicPieChartStore',
+									series: [
+										{
+											type: 'pie',
+											label: {
+												field: 'name',
+												display: 'rotate',
+												contrast: true,
+												font: '12px Arial',
+												renderer: function(value, label, storeItem) {
+													return storeItem.get('consumptionPercentage') + '%';
+												}
+											},
+											showInLegend: true,
+											angleField: 'consumptionPercentage'
+										}
+									],
+									legend: {
+										position: 'right'
+									}
+								},
+								{
+									xtype: 'chart',
+									flex: 1,
+									height: 200,
+									maxWidth: 350,
+									width: 350,
+									animate: true,
+									insetPadding: 20,
+									store: 'PublicPieChartActivitiesStore',
+									series: [
+										{
+											type: 'pie',
+											label: {
+												field: 'name',
+												display: 'rotate',
+												contrast: true,
+												font: '12px Arial',
+												renderer: function(value, label, storeItem) {
+													return storeItem.get('consumptionPercentage') + '%';
+												}
+											},
+											showInLegend: true,
+											angleField: 'consumptionPercentage'
+										}
+									],
+									legend: {
+										position: 'right'
+									}
+								}
+							]
+						},
+						{
+							xtype: 'container',
+							margin: 10,
+							items: [
+								{
+									xtype: 'gridpanel',
 									id: 'publicResultsGrid',
 									itemId: '',
 									maxHeight: 200,
-									maxWidth: 350,
-									minWidth: 350,
-									width: 350,
 									autoScroll: true,
 									store: 'PublicEntityConsumptionStore',
 									selModel: Ext.create('Ext.selection.RowModel', {
@@ -277,39 +340,10 @@ Ext.define('C.view.PublicPageResults', {
 										{
 											xtype: 'numbercolumn',
 											dataIndex: 'consumption',
-											text: 'Consumption',
+											text: 'Consumption (kWh)',
 											flex: 1.5
 										}
 									]
-								},
-								{
-									xtype: 'chart',
-									flex: 1,
-									height: 200,
-									maxWidth: 350,
-									width: 350,
-									animate: true,
-									insetPadding: 20,
-									store: 'PublicPieChartStore',
-									series: [
-										{
-											type: 'pie',
-											label: {
-												field: 'name',
-												display: 'rotate',
-												contrast: true,
-												font: '12px Arial',
-												renderer: function(value, label, storeItem) {
-													return storeItem.get('consumptionPercentage') + '%';
-												}
-											},
-											showInLegend: true,
-											angleField: 'consumptionPercentage'
-										}
-									],
-									legend: {
-										position: 'right'
-									}
 								}
 							]
 						},
