@@ -52,6 +52,12 @@ Ext.define('C.model.Installation', {
 			type: 'string'
 		},
 		{
+			defaultValue: [
+				
+			],
+			name: 'operatingHours'
+		},
+		{
 			name: 'x',
 			type: 'float'
 		},
