@@ -34,7 +34,7 @@ Ext.define('C.store.PublicConsumptionComparisonStore', {
 					type: 'string'
 				},
 				{
-					name: 'consumption',
+					name: 'value',
 					type: 'float'
 				}
 			]

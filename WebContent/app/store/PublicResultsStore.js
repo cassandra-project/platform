@@ -21,10 +21,14 @@ Ext.define('C.store.PublicResultsStore', {
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
 			autoLoad: false,
-			storeId: 'MyJsonStore2',
+			storeId: 'publicResultsStore',
 			proxy: {
 				type: 'ajax',
-				url: '/cassandra/publicresults.json',
+				extraParams: {
+					timeRange: 'hour',
+					unit: 'kwh'
+				},
+				url: '/cassandra/api/publicresults',
 				reader: {
 					type: 'json'
 				}
@@ -41,25 +45,28 @@ Ext.define('C.store.PublicResultsStore', {
 	onJsonstoreLoad: function(store, records, successful, eOpts) {
 		var rootData = store.proxy.reader.jsonData;
 
-		Ext.getStore('PublicConsumptionPlotStore').loadData(rootData.consumptionPlotData);
-		Ext.getStore('PublicConsumptionComparisonStore').loadData(rootData.energyBarsData);
-		Ext.getStore('PublicEntityConsumptionStore').loadData(rootData.consumptionCategoryData);
-		Ext.getStore('PublicPieChartStore').loadData(rootData.pieChartData);
+		if (rootData && rootData.data[0]) {
+			rootData = rootData.data[0];
+			Ext.getStore('PublicConsumptionPlotStore').loadData(rootData.consumptionPlotData);
+			Ext.getStore('PublicConsumptionComparisonStore').loadData(rootData.energyBarsData);
+			Ext.getStore('PublicEntityConsumptionStore').loadData(rootData.consumptionCategoryData);
+			Ext.getStore('PublicPieChartStore').loadData(rootData.pieChartDataAppliances);
 
-		//grid default selection
-		var tablepanel = Ext.getCmp('publicResultsGrid');
-		var plotTitle = Ext.getCmp('total_energy_plot_title');
-		var totalEnergyPlot = Ext.getCmp('total_energy_plot');
-		var unit = rootData.unit;
+			//grid default selection
+			var tablepanel = Ext.getCmp('publicResultsGrid');
+			var plotTitle = Ext.getCmp('total_energy_plot_title');
+			var totalEnergyPlot = Ext.getCmp('total_energy_plot');
+			var unit = rootData.unit;
 
-		if (tablepanel) {
-			tablepanel.selModel.doSelect(tablepanel.store.data.items[0]);
-			tablepanel.columns[1].setText('Consumption (' + unit + ')');
+			if (tablepanel) {
+				tablepanel.selModel.doSelect(tablepanel.store.data.items[0]);
+				tablepanel.columns[2].setText('Consumption (' + unit + ')');
+			}
+
+			plotTitle.setText('Total Energy Consumption for ' + rootData.consumptionCategoryData[0].name + ' : ' + rootData.consumptionCategoryData[0].consumption + ' ' + unit);
+			totalEnergyPlot.axes.get(1).title = 'Consumption (' + unit + ')';
+			totalEnergyPlot.redraw();
 		}
-
-		plotTitle.setText('Total Energy Consumption for ' + rootData.consumptionCategoryData[0].name + ' : ' + rootData.consumptionCategoryData[0].consumption + ' ' + unit);
-		totalEnergyPlot.axes.get(1).title = 'Consumption (' + unit + ')';
-		totalEnergyPlot.redraw();
 	}
 
 });
