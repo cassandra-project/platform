@@ -40,7 +40,7 @@ Ext.define('C.view.ApplianceForm', {
 					items: [
 						{
 							xtype: 'fieldset',
-							height: 365,
+							height: 420,
 							padding: '10px',
 							width: 280,
 							layout: {
@@ -105,13 +105,42 @@ Ext.define('C.view.ApplianceForm', {
 									boxLabel: '',
 									inputValue: 'true',
 									uncheckedValue: 'false'
+								},
+								{
+									xtype: 'checkboxfield',
+									fieldLabel: 'Lighting',
+									name: 'lighting',
+									boxLabel: '',
+									inputValue: 'true',
+									uncheckedValue: 'false',
+									listeners: {
+										change: {
+											fn: me.onCheckboxfieldChange,
+											scope: me
+										}
+									}
+								},
+								{
+									xtype: 'textareafield',
+									hidden: true,
+									itemId: 'monthlyConsumptions',
+									width: 246,
+									fieldLabel: 'Monthly Consumptions',
+									name: 'monthlyConsumptions',
+									submitValue: false,
+									listeners: {
+										beforerender: {
+											fn: me.onMonthlyConsumptionsBeforeRender,
+											scope: me
+										}
+									}
 								}
 							]
 						},
 						{
 							xtype: 'fieldset',
 							margins: '0 0 0 10px',
-							height: 365,
+							height: 420,
 							width: 271,
 							layout: {
 								type: 'auto'
@@ -204,6 +233,20 @@ Ext.define('C.view.ApplianceForm', {
 		node.set({'name':newValue});
 	},
 
+	onCheckboxfieldChange: function(field, newValue, oldValue, eOpts) {
+		if (newValue) {
+			this.down('#monthlyConsumptions').show();
+		} else {
+			this.down('#monthlyConsumptions').setValue('');
+			this.down('#monthlyConsumptions').hide();
+		}
+	},
+
+	onMonthlyConsumptionsBeforeRender: function(component, eOpts) {
+		component.helpText = '12 comma separated monthly consumption values </br>(one for each month): e.g. 1,2,3,4...';
+		component.url = 'https://github.com/cassandra-project/platform/wiki/Appliance-and-consumption-model-form';
+	},
+
 	onTextareafieldBeforeRender: function(component, eOpts) {
 		component.helpText = 'P-Expression: the expression that provides the active power curve</br>p-Expression has the following form:</br>{m {n1 [p1,d1,s1] [p2,d2,s2]}, {n2 [p3,d3,s3]}, ...}</br>respectively, with:</br> - p: active power</br> - d: duration in minutes </br> - s: slope';
 		component.url = 'https://github.com/cassandra-project/platform/wiki/Appliance-and-consumption-model-form';
@@ -218,9 +261,37 @@ Ext.define('C.view.ApplianceForm', {
 		var myForm = this.getForm();
 		var node = C.app.getNodeFromTree(myForm.getRecord().internalId);
 		var record = C.app.getRecordByNode(node);
+		var values = myForm.getFieldValues();
 		var myConsModChartStore = this.query('chart')[0].store;
+		var monthlyConsumptions = myForm.getFieldValues().monthlyConsumptions === '' ? '[]' : '[' + myForm.getFieldValues().monthlyConsumptions + ']';
 
-		myForm.updateRecord();
+		try {
+			monthlyConsumptions = JSON.parse(monthlyConsumptions);
+			if (typeof(monthlyConsumptions) !== 'object' || (myForm.getValues().lighting == 'true' && monthlyConsumptions.length !== 12)) {
+				JSON.parse(undefined);
+			}
+		}
+		catch(e) {
+			Ext.MessageBox.show({
+				title:'Monthly consumptions Error', 
+				msg: 'Monthly consumptions should be a 12 value vector', 
+				icon: Ext.MessageBox.ERROR
+			});
+			return false;
+		}
+
+		record.set({
+			'name': values.name,
+			'type': values.type,
+			'description': values.description,
+			'energy_class': values.energy_class,
+			'standy_consumption': values.standy_consumption,
+			'base': values.base,
+			'contollable': values.contollable,
+			'shiftable': values.shiftable,
+			'lighting': values.lighting,
+			'monthlyConsumptions': monthlyConsumptions
+		});
 
 		//clear dirty record
 		record.node.commit();
@@ -242,7 +313,7 @@ Ext.define('C.view.ApplianceForm', {
 				}
 				catch(e) {
 					Ext.MessageBox.show({
-						title:'Invalid input', 
+						title:'P-Expression Error', 
 						msg: 'A valid input example would be: </br>{"n":0,"params":[{"n":1,"values":[{"p":60,"d":200,"s":0}]}]}', 
 						icon: Ext.MessageBox.ERROR
 					});
@@ -258,7 +329,7 @@ Ext.define('C.view.ApplianceForm', {
 				}
 				catch(e) {
 					Ext.MessageBox.show({
-						title:'Invalid input', 
+						title:'Q-Expression Error', 
 						msg: 'A valid input example would be: </br>{"n":0,"params":[{"n":1,"values":[{"q":60,"d":200,"s":0}]}]}', 
 						icon: Ext.MessageBox.ERROR
 					});

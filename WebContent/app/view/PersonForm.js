@@ -58,7 +58,7 @@ Ext.define('C.view.PersonForm', {
 								},
 								{
 									xtype: 'container',
-									width: 300,
+									width: 320,
 									layout: {
 										align: 'stretch',
 										type: 'hbox'
@@ -66,12 +66,12 @@ Ext.define('C.view.PersonForm', {
 									items: [
 										{
 											xtype: 'slider',
-											flex: 8,
+											flex: 4,
 											fieldLabel: 'Sensitivity',
 											name: 'sensitivity',
 											value: 0.6,
-											decimalPrecision: 1,
-											keyIncrement: 0.1,
+											decimalPrecision: 2,
+											keyIncrement: 0.01,
 											maxValue: 1,
 											listeners: {
 												change: {
@@ -94,7 +94,7 @@ Ext.define('C.view.PersonForm', {
 								},
 								{
 									xtype: 'container',
-									width: 300,
+									width: 320,
 									layout: {
 										align: 'stretch',
 										type: 'hbox'
@@ -102,11 +102,11 @@ Ext.define('C.view.PersonForm', {
 									items: [
 										{
 											xtype: 'slider',
-											flex: 8,
+											flex: 4,
 											fieldLabel: 'Awareness',
 											name: 'awareness',
-											decimalPrecision: 1,
-											keyIncrement: 0.1,
+											decimalPrecision: 2,
+											keyIncrement: 0.01,
 											maxValue: 1,
 											listeners: {
 												change: {

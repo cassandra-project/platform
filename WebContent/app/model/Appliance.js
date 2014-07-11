@@ -56,6 +56,16 @@ Ext.define('C.model.Appliance', {
 			type: 'boolean'
 		},
 		{
+			name: 'lighting',
+			type: 'boolean'
+		},
+		{
+			defaultValue: [
+				
+			],
+			name: 'monthlyConsumptions'
+		},
+		{
 			name: 'inst_id'
 		},
 		{
