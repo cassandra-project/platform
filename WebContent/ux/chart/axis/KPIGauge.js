@@ -77,14 +77,15 @@ Ext.define('Ext.ux.chart.axis.KPIGauge', {
             sin = Math.sin,
 			textLabel, adjY;
 		
-		me.label.renderer = me.label.renderer || Ext.identityFn
+		me.label.renderer = me.label.renderer || Ext.identityFn;
 			
 		for (i = 0; i <= steps; i++) {
 			textLabel = labelGroup.getAt(i);
 			adjY = (i === 0 || i === steps) ? 7 : 0;
 			x = centerX + rho * cos(i / steps * pi - pi);
-			y = centerY + rho * sin(i / steps * pi - pi) - adjY
-			text = me.label.renderer(round(minValue + i / steps * (maxValue - minValue)));
+			y = centerY + rho * sin(i / steps * pi - pi) - adjY;
+			stepValue = minValue + i / steps * (maxValue - minValue);
+			text = me.label.renderer(round(stepValue * 100) / 100);
 			if (textLabel) {
 				textLabel.setAttributes(Ext.apply({
                     text: text,
