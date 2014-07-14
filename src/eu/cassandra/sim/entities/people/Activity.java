@@ -631,4 +631,12 @@ public class Activity extends Entity {
     	return cost;
     }
 
+	public HashMap<String, ProbabilityDistribution> getProbDuration() {
+		return probDuration;
+	}
+
+	public HashMap<String, Vector<Appliance>> getAppliances() {
+		return appliances;
+	}
+
 }
