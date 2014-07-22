@@ -171,10 +171,14 @@ public class MongoPublicPageQueries {
 		return results;
 	}
 	
-	private static Date[] getSimulationDates(DB db)
+	private static Date[] getSimulationDates(DB db) throws Exception
 	{
 		Date[] dates = new Date[2];
 		DBCursor c = db.getCollection("sim_param").find();
+		
+		if (c.size() == 0)
+			throw new Exception("Target collection \"sim_param\" is empty.");
+		
 		while (c.hasNext()) {
 			DBObject sim_params = c.next();
 			DBObject temp = (DBObject)sim_params.get("calendar");
@@ -222,24 +226,28 @@ public class MongoPublicPageQueries {
 	 * @param resultsAreEnergy	Whether returned values refer to power or energy consumption.
 	 * @param inst_id					The id of the target installation. If null computations are about the whole simulation.
 	 * @return
+	 * @throws Exception 
 	 */
-	public static TreeMap<String, Double> getConsumptionPlotData(DB adb, String dbname, String aggregateBy, boolean resultsAreEnergy, String inst_id)
+	public static TreeMap<String, Double> getConsumptionPlotData(DB adb, String dbname, String aggregateBy, boolean resultsAreEnergy, String inst_id) throws Exception
 	{
 		TreeMap<String, Double> results = new TreeMap<String, Double>();
 		try {
 			DB db = adb;
+			if (db.getCollectionNames().isEmpty())
+				throw new Exception("Target database contains no collections.");
+			
 			Date[] dates  = getSimulationDates(db);
 			DBCollection collection;
 			if (inst_id!=null)
 				collection = db.getCollection("inst_results");
 			else
 				collection = db.getCollection("aggr_results");
+			
+			if (collection.count() == 0)
+				throw new Exception("Target collection \"inst/aggr_results\" is empty.");
 								
 			if ( !aggregateBy.equals("hour") && !aggregateBy.equals("day") && !aggregateBy.equals("week") && !aggregateBy.equals("month") )
-			{
-				System.err.println("ERROR: Possible values for the aggregation unit are: hour, day, week and month.");
-				System.exit(1);
-			}
+				throw new Exception("ERROR: Possible values for the aggregation unit are: hour, day, week and month.");
 			
 			double[] results2 = getMostRecentBlockOfBarGraphValues(collection, aggregateBy, resultsAreEnergy, inst_id, dates);
 			
@@ -310,19 +318,21 @@ public class MongoPublicPageQueries {
 	 * @param resultsAreEnergy	Whether returned values refer to power or energy consumption.
 	 * @param aInst_id				The id of the target installation. Cannot be null.
 	 * @return
+	 * @throws Exception 
 	 */
-	public static TreeMap<String, Double> getComparisonBarsData(DB adb, String dbname, String aggregateBy, boolean resultsAreEnergy, String aInst_id)
+	public static TreeMap<String, Double> getComparisonBarsData(DB adb, String dbname, String aggregateBy, boolean resultsAreEnergy, String aInst_id) throws Exception
 	{
 		if (aInst_id == null)
-		{
-			System.err.println("The id of the target installation cannot be null.");
-			System.exit(2);
-		}
+			throw new Exception("The id of the target installation cannot be null.");
 			
 		TreeMap<String, Double> barsData = new TreeMap<String, Double>();
 		try {
 			DB db = adb;
+			if (db.getCollectionNames().isEmpty())
+				throw new Exception("Target database contains no collections.");
 			DBCollection installations = db.getCollection("installations");
+			if (installations.count() == 0)
+				throw new Exception("Target collection \"installations\" is empty.");
 			List<ObjectId> inst_ids = installations.distinct("_id");
 			
 			double maxInst = Double.MIN_VALUE;
@@ -359,7 +369,7 @@ public class MongoPublicPageQueries {
 	}
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		DecimalFormat df = new DecimalFormat("#0.000"); 
 		Mongo m;

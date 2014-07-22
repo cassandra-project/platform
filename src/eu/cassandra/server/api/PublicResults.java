@@ -53,7 +53,7 @@ public class PublicResults {
 			@Context HttpHeaders httpHeaders) {
 		JSONtoReturn jSON2Rrn = new JSONtoReturn();
 		try {
-			DecimalFormat df = new DecimalFormat("#0.000"); 
+			DecimalFormat df = new DecimalFormat("#0.00"); 
 			String dbname = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 			DB db = DBConn.getConn(dbname);
 			boolean resultsAreEnergy = false;
@@ -66,7 +66,7 @@ public class PublicResults {
 	            System.out.println(key + " \t" +value); 
 	            DBObject dbo = new BasicDBObject();
 				dbo.put("x", key);
-				dbo.put("y", value);
+				dbo.put("y", df.format(value));
 				consumptionPlotData.add(dbo);
 			}
 			DBObject retObj = new BasicDBObject();
@@ -78,7 +78,7 @@ public class PublicResults {
 	            System.out.print(key + " \t" +value + " \t"); 
 	            DBObject dbo = new BasicDBObject();
 				dbo.put("name", key);
-				dbo.put("value", value);
+				dbo.put("value", df.format(value));
 				energyBarsData.add(dbo);
 			}	
 			retObj.put("energyBarsData", energyBarsData);
@@ -90,7 +90,7 @@ public class PublicResults {
 	            System.out.print(key + " \t" +value + " \t"); 
 	            DBObject dbo = new BasicDBObject();
 				dbo.put("name", key);
-				dbo.put("consumptionPercentage", value);
+				dbo.put("consumptionPercentage", df.format(value));
 				pieChartDataActivities.add(dbo);
 			}	
 			retObj.put("pieChartDataActivities", pieChartDataActivities);
@@ -101,7 +101,7 @@ public class PublicResults {
 	            System.out.print(key + " \t" +value + " \t"); 
 	            DBObject dbo = new BasicDBObject();
 				dbo.put("name", key);
-				dbo.put("consumptionPercentage", value);
+				dbo.put("consumptionPercentage", df.format(value));
 				pieChartDataAppliances.add(dbo);
 			}	
 			retObj.put("pieChartDataAppliances", pieChartDataAppliances);
@@ -119,10 +119,10 @@ public class PublicResults {
 	            } else {
 	            	dbo.put("type", "Activity");
 	            }
-				dbo.put("consumption", values[0]);
-				dbo.put("efficient", values[1]);
-				dbo.put("average", values[2]);
-				dbo.put("inefficient", values[3]);
+				dbo.put("consumption", df.format(values[0]));
+				dbo.put("efficient", df.format(values[1]));
+				dbo.put("average", df.format(values[2]));
+				dbo.put("inefficient", df.format(values[3]));
 				dbo.put("description", "Demo Description");
 				consumptionCategoryData.add(dbo);
 			}	
@@ -133,10 +133,10 @@ public class PublicResults {
 	            DBObject dbo = new BasicDBObject();
 				dbo.put("name", key);
 				dbo.put("type", "Appliance");
-				dbo.put("consumption", values[0]);
-				dbo.put("efficient", values[1]);
-				dbo.put("average", values[2]);
-				dbo.put("inefficient", values[3]);
+				dbo.put("consumption", df.format(values[0]));
+				dbo.put("efficient", df.format(values[1]));
+				dbo.put("average", df.format(values[2]));
+				dbo.put("inefficient", df.format(values[3]));
 				dbo.put("description", "Demo Description");
 				consumptionCategoryData.add(dbo);
 			}	
