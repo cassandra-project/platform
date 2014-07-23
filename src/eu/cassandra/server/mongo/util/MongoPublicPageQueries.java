@@ -47,7 +47,7 @@ public class MongoPublicPageQueries {
 	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy MM");
 	private static Calendar c1 = Calendar.getInstance();
 	
-	private static double getBarGraphValuesWithIndices(DBCollection collection, String aggregateBy, boolean resultsAreEnergy, String inst_id, Date[] dates, int startIndex, int numOfRecords)
+	private static double getBarGraphValuesWithIndices(DBCollection collection, boolean resultsAreEnergy, String inst_id, Date[] dates, int startIndex, int numOfRecords)
 	{
 //		DBObject skip = new BasicDBObject("$skip", recordsToSkip);
 //		DBObject limit = new BasicDBObject("$limit", N);
@@ -92,6 +92,7 @@ public class MongoPublicPageQueries {
 	
 	private static double[] getMostRecentBlockOfBarGraphValues(DBCollection collection, String aggregateBy, boolean resultsAreEnergy, String inst_id, Date[] dates)
 	{
+		aggregateBy = aggregateBy.trim();
 		double divideBy = 60;  	//  aggregateBy = "hour";
 		double[] divideBys = null;
 		switch(aggregateBy) {
@@ -124,7 +125,7 @@ public class MongoPublicPageQueries {
 		}
 		
 		int numOfResults = 1; 
-		if (aggregateBy != "month")
+		if (!aggregateBy.equals("month"))
 		{
 			if (inst_id != null)
 				numOfResults = (int) Math.ceil(collection.count(new BasicDBObject("inst_id", inst_id))/ divideBy);
@@ -152,7 +153,7 @@ public class MongoPublicPageQueries {
 					m=-1;
 					year++;
 				}
-				if (m==dates[1].getMonth())
+				if (m==dates[1].getMonth() && year==dates[1].getYear() )
 					break;
 			}
 		}
@@ -165,7 +166,7 @@ public class MongoPublicPageQueries {
 		{
 			int recordsToSkip = (int) (aggregateBy.equals("month") ? divideBys[i] : divideBy*i);
 			int recordsToAggregate = (int)(aggregateBy.equals("month") ? divideBys[i+1] : divideBy);
-			results[index] = getBarGraphValuesWithIndices(collection, aggregateBy, resultsAreEnergy, inst_id, dates, recordsToSkip, recordsToAggregate);
+			results[index] = getBarGraphValuesWithIndices(collection, resultsAreEnergy, inst_id, dates, recordsToSkip, recordsToAggregate);
 			index++;
 		}
 		return results;
@@ -228,7 +229,7 @@ public class MongoPublicPageQueries {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static TreeMap<String, Double> getConsumptionPlotData(DB adb, String dbname, String aggregateBy, boolean resultsAreEnergy, String inst_id) throws Exception
+	public static TreeMap<String, Double> getConsumptionPlotData(DB adb, String aggregateBy, boolean resultsAreEnergy, String inst_id) throws Exception
 	{
 		TreeMap<String, Double> results = new TreeMap<String, Double>();
 		try {
@@ -320,7 +321,7 @@ public class MongoPublicPageQueries {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static TreeMap<String, Double> getComparisonBarsData(DB adb, String dbname, String aggregateBy, boolean resultsAreEnergy, String aInst_id) throws Exception
+	public static TreeMap<String, Double> getComparisonBarsData(DB adb, String aggregateBy, boolean resultsAreEnergy, String aInst_id) throws Exception
 	{
 		if (aInst_id == null)
 			throw new Exception("The id of the target installation cannot be null.");
@@ -342,7 +343,7 @@ public class MongoPublicPageQueries {
 		
 			for (ObjectId inst_id : inst_ids)
 			{
-				TreeMap<String, Double> resultsInst = getConsumptionPlotData(adb, dbname, aggregateBy, resultsAreEnergy, inst_id+"");
+				TreeMap<String, Double> resultsInst = getConsumptionPlotData(adb, aggregateBy, resultsAreEnergy, inst_id+"");
 				double value = 0;
 				if (!resultsAreEnergy)
 					value = mean(resultsInst);
@@ -369,17 +370,17 @@ public class MongoPublicPageQueries {
 	}
 	
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		
 		DecimalFormat df = new DecimalFormat("#0.000"); 
 		Mongo m;
 		try {
-			String dbname = "525fc911712e85146919f5e4";
-			String aggregateBy = "week";		
+			String dbname = "53cf665030043b3208584016";
+			String aggregateBy = "month";		
 			boolean resultsAreEnergy = false;
 			
 
-			m = new Mongo("cassandra.iti.gr");
+			m = new Mongo("localhost");
 			DB db = m.getDB(dbname);
 				
 			System.out.println("\"Block\" length is 24 when aggregating by hour, 15 when aggregating by day, "
@@ -387,7 +388,7 @@ public class MongoPublicPageQueries {
 			System.out.println();
 			
 			System.out.println("Results per " + aggregateBy + " for all installations in the simulation (showing the most recent \"block\" of values)");		     
-			TreeMap<String, Double> results = getConsumptionPlotData(db, dbname, aggregateBy, resultsAreEnergy, null);
+			TreeMap<String, Double> results = getConsumptionPlotData(db, aggregateBy, resultsAreEnergy, null);
 			for (String key : results.keySet())
 			{
 				double value = Double.parseDouble(results.get(key).toString());  
@@ -403,7 +404,7 @@ public class MongoPublicPageQueries {
 			for (ObjectId inst_id : inst_ids)
 			{
 				System.out.println("Installation: "+ inst_id);
-				TreeMap<String, Double> results2 = getConsumptionPlotData(db, dbname, aggregateBy, resultsAreEnergy, inst_id+"");
+				TreeMap<String, Double> results2 = getConsumptionPlotData(db, aggregateBy, resultsAreEnergy, inst_id+"");
 				for (String key : results2.keySet())
 				{
 					double value = Double.parseDouble(results2.get(key).toString());  
@@ -417,7 +418,7 @@ public class MongoPublicPageQueries {
 			for (ObjectId inst_id : inst_ids)
 			{
 				System.out.println("Installation: "+ inst_id);
-				TreeMap<String, Double> results2 = getComparisonBarsData(db, dbname, aggregateBy, resultsAreEnergy, inst_id+"");
+				TreeMap<String, Double> results2 = getComparisonBarsData(db, aggregateBy, resultsAreEnergy, inst_id+"");
 				for (String key : results2.keySet())
 				{
 					double value = Double.parseDouble(results2.get(key).toString());  
@@ -430,6 +431,9 @@ public class MongoPublicPageQueries {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MongoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
