@@ -52,6 +52,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.GroupCommand;
 import com.mongodb.util.JSON;
 
 public class MongoDBQueries {
@@ -1244,6 +1245,9 @@ public class MongoDBQueries {
 			else if(numberOfDays <= 360) {
 				defaultAggregationUnit = 720;
 				defaultAggrUnit = " (12 Hours)";
+			} else {
+				defaultAggregationUnit = 1440;
+				defaultAggrUnit = " (1 day)";
 			}
 			if(aggregationUnit == null) {
 				aggregationUnit = defaultAggregationUnit;
@@ -1296,6 +1300,7 @@ public class MongoDBQueries {
 				groupCmd.append("cond", condition); 
 			groupCmd.append("$reduce", "function(obj,prev){prev.y+=obj." + yMetric + "}");
 			groupCmd.append("initial",  new BasicDBObject("y",0));
+			
 
 			@SuppressWarnings("deprecation")
 			BasicDBList dbList = (BasicDBList)DBConn.getConn(getDbNameFromHTTPHeader(httpHeaders)
@@ -1304,6 +1309,7 @@ public class MongoDBQueries {
 			if(aggregationUnit > 1) {
 				for(int i=0;i<dbList.size();i++) {
 					BasicDBObject obj = (BasicDBObject)dbList.get(i);
+					System.out.println(obj.toString());
 					obj.put("y", Double.parseDouble(obj.get("y").toString())/aggregationUnit);
 				}
 			}
