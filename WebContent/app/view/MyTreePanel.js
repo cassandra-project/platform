@@ -731,6 +731,14 @@ Ext.define('C.view.MyTreePanel', {
 
 				);
 			}
+			else if (f.name == 'public_url'){
+				if (C.dbname) {
+					cols.push({
+						header: 'Public page url',
+						dataIndex: f.name,
+					});
+				}
+			}
 			else if (f.name == 'started' || f.name == 'ended'){
 				cols.push({
 					header: f.name,

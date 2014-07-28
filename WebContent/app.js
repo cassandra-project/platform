@@ -19,7 +19,8 @@ Ext.Loader.setConfig({
 	paths: {
 		Ext: '.',
 		'Ext.ux.Exporter': '/resources/js/Ext.ux.Exporter',
-		'Ext.ux.chart': '/resources/js/Ext.ux.chart'
+		'Ext.ux.chart': '/resources/js/Ext.ux.chart',
+		
 	}
 });
 
@@ -110,8 +111,7 @@ Ext.application({
 		'PublicPieChartStore',
 		'ResultsPieChartsStore',
 		'ResultsActivityStore',
-		'ResultsApplianceStore',
-		'PublicPieChartActivitiesStore'
+		'ResultsApplianceStore'
 	],
 	views: [
 		'MyViewport',
@@ -488,8 +488,6 @@ Ext.application({
 		var myForm = myFormCmp.getForm();
 
 		myForm.loadRecord(record);
-
-		myFormCmp.down('#operatingHoursGrid').store.loadData(record.get('operatingHours'));
 
 		//check if thermal module or lighting module exist and update form layout
 		if (record.get('thermalModule_id')) {

@@ -91,6 +91,21 @@ Ext.define('C.view.InstallationForm', {
 									step: 0.01
 								},
 								{
+									xtype: 'displayfield',
+									anchor: '100%',
+									height: 50,
+									hidden: true,
+									width: 555,
+									fieldLabel: 'Public page url',
+									name: 'public_url',
+									listeners: {
+										render: {
+											fn: me.onDisplayfieldRender,
+											scope: me
+										}
+									}
+								},
+								{
 									xtype: 'gridpanel',
 									itemId: 'operatingHoursGrid',
 									margin: '20 0 0 0',
@@ -436,6 +451,12 @@ Ext.define('C.view.InstallationForm', {
 		node.set({'name':newValue});
 	},
 
+	onDisplayfieldRender: function(component, eOpts) {
+		if (C.dbname) {
+			component.show();
+		}
+	},
+
 	onButtonClick211: function(button, e, eOpts) {
 
 		var grid = this.down('#operatingHoursGrid');
@@ -475,17 +496,29 @@ Ext.define('C.view.InstallationForm', {
 			operatingHours.push(index.data);
 		});
 
-		record.set('operatingHours', operatingHours);
+		if (myForm.isValid()) {
+			record.set({
+				'name': values.name,
+				'description': values.description,
+				'type': values.type,
+				'trans_id':values.trans_id,
+				'x':values.x,
+				'y': values.y, 
+				'location': values.location,
+				'operatingHours': operatingHours
+			});
 
-		myForm.updateRecord(record);
+			this.dirtyForm = false;
 
-		this.dirtyForm = false;
+			//clear dirty record
+			record.node.commit();
 
-		//clear dirty record
-		record.node.commit();
+			if (record.isNew) {
+				record.isNew = false;
+			}
+		}
 
-		if (record.isNew)
-		record.isNew = false;
+
 	},
 
 	onToolClick1: function(tool, e, eOpts) {
