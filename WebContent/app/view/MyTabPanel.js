@@ -51,12 +51,14 @@ Ext.define('C.view.MyTabPanel', {
 				activeTab.query('.button').forEach(function(c){if (c.xtype!='tab')c.setDisabled(true);});
 				activeTab.query('.field').forEach(function(c){c.readOnly = true;});
 				activeTab.query('.grid').forEach(function(c){
-					c.view.plugins.forEach(function(plugin){
-						if (plugin.ptype == 'gridviewdragdrop') {
-							plugin.dragZone.locked = true;
-							plugin.dropZone.locked = true;
-						}
-					});
+					if (c.view.plugins) {
+						c.view.plugins.forEach(function(plugin){
+							if (plugin.ptype == 'gridviewdragdrop') {
+								plugin.dragZone.locked = true;
+								plugin.dropZone.locked = true;
+							}
+						});
+					}
 				});
 
 				Ext.getCmp('uiNavigationTreePanel').view.plugins.forEach(function(plugin){

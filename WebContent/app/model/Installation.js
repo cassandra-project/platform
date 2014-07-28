@@ -24,6 +24,17 @@ Ext.define('C.model.Installation', {
 			type: 'string'
 		},
 		{
+			convert: function(v, rec) {
+				if (C.dbname) {
+					var url = '/cassandra/app.html?publicPage=true&inst_id=' + rec.get('_id') + '#' + C.dbname;
+					return '<a href = "' + url + '" target="_blank" title = "Public page">' + rec.get('name') + ' public page</a>';
+				}
+			},
+			name: 'public_url',
+			persist: false,
+			type: 'string'
+		},
+		{
 			name: 'type',
 			type: 'string'
 		},
