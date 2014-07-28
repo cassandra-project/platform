@@ -44,8 +44,9 @@ public class MongoQueries {
 	 * @param collection	The collection, based on which the energy sums will be computed ("appliances" or "activities")
 	 * @param inst_id		The id of the target installation. If null computations are about the whole simulation.
 	 * @return
+	 * @throws Exception 
 	 */
-	private static HashMap<String, Double> getEnergyPercentagesPerType(DBCollection collection, String inst_id)
+	private static HashMap<String, Double> getEnergyPercentagesPerType(DBCollection collection, String inst_id) throws Exception
 	{
 		HashMap<String, Double> results = getEnergySumsPerType(collection, inst_id);
 		double sum = 0;
@@ -61,14 +62,12 @@ public class MongoQueries {
 	 * @param collection	The collection, based on which the energy sums will be computed ("appliances" or "activities")
 	 * @param inst_id		The id of the target installation. If null computations are about the whole simulation.
 	 * @return
+	 * @throws Exception 
 	 */
-	private static HashMap<String, Double> getEnergySumsPerType(DBCollection collection, String inst_id)
+	private static HashMap<String, Double> getEnergySumsPerType(DBCollection collection, String inst_id) throws Exception
 	{
 		if (!collection.getName().equals("appliances") && ! collection.getName().equals("activities"))
-		{
-			System.err.println("Method only applicable to collections 'appliances' and 'activities'");
-			System.exit(5);
-		}
+			throw new Exception("Method only applicable to collections 'appliances' and 'activities'");
 		
 		HashMap<String, Double> results = new HashMap<String, Double>();
 		
@@ -142,13 +141,10 @@ public class MongoQueries {
 		return results;
 	}
 	
-	private static HashMap<String, Double[]> getEnergyLimitsPerType(DB db, DBCollection collection)
+	private static HashMap<String, Double[]> getEnergyLimitsPerType(DB db, DBCollection collection) throws Exception
 	{
 		if (!collection.getName().equals("appliances") && ! collection.getName().equals("activities"))
-		{
-			System.err.println("Method only applicable to collections 'appliances' and 'activities'");
-			System.exit(5);
-		}
+			throw new Exception("Method only applicable to collections 'appliances' and 'activities'");
 		
 		HashMap<String, Double[]> limitsPerType = new HashMap<String, Double[]>();
 		
@@ -199,17 +195,25 @@ public class MongoQueries {
 		return limitsPerType;
 	}
 	
-	private static HashMap<String, Double[]> getEnergyLimitsPerActivityType(DB adb, String dbname)
+	private static HashMap<String, Double[]> getEnergyLimitsPerActivityType(DB adb, String dbname) throws Exception
 	{
 		DB db = adb;
 		DBCollection activities = db.getCollection("activities");
+		if (db.getCollectionNames().isEmpty())
+			throw new Exception("Target database contains no collections.");
+		if (activities.count() == 0)
+			throw new Exception("Target collection \"activities\" is empty.");
 		return getEnergyLimitsPerType(db, activities);
 	}
 	
-	private static HashMap<String, Double[]> getEnergyLimitsPerApplianceType(DB adb, String dbname)
+	private static HashMap<String, Double[]> getEnergyLimitsPerApplianceType(DB adb, String dbname) throws Exception
 	{
 		DB db = adb;
 		DBCollection appliances = db.getCollection("appliances");
+		if (db.getCollectionNames().isEmpty())
+			throw new Exception("Target database contains no collections.");
+		if (appliances.count() == 0)
+			throw new Exception("Target collection \"appliances\" is empty.");
 		return getEnergyLimitsPerType(db, appliances);
 	}
 	
@@ -219,12 +223,17 @@ public class MongoQueries {
 	 * @param collection	The name of the database, where the target simulation is stored.
 	 * @param inst_id		The id of the target installation. If null computations are about the whole simulation.
 	 * @return
+	 * @throws Exception 
 	 */
-	public static HashMap<String, Double> getEnergySumsPerApplianceType(DB adb, String dbname, String inst_id)
+	public static HashMap<String, Double> getEnergySumsPerApplianceType(DB adb, String dbname, String inst_id) throws Exception
 	{
 		HashMap<String, Double> temp = new HashMap<String, Double>();
 		DB db = adb;
+		if (db.getCollectionNames().isEmpty())
+			throw new Exception("Target database contains no collections.");
 		DBCollection appliances = db.getCollection("appliances");
+		if (appliances.count() == 0)
+			throw new Exception("Target collection \"appliances\" is empty.");
 		temp =  getEnergySumsPerType(appliances, inst_id);
 		return temp;	
 	}
@@ -234,12 +243,17 @@ public class MongoQueries {
 	 * @param collection	The name of the database, where the target simulation is stored.
 	 * @param inst_id		The id of the target installation. If null computations are about the whole simulation.
 	 * @return
+	 * @throws Exception 
 	 */
-	public static HashMap<String, Double> getEnergySumsPerActivityType(DB adb, String dbname, String inst_id)
+	public static HashMap<String, Double> getEnergySumsPerActivityType(DB adb, String dbname, String inst_id) throws Exception
 	{
 		HashMap<String, Double> temp = new HashMap<String, Double>();
 		DB db = adb;
+		if (db.getCollectionNames().isEmpty())
+			throw new Exception("Target database contains no collections.");
 		DBCollection activities = db.getCollection("activities");
+		if (activities.count() == 0)
+			throw new Exception("Target collection \"activities\" is empty.");
 		temp = getEnergySumsPerType(activities, inst_id);
 		return temp;	
 	}
@@ -249,12 +263,17 @@ public class MongoQueries {
 	 * @param dbname	The name of the database, where the target simulation is stored.
 	 * @param inst_id		The id of the target installation. If null computations are about the whole simulation.
 	 * @return
+	 * @throws Exception 
 	 */
-	public static HashMap<String, Double> getEnergyPercentagesPerApplianceType(DB adb, String dbname, String inst_id)
+	public static HashMap<String, Double> getEnergyPercentagesPerApplianceType(DB adb, String dbname, String inst_id) throws Exception
 	{
 		HashMap<String, Double> temp = new HashMap<String, Double>();
 		DB db = adb;
+		if (db.getCollectionNames().isEmpty())
+			throw new Exception("Target database contains no collections.");
 		DBCollection appliances = db.getCollection("appliances");
+		if (appliances.count() == 0)
+			throw new Exception("Target collection \"appliances\" is empty.");
 		temp = getEnergyPercentagesPerType(appliances, inst_id);
 		return temp;	
 	}
@@ -264,12 +283,17 @@ public class MongoQueries {
 	 * @param dbname	The name of the database, where the target simulation is stored.
 	 * @param inst_id		The id of the target installation. If null computations are about the whole simulation.
 	 * @return
+	 * @throws Exception 
 	 */
-	public static HashMap<String, Double> getEnergyPercentagesPerActivityType(DB adb, String dbname, String inst_id)
+	public static HashMap<String, Double> getEnergyPercentagesPerActivityType(DB adb, String dbname, String inst_id) throws Exception
 	{
 		HashMap<String, Double> temp = new HashMap<String, Double>();
 		DB db = adb;
+		if (db.getCollectionNames().isEmpty())
+			throw new Exception("Target database contains no collections.");
 		DBCollection activities = db.getCollection("activities");
+		if (activities.count() == 0)
+			throw new Exception("Target collection \"activities\" is empty.");
 		temp =  getEnergyPercentagesPerType(activities, inst_id);
 		return temp;	
 	}
@@ -279,14 +303,12 @@ public class MongoQueries {
 	 * @param dbname	The name of the database, where the target simulation is stored.
 	 * @param inst_id		The id of the target installation. Cannot be null.
 	 * @return
+	 * @throws Exception 
 	 */
-	public static HashMap<String, Double[]> getEnergySumsWithLimitsPerApplianceType(DB adb, String dbname, String inst_id)
+	public static HashMap<String, Double[]> getEnergySumsWithLimitsPerApplianceType(DB adb, String dbname, String inst_id) throws Exception
 	{
 		if (inst_id == null)
-		{
-			System.err.println("The id of the target installation cannot be null.");
-			System.exit(2);
-		}
+			throw new Exception("The id of the target installation cannot be null.");
 		
 		HashMap<String, Double[]> results = new HashMap<String, Double[]>();
 		HashMap<String, Double[]> limits = getEnergyLimitsPerApplianceType(adb, dbname);
@@ -310,14 +332,12 @@ public class MongoQueries {
 	 * @param dbname	The name of the database, where the target simulation is stored.
 	 * @param inst_id		The id of the target installation. Cannot be null.
 	 * @return
+	 * @throws Exception 
 	 */
-	public static HashMap<String, Double[]> getEnergySumsWithLimitsPerActivityType(DB db, String dbname, String inst_id)
+	public static HashMap<String, Double[]> getEnergySumsWithLimitsPerActivityType(DB db, String dbname, String inst_id) throws Exception
 	{
 		if (inst_id == null)
-		{
-			System.err.println("The id of the target installation cannot be null.");
-			System.exit(2);
-		}
+			throw new Exception("The id of the target installation cannot be null.");
 		
 		HashMap<String, Double[]> results = new HashMap<String, Double[]>();
 		HashMap<String, Double[]> limits = getEnergyLimitsPerActivityType(db, dbname);

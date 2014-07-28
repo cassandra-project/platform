@@ -1,0 +1,5 @@
+04/09 14:39:05 INFO  server.IServletContextListener  - Cassandra platform started!!!
+04/09 14:42:06 INFO  server.IServletContextListener  - Cassandra platform started!!!
+04/09 14:42:27 INFO  .cassandra.server.api.Projects  - 5333ff000572513a8e1aea2e has logged in!
+04/09 15:57:58 INFO  .cassandra.server.api.Projects  - 5333ff000572513a8e1aea2e has logged in!
+04/09 19:28:10 INFO  server.IServletContextListener  - Cassandra platform started!!!

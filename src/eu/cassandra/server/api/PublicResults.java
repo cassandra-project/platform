@@ -53,32 +53,32 @@ public class PublicResults {
 			@Context HttpHeaders httpHeaders) {
 		JSONtoReturn jSON2Rrn = new JSONtoReturn();
 		try {
-			DecimalFormat df = new DecimalFormat("#0.000"); 
+			DecimalFormat df = new DecimalFormat("#0.00"); 
 			String dbname = MongoDBQueries.getDbNameFromHTTPHeader(httpHeaders);
 			DB db = DBConn.getConn(dbname);
 			boolean resultsAreEnergy = false;
 			if(unit.equalsIgnoreCase("kwh")) resultsAreEnergy = true;
 			String aggregateBy = timeRange;
-			TreeMap<String, Double> results = MongoPublicPageQueries.getConsumptionPlotData(db, dbname, aggregateBy, resultsAreEnergy, inst_id);
+			TreeMap<String, Double> results = MongoPublicPageQueries.getConsumptionPlotData(db, aggregateBy, resultsAreEnergy, inst_id);
 			BasicDBList consumptionPlotData = new BasicDBList();
 			for (String key : results.keySet()) {
 				double value = Double.parseDouble(results.get(key).toString());  
-	            System.out.println(key + " \t" +value); 
+//	            System.out.println(key + " \t" +value); 
 	            DBObject dbo = new BasicDBObject();
 				dbo.put("x", key);
-				dbo.put("y", value);
+				dbo.put("y", ""+df.format(value));
 				consumptionPlotData.add(dbo);
 			}
 			DBObject retObj = new BasicDBObject();
 			retObj.put("consumptionPlotData", consumptionPlotData);
-			TreeMap<String, Double> results2 = MongoPublicPageQueries.getComparisonBarsData(db, dbname, aggregateBy, resultsAreEnergy, inst_id);
+			TreeMap<String, Double> results2 = MongoPublicPageQueries.getComparisonBarsData(db, aggregateBy, resultsAreEnergy, inst_id);
 			BasicDBList energyBarsData = new BasicDBList();
 			for (String key : results2.keySet()) {
 				double value = Double.parseDouble(results2.get(key).toString());  
-	            System.out.print(key + " \t" +value + " \t"); 
+//	            System.out.print(key + " \t" +value + " \t"); 
 	            DBObject dbo = new BasicDBObject();
 				dbo.put("name", key);
-				dbo.put("value", value);
+				dbo.put("value", ""+df.format(value));
 				energyBarsData.add(dbo);
 			}	
 			retObj.put("energyBarsData", energyBarsData);
@@ -87,10 +87,10 @@ public class PublicResults {
 			BasicDBList pieChartDataActivities = new BasicDBList();
 			for (String key : results3.keySet()) {
 				double value = Double.parseDouble(results3.get(key).toString());  
-	            System.out.print(key + " \t" +value + " \t"); 
+//	            System.out.print(key + " \t" +value + " \t"); 
 	            DBObject dbo = new BasicDBObject();
 				dbo.put("name", key);
-				dbo.put("consumptionPercentage", value);
+				dbo.put("consumptionPercentage", ""+df.format(value));
 				pieChartDataActivities.add(dbo);
 			}	
 			retObj.put("pieChartDataActivities", pieChartDataActivities);
@@ -98,10 +98,10 @@ public class PublicResults {
 			BasicDBList pieChartDataAppliances = new BasicDBList();
 			for (String key : results4.keySet()) {
 				double value = Double.parseDouble(results4.get(key).toString());  
-	            System.out.print(key + " \t" +value + " \t"); 
+//	            System.out.print(key + " \t" +value + " \t"); 
 	            DBObject dbo = new BasicDBObject();
 				dbo.put("name", key);
-				dbo.put("consumptionPercentage", value);
+				dbo.put("consumptionPercentage", ""+df.format(value));
 				pieChartDataAppliances.add(dbo);
 			}	
 			retObj.put("pieChartDataAppliances", pieChartDataAppliances);
@@ -111,7 +111,7 @@ public class PublicResults {
 			BasicDBList consumptionCategoryData = new BasicDBList();
 			for (String key : results5.keySet()) {
 				Double[] values = results5.get(key);  
-	            System.out.println(key + ": \t" + df.format(values[0]) + ", \tefficient<=" + df.format(values[1]) + ", \taverage<=" + df.format(values[2]) + ", \tinefficient<=" + df.format(values[3]) );
+//	            System.out.println(key + ": \t" + df.format(values[0]) + ", \tefficient<=" + df.format(values[1]) + ", \taverage<=" + df.format(values[2]) + ", \tinefficient<=" + df.format(values[3]) );
 	            DBObject dbo = new BasicDBObject();
 	            dbo.put("name", key);
 	            if(key.equalsIgnoreCase("Whole House")) {
@@ -119,24 +119,24 @@ public class PublicResults {
 	            } else {
 	            	dbo.put("type", "Activity");
 	            }
-				dbo.put("consumption", values[0]);
-				dbo.put("efficient", values[1]);
-				dbo.put("average", values[2]);
-				dbo.put("inefficient", values[3]);
+				dbo.put("consumption", ""+df.format(values[0]));
+				dbo.put("efficient", ""+df.format(values[1]));
+				dbo.put("average", ""+df.format(values[2]));
+				dbo.put("inefficient", ""+df.format(values[3]));
 				dbo.put("description", "Demo Description");
 				consumptionCategoryData.add(dbo);
 			}	
 			for (String key : results6.keySet()) {
 				Double[] values = results6.get(key);  
-	            System.out.println(key + ": \t" + df.format(values[0]) + ", \tefficient<=" + df.format(values[1]) + ", \taverage<=" + df.format(values[2]) + ", \tinefficient<=" + df.format(values[3]) );
+//	            System.out.println(key + ": \t" + df.format(values[0]) + ", \tefficient<=" + df.format(values[1]) + ", \taverage<=" + df.format(values[2]) + ", \tinefficient<=" + df.format(values[3]) );
 	            if(key.equalsIgnoreCase("Whole House")) continue;
 	            DBObject dbo = new BasicDBObject();
 				dbo.put("name", key);
 				dbo.put("type", "Appliance");
-				dbo.put("consumption", values[0]);
-				dbo.put("efficient", values[1]);
-				dbo.put("average", values[2]);
-				dbo.put("inefficient", values[3]);
+				dbo.put("consumption", ""+df.format(values[0]));
+				dbo.put("efficient", ""+df.format(values[1]));
+				dbo.put("average", ""+df.format(values[2]));
+				dbo.put("inefficient", ""+df.format(values[3]));
 				dbo.put("description", "Demo Description");
 				consumptionCategoryData.add(dbo);
 			}	

@@ -51,7 +51,7 @@ public class IServletContextListener implements ServletContextListener {
 		try {
 			drfa.setName("R");
 			//drfa.setFile("/var/log/tomcat7/cassandra.log");
-			drfa.setFile("/home/kyrcha/cassandra/logs/cassandra.log");
+			drfa.setFile("/Users/fanitzima/git/platform/logs/cassandra.log");
 			drfa.setLayout(new PatternLayout("%d{MM/dd HH:mm:ss} %-5p %30.30c %x - %m\n"));
 			drfa.setDatePattern("'.'yyyy-MM-dd");
 			drfa.setThreshold(Level.TRACE);
@@ -60,7 +60,7 @@ public class IServletContextListener implements ServletContextListener {
 		} catch(Exception e) {
 			drfa = new DailyRollingFileAppender();
 			drfa.setName("R");
-			drfa.setFile("/home/kyrcha/cassandra/logs/cassandra.log");
+			drfa.setFile("/Users/fanitzima/git/platform/logs/cassandra.log");
 			drfa.setLayout(new PatternLayout("%d{MM/dd HH:mm:ss} %-5p %30.30c %x - %m\n"));
 			drfa.setDatePattern("'.'yyyy-MM-dd");
 			drfa.setThreshold(Level.TRACE);
