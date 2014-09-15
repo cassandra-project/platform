@@ -58,13 +58,14 @@ Ext.define('C.store.PublicResultsStore', {
 			var plotTitle = Ext.getCmp('total_energy_plot_title');
 			var totalEnergyPlot = Ext.getCmp('total_energy_plot');
 			var unit = rootData.unit;
+			var powerOrEnergy = unit == 'w' ? 'Power' : 'Energy';
 
 			if (tablepanel) {
 				tablepanel.selModel.doSelect(tablepanel.store.data.items[0]);
 				//tablepanel.columns[2].setText('Consumption (' + unit + ')');
 			}
 
-			plotTitle.setText('Total Energy Consumption for ' + rootData.consumptionCategoryData[0].name + ' : ' + rootData.consumptionCategoryData[0].consumption + ' ' + unit);
+			plotTitle.setText('Total ' + powerOrEnergy + ' Consumption for ' + rootData.consumptionCategoryData[0].name + ' : ' + rootData.consumptionCategoryData[0].consumption + ' ' + unit);
 			totalEnergyPlot.axes.get(1).title = 'Consumption (' + unit + ')';
 			totalEnergyPlot.redraw();
 		}
