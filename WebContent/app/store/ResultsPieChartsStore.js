@@ -46,6 +46,7 @@ Ext.define('C.store.ResultsPieChartsStore', {
 		var rootData = store.proxy.reader.jsonData;
 
 		if (rootData && rootData.data[0]) {
+
 			if (rootData.data[0].activities) {
 				Ext.getStore('ResultsActivityStore').loadData(rootData.data[0].activities);
 			}
