@@ -27,8 +27,16 @@ Ext.define('C.controller.setDbName', {
 		C.limit = 200;
 
 		//increase request timeout
-		Ext.override(Ext.data.proxy.Ajax, { timeout: 180000 });
-		Ext.override(Ext.form.action.Action, { timeout: 180 });
+		Ext.Ajax.timeout = 180000; // 180 seconds
+		Ext.override(Ext.form.Basic, {
+			timeout: Ext.Ajax.timeout / 1000
+		});
+		Ext.override(Ext.data.proxy.Server, {
+			timeout: Ext.Ajax.timeout
+		});
+		Ext.override(Ext.data.Connection, {
+			timeout: Ext.Ajax.timeout
+		});
 
 		//prevent pop up windows move out of browser area
 		Ext.override(Ext.Window, {

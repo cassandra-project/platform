@@ -148,11 +148,13 @@ Ext.define('C.view.ResultsGraphForm', {
 					]
 				},
 				{
-					xtype: 'container',
+					xtype: 'panel',
 					flex: 1,
+					id: 'pieChartContainer2',
 					itemId: 'pieChartContainer2',
 					margin: '0 0 0 20px',
 					minHeight: 500,
+					width: 250,
 					layout: {
 						align: 'center',
 						padding: '10px',
@@ -164,7 +166,6 @@ Ext.define('C.view.ResultsGraphForm', {
 							border: 1,
 							height: 229,
 							itemId: 'resultsActivityPieChart',
-							margin: '0 0 0 80',
 							width: 338,
 							shadow: true,
 							animate: true,
@@ -189,15 +190,15 @@ Ext.define('C.view.ResultsGraphForm', {
 									showInLegend: true,
 									tips: {
 										trackMouse: true,
-										width: 140,
+										width: 150,
 										height: 28,
 										renderer: function(storeItem, item) {
 										//calculate percentage.
 										var total = 0;
 										storeItem.store.each(function(rec) {
-											total += rec.get('count');
+											total += rec.get('consumption');
 										});
-										this.setTitle(storeItem.get('type') + ': ' + Math.round(storeItem.get('count') / total * 100) + '%');
+										this.setTitle(storeItem.get('type') + ': ' + Math.round(storeItem.get('consumption') / total * 100) + '%');
 									  }
 									},
 									angleField: 'consumption',
@@ -219,7 +220,6 @@ Ext.define('C.view.ResultsGraphForm', {
 							border: 1,
 							height: 229,
 							itemId: 'resultsAppliancePieChart',
-							margin: '0 0 0 80',
 							width: 338,
 							shadow: true,
 							animate: true,
@@ -244,15 +244,15 @@ Ext.define('C.view.ResultsGraphForm', {
 									showInLegend: true,
 									tips: {
 										trackMouse: true,
-										width: 140,
+										width: 150,
 										height: 28,
 										renderer: function(storeItem, item) {
 										//calculate percentage.
 										var total = 0;
 										storeItem.store.each(function(rec) {
-											total += rec.get('count');
+											total += rec.get('consumption');
 										});
-										this.setTitle(storeItem.get('type') + ': ' + Math.round(storeItem.get('count') / total * 100) + '%');
+										this.setTitle(storeItem.get('type') + ': ' + Math.round(storeItem.get('consumption') / total * 100) + '%');
 									  }
 									},
 									angleField: 'consumption',
