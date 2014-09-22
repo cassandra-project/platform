@@ -490,6 +490,7 @@ Ext.define('C.view.InstallationForm', {
 		var node =C.app.getNodeFromTree(myForm.getRecord().internalId);
 		var record = C.app.getRecordByNode(node);
 		var operatingHours = [];
+		var values = myForm.getValues();
 
 		operatingHoursData = this.down('#operatingHoursGrid').store.data;
 		Ext.each(operatingHoursData.items, function(index){
