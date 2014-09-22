@@ -170,7 +170,7 @@ public class Simulation implements Runnable {
 //  	  				System.out.println("Day " + ((tick / Constants.MIN_IN_DAY) + 1));
   	  					for (Installation installation: installations) {
 //  						System.out.println("Installation: " + installation.getName());
-  	  						installation.updateDailySchedule(tick, queue, simulationWorld.getResponseType(), orng);
+  	  						installation.updateDailySchedule(tick, queue, simulationWorld, orng);
   	  						
   	  					}
 //  					System.out.println("Daily queue size: " + queue.size() + "(" + 
@@ -202,7 +202,7 @@ public class Simulation implements Runnable {
 					float sumQ = 0;
 					int counter = 0;
 		  			for(Installation installation: installations) {
-		  				installation.nextStep(tick);
+		  				installation.nextStep(tick, simulationWorld);
 		  				double p = installation.getCurrentPowerP();
 		  				double q = installation.getCurrentPowerQ();
 //		  				if(p> 0.001) System.out.println(p);
@@ -213,7 +213,7 @@ public class Simulation implements Runnable {
 		  				} else {
 		  					installation.updateEnergy(p);
 		  				}
-		  				installation.updateAppliancesAndActivitiesConsumptions(tick, endTick);
+		  				installation.updateAppliancesAndActivitiesConsumptions(tick, endTick, simulationWorld);
 		  				m.addTickResultForInstallation(tick, 
 		  						installation.getId(), 
 		  						p * mcrunsRatio, 
@@ -416,6 +416,7 @@ public class Simulation implements Runnable {
   		if(setup.equalsIgnoreCase("static")) {
   			staticSetup(jsonScenario);
   		} else if(setup.equalsIgnoreCase("dynamic")) {
+  			mcruns = 1;
   			dynamicSetup(jsonScenario, jump);
   		} else {
   			throw new Exception("Problem with setup property!!!");
@@ -463,6 +464,11 @@ public class Simulation implements Runnable {
 		    	String apptype = (String)applianceDoc.get("type");
 		    	double standy = Utils.getDouble(applianceDoc.get("standy_consumption"));
 		    	boolean base = Utils.getBoolean(applianceDoc.get("base"));
+		    	boolean lighting = Utils.getBoolean(applianceDoc.get("lighting"));
+		    	double[] monLightCons = null;
+		    	if(lighting) {
+		    		monLightCons = Utils.dblist2doubleArr((BasicDBList)applianceDoc.get("monthlyConsumptions"));
+		    	}
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
 		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
 		    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
@@ -475,7 +481,9 @@ public class Simulation implements Runnable {
 	    				pconsmod,
 	    				qconsmod,
 	    				standy,
-	            		base).build(orng);
+	            		base,
+	            		lighting,
+	            		monLightCons).build(orng);
 	    		existing.put(appid, app);
 	    		inst.addAppliance(app);
 	    	}
@@ -663,6 +671,11 @@ public class Simulation implements Runnable {
 			    	String apptype = (String)applianceDoc.get("type");
 			    	double standy = Utils.getDouble(applianceDoc.get("standy_consumption"));
 			    	boolean base = Utils.getBoolean(applianceDoc.get("base"));
+			    	boolean lighting = Utils.getBoolean(applianceDoc.get("lighting"));
+			    	double[] monLightCons = null;
+			    	if(lighting) {
+			    		monLightCons = Utils.dblist2doubleArr((BasicDBList)applianceDoc.get("monthlyConsumptions"));
+			    	}
 			    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
 			    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
 			    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
@@ -675,7 +688,9 @@ public class Simulation implements Runnable {
 		    				pconsmod,
 		    				qconsmod,
 		    				standy,
-		            		base).build(orng);
+		            		base,
+		            		lighting,
+		            		monLightCons).build(orng);
 		    		existing.put(appid, app);
 		    	}
 		    	
@@ -843,6 +858,11 @@ public class Simulation implements Runnable {
 	    	    	String apptype = (String)applianceDoc.get("type");
 	    	    	double standy = Utils.getDouble(applianceDoc.get("standy_consumption"));
 	    	    	boolean base = Utils.getBoolean(applianceDoc.get("base"));
+	    	    	boolean lighting = Utils.getBoolean(applianceDoc.get("lighting"));
+			    	double[] monLightCons = null;
+			    	if(lighting) {
+			    		monLightCons = Utils.dblist2doubleArr((BasicDBList)applianceDoc.get("monthlyConsumptions"));
+			    	}
 	    	    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
 	    	    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
 	    	    	ConsumptionModel qconsmod = new ConsumptionModel(consModDoc.get("qmodel").toString(), "q");
@@ -855,7 +875,9 @@ public class Simulation implements Runnable {
 	        				pconsmod,
 	        				qconsmod,
 	        				standy,
-	                		base).build(orng);
+	                		base,
+	                		lighting,
+	                		monLightCons).build(orng);
 	        		app.setParentId(inst.getId());
 	    	    	String app_id = addEntity(app, jump);
 	    	    	app.setId(app_id);

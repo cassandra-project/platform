@@ -23,6 +23,7 @@ import com.mongodb.BasicDBObject;
 import eu.cassandra.server.mongo.MongoPersons;
 import eu.cassandra.sim.Event;
 import eu.cassandra.sim.PricingPolicy;
+import eu.cassandra.sim.SimulationParams;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.installations.Installation;
 import eu.cassandra.sim.utilities.ORNG;
@@ -83,10 +84,10 @@ public class Person extends Entity {
   	}
   
     public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
-    		PricingPolicy pricing, PricingPolicy baseline, String responseType, ORNG orng) {
+    		PricingPolicy pricing, PricingPolicy baseline, SimulationParams sp, ORNG orng) {
     	for(Activity activity: activities) {
 //    		System.out.println("Activity: " + activity.getName());
-    		activity.updateDailySchedule(tick, queue, pricing, baseline, awareness, sensitivity, responseType, orng);
+    		activity.updateDailySchedule(tick, queue, pricing, baseline, awareness, sensitivity, sp, orng);
     	}
     }
 

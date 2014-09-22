@@ -402,7 +402,7 @@ public class Activity extends Entity {
 	public void
 		updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue,
 				PricingPolicy pricing, PricingPolicy baseline, double awareness,
-				double sensitivity, String responseType, ORNG orng) {
+				double sensitivity, SimulationParams sp, ORNG orng) {
 		/*
 		 *  Decide on the number of times the activity is going to be activated
 		 *  during a day
@@ -516,7 +516,7 @@ public class Activity extends Entity {
 						responseStartProb = responseprobStartTime.get(selector);
 					} else {
 						responseStartProb = Response.respond(startProb, pricing,
-								baseline, awareness, sensitivity, responseType);
+								baseline, awareness, sensitivity, sp.getResponseType());
 						responseprobStartTime.put(selector, responseStartProb);
 					}
 				}

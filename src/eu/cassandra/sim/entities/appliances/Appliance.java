@@ -15,11 +15,14 @@
 */
 package eu.cassandra.sim.entities.appliances;
 
+import java.util.Calendar;
+
 import com.mongodb.BasicDBObject;
 
 import eu.cassandra.server.api.exceptions.BadParameterException;
 import eu.cassandra.server.mongo.MongoAppliances;
 import eu.cassandra.sim.PricingPolicy;
+import eu.cassandra.sim.SimulationParams;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.ConsumptionModel.Tripplet;
 import eu.cassandra.sim.entities.installations.Installation;
@@ -41,6 +44,8 @@ public class Appliance extends Entity {
 	private final ConsumptionModel qcm;
 	private final double standByConsumption;
 	private final boolean base;
+	private final boolean lighting;
+	private final double[] monLightCons;
 	private final Installation installation;
 	
 	private boolean inUse;
@@ -68,6 +73,8 @@ public class Appliance extends Entity {
 		private final ConsumptionModel qcm;
 		private final double standByConsumption;
 		private final boolean base;
+		private final boolean lighting;
+		private final double[] monLightCons;
 		// Optional or state related variables
 		private long onTick = -1;
 		private String who = null;
@@ -80,7 +87,9 @@ public class Appliance extends Entity {
 				ConsumptionModel apcm,
 				ConsumptionModel aqcm,
 				double astandy, 
-				boolean abase) {
+				boolean abase,
+				boolean alighting,
+				double[] amonLightCons) {
 			id = aid;
 			name = aname;
 			description = adesc;
@@ -90,6 +99,8 @@ public class Appliance extends Entity {
 			qcm = aqcm;
 			standByConsumption = astandy;
 			base = abase;
+			lighting = alighting;
+			monLightCons = amonLightCons;
 		}
 		public Appliance build(ORNG orng) {
 			return new Appliance(this, orng);
@@ -106,6 +117,8 @@ public class Appliance extends Entity {
 		pcm = builder.pcm;
 		qcm = builder.qcm;
 		base = builder.base;
+		lighting = builder.lighting;
+		monLightCons = builder.monLightCons;
 		inUse = (base) ? true : false;
 		onTick = (base) ? -orng.nextInt(Constants.MIN_IN_DAY) : builder.onTick;
 		who = builder.who;
@@ -131,7 +144,7 @@ public class Appliance extends Entity {
 		return pcm;
 	}
 
-	public double getPower(long tick, String type) {
+	public double getPower(long tick, String type, SimulationParams sp) {
 		try {
 		
 		ConsumptionModel cm = null; 
@@ -143,36 +156,43 @@ public class Appliance extends Entity {
 		double power = 0;
 		// TODO
 		if(isInUse()) {
-			long relativeTick = Math.abs(tick - onTick);
-			// If the device has a limited operational duration
-			long divTick = relativeTick / cm.getTotalDuration();
-			if(divTick >= cm.getOuterN() && cm.getOuterN() > 0) {
-				power = 0;
+			if(lighting) {
+				int monIndex = sp.getSimCalendar().getMyCalendar().get(Calendar.MONTH);
+				if(monLightCons != null) {
+					power = monLightCons[monIndex];
+				}
 			} else {
-				int sum = 0;
-				long moduloTick = relativeTick % cm.getTotalDuration();
-				int index1 = -1;
-				for(int i = 0; i < cm.getPatternN(); i++) {
-					sum += (cm.getN(i) * cm.getPatternDuration(i));
-					long whichPattern = moduloTick / sum;
-					if(whichPattern == 0) {
-						index1 = i;
-						break;
+				long relativeTick = Math.abs(tick - onTick);
+				// If the device has a limited operational duration
+				long divTick = relativeTick / cm.getTotalDuration();
+				if(divTick >= cm.getOuterN() && cm.getOuterN() > 0) {
+					power = 0;
+				} else {
+					int sum = 0;
+					long moduloTick = relativeTick % cm.getTotalDuration();
+					int index1 = -1;
+					for(int i = 0; i < cm.getPatternN(); i++) {
+						sum += (cm.getN(i) * cm.getPatternDuration(i));
+						long whichPattern = moduloTick / sum;
+						if(whichPattern == 0) {
+							index1 = i;
+							break;
+						}
 					}
-				}
-				sum = 0;
-				long moduloTick2 = moduloTick % cm.getPatternDuration(index1);
-				int index2 = -1;
-				for(int j = 0; j < cm.getPattern(index1).size(); j++) {
-					sum += ((Tripplet)cm.getPattern(index1).get(j)).d;
-					long whichPattern = moduloTick2 / sum;
-					if(whichPattern == 0) {
-						index2 = j;
-						break;
+					sum = 0;
+					long moduloTick2 = moduloTick % cm.getPatternDuration(index1);
+					int index2 = -1;
+					for(int j = 0; j < cm.getPattern(index1).size(); j++) {
+						sum += ((Tripplet)cm.getPattern(index1).get(j)).d;
+						long whichPattern = moduloTick2 / sum;
+						if(whichPattern == 0) {
+							index2 = j;
+							break;
+						}
 					}
+					relativeTick++;		
+					power = ((Tripplet)cm.getPattern(index1).get(index2)).v; 
 				}
-				relativeTick++;		
-				power = ((Tripplet)cm.getPattern(index1).get(index2)).v; 
 			}
 		} else {
 			power = standByConsumption;
@@ -231,11 +251,13 @@ public class Appliance extends Entity {
 				new ConsumptionModel(p, "p"),
 				new ConsumptionModel(q, "q"),
 				2f,
-				true).build(new ORNG());
+				true,
+				false,
+				null).build(new ORNG());
 		System.out.println(freezer.getId());
 		System.out.println(freezer.getName());
 		for(int i = 0; i < 200; i++) {
-			System.out.println(freezer.getPower(i, "p"));
+			System.out.println(freezer.getPower(i, "p", null));
 		}
 	}
 

@@ -24,6 +24,7 @@ import eu.cassandra.server.mongo.MongoInstallations;
 import eu.cassandra.server.mongo.MongoResults;
 import eu.cassandra.sim.Event;
 import eu.cassandra.sim.PricingPolicy;
+import eu.cassandra.sim.SimulationParams;
 import eu.cassandra.sim.entities.Entity;
 import eu.cassandra.sim.entities.appliances.Appliance;
 import eu.cassandra.sim.entities.external.ThermalModule;
@@ -110,9 +111,9 @@ public class Installation extends Entity {
         clustername = builder.clustername;
 	}
     
-    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue, String responseType, ORNG orng) {
+    public void updateDailySchedule(int tick, PriorityBlockingQueue<Event> queue, SimulationParams sp, ORNG orng) {
     	for(Person person : getPersons()) {
-    		person.updateDailySchedule(tick, queue, pp, bpp, responseType, orng);
+    		person.updateDailySchedule(tick, queue, pp, bpp, sp, orng);
 		}
     	if(tm != null) {
     		tm.nextStep();
@@ -190,13 +191,13 @@ public class Installation extends Entity {
     	return cost;
     }
 
-	public void nextStep(int tick) {
-		updateRegistry(tick);
+	public void nextStep(int tick, SimulationParams sp) {
+		updateRegistry(tick, sp);
 	}
 
-	public void updateAppliancesAndActivitiesConsumptions(int tick, int endTick) {
+	public void updateAppliancesAndActivitiesConsumptions(int tick, int endTick, SimulationParams sp) {
 		for(Appliance appliance : getAppliances()) {
-			double p = appliance.getPower(tick, "p");
+			double p = appliance.getPower(tick, "p", sp);
 			Activity act = appliance.getWhat();
 			if(act != null) {
 				act.updateMaxPower(p);
@@ -217,12 +218,12 @@ public class Installation extends Entity {
 		}
 	}
 	
-	public void updateRegistry(int tick) {
+	public void updateRegistry(int tick, SimulationParams sp) {
 		float p = 0f;
 		float q = 0f;
 		for(Appliance appliance : getAppliances()) {
-			p += appliance.getPower(tick, "p");
-			q += appliance.getPower(tick, "q");
+			p += appliance.getPower(tick, "p", sp);
+			q += appliance.getPower(tick, "q", sp);
 		}
 		if(tm != null) {
 			p += tm.getPower(tick);
