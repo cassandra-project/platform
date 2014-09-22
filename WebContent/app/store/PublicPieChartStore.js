@@ -20,7 +20,7 @@ Ext.define('C.store.PublicPieChartStore', {
 		var me = this;
 		cfg = cfg || {};
 		me.callParent([Ext.apply({
-			storeId: 'MyArrayStore',
+			storeId: 'PublicPieChartStore',
 			proxy: {
 				type: 'ajax',
 				reader: {
