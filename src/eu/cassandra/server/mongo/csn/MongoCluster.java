@@ -331,8 +331,10 @@ public class MongoCluster {
 			for(Vector<String> cluster : clusters.values()) {
 				for(int i=0;i<cluster.size();i++) {
 					String id = cluster.get(i);
+					String instName = DBConn.getConn().getCollection(MongoGraphs.COL_CSN_NODES).findOne(new BasicDBObject("_id",new ObjectId(id))).get("name").toString();
 					DBObject node = new BasicDBObject("_id",new ObjectId());
 					map.put(id, node.get("_id").toString());
+					node.put("name", instName);
 					nodes.add(node);
 				}
 			}

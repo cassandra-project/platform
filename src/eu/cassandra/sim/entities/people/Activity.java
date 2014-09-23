@@ -247,11 +247,13 @@ public class Activity extends Entity {
 	}
 	
 	private String getKey(String keyword) {
+		System.out.println("key: " + keyword);
 		Set<String> set = nTimesGivenDay.keySet();
 		Iterator<String> iter = set.iterator();
 		while(iter.hasNext()) {
 			String key = iter.next();
 			if(key.contains(keyword)) {
+				System.out.println("key: " + key);
 				return key;
 			}
 		}
@@ -440,6 +442,7 @@ public class Activity extends Entity {
 					durationProb = probDuration.get(dayOfWeekKey);
 					probVector = probApplianceUsed.get(dayOfWeekKey);
 					isShiftable = shiftable.get(dayOfWeekKey);
+					isExclusive = config.get(dayOfWeekKey);
 					vector = appliances.get(dayOfWeekKey);
 					// Then for weekdays and weekends
 					if(!notNull(numOfTimesProb, startProb, durationProb, probVector, vector)) {

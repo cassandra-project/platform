@@ -519,6 +519,7 @@ public class Simulation implements Runnable {
 	    			String actmodDayType = (String)actmodDoc.get("day_type");
 	    			boolean shiftable = Utils.getBoolean(actmodDoc.get("shiftable"));
 	    			boolean exclusive = Utils.getEquality(actmodDoc.get("config"), "exclusive", true);
+	    			System.out.println("exc: " + exclusive);
 	    			DBObject duration = (DBObject)actmodDoc.get("duration");
 	    			durDist = json2dist(duration, "duration");
 	    			DBObject start = (DBObject)actmodDoc.get("start");
@@ -758,6 +759,7 @@ public class Simulation implements Runnable {
 			    			String actmodDayType = (String)actmodDoc.get("day_type");
 			    			boolean shiftable = Utils.getBoolean(actmodDoc.get("shiftable"));
 			    			boolean exclusive = Utils.getEquality(actmodDoc.get("config"), "exclusive", true);
+			    			System.out.println("exc: " + exclusive);
 			    			DBObject duration = (DBObject)actmodDoc.get("duration");
 			    			act.addDurations(duration);
 			    			durDist = json2dist(duration, "duration");
@@ -923,6 +925,7 @@ public class Simulation implements Runnable {
 	        			String actmodDayType = (String)actmodDoc.get("day_type");
 	        			boolean shiftable = Utils.getBoolean(actmodDoc.get("shiftable"));
 	        			boolean exclusive = Utils.getEquality(actmodDoc.get("config"), "exclusive", true);
+	        			System.out.println("exc: " + exclusive);
 	        			DBObject duration = (DBObject)actmodDoc.get("duration");
 	        			durDist = json2dist(duration, "duration");
 	        			DBObject start = (DBObject)actmodDoc.get("start");
