@@ -468,6 +468,9 @@ public class Simulation implements Runnable {
 		    	double[] monLightCons = null;
 		    	if(lighting) {
 		    		monLightCons = Utils.dblist2doubleArr((BasicDBList)applianceDoc.get("monthlyConsumptions"));
+		    		for (int m = 0; m < monLightCons.length; m++) {
+		    			monLightCons[m] = monLightCons[m] / 30 / 1440; 
+		    		}
 		    	}
 		    	DBObject consModDoc = (DBObject)applianceDoc.get("consmod");
 		    	ConsumptionModel pconsmod = new ConsumptionModel(consModDoc.get("pmodel").toString(), "p");
